@@ -1,92 +1,60 @@
+import { CSSProperties } from "react";
 import { Element } from "../element";
-import { coreComponent } from "./types";
+import { ContainerStyle } from "../../models";
+import { SortableContext, verticalListSortingStrategy, horizontalListSortingStrategy } from "@dnd-kit/sortable";
+import { useSnapshot } from "valtio";
+import { editorContext } from "../../models";
 
 export interface ContainerProps {
-  children: string[];
-  layout?: "flex" | "grid" | "none";
-  direction?: "row" | "column";
-  gap?: {
-    x?: number;
-    y?: number;
-  };
-  padding?: {
-    top?: number;
-    bottom?: number;
-    left?: number;
-    right?: number;
-  };
-  columns?: number[];
-  rows?: number[];
-  alignItems?: "start" | "end" | "center" | "stretch";
-  justifyContent?: "start" | "end" | "center" | "stretch";
-  
-  // Dimensional and styling props
-  width?: string | number;
-  height?: string | number;
-  minWidth?: string | number;
-  maxWidth?: string | number;
-  minHeight?: string | number;
-  maxHeight?: string | number;
-  background?: string;
-  cornerRadius?: number;
-  borderWidth?: number;
-  borderColor?: string;
-  overflow?: "visible" | "hidden" | "scroll" | "auto";
+  content: string[];
+  style: ContainerStyle;
 }
 
-export const container = coreComponent(
-  "container",
-  ({
-    children,
-    layout = "flex",
-    direction,
-    gap,
-    padding,
-    columns,
-    rows,
-    alignItems,
-    justifyContent,
-    width,
-    height,
-    minWidth,
-    maxWidth,
-    minHeight,
-    maxHeight,
-    background,
-    cornerRadius,
-    borderWidth,
-    borderColor,
-    overflow,
-  }: ContainerProps) => {
-    return (
-      <div
-        style={{
-          display: layout === "none" ? "block" : layout,
-          flexDirection: direction,
-          gap: gap ? `${gap.y ?? 0}px ${gap.x ?? 0}px` : undefined,
-          padding: padding ? `${padding.top ?? 0}px ${padding.right ?? 0}px ${padding.bottom ?? 0}px ${padding.left ?? 0}px` : undefined,
-          gridTemplateColumns: columns?.map((c) => `${c}%`).join(" "),
-          gridTemplateRows: rows?.map((r) => `${r}%`).join(" "),
-          alignItems,
-          justifyContent,
-          width,
-          height,
-          minWidth,
-          maxWidth,
-          minHeight,
-          maxHeight,
-          backgroundColor: background,
-          borderRadius: cornerRadius ? `${cornerRadius}px` : undefined,
-          borderWidth: borderWidth ? `${borderWidth}px` : undefined,
-          borderStyle: borderWidth ? "solid" : undefined,
-          borderColor,
-          overflow,
-        }}
-      >
-        {children.map((child, index) => (
-          <Element key={index} id={child} />
-        ))}
-      </div>
-    );
-  },
-);
+export function Container({ content, style }: ContainerProps) {
+  const editorSnap = useSnapshot(editorContext);
+  const isEditMode = editorSnap.mode === "edit";
+
+  const layoutStyle: CSSProperties = {
+    display: style.layout === "none" ? "block" : style.layout || "flex",
+    flexDirection: style.direction,
+    gap: style.gap ? `${style.gap.y ?? 0}px ${style.gap.x ?? 0}px` : undefined,
+    padding: style.padding ? `${style.padding.top ?? 0}px ${style.padding.right ?? 0}px ${style.padding.bottom ?? 0}px ${style.padding.left ?? 0}px` : undefined,
+    gridTemplateColumns: style.columns ? `repeat(${style.columns}, 1fr)` : undefined,
+    gridTemplateRows: style.rows ? `repeat(${style.rows}, 1fr)` : undefined,
+    alignItems: style.alignItems,
+    justifyContent: style.justifyContent,
+    width: style.width,
+    height: style.height,
+    minWidth: style.minWidth,
+    maxWidth: style.maxWidth,
+    minHeight: style.minHeight,
+    maxHeight: style.maxHeight,
+    backgroundColor: style.background,
+    borderRadius: style.cornerRadius ? `${style.cornerRadius}px` : undefined,
+    borderWidth: style.borderWidth ? `${style.borderWidth}px` : undefined,
+    borderStyle: style.borderWidth ? "solid" : undefined,
+    borderColor: style.borderColor,
+    overflow: style.overflow,
+  };
+
+  const innerContent = (
+    <div style={layoutStyle}>
+      {content.map((childId) => (
+        <Element key={childId} id={childId} />
+      ))}
+    </div>
+  );
+
+  if (!isEditMode) {
+    return innerContent;
+  }
+
+  return (
+    <SortableContext 
+      items={content} 
+      strategy={style.direction === "row" ? horizontalListSortingStrategy : verticalListSortingStrategy}
+    >
+      {innerContent}
+    </SortableContext>
+  );
+}

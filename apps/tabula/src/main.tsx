@@ -1,172 +1,190 @@
+import "./modules"; // Initialize import map for shared React
 import {
   App,
   createApp,
-  createPage,
   PageRegistryProvider,
-  container,
-  text,
+  editorContext,
+  Bridge,
+  type PageData,
+  type AppData
 } from "@hivary/engine";
+import { AppAgent, ThinkingAgent } from "@hivary/agent";
+import { useEffect, useState, useMemo } from "react";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { useSnapshot } from "valtio";
 import "./index.css";
 
-const app = createApp({
-  id: "tabula",
-  routes: {
-    "/": "home",
-  },
-});
+// Mock LLM for demonstration
+const mockLLM = async (prompt: string) => {
+  console.log("AI Agent prompted:", prompt);
+  if (prompt.toLowerCase().includes("add text")) {
+    return JSON.stringify([{
+      type: "add_element",
+      pageId: "home",
+      parentId: "root",
+      elementId: `text-${Date.now()}`,
+      element: {
+        type: "block",
+        component: "text",
+        props: { text: "AI Generated Text Block" },
+        style: { size: 24, weight: 600, color: "#3b82f6" }
+      }
+    }]);
+  }
+  return "[]";
+};
 
-const page = createPage({
-  id: "home",
-  rootId: "root",
-  elements: {
-    root: {
-      component: container.name,
-      props: container.props({ 
-        children: ["header", "stats-row", "grid-title", "grid"],
-        layout: "flex", 
-        direction: "column", 
-        background: "#0a0a0a", 
-        height: "100vh", 
-        width: "100%",
-        padding: { top: 40, bottom: 40, left: 60, right: 60 },
-        gap: { y: 32 },
-        overflow: "auto"
-      }),
-    },
-    header: {
-      component: container.name,
-      props: container.props({ 
-        children: ["title", "subtitle"],
-        layout: "flex", 
-        direction: "column", 
-        gap: { y: 4 } 
-      }),
-    },
-    title: {
-      component: text.name,
-      props: text.props({ text: "Hivary Workspace", size: 32, weight: 700, color: "#ffffff" }),
-    },
-    subtitle: {
-      component: text.name,
-      props: text.props({ text: "Manage your active projects and team tasks", size: 14, color: "#737373" }),
-    },
-    "stats-row": {
-      component: container.name,
-      props: container.props({ 
-        children: ["stat-1", "stat-2", "stat-3"],
-        layout: "flex", 
-        direction: "row", 
-        gap: { x: 16 } 
-      }),
-    },
-    "stat-1": {
-      component: container.name,
-      props: container.props({ 
-        children: ["stat-1-label", "stat-1-val"],
-        background: "#171717", 
-        cornerRadius: 12, 
-        padding: { top: 16, bottom: 16, left: 20, right: 20 }, 
-        width: 160 
-      }),
-    },
-    "stat-1-label": { component: "text", props: { text: "Active Tasks", size: 11, color: "#a3a3a3", weight: 600 } },
-    "stat-1-val": { component: "text", props: { text: "24", size: 24, color: "#3b82f6", weight: 700 } },
-    
-    "stat-2": {
-      component: container.name,
-      props: container.props({ 
-        children: ["stat-2-label", "stat-2-val"],
-        background: "#171717", 
-        cornerRadius: 12, 
-        padding: { top: 16, bottom: 16, left: 20, right: 20 }, 
-        width: 160 
-      }),
-    },
-    "stat-2-label": { component: "text", props: { text: "Completed", size: 11, color: "#a3a3a3", weight: 600 } },
-    "stat-2-val": { component: "text", props: { text: "128", size: 24, color: "#10b981", weight: 700 } },
+function GuestApp() {
+  const [initData, setInitData] = useState<{ app: any; pages: Record<string, PageData> } | null>(null);
 
-    "stat-3": {
-      component: container.name,
-      props: container.props({ 
-        children: ["stat-3-label", "stat-3-val"],
-        background: "#171717", 
-        cornerRadius: 12, 
-        padding: { top: 16, bottom: 16, left: 20, right: 20 }, 
-        width: 160 
-      }),
-    },
-    "stat-3-label": { component: "text", props: { text: "Team", size: 11, color: "#a3a3a3", weight: 600 } },
-    "stat-3-val": { component: "text", props: { text: "8", size: 24, color: "#f59e0b", weight: 700 } },
+  const agent = useMemo(() => {
+    if (!initData) return null;
+    return new AppAgent({ app: initData.app, pages: initData.pages });
+  }, [initData]);
 
-    "grid-title": {
-      component: text.name,
-      props: text.props({ text: "Active Projects", size: 18, weight: 600, color: "#e5e5e5" }),
-    },
-    grid: {
-      component: container.name,
-      props: container.props({ 
-        children: ["card-1", "card-2", "card-3"],
-        layout: "grid", 
-        columns: [33, 33, 33], 
-        gap: { x: 20, y: 20 } 
-      }),
-    },
-    "card-1": {
-      component: container.name,
-      props: container.props({ 
-        children: ["card-1-tag", "card-1-name"],
-        background: "#1e1b4b", 
-        cornerRadius: 20, 
-        padding: { top: 24, bottom: 24, left: 24, right: 24 }, 
-        height: 180, 
-        layout: "flex", 
-        direction: "column", 
-        justifyContent: "end" 
-      }),
-    },
-    "card-1-tag": { component: "text", props: { text: "Design", size: 10, weight: 700, color: "#818cf8", underline: true } },
-    "card-1-name": { component: "text", props: { text: "Work OS Interface", size: 18, weight: 600, color: "#ffffff" } },
+  const thinkingAgent = useMemo(() => {
+    if (!agent) return null;
+    return new ThinkingAgent(agent, mockLLM);
+  }, [agent]);
 
-    "card-2": {
-      component: container.name,
-      props: container.props({ 
-        children: ["card-2-tag", "card-2-name"],
-        background: "#064e3b", 
-        cornerRadius: 20, 
-        padding: { top: 24, bottom: 24, left: 24, right: 24 }, 
-        height: 180, 
-        layout: "flex", 
-        direction: "column", 
-        justifyContent: "end" 
-      }),
-    },
-    "card-2-tag": { component: "text", props: { text: "Engineering", size: 10, weight: 700, color: "#34d399", underline: true } },
-    "card-2-name": { component: "text", props: { text: "App Engine Core", size: 18, weight: 600, color: "#ffffff" } },
+  useEffect(() => {
+    // 1. Notify host that we are ready to receive the app config
+    Bridge.send(window.parent, "APP_READY", {});
 
-    "card-3": {
-      component: container.name,
-      props: container.props({ 
-        children: ["card-3-tag", "card-3-name"],
-        background: "#450a0a", 
-        cornerRadius: 20, 
-        padding: { top: 24, bottom: 24, left: 24, right: 24 }, 
-        height: 180, 
-        layout: "flex", 
-        direction: "column", 
-        justifyContent: "end" 
-      }),
-    },
-    "card-3-tag": { component: "text", props: { text: "Marketing", size: 10, weight: 700, color: "#f87171", underline: true } },
-    "card-3-name": { component: "text", props: { text: "Monorepo Launch", size: 18, weight: 600, color: "#ffffff" } },
-  },
-});
+    // 2. Listen for initialization from host
+    const cleanup = Bridge.listen((type, payload) => {
+      console.log(`[Guest] Received: ${type}`, payload);
+      if (type === "INITIALIZE_GUEST") {
+        const { app, pages } = payload as { app: AppData; pages: Record<string, PageData> };
+        setInitData({
+          app: createApp(app),
+          pages: pages
+        });
+      }
+    });
+
+    return cleanup;
+  }, []);
+
+  if (!initData) {
+    return (
+      <div className="h-screen w-screen bg-neutral-900 flex items-center justify-center text-neutral-500 font-mono text-xs uppercase tracking-widest">
+        Waiting for Host Configuration...
+      </div>
+    );
+  }
+
+  return (
+    <PageRegistryProvider registry={initData.pages}>
+      <App app={initData.app} />
+      <EditorToolbar thinkingAgent={thinkingAgent} />
+    </PageRegistryProvider>
+  );
+}
+
+function EditorToolbar({ thinkingAgent }: { thinkingAgent: ThinkingAgent | null }) {
+  const snap = useSnapshot(editorContext);
+  const [isAiLoading, setIsAiLoading] = useState(false);
+
+  const handleAiAction = async () => {
+    if (!thinkingAgent) return;
+    const prompt = window.prompt("What would you like to build? (Try 'add text')");
+    if (!prompt) return;
+
+    setIsAiLoading(true);
+    try {
+      await thinkingAgent.process(prompt);
+    } catch (e) {
+      alert("AI Agent failed: " + e);
+    } finally {
+      setIsAiLoading(false);
+    }
+  };
+
+  return (
+    <div
+      style={{
+        position: "fixed",
+        bottom: 20,
+        left: "50%",
+        transform: "translateX(-50%)",
+        backgroundColor: "#1f2937",
+        padding: "8px 16px",
+        borderRadius: "99px",
+        display: "flex",
+        gap: "12px",
+        alignItems: "center",
+        boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
+        zIndex: 1000,
+        border: "1px solid #374151",
+      }}
+    >
+      <button
+        style={{
+          backgroundColor: snap.mode === "view" ? "#3b82f6" : "transparent",
+          color: "white",
+          border: "none",
+          padding: "4px 12px",
+          borderRadius: "99px",
+          cursor: "pointer",
+          fontSize: "12px",
+          fontWeight: 600,
+        }}
+        onClick={() => {
+          editorContext.mode = "view";
+          editorContext.selection = [];
+        }}
+      >
+        View
+      </button>
+      <button
+        style={{
+          backgroundColor: snap.mode === "edit" ? "#3b82f6" : "transparent",
+          color: "white",
+          border: "none",
+          padding: "4px 12px",
+          borderRadius: "99px",
+          cursor: "pointer",
+          fontSize: "12px",
+          fontWeight: 600,
+        }}
+        onClick={() => (editorContext.mode = "edit")}
+      >
+        Edit
+      </button>
+
+      <div style={{ width: "1px", height: "16px", backgroundColor: "#374151" }} />
+
+      <button
+        style={{
+          backgroundColor: "#8b5cf6",
+          color: "white",
+          border: "none",
+          padding: "4px 12px",
+          borderRadius: "99px",
+          cursor: "pointer",
+          fontSize: "12px",
+          fontWeight: 600,
+          opacity: isAiLoading ? 0.7 : 1,
+        }}
+        disabled={isAiLoading}
+        onClick={handleAiAction}
+      >
+        {isAiLoading ? "Thinking..." : "✨ AI Builder"}
+      </button>
+
+      {snap.selection.length > 0 && (
+        <div style={{ color: "#9ca3af", fontSize: "11px", marginLeft: "8px", borderLeft: "1px solid #374151", paddingLeft: "12px" }}>
+          {snap.selection.length} selected
+        </div>
+      )}
+    </div>
+  );
+}
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <PageRegistryProvider registry={{ home: page }}>
-      <App app={app} />
-    </PageRegistryProvider>
+    <GuestApp />
   </StrictMode>,
 );

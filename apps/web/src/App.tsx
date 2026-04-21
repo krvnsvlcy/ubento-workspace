@@ -1,227 +1,266 @@
 import { Bridge, type AppData, type PageData } from "@hivary/engine";
 import { useEffect, useRef, useState } from "react";
 
-// --- App Definitions ---
+const REGISTRY_BASE = "http://localhost:4030/components";
+const BACKEND_URL = "http://localhost:4050";
 
-const TABULA_APP: AppData = {
-  id: "tabula",
-  routes: {
-    "/": "board-component",
-    "/settings": "settings-component",
-  },
+// --- Default Template Data (used when creating new apps) ---
+const DEFAULT_PAGE_DATA: PageData = {
+  id: "home",
+  rootId: "root",
+  elements: {
+    root: {
+      type: "container",
+      style: { 
+        layout: "flex", 
+        direction: "column", 
+        background: "#0a0a0a", 
+        height: "100vh", 
+        width: "100%",
+        padding: { top: 40, left: 60 },
+        gap: { y: 32 }
+      },
+      content: ["welcome-text"],
+    },
+    "welcome-text": {
+      type: "block",
+      component: "text",
+      props: { text: "Welcome to your new Hivary App!" },
+      style: { size: 24, weight: 600, color: "#ffffff" } as any
+    }
+  }
 };
 
-const COMPONENT_REGISTRY: Record<string, PageData> = {
-  "board-component": {
-    id: "board-component",
-    rootId: "root",
-    elements: {
-      root: {
-        component: "container",
-        props: { 
-          layout: "flex", 
-          direction: "column", 
-          background: "#0a0a0a", 
-          height: "100vh", 
-          width: "100%",
-          padding: { top: 40, bottom: 40, left: 60, right: 60 },
-          gap: { y: 32 }
-        },
-        children: ["header", "stats-row", "grid-title", "grid"],
+// For this demo, we'll keep the rich dashboard for the existing "tabula" app
+const RICH_DASHBOARD_DATA: PageData = {
+  id: "home",
+  rootId: "root",
+  elements: {
+    root: {
+      type: "container",
+      style: { 
+        layout: "flex", 
+        direction: "column", 
+        background: "#0a0a0a", 
+        height: "100vh", 
+        width: "100%",
+        padding: { top: 40, bottom: 40, left: 60, right: 60 },
+        gap: { y: 32 },
+        overflow: "auto"
       },
-      header: {
-        component: "container",
-        props: { layout: "flex", direction: "column", gap: { y: 4 } },
-        children: ["title", "subtitle"],
-      },
-      title: {
-        component: "text",
-        props: { text: "Hivary Workspace", size: 32, weight: 700, color: "#ffffff" },
-      },
-      subtitle: {
-        component: "text",
-        props: { text: "Manage your active projects and team tasks", size: 14, color: "#737373" },
-      },
-      "stats-row": {
-        component: "container",
-        props: { layout: "flex", direction: "row", gap: { x: 16 } },
-        children: ["stat-1", "stat-2", "stat-3"],
-      },
-      "stat-1": {
-        component: "container",
-        props: { background: "#171717", cornerRadius: 12, padding: { top: 16, bottom: 16, left: 20, right: 20 }, width: 160 },
-        children: ["stat-1-label", "stat-1-val"],
-      },
-      "stat-1-label": { component: "text", props: { text: "Active Tasks", size: 11, color: "#a3a3a3", weight: 600 } },
-      "stat-1-val": { component: "text", props: { text: "24", size: 24, color: "#3b82f6", weight: 700 } },
-      
-      "stat-2": {
-        component: "container",
-        props: { background: "#171717", cornerRadius: 12, padding: { top: 16, bottom: 16, left: 20, right: 20 }, width: 160 },
-        children: ["stat-2-label", "stat-2-val"],
-      },
-      "stat-2-label": { component: "text", props: { text: "Completed", size: 11, color: "#a3a3a3", weight: 600 } },
-      "stat-2-val": { component: "text", props: { text: "128", size: 24, color: "#10b981", weight: 700 } },
-
-      "stat-3": {
-        component: "container",
-        props: { background: "#171717", cornerRadius: 12, padding: { top: 16, bottom: 16, left: 20, right: 20 }, width: 160 },
-        children: ["stat-3-label", "stat-3-val"],
-      },
-      "stat-3-label": { component: "text", props: { text: "Team", size: 11, color: "#a3a3a3", weight: 600 } },
-      "stat-3-val": { component: "text", props: { text: "8", size: 24, color: "#f59e0b", weight: 700 } },
-
-      "grid-title": {
-        component: "text",
-        props: { text: "Active Projects", size: 18, weight: 600, color: "#e5e5e5" },
-      },
-      grid: {
-        component: "container",
-        props: { layout: "grid", columns: [33, 33, 33], gap: { x: 20, y: 20 } },
-        children: ["card-1", "card-2", "card-3"],
-      },
-      "card-1": {
-        component: "container",
-        props: { background: "#1e1b4b", cornerRadius: 20, padding: { top: 24, bottom: 24, left: 24, right: 24 }, height: 180, layout: "flex", direction: "column", justifyContent: "end" },
-        children: ["card-1-tag", "card-1-name"],
-      },
-      "card-1-tag": { component: "text", props: { text: "Design", size: 10, weight: 700, color: "#818cf8", underline: true } },
-      "card-1-name": { component: "text", props: { text: "Work OS Interface", size: 18, weight: 600, color: "#ffffff" } },
-
-      "card-2": {
-        component: "container",
-        props: { background: "#064e3b", cornerRadius: 20, padding: { top: 24, bottom: 24, left: 24, right: 24 }, height: 180, layout: "flex", direction: "column", justifyContent: "end" },
-        children: ["card-2-tag", "card-2-name"],
-      },
-      "card-2-tag": { component: "text", props: { text: "Engineering", size: 10, weight: 700, color: "#34d399", underline: true } },
-      "card-2-name": { component: "text", props: { text: "App Engine Core", size: 18, weight: 600, color: "#ffffff" } },
-
-      "card-3": {
-        component: "container",
-        props: { background: "#450a0a", cornerRadius: 20, padding: { top: 24, bottom: 24, left: 24, right: 24 }, height: 180, layout: "flex", direction: "column", justifyContent: "end" },
-        children: ["card-3-tag", "card-3-name"],
-      },
-      "card-3-tag": { component: "text", props: { text: "Marketing", size: 10, weight: 700, color: "#f87171", underline: true } },
-      "card-3-name": { component: "text", props: { text: "Monorepo Launch", size: 18, weight: 600, color: "#ffffff" } },
+      content: ["header", "stats-row", "grid-title", "grid"],
     },
-  },
-  "settings-component": {
-    id: "settings-component",
-    rootId: "root",
-    elements: {
-      root: {
-        component: "container",
-        props: { background: "#0a0a0a", height: "100vh", padding: { top: 40, left: 60 } },
-        children: ["s-title"],
-      },
-      "s-title": {
-        component: "text",
-        props: { text: "System Settings", size: 32, weight: 700, color: "#ffffff" },
-      },
+    header: {
+      type: "container",
+      style: { layout: "flex", direction: "row", justifyContent: "space-between", alignItems: "center" },
+      content: ["header-left", "header-right"],
+    },
+    "header-left": {
+      type: "container",
+      style: { layout: "flex", direction: "column", gap: { y: 4 } },
+      content: ["title", "subtitle"],
+    },
+    "header-right": {
+      type: "block",
+      component: `${REGISTRY_BASE}/Clock.js`,
+      props: { label: "LOCAL TIME", bg: "#171717" },
+      style: { width: 180 }
+    },
+    title: {
+      type: "block",
+      component: "text",
+      props: { text: "Hivary Workspace" },
+      style: { size: 32, weight: 700, color: "#ffffff" } as any,
+    },
+    subtitle: {
+      type: "block",
+      component: "text",
+      props: { text: "Platform View: Manage your environment" },
+      style: { size: 14, color: "#737373" } as any,
+    },
+    "stats-row": {
+      type: "container",
+      style: { layout: "flex", direction: "row", gap: { x: 16 } },
+      content: ["stat-1", "stat-2", "stat-3"],
+    },
+    "stat-1": {
+      type: "block",
+      component: `${REGISTRY_BASE}/StatCard.js`,
+      props: { label: "Active Nodes", value: "14", color: "#3b82f6", trend: "+2" },
+      style: { width: 200 }
+    },
+    "stat-2": {
+      type: "block",
+      component: `${REGISTRY_BASE}/StatCard.js`,
+      props: { label: "Latency", value: "24ms", color: "#10b981", trend: "-2ms" },
+      style: { width: 200 }
+    },
+    "stat-3": {
+      type: "block",
+      component: `${REGISTRY_BASE}/StatCard.js`,
+      props: { label: "Uptime", value: "99.9%", color: "#f59e0b", trend: "0%" },
+      style: { width: 200 }
+    },
+    "grid-title": {
+      type: "block",
+      component: "text",
+      props: { text: "Quick Access", size: 18, weight: 600, color: "#e5e5e5" } as any,
+    },
+    grid: {
+      type: "container",
+      style: { layout: "grid", columns: 3, gap: { x: 20, y: 20 } },
+      content: ["card-1", "card-2", "card-3"],
+    },
+    "card-1": {
+      type: "block",
+      component: `${REGISTRY_BASE}/ProjectCard.js`,
+      props: { title: "Infra Monitor", tag: "Ops", progress: 88, bg: "#1e1b4b" },
+      style: { height: 180 }
+    },
+    "card-2": {
+      type: "block",
+      component: `${REGISTRY_BASE}/ProjectCard.js`,
+      props: { title: "User Analytics", tag: "Product", progress: 45, bg: "#064e3b" },
+      style: { height: 180 }
+    },
+    "card-3": {
+      type: "block",
+      component: `${REGISTRY_BASE}/ProjectCard.js`,
+      props: { title: "Security Audit", tag: "Security", progress: 100, bg: "#450a0a" },
+      style: { height: 180 }
     },
   },
 };
 
 function App() {
-  const [iframeUrl] = useState("http://localhost:4020");
+  const [apps, setApps] = useState<any[]>([]);
+  const [selectedApp, setSelectedApp] = useState<any | null>(null);
   const [isOverlayVisible, setIsOverlayVisible] = useState(true);
-  const [guestStatus, setGuestStatus] = useState("WAITING...");
+  const [loading, setLoading] = useState(true);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
+  // 1. Fetch apps from backend on mount
+  useEffect(() => {
+    fetch(`${BACKEND_URL}/apps`)
+      .then(res => res.json())
+      .then(data => {
+        setApps(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error("Failed to fetch apps", err);
+        setLoading(false);
+      });
+  }, []);
+
+  // 2. Handle Bridge communication
   useEffect(() => {
     const cleanup = Bridge.listen((type, payload) => {
-      console.log(`[Host] Received: ${type}`, payload);
-
       if (type === "APP_READY") {
-        setGuestStatus("READY");
-        if (iframeRef.current?.contentWindow) {
-          Bridge.send(iframeRef.current.contentWindow, "LOAD_APP", TABULA_APP);
-        }
-      }
-
-      if (type === "COMPONENT_REQUEST") {
-        const { componentId } = payload;
-        const componentData = COMPONENT_REGISTRY[componentId];
-        if (componentData && iframeRef.current?.contentWindow) {
-          Bridge.send(
-            iframeRef.current.contentWindow,
-            "COMPONENT_DELIVERY",
-            componentData,
-          );
+        if (selectedApp && iframeRef.current?.contentWindow) {
+          // Inject actual app data
+          Bridge.send(iframeRef.current.contentWindow, "INITIALIZE_GUEST", {
+            app: selectedApp.config,
+            pages: selectedApp.id === 'tabula' ? { home: RICH_DASHBOARD_DATA } : { home: DEFAULT_PAGE_DATA }
+          });
         }
       }
     });
-
     return cleanup;
-  }, []);
+  }, [selectedApp]);
 
+  const createNewApp = () => {
+    const name = prompt("Enter App Name:");
+    if (!name) return;
+
+    fetch(`${BACKEND_URL}/apps`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, teamId: 't-1' })
+    })
+    .then(res => res.json())
+    .then(newApp => {
+      setApps([...apps, newApp]);
+    });
+  };
+
+  // Launcher View
+  if (!selectedApp) {
+    return (
+      <div className="min-h-screen w-full bg-neutral-950 p-12 text-white font-sans">
+        <header className="flex justify-between items-center mb-12">
+          <div>
+            <h1 className="text-4xl font-black tracking-tight mb-2">Hivary Platform</h1>
+            <p className="text-neutral-500">Welcome back, select an application to launch</p>
+          </div>
+          <button 
+            onClick={createNewApp}
+            className="bg-blue-600 hover:bg-blue-500 px-6 py-3 rounded-full font-bold transition-all active:scale-95 shadow-lg shadow-blue-900/20"
+          >
+            + Create New App
+          </button>
+        </header>
+
+        {loading ? (
+          <div className="flex justify-center py-20 opacity-50">Loading ecosystem...</div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {apps.map(app => (
+              <div 
+                key={app.id} 
+                onClick={() => setSelectedApp(app)}
+                className="group bg-neutral-900 border border-neutral-800 p-8 rounded-3xl cursor-pointer hover:border-blue-500/50 transition-all hover:bg-neutral-800/50"
+              >
+                <div className="h-12 w-12 bg-blue-600/10 text-blue-500 rounded-2xl flex items-center justify-center font-bold text-xl mb-6 group-hover:scale-110 transition-transform">
+                  {app.name[0]}
+                </div>
+                <h3 className="text-xl font-bold mb-2">{app.name}</h3>
+                <p className="text-neutral-500 text-sm mb-6">ID: {app.id}</p>
+                <div className="flex items-center text-blue-500 text-sm font-bold opacity-0 group-hover:opacity-100 transition-opacity">
+                  Launch Application →
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Runner View (Work OS)
   return (
-    <div className="relative h-screen w-screen overflow-hidden">
+    <div className="relative h-screen w-screen overflow-hidden bg-black">
       <iframe
         ref={iframeRef}
-        src={iframeUrl}
+        src="http://localhost:4020"
         className="absolute inset-0 h-full w-full border-none"
         title="Work OS Content"
       />
 
-      <div
-        className={`absolute inset-0 pointer-events-none transition-opacity duration-300 ${
-          isOverlayVisible ? "opacity-100" : "opacity-0"
-        }`}
-      >
+      <div className={`absolute inset-0 pointer-events-none transition-opacity duration-300 ${isOverlayVisible ? 'opacity-100' : 'opacity-0'}`}>
         <div className="pointer-events-auto flex h-12 w-full items-center justify-between bg-white/80 px-4 backdrop-blur-md shadow-sm">
           <div className="flex items-center gap-4">
-            <div className="h-8 w-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold">
-              H
-            </div>
+            <button 
+              onClick={() => setSelectedApp(null)}
+              className="h-8 w-8 rounded-lg bg-neutral-800 flex items-center justify-center text-white hover:bg-black transition-colors"
+              title="Back to Launcher"
+            >
+              ←
+            </button>
+            <div className="h-8 w-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold">H</div>
             <span className="text-sm font-bold text-gray-800">
-              Work OS Host
+              {selectedApp.name} <span className="font-normal text-gray-400 ml-2">({selectedApp.id})</span>
             </span>
           </div>
-
-          <div className="flex items-center gap-3">
-            <div className="text-[10px] font-mono bg-green-100 text-green-700 px-2 py-1 rounded">
-              GUEST: {guestStatus}
-            </div>
-            <div className="h-8 w-8 rounded-full bg-gray-200"></div>
-          </div>
-        </div>
-
-        <div className="absolute left-4 top-1/2 flex -translate-y-1/2 pointer-events-auto flex-col gap-4 rounded-2xl bg-white/80 p-3 backdrop-blur-md shadow-lg">
-          <button
-            className="h-10 w-10 rounded-xl bg-gray-100 transition-colors hover:bg-blue-100 hover:text-blue-600 flex items-center justify-center"
-            title="Load Dashboard"
-            onClick={() => {
-              if (iframeRef.current?.contentWindow) {
-                Bridge.send(iframeRef.current.contentWindow, "NAVIGATE", {
-                  path: "/",
-                });
-              }
-            }}
-          >
-            📁
-          </button>
-          <button
-            className="h-10 w-10 rounded-xl bg-gray-100 transition-colors hover:bg-blue-100 hover:text-blue-600 flex items-center justify-center"
-            title="Load Settings"
-            onClick={() => {
-              if (iframeRef.current?.contentWindow) {
-                Bridge.send(iframeRef.current.contentWindow, "NAVIGATE", {
-                  path: "/settings",
-                });
-              }
-            }}
-          >
-            ⚙️
-          </button>
+          <div className="h-8 w-8 rounded-full bg-gray-200"></div>
         </div>
       </div>
 
-      <button
+      <button 
         onClick={() => setIsOverlayVisible(!isOverlayVisible)}
         className="absolute bottom-6 right-6 h-12 w-12 rounded-full bg-blue-600 text-white shadow-xl hover:bg-blue-700 z-50 flex items-center justify-center text-xl"
       >
-        {isOverlayVisible ? "✕" : "⌘"}
+        {isOverlayVisible ? '✕' : '⌘'}
       </button>
     </div>
   );
