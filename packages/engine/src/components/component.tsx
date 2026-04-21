@@ -1,12 +1,12 @@
 import React, { createContext, useContext, useMemo } from "react";
 import { proxy } from "valtio";
-import { stack } from "./core/stack";
+import { container } from "./core/container";
 import { text } from "./core/text";
 
 export type ComponentRegistry = Record<string, React.ComponentType<any>>;
 const coreComponents: ComponentRegistry = {
   [text.name]: text.component,
-  [stack.name]: stack.component,
+  [container.name]: container.component,
 };
 
 export const ComponentRegistryContext = createContext<ComponentRegistry>(
