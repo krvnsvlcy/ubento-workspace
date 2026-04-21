@@ -1,0 +1,22 @@
+{
+  "name": "hivary",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Hivary Monorepo",
+  "scripts": {
+    "dev": "turbo dev",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.26.2",
+  "devDependencies": {
+    "turbo": "^2.9.6",
+    "valtio": "^2.1.2",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5"
+  }
+}
