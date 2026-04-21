@@ -13,10 +13,10 @@
     }
   },
   "scripts": {
-    "deploy": "echo \"Deploying $(basename $(dirname $f))...\"",
     "build": "tsc",
     "watch": "tsc --watch",
-    "dev": "tsx src/index.ts"
+    "dev": "tsx src/index.ts",
+    "deploy": "gcloud run deploy billing-service --source ."
   },
   "dependencies": {
     "@ubento/services-common": "workspace:*"

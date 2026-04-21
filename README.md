@@ -4,7 +4,7 @@ A pnpm monorepo for Ubento.
 
 ## Structure
 
-- `apps/`: Deployable client solutions
+- `apps/`: Deployable client solutions (Vercel)
 - `services/`: Backend services
 - `packages/`: Shared internal packages
 
@@ -16,9 +16,11 @@ A pnpm monorepo for Ubento.
 - `npm run dev:services`: Start only the backend services
 
 ### Deployment
-- `npm run deploy:ubento`: Deploy the Ubento Platform (Next.js)
-- `npm run deploy:bento-app`: Deploy the Bento App Host (Vite)
-- `npm run deploy:bento-runtime`: Deploy the Bento Runtime (Vite)
+> Note: For actual deployments, ensure `VERCEL_TOKEN` is set in your environment.
+
+- `npm run deploy:ubento`: Deploy the Ubento Platform (Next.js) to Vercel
+- `npm run deploy:bento-app`: Deploy the Bento App Host (Vite) to Vercel
+- `npm run deploy:bento-runtime`: Deploy the Bento Runtime (Vite) to Vercel
 - `npm run deploy:service:iam`: Deploy IAM service
 - `npm run deploy:service:billing`: Deploy Billing service
 - `npm run deploy:service:registry`: Deploy Registry service

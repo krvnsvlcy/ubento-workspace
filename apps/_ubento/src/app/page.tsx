@@ -1,6 +1,6 @@
 "use client";
-import React, { useEffect, useState } from 'react';
-import { LayoutGrid, Plus, externalLink } from 'lucide-react';
+import { LayoutGrid, Plus } from "lucide-react";
+import { useEffect, useState } from "react";
 
 const BACKEND_URL = "http://localhost:4050";
 
@@ -9,7 +9,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetch(`${BACKEND_URL}/apps`)
-      .then(res => res.json())
+      .then((res) => res.json())
       .then(setApps)
       .catch(console.error);
   }, []);
@@ -30,8 +30,8 @@ export default function Dashboard() {
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {apps.map(app => (
-          <div 
+        {apps.map((app) => (
+          <div
             key={app.id}
             onClick={() => launchApp(app.id)}
             className="group bg-neutral-900 border border-neutral-800 p-6 rounded-2xl cursor-pointer hover:border-neutral-600 transition-all"

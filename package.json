@@ -7,11 +7,11 @@
     "dev": "turbo dev",
     "dev:apps": "turbo dev --filter='./apps/*'",
     "dev:services": "turbo dev --filter='./services/*'",
-    "deploy:bento-runtime": "turbo deploy --filter=tabula",
-    "deploy:bento-app": "turbo deploy --filter=web",
-    "deploy:ubento": "turbo deploy --filter=@ubento/platform",
-    "deploy:service:iam": "turbo deploy --filter=iam",
-    "deploy:service:billing": "turbo deploy --filter=billing",
+    "deploy:app:bento.runtime": "turbo deploy --filter=@ubento/bento.runtime",
+    "deploy:app:bento.app": "turbo deploy --filter=@ubento/bento.app",
+    "deploy:app:ubento": "turbo deploy --filter=@ubento/ubento",
+    "deploy:service:iam": "turbo deploy --filter=@ubento/iam-service",
+    "deploy:service:billing": "turbo deploy --filter=@ubento/billing-service",
     "deploy:service:registry": "turbo deploy --filter=@ubento/registry",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -20,11 +20,12 @@
   "license": "ISC",
   "packageManager": "pnpm@10.26.2",
   "devDependencies": {
-    "turbo": "^2.9.6",
-    "valtio": "^2.1.2",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "react": "^19.2.5",
-    "react-dom": "^19.2.5"
+    "react-dom": "^19.2.5",
+    "turbo": "^2.9.6",
+    "valtio": "^2.1.2",
+    "vercel": "^51.8.0"
   }
 }

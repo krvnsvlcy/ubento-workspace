@@ -1,14 +1,16 @@
 {
-  "name": "tabula",
+  "name": "@ubento/bento.runtime",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "deploy": "echo \"Deploying $(basename $(dirname $f))...\"",
     "dev": "vite",
-    "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build": "tsc -b && vite build",
+    "vercel:build": "vercel build --prod",
+    "vercel:deploy": "vercel deploy --prebuilt --prod --yes",
+    "deploy": "pnpm vercel:build && pnpm vercel:deploy"
   },
   "dependencies": {
     "@ubento/engine": "workspace:*",
