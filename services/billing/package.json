@@ -1,0 +1,28 @@
+{
+  "name": "@ubento/billing-service",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./build/index.js",
+  "module": "./build/index.js",
+  "types": "./build/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./build/index.d.ts",
+      "import": "./build/index.js"
+    }
+  },
+  "scripts": {
+    "deploy": "echo \"Deploying $(basename $(dirname $f))...\"",
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "dev": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "@ubento/services-common": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "tsx": "^4.0.0"
+  }
+}

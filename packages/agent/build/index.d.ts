@@ -1,4 +1,4 @@
-import { AppData, PageData, ElementData } from "@hivary/engine";
+import { AppData, PageData, ElementData } from "@ubento/engine";
 export type PageRegistry = Record<string, PageData>;
 export interface AgentConfig {
     app: AppData;

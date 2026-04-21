@@ -1,5 +1,5 @@
 {
-  "name": "@hivary/agent",
+  "name": "@ubento/agent",
   "version": "1.0.0",
   "private": true,
   "type": "module",
@@ -17,7 +17,7 @@
     "watch": "tsc --watch"
   },
   "dependencies": {
-    "@hivary/engine": "workspace:*"
+    "@ubento/engine": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.0.0"

@@ -1,17 +1,17 @@
-# Hivary Workspace Architecture
+# Ubento Workspace Architecture
 
-This repository contains the Hivary Data-Driven UI (SDUI) engine and its ecosystem. It is structured as a pnpm monorepo designed for high-performance, remotely-controlled applications.
+This repository contains the Ubento Data-Driven UI (SDUI) engine and its ecosystem. It is structured as a pnpm monorepo designed for high-performance, remotely-controlled applications.
 
 ## Monorepo Structure
 
 -   `apps/web`: **Work OS Host**. The owner of application data. It manages the lifecycle of the environment and injects configurations into guest applications.
 -   `apps/tabula`: **Interactive Board Guest**. A thin renderer application that runs inside an iframe. It receives its UI definitions dynamically from the Host.
 -   `apps/registry`: **Component Registry**. A static server (`port 4030`) that serves self-contained ES modules (widgets) to be used by the engine.
--   `packages/engine`: **Core Engine (@hivary/engine)**. The shared logic for state modeling, component rendering, and drag-and-drop interactions.
+-   `packages/engine`: **Core Engine (@ubento/engine)**. The shared logic for state modeling, component rendering, and drag-and-drop interactions.
 
 ---
 
-## Core Engine Architecture (@hivary/engine)
+## Core Engine Architecture (@ubento/engine)
 
 The engine is built on a "Flat Map" element architecture, using **Valtio** for high-performance reactive state.
 

@@ -1,4 +1,4 @@
-import { createPage } from "@hivary/engine";
+import { createPage } from "@ubento/engine";
 export class AppAgent {
     app;
     pages;
@@ -161,7 +161,7 @@ export class ThinkingAgent {
             app: this.agent.getAppData(),
             pages: this.agent.getPages()
         };
-        const systemPrompt = `You are an AI UI Agent for the Hivary Engine. 
+        const systemPrompt = `You are an AI UI Agent for the Ubento Engine. 
 Your task is to generate a JSON array of AgentActions to fulfill the user's request.
 
 Current App State:

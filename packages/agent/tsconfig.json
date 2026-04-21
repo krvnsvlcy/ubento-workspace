@@ -14,7 +14,7 @@
     "skipLibCheck": true,
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "paths": {
-      "@hivary/engine": ["../engine/build/index.d.ts"]
+      "@ubento/engine": ["../engine/build/index.d.ts"]
     }
   },
   "include": ["src"],

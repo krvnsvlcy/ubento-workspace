@@ -1,10 +1,18 @@
 {
-  "name": "hivary",
+  "name": "ubento",
   "version": "1.0.0",
   "private": true,
-  "description": "Hivary Monorepo",
+  "description": "Ubento Monorepo",
   "scripts": {
     "dev": "turbo dev",
+    "dev:apps": "turbo dev --filter='./apps/*'",
+    "dev:services": "turbo dev --filter='./services/*'",
+    "deploy:bento-runtime": "turbo deploy --filter=tabula",
+    "deploy:bento-app": "turbo deploy --filter=web",
+    "deploy:ubento": "turbo deploy --filter=@ubento/platform",
+    "deploy:service:iam": "turbo deploy --filter=iam",
+    "deploy:service:billing": "turbo deploy --filter=billing",
+    "deploy:service:registry": "turbo deploy --filter=@ubento/registry",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
