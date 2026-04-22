@@ -1,5 +1,4 @@
 import { LoggingWinston } from "@google-cloud/logging-winston";
-import util from "util";
 import winston, { format } from "winston";
 
 /* ---------------------------- Schema ---------------------------- */
@@ -13,18 +12,11 @@ export type ErrorEvent = BaseLogEvent<"error"> & {
   stack?: string;
   context?: Record<string, any>;
 };
-export type WarningEvent = BaseLogEvent<"warning"> & {
-};
-export type InfoEvent = BaseLogEvent<"info"> & {
-};
-export type DebugEvent = BaseLogEvent<"debug"> & {
-};
+export type WarningEvent = BaseLogEvent<"warning"> & {};
+export type InfoEvent = BaseLogEvent<"info"> & {};
+export type DebugEvent = BaseLogEvent<"debug"> & {};
 
-export type LogEvent =
-  | ErrorEvent
-  | WarningEvent
-  | InfoEvent
-  | DebugEvent;
+export type LogEvent = ErrorEvent | WarningEvent | InfoEvent | DebugEvent;
 
 export type Logger<E extends BaseLogEvent<string>> = {
   info: (message: string, event: E | LogEvent) => void;
@@ -33,7 +25,6 @@ export type Logger<E extends BaseLogEvent<string>> = {
   debug: (message: string, event: E | LogEvent) => void;
   child: (meta: Record<string, any>) => Logger<E>;
 };
-
 
 /* --------------------------- Factory ---------------------------- */
 
@@ -50,21 +41,16 @@ const prettyConsoleFormat = format.printf(
             ? "\x1b[32m" // green
             : "\x1b[36m"; // cyan for debug/others
 
+    const gray = "\x1b[90m";
+
     // reset color
     const reset = "\x1b[0m";
 
     // base line
-    let line = `${color}${timestamp} ${level.toUpperCase()} ${reset} ${message}`;
-
-    // print event/context if present
-    if (event) {
-      line += `\n${util.inspect(event, { colors: true, depth: null })}`;
-    } else if (Object.keys(meta).length) {
-      line += `\n${util.inspect(meta, { colors: true, depth: null })}`;
-    }
+    let line = `${gray}${timestamp}${reset} ${color}${level.toUpperCase()} [${event}]${reset} ${message} `;
 
     return line;
-  }
+  },
 );
 
 export function createLogger<E extends BaseLogEvent<string>>({
@@ -89,9 +75,9 @@ export function createLogger<E extends BaseLogEvent<string>>({
       new winston.transports.Console({
         format: format.combine(
           format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
-          prettyConsoleFormat
+          prettyConsoleFormat,
         ),
-      })
+      }),
     );
   }
 
@@ -100,7 +86,7 @@ export function createLogger<E extends BaseLogEvent<string>>({
       new LoggingWinston({
         logName: `services.${serviceName}`,
         serviceContext: { service: serviceName },
-      })
+      }),
     );
   }
 
@@ -110,24 +96,35 @@ export function createLogger<E extends BaseLogEvent<string>>({
     defaultMeta: { ...meta, service: serviceName },
   });
 
-  function makeLogger(logger: winston.Logger, metaHook: (meta: Record<string, any>) => Record<string, any> = (meta) => meta): Logger<E> {
-    function child(extra: Record<string, any>, childMetaHook: (meta: Record<string, any>) => Record<string, any> = (meta) => meta) {
-      return makeLogger(logger.child(extra), meta => childMetaHook(metaHook(meta)));
+  function makeLogger(
+    logger: winston.Logger,
+    metaHook: (meta: Record<string, any>) => Record<string, any> = (meta) =>
+      meta,
+  ): Logger<E> {
+    function child(
+      extra: Record<string, any>,
+      childMetaHook: (meta: Record<string, any>) => Record<string, any> = (
+        meta,
+      ) => meta,
+    ) {
+      return makeLogger(logger.child(extra), (meta) =>
+        childMetaHook(metaHook(meta)),
+      );
     }
 
     function log(level: string, message: string, event: E | LogEvent) {
-      logger.log(
-        level,
-        message,
-        metaHook({ ...meta, ...event }),
-      );
+      logger.log(level, message, metaHook({ ...meta, ...event }));
     }
     return {
       child,
-      info: (message: string, event: E | LogEvent) => log("info", message, event),
-      warn: (message: string, event: E | LogEvent) => log("warn", message, event),
-      error: (message: string, event: E | LogEvent) => log("error", message, event),
-      debug: (message: string, event: E | LogEvent) => log("debug", message, event),
+      info: (message: string, event: E | LogEvent) =>
+        log("info", message, event),
+      warn: (message: string, event: E | LogEvent) =>
+        log("warn", message, event),
+      error: (message: string, event: E | LogEvent) =>
+        log("error", message, event),
+      debug: (message: string, event: E | LogEvent) =>
+        log("debug", message, event),
     };
   }
 

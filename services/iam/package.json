@@ -8,7 +8,7 @@
     "build": "prisma generate && tsc",
     "clean": "rm -rf dist",
     "start": "node dist/index.js",
-    "dev": "nodemon --watch 'src' -e 'ts,js' --exec 'tsx src/index.ts'",
+    "dev": "tsx watch src/index.ts",
     "cli": "tsx src/cli/cli.ts",
     "seed": "tsx scripts/seed/seed.ts",
     "prisma": "prisma generate",

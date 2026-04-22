@@ -55,9 +55,9 @@ export const spec: OpenAPIV3.Document = {
     version: "1.0.0",
   },
   paths: {
-    "/organizations": {
+    "/teams": {
       get: {
-        summary: "List Organizations",
+        summary: "List Teams",
         parameters: [
           { $ref: "#/components/parameters/queryCursor" },
           { $ref: "#/components/parameters/queryLimit" },
@@ -90,13 +90,13 @@ export const spec: OpenAPIV3.Document = {
         ],
         responses: {
           "200": {
-            description: "A list of organizations",
+            description: "A list of teams",
             content: {
               "application/json": {
                 schema: {
                   type: "array",
                   items: {
-                    $ref: "#/components/schemas/Organization",
+                    $ref: "#/components/schemas/Team",
                   },
                 },
               },
@@ -105,7 +105,7 @@ export const spec: OpenAPIV3.Document = {
         },
       },
       post: {
-        summary: "Create Organization",
+        summary: "Create Team",
         security: [{ bearerAuth: [] }],
         requestBody: {
           required: true,
@@ -134,11 +134,11 @@ export const spec: OpenAPIV3.Document = {
         },
         responses: {
           "201": {
-            description: "Organization created",
+            description: "Team created",
             content: {
               "application/json": {
                 schema: {
-                  $ref: "#/components/schemas/Organization",
+                  $ref: "#/components/schemas/Team",
                 },
               },
             },
@@ -157,9 +157,9 @@ export const spec: OpenAPIV3.Document = {
         },
       },
     },
-    "/organizations/check-handle": {
+    "/teams/check-handle": {
       post: {
-        summary: "Check Organization Handle",
+        summary: "Check Team Handle",
         security: [{ bearerAuth: [] }],
         requestBody: {
           required: true,
@@ -180,7 +180,7 @@ export const spec: OpenAPIV3.Document = {
         },
         responses: {
           "200": {
-            description: "Organization handle checked",
+            description: "Team handle checked",
             content: {
               "application/json": {
                 schema: {
@@ -212,12 +212,12 @@ export const spec: OpenAPIV3.Document = {
         },
       },
     },
-    "/organizations/{organization_id}": {
+    "/teams/{team_id}": {
       get: {
-        summary: "Get Organization",
+        summary: "Get Team",
         parameters: [
           {
-            name: "organization_id",
+            name: "team_id",
             in: "path",
             required: true,
             schema: {
@@ -227,17 +227,17 @@ export const spec: OpenAPIV3.Document = {
         ],
         responses: {
           "200": {
-            description: "Organization details",
+            description: "Team details",
             content: {
               "application/json": {
                 schema: {
-                  $ref: "#/components/schemas/Organization",
+                  $ref: "#/components/schemas/Team",
                 },
               },
             },
           },
           "400": {
-            description: "Invalid organization id",
+            description: "Invalid team id",
             content: {
               "application/json": {
                 schema: {
@@ -247,7 +247,7 @@ export const spec: OpenAPIV3.Document = {
             },
           },
           "404": {
-            description: "Organization not found",
+            description: "Team not found",
             content: {
               "application/json": {
                 schema: {
@@ -259,10 +259,10 @@ export const spec: OpenAPIV3.Document = {
         },
       },
       patch: {
-        summary: "Update Organization",
+        summary: "Update Team",
         parameters: [
           {
-            name: "organization_id",
+            name: "team_id",
             in: "path",
             required: true,
             schema: {
@@ -290,17 +290,17 @@ export const spec: OpenAPIV3.Document = {
         },
         responses: {
           "200": {
-            description: "Organization updated",
+            description: "Team updated",
             content: {
               "application/json": {
                 schema: {
-                  $ref: "#/components/schemas/Organization",
+                  $ref: "#/components/schemas/Team",
                 },
               },
             },
           },
           "400": {
-            description: "Invalid organization id or validation error",
+            description: "Invalid team id or validation error",
             content: {
               "application/json": {
                 schema: {
@@ -310,7 +310,7 @@ export const spec: OpenAPIV3.Document = {
             },
           },
           "404": {
-            description: "Organization not found",
+            description: "Team not found",
             content: {
               "application/json": {
                 schema: {
@@ -322,10 +322,10 @@ export const spec: OpenAPIV3.Document = {
         },
       },
       delete: {
-        summary: "Delete Organization",
+        summary: "Delete Team",
         parameters: [
           {
-            name: "organization_id",
+            name: "team_id",
             in: "path",
             required: true,
             schema: {
@@ -335,7 +335,7 @@ export const spec: OpenAPIV3.Document = {
         ],
         responses: {
           "200": {
-            description: "Organization deleted",
+            description: "Team deleted",
             content: {
               "application/json": {
                 schema: {
@@ -349,12 +349,12 @@ export const spec: OpenAPIV3.Document = {
         },
       },
     },
-    "/organizations/{organization_id}/invites": {
+    "/teams/{team_id}/invites": {
       get: {
-        summary: "List organization invites",
+        summary: "List team invites",
         security: [{ bearerAuth: [] }],
         parameters: [
-          { $ref: "#/components/parameters/pathOrganizationId" },
+          { $ref: "#/components/parameters/pathTeamId" },
           { $ref: "#/components/parameters/queryLimit" },
           { $ref: "#/components/parameters/queryCursor" },
           {
@@ -386,7 +386,7 @@ export const spec: OpenAPIV3.Document = {
                     items: {
                       type: "array",
                       items: {
-                        $ref: "#/components/schemas/OrganizationInvite",
+                        $ref: "#/components/schemas/TeamInvite",
                       },
                     },
                     next_cursor: { type: "string", nullable: true },
@@ -404,7 +404,7 @@ export const spec: OpenAPIV3.Document = {
         description:
           "Creates a single-use invite and returns a plaintext token once. The token must be stored client-side for composing an accept URL.",
         security: [{ bearerAuth: [] }],
-        parameters: [{ $ref: "#/components/parameters/pathOrganizationId" }],
+        parameters: [{ $ref: "#/components/parameters/pathTeamId" }],
         requestBody: {
           required: true,
           content: {
@@ -433,7 +433,7 @@ export const spec: OpenAPIV3.Document = {
                 schema: {
                   type: "object",
                   properties: {
-                    invite: { $ref: "#/components/schemas/OrganizationInvite" },
+                    invite: { $ref: "#/components/schemas/TeamInvite" },
                     token: {
                       type: "string",
                       description: "Plaintext token (returned once)",
@@ -463,7 +463,7 @@ export const spec: OpenAPIV3.Document = {
         },
       },
     },
-    "/organization-invites/{invite_id}": {
+    "/team-invites/{invite_id}": {
       get: {
         summary: "Get invite (admin/issuer view)",
         security: [{ bearerAuth: [] }],
@@ -473,7 +473,7 @@ export const spec: OpenAPIV3.Document = {
             description: "Invite",
             content: {
               "application/json": {
-                schema: { $ref: "#/components/schemas/OrganizationInvite" },
+                schema: { $ref: "#/components/schemas/TeamInvite" },
               },
             },
           },
@@ -482,7 +482,7 @@ export const spec: OpenAPIV3.Document = {
         },
       },
     },
-    "/organization-invites/{invite_id}/revoke": {
+    "/team-invites/{invite_id}/revoke": {
       post: {
         summary: "Revoke invite",
         security: [{ bearerAuth: [] }],
@@ -492,7 +492,7 @@ export const spec: OpenAPIV3.Document = {
             description: "Invite revoked",
             content: {
               "application/json": {
-                schema: { $ref: "#/components/schemas/OrganizationInvite" },
+                schema: { $ref: "#/components/schemas/TeamInvite" },
               },
             },
           },
@@ -510,7 +510,7 @@ export const spec: OpenAPIV3.Document = {
         },
       },
     },
-    "/organization-invites/resolve": {
+    "/team-invites/resolve": {
       post: {
         summary: "Resolve invite by token (public-safe view)",
         description:
@@ -558,7 +558,7 @@ export const spec: OpenAPIV3.Document = {
         },
       },
     },
-    "/organization-invites/accept": {
+    "/team-invites/accept": {
       post: {
         summary: "Accept invite by token",
         description:
@@ -585,8 +585,8 @@ export const spec: OpenAPIV3.Document = {
                 schema: {
                   type: "object",
                   properties: {
-                    invite: { $ref: "#/components/schemas/OrganizationInvite" },
-                    organization: { $ref: "#/components/schemas/Organization" },
+                    invite: { $ref: "#/components/schemas/TeamInvite" },
+                    team: { $ref: "#/components/schemas/Team" },
                     membership: {
                       type: "object",
                       properties: {
@@ -596,7 +596,7 @@ export const spec: OpenAPIV3.Document = {
                       required: ["id", "role"],
                     },
                   },
-                  required: ["invite", "organization", "membership"],
+                  required: ["invite", "team", "membership"],
                 },
               },
             },
@@ -711,9 +711,9 @@ export const spec: OpenAPIV3.Document = {
         },
       },
     },
-    "/users/{user_id}/organizations": {
+    "/users/{user_id}/teams": {
       get: {
-        summary: "Get User Organizations",
+        summary: "Get User Teams",
         parameters: [
           {
             name: "user_id",
@@ -726,12 +726,12 @@ export const spec: OpenAPIV3.Document = {
         ],
         responses: {
           "200": {
-            description: "User organizations",
+            description: "User teams",
             content: {
               "application/json": {
                 schema: {
                   type: "array",
-                  items: { $ref: "#/components/schemas/Organization" },
+                  items: { $ref: "#/components/schemas/Team" },
                 },
               },
             },
@@ -990,6 +990,99 @@ export const spec: OpenAPIV3.Document = {
         },
       },
     },
+    "/oauth/token": {
+      post: {
+        summary: "Issue Token",
+        description: "Exchanges a grant for an access token.",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                oneOf: [
+                  {
+                    type: "object",
+                    properties: {
+                      grant_type: { enum: ["authorization_code"] },
+                      code: { type: "string" },
+                      redirect_uri: { type: "string" },
+                      client_id: { type: "string" },
+                      client_secret: { type: "string" },
+                    },
+                    required: [
+                      "grant_type",
+                      "code",
+                      "redirect_uri",
+                      "client_id",
+                      "client_secret",
+                    ],
+                  },
+                  {
+                    type: "object",
+                    properties: {
+                      grant_type: { enum: ["refresh_token"] },
+                      refresh_token: { type: "string" },
+                      client_id: { type: "string" },
+                      client_secret: { type: "string" },
+                    },
+                    required: ["grant_type", "refresh_token", "client_id"],
+                  },
+                  {
+                    type: "object",
+                    properties: {
+                      grant_type: { enum: ["client_credentials"] },
+                      client_id: { type: "string" },
+                      client_secret: { type: "string" },
+                      scope: { type: "array", items: { type: "string" } },
+                      audience: { type: "string" },
+                    },
+                    required: ["grant_type", "client_id", "client_secret"],
+                  },
+                  {
+                    type: "object",
+                    properties: {
+                      grant_type: { enum: ["password"] },
+                      email: { type: "string", format: "email" },
+                      password: { type: "string" },
+                      client_id: { type: "string" },
+                      client_secret: { type: "string" },
+                    },
+                    required: [
+                      "grant_type",
+                      "email",
+                      "password",
+                      "client_id",
+                      "client_secret",
+                    ],
+                  },
+                ],
+              },
+            },
+          },
+        },
+        responses: {
+          "200": {
+            description: "Token response",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    access_token: { type: "string" },
+                    token_type: { type: "string", example: "Bearer" },
+                    expires_in: { type: "integer" },
+                    refresh_token: { type: "string" },
+                  },
+                  required: ["access_token", "token_type", "expires_in"],
+                },
+              },
+            },
+          },
+          "400": { $ref: "#/components/responses/ValidationError" },
+          "401": { $ref: "#/components/responses/Unauthorized" },
+        },
+      },
+    },
   },
   components: {
     securitySchemes: {
@@ -997,8 +1090,8 @@ export const spec: OpenAPIV3.Document = {
     },
 
     parameters: {
-      pathOrganizationId: {
-        name: "organization_id",
+      pathTeamId: {
+        name: "team_id",
         in: "path",
         required: true,
         schema: { type: "string" },
@@ -1091,7 +1184,7 @@ export const spec: OpenAPIV3.Document = {
 
     schemas: {
       // Prisma models:
-      Organization: prismaSchemas.definitions.Organization as any,
+      Team: prismaSchemas.definitions.Team as any,
       User: prismaSchemas.definitions.User as any,
 
       Session: prismaSchemas.definitions.Session as any,
@@ -1104,13 +1197,13 @@ export const spec: OpenAPIV3.Document = {
         enum: ["PENDING", "ACCEPTED", "REVOKED", "EXPIRED"],
       },
 
-      OrganizationInvite: {
+      TeamInvite: {
         type: "object",
         description:
-          "Single-use invite to join a organization. Minimal public/admin shape.",
+          "Single-use invite to join a team. Minimal public/admin shape.",
         properties: {
           id: { type: "string" },
-          organization_id: { type: "string" },
+          team_id: { type: "string" },
           email: { type: "string", format: "email" },
           role: { type: "string" },
           status: { $ref: "#/components/schemas/InviteStatus" },
@@ -1126,7 +1219,7 @@ export const spec: OpenAPIV3.Document = {
         },
         required: [
           "id",
-          "organization_id",
+          "team_id",
           "email",
           "role",
           "status",
@@ -1141,7 +1234,7 @@ export const spec: OpenAPIV3.Document = {
         type: "object",
         properties: {
           id: { type: "string", description: "Invite id (safe to reveal)" },
-          organization: {
+          team: {
             type: "object",
             properties: {
               id: { type: "string" },
@@ -1164,14 +1257,7 @@ export const spec: OpenAPIV3.Document = {
             description: "Display name of inviter if available.",
           },
         },
-        required: [
-          "id",
-          "organization",
-          "email",
-          "role",
-          "status",
-          "expires_at",
-        ],
+        required: ["id", "team", "email", "role", "status", "expires_at"],
       },
 
       Message: {

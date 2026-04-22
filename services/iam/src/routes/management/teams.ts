@@ -12,23 +12,23 @@ import {
 import { Router } from "express";
 import z from "zod";
 import {
-  createOrganizationInvite,
-  listOrganizationInvites,
-} from "../../entities/management/organization/invites.js";
+  createTeamInvite,
+  listTeamInvites,
+} from "../../entities/management/team/invites.js";
 import {
-  createOrganization,
-  deleteOrganization,
-  getOrganization,
-  getOrganizationByHandle,
-  listOrganizations,
-  organizationRoles,
-  updateOrganization,
-} from "../../entities/management/organization/organization.js";
+  createTeam,
+  deleteTeam,
+  getTeam,
+  getTeamByHandle,
+  listTeams,
+  teamRoles,
+  updateTeam,
+} from "../../entities/management/team/team.js";
 
-const organizationsRouter = Router();
+const teamsRouter: Router = Router();
 
-// List Organizations
-organizationsRouter.get(
+// List Teams
+teamsRouter.get(
   "/",
   chain(
     validate({
@@ -40,9 +40,9 @@ organizationsRouter.get(
         handle: z.string().optional(),
       }),
     }),
-    enforce(ubentoApi.permissions.identity.organization.list),
+    enforce(ubentoApi.permissions.identity.team.list),
     async (req, res) => {
-      const { items: organizations, nextCursor } = await listOrganizations({
+      const { items: teams, nextCursor } = await listTeams({
         limit: req.query.limit ? Number(req.query.limit) : undefined,
         cursor: req.query.cursor as string | undefined,
         ids: parseStringListQuery(req, "ids"),
@@ -50,13 +50,13 @@ organizationsRouter.get(
         handle: parseStringQuery(req, "handle"),
       });
       setNextLink(req, res, nextCursor);
-      res.json(dataResponse(organizations));
+      res.json(dataResponse(teams));
     },
   ),
 );
 
-// Create Organization
-organizationsRouter.post(
+// Create Team
+teamsRouter.post(
   "/",
   chain(
     validate({
@@ -66,22 +66,22 @@ organizationsRouter.post(
         owner: z.string(),
       }),
     }),
-    enforce(ubentoApi.permissions.identity.organization.create),
+    enforce(ubentoApi.permissions.identity.team.create),
     async (req, res) => {
       const { name, handle, owner } = req.body;
 
-      const organization = await createOrganization({
+      const team = await createTeam({
         name,
         handle,
-        members: [{ user_id: owner, role: organizationRoles.owner }],
+        members: [{ user_id: owner, role: teamRoles.owner }],
       });
-      res.status(201).json(dataResponse(organization));
+      res.status(201).json(dataResponse(team));
     },
   ),
 );
 
-// Check Organization Handle
-organizationsRouter.post(
+// Check Team Handle
+teamsRouter.post(
   "/check-handle",
   chain(
     validate({
@@ -89,93 +89,90 @@ organizationsRouter.post(
         handle: z.string(),
       }),
     }),
-    enforce(ubentoApi.permissions.identity.organization.create),
+    enforce(ubentoApi.permissions.identity.team.create),
     async (req, res) => {
       const { handle } = req.body;
 
-      const organization = await getOrganizationByHandle(handle);
+      const team = await getTeamByHandle(handle);
       res.status(201).json({
         handle,
-        available: !organization,
+        available: !team,
       });
     },
   ),
 );
 
-// Get Organization
-organizationsRouter.get(
-  "/:organization_id",
+// Get Team
+teamsRouter.get(
+  "/:team_id",
   chain(
     validate({
       params: z.object({
-        organization_id: z.string(),
+        team_id: z.string(),
       }),
     }),
-    enforce(ubentoApi.permissions.identity.organization.read),
+    enforce(ubentoApi.permissions.identity.team.read),
     async (req, res) => {
-      const organization = await getOrganization(req.params.organization_id);
-      if (!organization) {
-        throw new NotFoundError("Organization not found");
+      const team = await getTeam(req.params.team_id);
+      if (!team) {
+        throw new NotFoundError("Team not found");
       }
-      res.json(dataResponse(organization));
+      res.json(dataResponse(team));
     },
   ),
 );
 
-// Update Organization
-organizationsRouter.patch(
-  "/:organization_id",
+// Update Team
+teamsRouter.patch(
+  "/:team_id",
   chain(
     validate({
       params: z.object({
-        organization_id: z.string(),
+        team_id: z.string(),
       }),
       body: z.object({
         name: z.string().optional(),
         handle: z.string().optional(),
       }),
     }),
-    enforce(ubentoApi.permissions.identity.organization.update),
+    enforce(ubentoApi.permissions.identity.team.update),
     async (req, res) => {
-      const organization = await updateOrganization(
-        req.params.organization_id,
-        {
-          name: req.body.name,
-          handle: req.body.handle,
-        },
-      );
-      if (!organization) {
-        throw new NotFoundError("Organization not found");
+      const team = await updateTeam(req.params.team_id, {
+        name: req.body.name,
+        handle: req.body.handle,
+      });
+      if (!team) {
+        throw new NotFoundError("Team not found");
       }
-      res.json(dataResponse(organization));
+      res.json(dataResponse(team));
     },
   ),
 );
 
-// Delete Organization
-organizationsRouter.delete(
-  "/:organization_id",
+// Delete Team
+teamsRouter.delete(
+  "/:team_id",
   chain(
     validate({
       params: z.object({
-        organization_id: z.string(),
+        team_id: z.string(),
       }),
     }),
-    enforce(ubentoApi.permissions.identity.organization.delete),
+    enforce(ubentoApi.permissions.identity.team.delete),
     async (req, res) => {
-      await deleteOrganization(req.params.organization_id);
+      await deleteTeam(req.params.team_id);
       res.json(dataResponse({ success: true }));
     },
   ),
 );
 
-// List Organization Invites
-organizationsRouter.get(
-  "/:organization_id/invites",
+// List Team Invites
+teamsRouter.get(
+  "/:team_id/invites",
   chain(
     validate({
       params: z.object({
-        organization_id: z.string(),
+        team_id: z.string(),
       }),
       query: z.object({
         limit: z.coerce.number().optional(),
@@ -184,10 +181,10 @@ organizationsRouter.get(
         email: z.string().optional(),
       }),
     }),
-    enforce(ubentoApi.permissions.identity.organizationInvite.list),
+    enforce(ubentoApi.permissions.identity.teamInvite.list),
     async (req, res) => {
-      const { items: invites, nextCursor } = await listOrganizationInvites({
-        organization_id: req.params.organization_id,
+      const { items: invites, nextCursor } = await listTeamInvites({
+        team_id: req.params.team_id as string,
         limit: req.query.limit ? Number(req.query.limit) : undefined,
         cursor: req.query.cursor as string | undefined,
         statuses: parseStringListQuery(req, "statuses") as any,
@@ -199,13 +196,13 @@ organizationsRouter.get(
   ),
 );
 
-// Create Organization Invite
-organizationsRouter.post(
-  "/:organization_id/invites",
+// Create Team Invite
+teamsRouter.post(
+  "/:team_id/invites",
   chain(
     validate({
       params: z.object({
-        organization_id: z.string(),
+        team_id: z.string(),
       }),
       body: z.object({
         email: z.string().email(),
@@ -213,11 +210,11 @@ organizationsRouter.post(
         expires_in_seconds: z.number().min(60).optional(),
       }),
     }),
-    enforce(ubentoApi.permissions.identity.organizationInvite.create),
+    enforce(ubentoApi.permissions.identity.teamInvite.create),
     async (req, res) => {
       const invitedBy = (req as any).user?.id || "temp-user-id";
-      const result = await createOrganizationInvite({
-        organization_id: req.params.organization_id,
+      const result = await createTeamInvite({
+        team_id: req.params.team_id,
         email: req.body.email,
         role: req.body.role,
         invited_by: invitedBy,
@@ -228,4 +225,4 @@ organizationsRouter.post(
   ),
 );
 
-export default organizationsRouter;
+export default teamsRouter;

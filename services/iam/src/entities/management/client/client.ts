@@ -1,10 +1,10 @@
+import { ClientStatus, Prisma } from "@prisma/client";
 import {
-  ubentoEntities,
   generateBareId,
   makeEntityId,
+  ubentoEntities,
 } from "@ubento/primitives";
 import { prismaListWithCursor } from "@ubento/service-toolkit";
-import { ClientStatus, Prisma } from "@prisma/client";
 import prisma from "../../../lib/prisma.js";
 
 export async function listClients(filters?: {
@@ -55,9 +55,6 @@ export async function createClient({
 export async function getClient(id: string) {
   return await prisma.client.findUnique({
     where: { id },
-    include: {
-      credentials: true,
-    },
   });
 }
 export async function updateClient(

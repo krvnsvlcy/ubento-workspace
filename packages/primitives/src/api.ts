@@ -9,12 +9,12 @@ export const ubentoApi = {
         update: "user:update",
         delete: "user:delete",
       },
-      organization: {
-        create: "organization:create",
-        read: "organization:read",
-        update: "organization:update",
-        delete: "organization:delete",
-        list: "organization:list",
+      team: {
+        create: "team:create",
+        read: "team:read",
+        update: "team:update",
+        delete: "team:delete",
+        list: "team:list",
       },
       client: {
         create: "client:create",
@@ -28,11 +28,11 @@ export const ubentoApi = {
         create: "client_credential:create",
         delete: "client_credential:delete",
       },
-      organizationInvite: {
-        list: "organization_invite:list",
-        create: "organization_invite:create",
-        read: "organization_invite:read",
-        revoke: "organization_invite:revoke",
+      teamInvite: {
+        list: "team_invite:list",
+        create: "team_invite:create",
+        read: "team_invite:read",
+        revoke: "team_invite:revoke",
       },
       role: {
         list: "role:list",

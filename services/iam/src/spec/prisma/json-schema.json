@@ -20,23 +20,11 @@
         "broker_id": {
           "type": "string"
         },
-        "roles": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
         "email": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": "string"
         },
         "name": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": "string"
         },
         "picture": {
           "type": [
@@ -45,10 +33,14 @@
           ]
         },
         "email_verified": {
-          "type": [
-            "boolean",
-            "null"
-          ]
+          "type": "boolean",
+          "default": false
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "version": {
           "type": "integer",
@@ -67,11 +59,12 @@
         "id",
         "broker",
         "broker_id",
-        "roles",
+        "email",
+        "name",
         "updated_at"
       ]
     },
-    "Session": {
+    "Team": {
       "type": "object",
       "properties": {
         "id": {
@@ -79,118 +72,16 @@
         },
         "entity": {
           "type": "string",
-          "default": "session"
+          "default": "team"
         },
-        "user_id": {
-          "type": "string"
-        },
-        "status": {
+        "broker": {
           "type": "string",
-          "default": "ACTIVE",
           "enum": [
-            "ACTIVE",
-            "REVOKED",
-            "EXPIRED"
+            "WORKOS"
           ]
         },
-        "ip": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "user_agent": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "metadata": {
-          "type": [
-            "number",
-            "string",
-            "boolean",
-            "object",
-            "array",
-            "null"
-          ]
-        },
-        "revoked_at": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "format": "date-time"
-        },
-        "expires_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "refresh_token": {
+        "broker_id": {
           "type": "string"
-        },
-        "refresh_token_rotated_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "version": {
-          "type": "integer",
-          "default": 1
-        },
-        "created_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "updated_at": {
-          "type": "string",
-          "format": "date-time"
-        }
-      },
-      "required": [
-        "id",
-        "user_id",
-        "expires_at",
-        "refresh_token",
-        "refresh_token_rotated_at",
-        "updated_at"
-      ]
-    },
-    "AuthCode": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
-        },
-        "code": {
-          "type": "string"
-        },
-        "session_id": {
-          "type": "string"
-        },
-        "client_id": {
-          "type": "string"
-        },
-        "expires_at": {
-          "type": "string",
-          "format": "date-time"
-        }
-      },
-      "required": [
-        "code",
-        "session_id",
-        "client_id",
-        "expires_at"
-      ]
-    },
-    "Organization": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
-        },
-        "entity": {
-          "type": "string",
-          "default": "organization"
         },
         "handle": {
           "type": "string"
@@ -203,15 +94,6 @@
             "string",
             "null"
           ]
-        },
-        "broker": {
-          "type": "string",
-          "enum": [
-            "WORKOS"
-          ]
-        },
-        "broker_id": {
-          "type": "string"
         },
         "version": {
           "type": "integer",
@@ -235,14 +117,14 @@
       },
       "required": [
         "id",
-        "handle",
-        "name",
         "broker",
         "broker_id",
+        "handle",
+        "name",
         "updated_at"
       ]
     },
-    "OrganizationInvite": {
+    "TeamMembership": {
       "type": "object",
       "properties": {
         "id": {
@@ -250,9 +132,49 @@
         },
         "entity": {
           "type": "string",
-          "default": "organization_invite"
+          "default": "team_membership"
         },
-        "organization_id": {
+        "team_id": {
+          "type": "string"
+        },
+        "user_id": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "version": {
+          "type": "integer",
+          "default": 1
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "team_id",
+        "user_id",
+        "role",
+        "updated_at"
+      ]
+    },
+    "TeamInvite": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "entity": {
+          "type": "string",
+          "default": "team_invite"
+        },
+        "team_id": {
           "type": "string"
         },
         "email": {
@@ -261,7 +183,7 @@
         "role": {
           "type": "string"
         },
-        "token_hash": {
+        "invited_by": {
           "type": "string"
         },
         "status": {
@@ -270,20 +192,11 @@
           "enum": [
             "PENDING",
             "ACCEPTED",
-            "EXPIRED",
-            "REVOKED"
+            "REVOKED",
+            "EXPIRED"
           ]
         },
-        "invited_by": {
-          "type": "string"
-        },
-        "accepted_by": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "revoked_by": {
+        "token_hash": {
           "type": [
             "string",
             "null"
@@ -293,13 +206,6 @@
           "type": "string",
           "format": "date-time"
         },
-        "accepted_at": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "format": "date-time"
-        },
         "revoked_at": {
           "type": [
             "string",
@@ -307,6 +213,25 @@
           ],
           "format": "date-time"
         },
+        "revoked_by": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "accepted_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "accepted_by": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "version": {
           "type": "integer",
           "default": 1
@@ -322,52 +247,11 @@
       },
       "required": [
         "id",
-        "organization_id",
+        "team_id",
         "email",
         "role",
-        "token_hash",
         "invited_by",
         "expires_at",
-        "updated_at"
-      ]
-    },
-    "OrganizationMembership": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
-        },
-        "entity": {
-          "type": "string",
-          "default": "organization_membership"
-        },
-        "user_id": {
-          "type": "string"
-        },
-        "organization_id": {
-          "type": "string"
-        },
-        "role": {
-          "type": "string"
-        },
-        "version": {
-          "type": "integer",
-          "default": 1
-        },
-        "created_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "updated_at": {
-          "type": "string",
-          "format": "date-time"
-        }
-      },
-      "required": [
-        "id",
-        "user_id",
-        "organization_id",
-        "role",
         "updated_at"
       ]
     },
@@ -390,13 +274,13 @@
             "null"
           ]
         },
-        "allowed_audiences": {
+        "allowed_scopes": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "allowed_scopes": {
+        "allowed_audiences": {
           "type": "array",
           "items": {
             "type": "string"
@@ -413,7 +297,7 @@
           "default": "ACTIVE",
           "enum": [
             "ACTIVE",
-            "DISABLED"
+            "INACTIVE"
           ]
         },
         "metadata": {
@@ -442,7 +326,6 @@
       "required": [
         "id",
         "name",
-        "allowed_audiences",
         "updated_at"
       ]
     },
@@ -456,14 +339,14 @@
           "type": "string",
           "default": "client_credential"
         },
+        "client_id": {
+          "type": "string"
+        },
         "label": {
           "type": [
             "string",
             "null"
           ]
-        },
-        "client_id": {
-          "type": "string"
         },
         "secret_hash": {
           "type": "string"
@@ -534,7 +417,7 @@
         "updated_at"
       ]
     },
-    "JwtSigningKey": {
+    "AuthCode": {
       "type": "object",
       "properties": {
         "id": {
@@ -542,18 +425,81 @@
         },
         "entity": {
           "type": "string",
-          "default": "jwt_signing_key"
+          "default": "auth_code"
+        },
+        "code": {
+          "type": "string"
+        },
+        "client_id": {
+          "type": "string"
+        },
+        "user_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "session_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "scope": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "code",
+        "client_id",
+        "scope",
+        "expires_at"
+      ]
+    },
+    "Session": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "entity": {
+          "type": "string",
+          "default": "session"
+        },
+        "user_id": {
+          "type": "string"
+        },
+        "refresh_token": {
+          "type": "string"
+        },
+        "refresh_token_rotated_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
         },
         "status": {
           "type": "string",
           "default": "ACTIVE",
           "enum": [
             "ACTIVE",
-            "ROTATED",
+            "EXPIRED",
             "REVOKED"
           ]
         },
-        "public_jwk": {
+        "metadata": {
           "type": [
             "number",
             "string",
@@ -563,21 +509,28 @@
             "null"
           ]
         },
-        "private_jwk_encrypted": {
+        "ip": {
           "type": [
             "string",
             "null"
           ]
         },
-        "private_ref": {
+        "user_agent": {
           "type": [
             "string",
             "null"
           ]
         },
-        "algorithm": {
+        "revoked_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "expires_at": {
           "type": "string",
-          "default": "RS256"
+          "format": "date-time"
         },
         "version": {
           "type": "integer",
@@ -594,7 +547,65 @@
       },
       "required": [
         "id",
+        "user_id",
+        "refresh_token",
+        "expires_at",
+        "updated_at"
+      ]
+    },
+    "JwtSigningKey": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "entity": {
+          "type": "string",
+          "default": "jwt_signing_key"
+        },
+        "algorithm": {
+          "type": "string"
+        },
+        "public_jwk": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "private_jwk_encrypted": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "default": "ACTIVE",
+          "enum": [
+            "ACTIVE",
+            "ROTATED",
+            "REVOKED"
+          ]
+        },
+        "version": {
+          "type": "integer",
+          "default": 1
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "algorithm",
         "public_jwk",
+        "private_jwk_encrypted",
         "updated_at"
       ]
     }
@@ -604,26 +615,26 @@
     "user": {
       "$ref": "#/definitions/User"
     },
-    "session": {
-      "$ref": "#/definitions/Session"
+    "team": {
+      "$ref": "#/definitions/Team"
     },
-    "authCode": {
-      "$ref": "#/definitions/AuthCode"
+    "teamMembership": {
+      "$ref": "#/definitions/TeamMembership"
     },
-    "organization": {
-      "$ref": "#/definitions/Organization"
-    },
-    "organizationInvite": {
-      "$ref": "#/definitions/OrganizationInvite"
-    },
-    "organizationMembership": {
-      "$ref": "#/definitions/OrganizationMembership"
+    "teamInvite": {
+      "$ref": "#/definitions/TeamInvite"
     },
     "client": {
       "$ref": "#/definitions/Client"
     },
     "clientCredential": {
       "$ref": "#/definitions/ClientCredential"
+    },
+    "authCode": {
+      "$ref": "#/definitions/AuthCode"
+    },
+    "session": {
+      "$ref": "#/definitions/Session"
     },
     "jwtSigningKey": {
       "$ref": "#/definitions/JwtSigningKey"

@@ -1,6 +1,10 @@
 import { Router, type RequestHandler } from "express";
 import { expressjwt, UnauthorizedError } from "express-jwt";
 import { JwksClient } from "jwks-rsa";
+import { AuthOptions } from "../../service.js";
+import { mongoDbUrlWithDatabase } from "../../utils/prisma.js";
+import { Authorizer } from "../authorization/authorizer.js";
+import { withAuthorizer } from "../authorization/enforce.js";
 import { defaultTrustedIssuers, TrustedIssuer } from "./issuer.js";
 import { audMatches, AuthorizationPayload, jwtPayload } from "./schemas.js";
 
@@ -136,6 +140,32 @@ export function createAuthenticationMiddleware({
       }
     }) as RequestHandler,
   );
+
+  return router;
+}
+
+export function auth(options: AuthOptions): Router {
+  const router = Router();
+
+  router.use(
+    createAuthenticationMiddleware({
+      audience: options.audience,
+      issuers: options.issuers,
+    }),
+  );
+
+  if (options.authorizationDatabaseUri) {
+    router.use(
+      withAuthorizer({
+        authorizer: new Authorizer(
+          mongoDbUrlWithDatabase(
+            options.authorizationDatabaseUri,
+            "authorization",
+          ),
+        ),
+      }),
+    );
+  }
 
   return router;
 }

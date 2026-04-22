@@ -1,10 +1,8 @@
 import cors, { CorsOptions } from "cors";
 import Express, { Application, NextFunction, Request, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
-import { createAuthenticationMiddleware } from "./libs/authentication/authentication.js";
+import { auth } from "./libs/authentication/authentication.js";
 import { TrustedIssuer } from "./libs/authentication/issuer.js";
-import { Authorizer } from "./libs/authorization/authorizer.js";
-import { withAuthorizer } from "./libs/authorization/enforce.js";
 import { ServiceError } from "./libs/errors.js";
 import {
   createServiceLogger,
@@ -14,7 +12,6 @@ import {
   decrementRequestCount,
   incrementRequestCount,
 } from "./libs/telemetry/state.js";
-import { mongoDbUrlWithDatabase } from "./utils/prisma.js";
 import { errorResponse } from "./utils/response.js";
 import { openApiSpec } from "./utils/spec.js";
 
@@ -29,7 +26,6 @@ export type ServiceOptions = {
   port: number;
   name: string;
   auth?: AuthOptions | boolean;
-  host?: string;
   logger?: ServiceLogger; // optional; falls back to no-op
   exposeHeaders?: string[]; // default: ["Link", "X-Request-Id"]
   cors?: CorsOptions | boolean; // new option
@@ -73,14 +69,15 @@ export function createService(options: ServiceOptions): ServiceInstance {
     const started = Date.now();
     incrementRequestCount();
     res.on("finish", () => {
-      const message = `${req.method} ${req.originalUrl} ${res.statusCode} ${res.statusMessage}`;
+      const duration = Date.now() - started;
+      const message = `${req.method} ${req.originalUrl} ${res.statusCode} ${res.statusMessage} (${duration}ms)`;
       if (res.statusCode >= 500) {
         req.context.logger.error(message, {
           event: "request.end",
           method: req.method,
           path: req.originalUrl,
           status: res.statusCode,
-          duration: Date.now() - started,
+          duration,
         });
       } else if (res.statusCode >= 400) {
         req.context.logger.warn(message, {
@@ -88,7 +85,7 @@ export function createService(options: ServiceOptions): ServiceInstance {
           method: req.method,
           path: req.originalUrl,
           status: res.statusCode,
-          duration: Date.now() - started,
+          duration,
         });
       } else {
         req.context.logger.info(message, {
@@ -96,7 +93,7 @@ export function createService(options: ServiceOptions): ServiceInstance {
           method: req.method,
           path: req.originalUrl,
           status: res.statusCode,
-          duration: Date.now() - started,
+          duration,
         });
       }
       decrementRequestCount();
@@ -123,27 +120,9 @@ export function createService(options: ServiceOptions): ServiceInstance {
 
   /* ------------------ Authentication ------------------ */
   if (options.auth !== false) {
-    const auth: AuthOptions =
+    const opt: AuthOptions =
       typeof options.auth === "object" ? options.auth : {};
-    app.use(
-      createAuthenticationMiddleware({
-        audience: auth.audience,
-        issuers: auth.issuers,
-      }),
-    );
-
-    if (auth.authorizationDatabaseUri) {
-      app.use(
-        withAuthorizer({
-          authorizer: new Authorizer(
-            mongoDbUrlWithDatabase(
-              auth.authorizationDatabaseUri,
-              "authorization",
-            ),
-          ),
-        }),
-      );
-    }
+    app.use(auth(opt));
   } else {
     app.use((req: Request, res: Response, next: NextFunction) => {
       req.auth = {
@@ -217,29 +196,30 @@ export function createService(options: ServiceOptions): ServiceInstance {
       }
     });
 
-    const server = app.listen(
-      options.port,
-      options.host ?? "0.0.0.0",
-      (err?: Error) => {
-        if (err) {
-          baseLogger.error(err.message, {
-            event: "service.end",
-            error: err.message,
-          });
-          process.exit(1);
-        }
-        baseLogger.info(`Service started on ${options.host}:${options.port}`, {
+    const server = app.listen(options.port, (err?: Error) => {
+      if (err) {
+        baseLogger.error(err.message, {
+          event: "service.end",
+          error: err.message,
+        });
+        process.exit(1);
+      }
+      baseLogger.info(
+        `${options.name} service started on http://localhost:${options.port}`,
+        {
           event: "service.start",
           port: options.port,
-          host: options.host ?? "0.0.0.0",
-        });
-      },
-    );
+        },
+      );
+    });
 
     server.on("close", () =>
-      baseLogger.info(`Service stopped on ${options.host}:${options.port}`, {
-        event: "service.end",
-      }),
+      baseLogger.info(
+        `${options.name} service stopped on http://localhost:${options.port}`,
+        {
+          event: "service.end",
+        },
+      ),
     );
     return server;
   }

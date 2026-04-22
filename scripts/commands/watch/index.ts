@@ -232,7 +232,7 @@ const print = {
 };
 
 // ---------- main ----------
-async function watchProject(tsconfigPath = "tsconfig.build.json") {
+async function watchProject(tsconfigPath = "tsconfig.json") {
   const config = ts.getParsedCommandLineOfConfigFile(
     tsconfigPath,
     {},

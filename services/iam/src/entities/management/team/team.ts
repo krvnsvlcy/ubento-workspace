@@ -1,43 +1,43 @@
+import { Broker, Prisma, Team } from "@prisma/client";
 import {
-  ubentoEntities,
   generateBareId,
   makeEntityId,
+  ubentoEntities,
 } from "@ubento/primitives";
 import {
   ValidationError,
   isPrismaNotFoundError,
   prismaListWithCursor,
 } from "@ubento/service-toolkit";
-import { Broker, Organization, Prisma } from "@prisma/client";
 import { Organization as WOOrganization } from "@workos-inc/node";
 import prisma from "../../../lib/prisma.js";
 import { workos } from "../../../lib/workos.js";
 
-export const organizationScopeKind = "organization";
-export const organizationRoles = {
-  owner: "organization:owner",
-  admin: "organization:admin",
-  member: "organization:member",
+export const teamScopeKind = "team";
+export const teamRoles = {
+  owner: "team:owner",
+  admin: "team:admin",
+  member: "team:member",
 };
 export function workosRoleFromInternalRole(role: string) {
   switch (role) {
-    case organizationRoles.owner:
+    case teamRoles.owner:
       return "admin";
-    case organizationRoles.admin:
+    case teamRoles.admin:
       return "admin";
-    case organizationRoles.member:
+    case teamRoles.member:
       return "member";
     default:
       throw new ValidationError("Invalid role");
   }
 }
-export function isValidOrganizationHandle(handle: string) {
+export function isValidTeamHandle(handle: string) {
   return (
     handle.match(/^[a-z0-9\-]+$/) && handle.length >= 3 && handle.length <= 64
   );
 }
 
-export async function listOrganizations({
+export async function listTeams({
   ids,
   handle,
   name,
@@ -61,7 +61,7 @@ export async function listOrganizations({
         ? [{ name: "asc" }, { id: "asc" }]
         : /* default newest */ [{ created_at: "desc" }, { id: "desc" }];
 
-  return prismaListWithCursor(prisma.organization, {
+  return prismaListWithCursor(prisma.team, {
     limit,
     cursor,
     orderBy,
@@ -74,7 +74,7 @@ export async function listOrganizations({
     resolveCursor: (item) => ({ id: item.id }),
   });
 }
-export async function createOrganization({
+export async function createTeam({
   handle,
   name,
   members,
@@ -87,12 +87,12 @@ export async function createOrganization({
   }[];
 }) {
   // at least one member with owner role
-  if (!members.some((m) => m.role === organizationRoles.owner)) {
+  if (!members.some((m) => m.role === teamRoles.owner)) {
     throw new ValidationError("At least one member must have owner role");
   }
   // validate handle
-  if (!isValidOrganizationHandle(handle)) {
-    throw new ValidationError("Invalid organization handle");
+  if (!isValidTeamHandle(handle)) {
+    throw new ValidationError("Invalid team handle");
   }
   // member ids are unique
   const memberUserIds = new Set(members.map((m) => m.user_id));
@@ -110,28 +110,28 @@ export async function createOrganization({
   }
   const memberUsersById = Object.fromEntries(memberUsers.map((u) => [u.id, u]));
 
-  const organizationId = makeEntityId({
-    code: ubentoEntities.organization.code,
+  const teamId = makeEntityId({
+    code: ubentoEntities.team.code,
     bareId: generateBareId(),
   });
 
   let workosOrg: WOOrganization | null = null;
-  let org: Organization | null = null;
+  let team: Team | null = null;
 
   try {
     workosOrg = await workos.organizations.createOrganization({ name });
     const workOsOrgId = workosOrg.id;
 
-    const createdOrg = await prisma.organization.create({
+    const createdTeam = await prisma.team.create({
       data: {
-        id: organizationId,
+        id: teamId,
         name,
         handle,
         broker: Broker.WORKOS,
         broker_id: workosOrg.id,
       },
     });
-    org = createdOrg;
+    team = createdTeam;
 
     await Promise.all(
       members.map(async (m) => {
@@ -139,13 +139,13 @@ export async function createOrganization({
         if (!user) {
           throw new Error("User not found");
         }
-        await prisma.organizationMembership.create({
+        await prisma.teamMembership.create({
           data: {
             id: makeEntityId({
-              code: ubentoEntities.organizationMembership.code,
+              code: ubentoEntities.teamMembership.code,
               bareId: generateBareId(),
             }),
-            organization_id: createdOrg.id,
+            team_id: createdTeam.id,
             user_id: user.id,
             role: m.role,
           },
@@ -160,10 +160,10 @@ export async function createOrganization({
       }),
     );
   } catch (e) {
-    if (org) {
-      await prisma.organization.delete({
+    if (team) {
+      await prisma.team.delete({
         where: {
-          id: org.id,
+          id: team.id,
         },
       });
     }
@@ -173,28 +173,28 @@ export async function createOrganization({
     throw e;
   }
 
-  return org;
+  return team;
 }
-export async function getOrganization(id: string, includeSoftDeleted = false) {
-  return await prisma.organization.findUnique({
+export async function getTeam(id: string, includeSoftDeleted = false) {
+  return await prisma.team.findUnique({
     where: {
       id,
       ...(includeSoftDeleted ? undefined : { deleted_at: { isSet: false } }),
     },
   });
 }
-export async function getOrganizationByHandle(
+export async function getTeamByHandle(
   handle: string,
   includeSoftDeleted = false,
 ) {
-  return await prisma.organization.findUnique({
+  return await prisma.team.findUnique({
     where: {
       handle,
       ...(includeSoftDeleted ? undefined : { deleted_at: { isSet: false } }),
     },
   });
 }
-export async function updateOrganization(
+export async function updateTeam(
   id: string,
   update: {
     name?: string;
@@ -203,12 +203,12 @@ export async function updateOrganization(
   },
 ) {
   if (update.handle) {
-    if (!isValidOrganizationHandle(update.handle)) {
-      throw new ValidationError("Invalid organization handle");
+    if (!isValidTeamHandle(update.handle)) {
+      throw new ValidationError("Invalid team handle");
     }
   }
 
-  const organization = await prisma.organization.update({
+  const team = await prisma.team.update({
     where: {
       id,
       deleted_at: { isSet: false }, // can't update soft deleted
@@ -219,11 +219,11 @@ export async function updateOrganization(
       picture: update.picture,
     },
   });
-  return organization;
+  return team;
 }
-export async function deleteOrganization(id: string) {
+export async function deleteTeam(id: string) {
   try {
-    const updatedOrg = await prisma.organization.update({
+    const updatedTeam = await prisma.team.update({
       where: {
         id,
         deleted_at: { isSet: false }, // can't delete soft deleted
@@ -234,13 +234,13 @@ export async function deleteOrganization(id: string) {
       },
     });
     // revoke all memberships
-    await prisma.organizationMembership.deleteMany({
+    await prisma.teamMembership.deleteMany({
       where: {
-        organization_id: updatedOrg.id,
+        team_id: updatedTeam.id,
       },
     });
     // delete workos organization
-    await workos.organizations.deleteOrganization(updatedOrg.broker_id);
+    await workos.organizations.deleteOrganization(updatedTeam.broker_id);
   } catch (e) {
     if (isPrismaNotFoundError(Prisma, e)) {
       return;

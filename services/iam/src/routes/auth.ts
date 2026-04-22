@@ -14,6 +14,7 @@ import {
 import {
   getTokenWithAuthorizationCode,
   getTokenWithClientCredentials,
+  getTokenWithPassword,
   getTokenWithRefreshToken,
   TokenResponse,
 } from "../entities/auth/token.js";
@@ -23,7 +24,7 @@ import { env } from "../env.js";
 import { joinUrl } from "../lib/url.js";
 import { workos } from "../lib/workos.js";
 
-const authRouter = Router();
+const authRouter: Router = Router();
 
 const authProviders = {
   google: "google",
@@ -229,11 +230,11 @@ authRouter.get("/oauth/callback", async (req, res, next) => {
                   organizationId: org.id,
                   pendingAuthenticationToken: data.pending_authentication_token,
                   ipAddress: req.ip,
-                }
+                },
               );
             user = workOsUser;
           } else {
-            return res.status(400).send("No organization found");
+            return res.status(400).send("No team found for user");
           }
         } else {
           return res.status(400).send("Invalid authentication");
@@ -305,6 +306,15 @@ authRouter.post(
           scope: z.array(z.string()).optional(),
           audience: z.string().optional(),
         }),
+
+        // 4. Password Grant
+        z.object({
+          grant_type: z.literal("password"),
+          email: z.string().email(),
+          password: z.string(),
+          client_id: z.string(),
+          client_secret: z.string(),
+        }),
       ]),
     }),
     async (req, res) => {
@@ -334,17 +344,41 @@ authRouter.post(
             scope: payload.scope,
             audience: payload.audience,
           });
+        } else if (payload.grant_type === "password") {
+          token = await getTokenWithPassword({
+            email: payload.email,
+            password: payload.password,
+            client_id: payload.client_id,
+            client_secret: payload.client_secret,
+          });
         } else {
           return res.status(400).json({ error: "unsupported_grant_type" });
         }
       } catch (e) {
         console.error("Token Error:", e);
+
+        if (e instanceof GenericServerException) {
+          const rawData = e.rawData as any;
+          return res.status(e.status || 400).json({
+            error: rawData.code || "workos_error",
+            error_description: rawData.message || e.message,
+            ...rawData,
+          });
+        }
+
+        if (e instanceof ValidationError) {
+          return res.status(400).json({
+            error: "invalid_request",
+            error_description: e.message,
+          });
+        }
+
         return res.status(500).json({ error: "server_error" });
       }
 
       res.json(token);
-    }
-  )
+    },
+  ),
 );
 
 /**

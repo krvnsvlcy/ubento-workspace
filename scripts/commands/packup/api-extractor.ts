@@ -23,7 +23,7 @@ export async function extractApi({
     projectFolder,
     out.replace(/\.d\.ts$/, ".api.json")
   );
-  let tsconfigFilePath = path.resolve(projectFolder, "tsconfig.build.json");
+  let tsconfigFilePath = path.resolve(projectFolder, "tsconfig.json");
   if (!fs.existsSync(tsconfigFilePath)) {
     tsconfigFilePath = path.resolve(projectFolder, "tsconfig.json");
   }

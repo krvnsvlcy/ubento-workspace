@@ -9,7 +9,4 @@ export const ubentoEventTypes = {
     updated: "entity.updated",
     deleted: "entity.deleted",
   },
-  file_content: {
-    updated: "file_content.updated",
-  },
 } as const;

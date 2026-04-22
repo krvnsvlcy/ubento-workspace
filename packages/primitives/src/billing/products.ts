@@ -11,12 +11,6 @@ export const ubentoProducts = {
     description:
       "Ubento AI Credit Add-On is a subscription-based service that provides a fixed number of AI credits for use in the Ubento platform.",
   },
-  storageAddOn: {
-    code: "storage_add_on",
-    name: "Ubento Storage Add-On",
-    description:
-      "Ubento Storage Add-On is a subscription-based service that provides a fixed amount of storage for use in the Ubento platform.",
-  },
 } satisfies Record<
   string,
   {

@@ -8,14 +8,14 @@ import {
 } from "@ubento/service-toolkit";
 import { Router } from "express";
 import z from "zod";
-import { listUserOrganizations } from "../../entities/management/organization/memberships.js";
+import { listUserTeams } from "../../entities/management/team/memberships.js";
 import {
   deleteUser,
   getUser,
   listUsers,
 } from "../../entities/management/user.js";
 
-const usersRouter = Router();
+const usersRouter: Router = Router();
 
 // List Users
 usersRouter.get(
@@ -77,9 +77,9 @@ usersRouter.delete(
   ),
 );
 
-// Get User Organizations
+// Get User Teams
 usersRouter.get(
-  "/:user_id/organizations",
+  "/:user_id/teams",
   chain(
     validate({
       params: z.object({
@@ -88,8 +88,8 @@ usersRouter.get(
     }),
     enforce(ubentoApi.permissions.identity.user.read),
     async (req, res) => {
-      const organizations = await listUserOrganizations(req.params.user_id);
-      res.json(dataResponse(organizations));
+      const teams = await listUserTeams(req.params.user_id);
+      res.json(dataResponse(teams));
     },
   ),
 );

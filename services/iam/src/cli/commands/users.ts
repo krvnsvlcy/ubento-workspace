@@ -1,9 +1,11 @@
 import { Command } from "commander";
-import { listUserOrganizations } from "../../entities/management/organization/memberships.js";
+import { listUserTeams } from "../../entities/management/team/memberships.js";
 import {
+  addUserRoles,
   deleteUser,
   getUser,
   listUsers,
+  removeUserRoles,
   syncUser,
 } from "../../entities/management/user.js";
 
@@ -54,11 +56,31 @@ export function registerUsersCommands(program: Command) {
     });
 
   users
-    .command("organizations")
-    .description("List organizations for a user")
+    .command("add-roles")
+    .description("Add roles to a user")
+    .argument("<id>", "User ID")
+    .argument("<roles...>", "Roles to add")
+    .action(async (id, roles) => {
+      const user = await addUserRoles(id, roles);
+      console.log(JSON.stringify(user, null, 2));
+    });
+
+  users
+    .command("remove-roles")
+    .description("Remove roles from a user")
+    .argument("<id>", "User ID")
+    .argument("<roles...>", "Roles to remove")
+    .action(async (id, roles) => {
+      const user = await removeUserRoles(id, roles);
+      console.log(JSON.stringify(user, null, 2));
+    });
+
+  users
+    .command("teams")
+    .description("List teams for a user")
     .argument("<user_id>", "User ID")
     .action(async (userId) => {
-      const orgs = await listUserOrganizations(userId);
-      console.log(JSON.stringify(orgs, null, 2));
+      const teams = await listUserTeams(userId);
+      console.log(JSON.stringify(teams, null, 2));
     });
 }

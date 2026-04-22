@@ -1,23 +1,20 @@
+import { Broker } from "@prisma/client";
 import {
-  ubentoEntities,
   generateBareId,
   makeEntityId,
+  ubentoEntities,
 } from "@ubento/primitives";
 import { ValidationError } from "@ubento/service-toolkit";
-import { Broker } from "@prisma/client";
 import { User as WorkOSUser } from "@workos-inc/node";
 import prisma from "../../lib/prisma.js";
 import { workos } from "../../lib/workos.js";
+import { listTeamMembers, listUserTeams } from "./team/memberships.js";
 import {
-  listOrganizationMembers,
-  listUserOrganizations,
-} from "./organization/memberships.js";
-import {
-  createOrganization,
-  deleteOrganization,
-  getOrganizationByHandle,
-  organizationRoles,
-} from "./organization/organization.js";
+  createTeam,
+  deleteTeam,
+  getTeamByHandle,
+  teamRoles,
+} from "./team/team.js";
 
 export async function getUser(id: string) {
   const user = await prisma.user.findUnique({
@@ -56,25 +53,25 @@ export async function deleteUser(id: string) {
     return;
   }
 
-  const organizations = await listUserOrganizations(user.id);
+  const teams = await listUserTeams(user.id);
   const canBeDeleted = await Promise.all(
-    organizations.map(async (org) => {
-      const members = await listOrganizationMembers(org.id);
+    teams.map(async (team) => {
+      const members = await listTeamMembers(team.id);
       return members.length === 1 && members[0].id === user.id;
-    })
+    }),
   );
 
   if (canBeDeleted.some((c) => !c)) {
     throw new ValidationError(
-      "User is a member of some organizations that can't be deleted"
+      "User is a member of some teams that can't be deleted",
     );
   }
 
-  // Delete all organizations
+  // Delete all teams
   await Promise.all(
-    organizations.map(async (org) => {
-      await deleteOrganization(org.id);
-    })
+    teams.map(async (team) => {
+      await deleteTeam(team.id);
+    }),
   );
 
   // Delete sessions
@@ -131,8 +128,8 @@ export async function syncUserData(user: WorkOSUser) {
     });
   }
 
-  const organizations = await listUserOrganizations(syncedUser.id);
-  if (organizations.length === 0) {
+  const teams = await listUserTeams(syncedUser.id);
+  if (teams.length === 0) {
     let baseHandle = (syncedUser.name || syncedUser.email || syncedUser.id)
       .replace(/[^a-zA-Z0-9]+/g, "-")
       .toLowerCase();
@@ -140,21 +137,21 @@ export async function syncUserData(user: WorkOSUser) {
     let suffix = 0;
 
     while (true) {
-      const existingOrg = await getOrganizationByHandle(handle);
-      if (!existingOrg) {
+      const existingTeam = await getTeamByHandle(handle);
+      if (!existingTeam) {
         break;
       }
       suffix++;
       handle = `${baseHandle}-${suffix}`;
     }
 
-    await createOrganization({
-      name: `${syncedUser.name}'s Organization`,
+    await createTeam({
+      name: `${syncedUser.name}'s Team`,
       handle,
       members: [
         {
           user_id: syncedUser.id,
-          role: organizationRoles.owner,
+          role: teamRoles.owner,
         },
       ],
     });
@@ -176,4 +173,42 @@ export async function syncUser({
   } else {
     throw new ValidationError(`Unsupported broker ${broker}`);
   }
+}
+
+export async function addUserRoles(userId: string, roles: string[]) {
+  const user = await getUser(userId);
+  if (!user) {
+    throw new ValidationError("User not found");
+  }
+
+  const currentRoles = new Set(user.roles);
+  for (const role of roles) {
+    currentRoles.add(role);
+  }
+
+  return await prisma.user.update({
+    where: { id: userId },
+    data: {
+      roles: Array.from(currentRoles),
+    },
+  });
+}
+
+export async function removeUserRoles(userId: string, roles: string[]) {
+  const user = await getUser(userId);
+  if (!user) {
+    throw new ValidationError("User not found");
+  }
+
+  const currentRoles = new Set(user.roles);
+  for (const role of roles) {
+    currentRoles.delete(role);
+  }
+
+  return await prisma.user.update({
+    where: { id: userId },
+    data: {
+      roles: Array.from(currentRoles),
+    },
+  });
 }

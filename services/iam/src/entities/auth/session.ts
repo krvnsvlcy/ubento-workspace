@@ -1,10 +1,10 @@
+import { Prisma, Session, SessionStatus } from "@prisma/client";
 import {
-  ubentoEntities,
   generateBareId,
   makeEntityId,
+  ubentoEntities,
 } from "@ubento/primitives";
 import { NotFoundError, prismaListWithCursor } from "@ubento/service-toolkit";
-import { Prisma, Session, SessionStatus } from "@prisma/client";
 import crypto from "crypto";
 import prisma from "../../lib/prisma.js";
 
@@ -147,8 +147,9 @@ export async function getActualizedRefreshToken(sessionId: string) {
     throw new Error("Session is not valid.");
   }
   if (
+    session.refresh_token_rotated_at &&
     session.refresh_token_rotated_at.getTime() <
-    Date.now() - REFRESH_TOKEN_TTL_MS
+      Date.now() - REFRESH_TOKEN_TTL_MS
   ) {
     const newRefreshToken = crypto.randomBytes(32).toString("hex");
     await prisma.session.update({

@@ -15,7 +15,7 @@ import {
   revokeSession,
 } from "../../entities/auth/session.js";
 
-const sessionsRouter = Router();
+const sessionsRouter: Router = Router();
 
 // List Sessions
 sessionsRouter.get(

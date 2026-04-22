@@ -10,12 +10,12 @@ import { Router } from "express";
 import z from "zod";
 import {
   acceptInviteByToken,
-  getOrganizationInvite,
+  getTeamInvite,
   resolveInviteByToken,
-  revokeOrganizationInvite,
-} from "../../entities/management/organization/invites.js";
+  revokeTeamInvite,
+} from "../../entities/management/team/invites.js";
 
-const invitesRouter = Router();
+const invitesRouter: Router = Router();
 
 // Get Invite
 invitesRouter.get(
@@ -26,9 +26,9 @@ invitesRouter.get(
         invite_id: z.string(),
       }),
     }),
-    enforce(ubentoApi.permissions.identity.organizationInvite.read),
+    enforce(ubentoApi.permissions.identity.teamInvite.read),
     async (req, res) => {
-      const invite = await getOrganizationInvite(req.params.invite_id);
+      const invite = await getTeamInvite(req.params.invite_id);
       if (!invite) {
         throw new NotFoundError("Invite not found");
       }
@@ -46,13 +46,10 @@ invitesRouter.post(
         invite_id: z.string(),
       }),
     }),
-    enforce(ubentoApi.permissions.identity.organizationInvite.revoke),
+    enforce(ubentoApi.permissions.identity.teamInvite.revoke),
     async (req, res) => {
       const userId = (req as any).user?.id || "temp-user-id";
-      const invite = await revokeOrganizationInvite(
-        req.params.invite_id,
-        userId,
-      );
+      const invite = await revokeTeamInvite(req.params.invite_id, userId);
       res.json(dataResponse(invite));
     },
   ),

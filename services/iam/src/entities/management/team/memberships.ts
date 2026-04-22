@@ -1,23 +1,23 @@
+import { Broker, Prisma, TeamMembership } from "@prisma/client";
 import {
-  ubentoEntities,
   generateBareId,
   makeEntityId,
+  ubentoEntities,
 } from "@ubento/primitives";
 import {
   isPrismaConstraintError,
   NotFoundError,
   ValidationError,
 } from "@ubento/service-toolkit";
-import { Broker, OrganizationMembership, Prisma } from "@prisma/client";
 import { OrganizationMembership as WOOrganizationMembership } from "@workos-inc/node";
 import prisma from "../../../lib/prisma.js";
 import { workos } from "../../../lib/workos.js";
-import { workosRoleFromInternalRole } from "./organization.js";
+import { workosRoleFromInternalRole } from "./team.js";
 
-export async function listOrganizationMembers(organizationId: string) {
-  const memberships = await prisma.organizationMembership.findMany({
+export async function listTeamMembers(teamId: string) {
+  const memberships = await prisma.teamMembership.findMany({
     where: {
-      organization_id: organizationId,
+      team_id: teamId,
     },
   });
 
@@ -32,44 +32,44 @@ export async function listOrganizationMembers(organizationId: string) {
   return users;
 }
 
-export async function addMemberToOrganization({
-  organizationId,
+export async function addMemberToTeam({
+  teamId,
   userId,
   role,
 }: {
-  organizationId: string;
+  teamId: string;
   userId: string;
   role: string;
 }) {
-  const organization = await prisma.organization.findUnique({
+  const team = await prisma.team.findUnique({
     where: {
-      id: organizationId,
+      id: teamId,
     },
   });
-  if (!organization) {
-    throw new NotFoundError("Organization not found");
+  if (!team) {
+    throw new NotFoundError("Team not found");
   }
 
-  let membership: OrganizationMembership | null = null;
+  let membership: TeamMembership | null = null;
   let workosMembership: WOOrganizationMembership | null = null;
 
   try {
-    membership = await prisma.organizationMembership.create({
+    membership = await prisma.teamMembership.create({
       data: {
         id: makeEntityId({
-          code: ubentoEntities.organizationMembership.code,
+          code: ubentoEntities.teamMembership.code,
           bareId: generateBareId(),
         }),
-        organization_id: organizationId,
+        team_id: teamId,
         user_id: userId,
         role,
       },
     });
 
-    if (organization.broker === Broker.WORKOS) {
+    if (team.broker === Broker.WORKOS) {
       workosMembership =
         await workos.userManagement.createOrganizationMembership({
-          organizationId: organization.broker_id,
+          organizationId: team.broker_id,
           userId: userId,
           roleSlug: workosRoleFromInternalRole(role),
         });
@@ -83,7 +83,7 @@ export async function addMemberToOrganization({
       );
     }
     if (membership) {
-      await prisma.organizationMembership.delete({
+      await prisma.teamMembership.delete({
         where: {
           id: membership.id,
         },
@@ -91,29 +91,27 @@ export async function addMemberToOrganization({
     }
 
     if (isPrismaConstraintError(Prisma, e)) {
-      throw new ValidationError(
-        "User is already a member of this organization",
-      );
+      throw new ValidationError("User is already a member of this team");
     }
 
     throw e;
   }
 }
 
-export async function removeMemberFromOrganization({
-  organizationId,
+export async function removeMemberFromTeam({
+  teamId,
   userId,
 }: {
-  organizationId: string;
+  teamId: string;
   userId: string;
 }) {
-  const organization = await prisma.organization.findUnique({
+  const team = await prisma.team.findUnique({
     where: {
-      id: organizationId,
+      id: teamId,
     },
   });
-  if (!organization) {
-    throw new NotFoundError("Organization not found");
+  if (!team) {
+    throw new NotFoundError("Team not found");
   }
 
   const user = await prisma.user.findUnique({ where: { id: userId } });
@@ -122,17 +120,17 @@ export async function removeMemberFromOrganization({
   }
 
   // Delete local membership
-  await prisma.organizationMembership.deleteMany({
+  await prisma.teamMembership.deleteMany({
     where: {
-      organization_id: organizationId,
+      team_id: teamId,
       user_id: userId,
     },
   });
 
-  if (organization.broker === Broker.WORKOS && user.broker === Broker.WORKOS) {
+  if (team.broker === Broker.WORKOS && user.broker === Broker.WORKOS) {
     const memberships = await workos.userManagement.listOrganizationMemberships(
       {
-        organizationId: organization.broker_id,
+        organizationId: team.broker_id,
         userId: user.broker_id,
       },
     );
@@ -146,20 +144,20 @@ export async function removeMemberFromOrganization({
   }
 }
 
-export async function listUserOrganizations(userId: string) {
-  const memberships = await prisma.organizationMembership.findMany({
+export async function listUserTeams(userId: string) {
+  const memberships = await prisma.teamMembership.findMany({
     where: {
       user_id: userId,
     },
   });
 
-  const organizations = await prisma.organization.findMany({
+  const teams = await prisma.team.findMany({
     where: {
       id: {
-        in: memberships.map((m) => m.organization_id),
+        in: memberships.map((m) => m.team_id),
       },
     },
   });
 
-  return organizations;
+  return teams;
 }

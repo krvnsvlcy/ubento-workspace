@@ -16,19 +16,22 @@ import {
   listClients,
 } from "../../entities/management/client/client.js";
 
-const clientsRouter = Router();
+const clientsRouter: Router = Router();
 
 // List Clients
 clientsRouter.get(
   "/",
-  chain(enforce(ubentoApi.permissions.identity.client.list), async (req, res) => {
-    const { items, nextCursor } = await listClients({
-      limit: req.query.limit ? Number(req.query.limit) : undefined,
-      cursor: req.query.cursor as string | undefined,
-    });
-    setNextLink(req, res, nextCursor);
-    res.json(dataResponse(items));
-  }),
+  chain(
+    enforce(ubentoApi.permissions.identity.client.list),
+    async (req, res) => {
+      const { items, nextCursor } = await listClients({
+        limit: req.query.limit ? Number(req.query.limit) : undefined,
+        cursor: req.query.cursor as string | undefined,
+      });
+      setNextLink(req, res, nextCursor);
+      res.json(dataResponse(items));
+    },
+  ),
 );
 
 // Create Client

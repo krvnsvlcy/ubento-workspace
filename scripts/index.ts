@@ -16,7 +16,7 @@ cli.command("build", "Build the project").action(build);
 cli
   .command("watch [tsconfig]", "Watch TypeScript files and fix import paths")
   .option("--config <path>", "Path to tsconfig file", {
-    default: "tsconfig.build.json",
+    default: "tsconfig.json",
   })
   .action(async (tsconfig: string | undefined, options: any) => {
     await watch(tsconfig || options.config);

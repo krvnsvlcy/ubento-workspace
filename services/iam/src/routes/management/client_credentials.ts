@@ -15,7 +15,7 @@ import {
   revokeClientCredential,
 } from "../../entities/management/client/credentials.js";
 
-const clientCredentialsRouter = Router({ mergeParams: true });
+const clientCredentialsRouter: Router = Router({ mergeParams: true });
 
 // Create Credential
 clientCredentialsRouter.post(
