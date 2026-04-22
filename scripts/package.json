@@ -1,0 +1,31 @@
+{
+  "name": "@repo/scripts",
+  "private": true,
+  "version": "1.0.1",
+  "keywords": [],
+  "author": "",
+  "type": "module",
+  "license": "ISC",
+  "bin": {
+    "scripts": "./index.ts"
+  },
+  "dependencies": {
+    "@hey-api/openapi-ts": "^0.77.0",
+    "@microsoft/api-extractor": "^7.53.1",
+    "@microsoft/api-extractor-model": "^7.31.1",
+    "cac": "^6.7.14",
+    "esbuild": "^0.25.11",
+    "execa": "^9.6.0",
+    "fast-glob": "^3.3.3",
+    "inflection": "^3.0.2",
+    "lodash": "^4.17.21",
+    "openapi-typescript": "^7.9.1",
+    "pacote": "^21.0.1",
+    "semver": "^7.7.2",
+    "ts-morph": "^26.0.0",
+    "tsconfig-paths": "^4.2.0"
+  },
+  "devDependencies": {
+    "@types/semver": "^7.7.1"
+  }
+}
