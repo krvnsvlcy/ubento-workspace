@@ -1,0 +1,268 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native"]
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator jsonSchema {
+  provider                 = "prisma-json-schema-generator"
+  output                   = "../src/spec/prisma"
+  keepRelationFields       = "false"
+  keepRelationScalarFields = "true"
+  includeRequiredFields    = "true"
+}
+
+enum Broker {
+  WORKOS
+}
+
+// Users
+
+model User {
+  id        String   @id @map("_id")
+  entity    String   @default("user")
+  broker    Broker
+  broker_id String
+  roles     String[]
+
+  email          String?
+  name           String?
+  picture        String?
+  email_verified Boolean?
+
+  sessions                Session[]
+  organizationMemberships OrganizationMembership[]
+
+  version    Int      @default(1) @db.Long
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@unique([broker, broker_id])
+  @@map("users")
+}
+
+enum SessionStatus {
+  ACTIVE
+  REVOKED
+  EXPIRED
+}
+
+model Session {
+  id     String @id @map("_id")
+  entity String @default("session")
+
+  user_id String
+  user    User   @relation(fields: [user_id], references: [id])
+
+  status SessionStatus @default(ACTIVE)
+
+  ip         String?
+  user_agent String?
+  metadata   Json?
+
+  revoked_at DateTime?
+  expires_at DateTime
+
+  refresh_token            String   @unique
+  refresh_token_rotated_at DateTime
+
+  version    Int      @default(1) @db.Long
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("sessions")
+}
+
+model AuthCode {
+  id String @id @default(cuid()) @map("_id")
+
+  code       String   @unique
+  session_id String
+  client_id  String
+  expires_at DateTime
+
+  @@index([expires_at])
+  @@map("auth_codes")
+}
+
+// Organizations
+
+enum OrganizationInviteStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
+  REVOKED
+}
+
+model Organization {
+  id     String @id @map("_id")
+  entity String @default("organization")
+
+  handle  String  @unique
+  name    String
+  picture String?
+
+  invites     OrganizationInvite[]
+  memberships OrganizationMembership[]
+
+  broker    Broker
+  broker_id String
+
+  version    Int       @default(1) @db.Long
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
+
+  @@unique([broker, broker_id])
+  @@map("organizations")
+}
+
+model OrganizationInvite {
+  id     String @id @map("_id")
+  entity String @default("organization_invite")
+
+  organization_id String
+  email           String
+  role            String
+
+  token_hash String
+
+  status OrganizationInviteStatus @default(PENDING)
+
+  invited_by  String
+  accepted_by String?
+  revoked_by  String?
+
+  expires_at  DateTime
+  accepted_at DateTime?
+  revoked_at  DateTime?
+
+  version      Int           @default(1) @db.Long
+  created_at   DateTime      @default(now())
+  updated_at   DateTime      @updatedAt
+  organization Organization? @relation(fields: [organization_id], references: [id])
+
+  @@index([organization_id, email, status])
+  @@index([token_hash])
+  @@index([expires_at])
+  @@map("organization_invites")
+}
+
+model OrganizationMembership {
+  id     String @id @map("_id")
+  entity String @default("organization_membership")
+
+  user_id String
+  user    User   @relation(fields: [user_id], references: [id])
+
+  organization_id String
+  organization    Organization @relation(fields: [organization_id], references: [id])
+
+  role String
+
+  version    Int      @default(1) @db.Long
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([user_id])
+  @@index([organization_id])
+  @@index([role])
+  @@map("organization_memberships")
+}
+
+// Clients
+
+enum ClientStatus {
+  ACTIVE
+  DISABLED
+}
+
+enum ClientCredentialStatus {
+  ACTIVE
+  REVOKED
+  EXPIRED
+}
+
+model Client {
+  id     String @id @map("_id")
+  entity String @default("client")
+
+  name        String
+  description String?
+
+  allowed_audiences String[]
+  allowed_scopes    String[] @default([])
+  redirect_uris     String[] @default([])
+
+  status ClientStatus @default(ACTIVE)
+
+  metadata Json?
+
+  credentials ClientCredential[]
+
+  version    Int      @default(1) @db.Long
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([status])
+  @@map("clients")
+}
+
+model ClientCredential {
+  id     String @id @map("_id")
+  entity String @default("client_credential")
+
+  label       String?
+  client_id   String
+  client      Client  @relation(fields: [client_id], references: [id])
+  secret_hash String
+
+  status ClientCredentialStatus @default(ACTIVE)
+
+  expires_at   DateTime?
+  revoked_at   DateTime?
+  last_used_at DateTime?
+  last_used_ip String?
+
+  metadata Json?
+
+  version    Int      @default(1) @db.Long
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([client_id])
+  @@index([status])
+  @@index([expires_at])
+  @@map("client_credentials")
+}
+
+// JWTs
+
+enum JwtKeyStatus {
+  ACTIVE
+  ROTATED
+  REVOKED
+}
+
+model JwtSigningKey {
+  id     String @id @map("_id") // use this as JWT header kid
+  entity String @default("jwt_signing_key")
+
+  status JwtKeyStatus @default(ACTIVE)
+
+  public_jwk            Json
+  private_jwk_encrypted String?
+  private_ref           String?
+
+  algorithm String @default("RS256")
+
+  version    Int      @default(1) @db.Long
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("jwt_signing_keys")
+}

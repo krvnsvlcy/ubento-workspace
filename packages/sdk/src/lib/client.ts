@@ -1,0 +1,84 @@
+import createClient, { FetchResponse, type ClientMethod } from "openapi-fetch";
+import type { TokenManager } from "./token_manager.js";
+
+// Optional: define what client shape you want to expose
+export type UbentoClient<Paths extends {}> = {
+  baseUrl: string;
+  tokenManager: TokenManager;
+
+  get: ClientMethod<Paths, "get", `${string}/${string}`>;
+  post: ClientMethod<Paths, "post", `${string}/${string}`>;
+  put: ClientMethod<Paths, "put", `${string}/${string}`>;
+  patch: ClientMethod<Paths, "patch", `${string}/${string}`>;
+  delete: ClientMethod<Paths, "delete", `${string}/${string}`>;
+  head: ClientMethod<Paths, "head", `${string}/${string}`>;
+  options: ClientMethod<Paths, "options", `${string}/${string}`>;
+  trace: ClientMethod<Paths, "trace", `${string}/${string}`>;
+
+  fetch: (request: Request) => Promise<Response>;
+};
+
+export function createClientFactory<Paths extends {}>() {
+  return function createUbentoClient({
+    baseUrl: _baseUrl,
+    tokenManager,
+  }: {
+    baseUrl?: string;
+    tokenManager: TokenManager;
+  }): UbentoClient<Paths> {
+    const baseUrl = _baseUrl ?? "https://api.ubento.dev";
+    const fetcher = async (request: Request) => {
+      const accessToken = await tokenManager.getToken();
+      request.headers.set("Authorization", `Bearer ${accessToken}`);
+      return fetch(request);
+    };
+    const client = createClient<Paths>({
+      baseUrl,
+      fetch: fetcher,
+    });
+
+    return {
+      baseUrl,
+      tokenManager,
+
+      get: client.GET,
+      post: client.POST,
+      put: client.PUT,
+      patch: client.PATCH,
+      delete: client.DELETE,
+      head: client.HEAD,
+      options: client.OPTIONS,
+      trace: client.TRACE,
+
+      fetch: fetcher,
+    };
+  };
+}
+
+export function extractResponseData<R extends FetchResponse<any, any, any>>(
+  response: R,
+  required?: boolean,
+): NonNullable<R["data"]> | undefined;
+export function extractResponseData<R extends FetchResponse<any, any, any>>(
+  response: R,
+  required: true,
+): NonNullable<R["data"]>;
+export function extractResponseData<R extends FetchResponse<any, any, any>>(
+  response: R,
+  required: boolean = false,
+): NonNullable<R["data"]> | undefined {
+  if (!response.response.ok) {
+    if (!required && response.response.status === 404) {
+      return undefined;
+    } else {
+      const errorMessage = response.error
+        ? JSON.stringify(response.error)
+        : response.response.statusText;
+      throw new Error(
+        `Request failed with status ${response.response.status}:\n${errorMessage}`,
+      );
+    }
+  } else {
+    return response.data!;
+  }
+}

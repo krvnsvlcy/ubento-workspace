@@ -1,0 +1,20 @@
+{
+  "name": "@ubento/sdk",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./build/index.js",
+  "types": "./build/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch"
+  },
+  "dependencies": {
+    "axios": "^1.11.0",
+    "jszip": "^3.10.1",
+    "openapi-fetch": "^0.9.7"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

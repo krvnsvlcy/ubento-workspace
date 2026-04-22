@@ -1,19 +1,38 @@
-import { BaseService } from "@ubento/services-common";
-import { Request, Response, Router } from "express";
+import { createService } from "@ubento/service-toolkit";
+import cookieParser from "cookie-parser";
+import { env } from "./env.js";
+import authRouter from "./routes/auth.js";
+import clientCredentialsRouter from "./routes/management/client_credentials.js";
+import clientsRouter from "./routes/management/clients.js";
+import invitesRouter from "./routes/management/organization_invites.js";
+import organizationsRouter from "./routes/management/organizations.js";
 
-export class IAMService extends BaseService {
-  constructor() {
-    super({ name: "IAM", port: 4002 });
-  }
+import sessionsRouter from "./routes/management/sessions.js";
+import usersRouter from "./routes/management/users.js";
+import { spec } from "./spec/spec.js";
 
-  protected setupRoutes(): void {
-    const router = Router();
-    router.get("/status", async (req: Request, res: Response) => {
-      res.json({ status: "ok" });
-    });
-    this.app.use("/iam", router);
-  }
-}
+export const service = createService({
+  name: "iam-service",
+  port: env.PORT,
+  auth: false,
+  spec,
+});
 
-const service = new IAMService();
+// auth server
+service.app.use("/", cookieParser(), authRouter);
+
+// management server
+// service.app.use(
+//   createAuthenticationMiddleware({
+//     audience: ubentoApi.audience,
+//   }),
+// );
+service.app.use("/users", usersRouter);
+service.app.use("/organizations", organizationsRouter);
+service.app.use("/organization-invites", invitesRouter);
+service.app.use("/clients", clientsRouter);
+service.app.use("/client-credentials", clientCredentialsRouter);
+
+service.app.use("/sessions", sessionsRouter);
+
 service.start();

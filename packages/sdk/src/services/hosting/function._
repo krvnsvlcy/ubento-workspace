@@ -1,0 +1,196 @@
+import {
+  createFunctionServiceClient,
+  Function,
+} from "~/clients/function/client.js";
+import { extractResponseData } from "~/lib/client.js";
+import { TokenManager } from "~/lib/token_manager.js";
+import { uploadFunctionVersion, UploadOptions } from "./deploy.js";
+
+export class FunctionService {
+  private functionClient: ReturnType<typeof createFunctionServiceClient>;
+
+  constructor({
+    baseUrl = "https://api.ubento.dev",
+    tokenManager,
+  }: {
+    baseUrl?: string;
+    tokenManager: TokenManager;
+  }) {
+    this.functionClient = createFunctionServiceClient({
+      baseUrl,
+      tokenManager,
+    });
+  }
+
+  async getInvocation(invocationId: string) {
+    const result = await this.functionClient.get(
+      "/invocations/{invocation_id}",
+      {
+        params: {
+          path: { invocation_id: invocationId },
+        },
+      }
+    );
+    return extractResponseData(result);
+  }
+
+  async listFunctions(options?: { limit?: number; offset?: number }) {
+    const result = await this.functionClient.get("/functions", {
+      params: {
+        query: options,
+      },
+    });
+    return extractResponseData(result);
+  }
+
+  async createFunction(data: { repository_id: string; name?: string }) {
+    const result = await this.functionClient.post("/functions", {
+      body: data,
+    });
+    return extractResponseData(result);
+  }
+
+  async getFunction(functionId: string) {
+    const result = await this.functionClient.get("/functions/{function_id}", {
+      params: {
+        path: { function_id: functionId },
+      },
+    });
+    return extractResponseData(result);
+  }
+
+  async deleteFunction(functionId: string) {
+    // Note: Type assertion needed due to incorrect generated types for this endpoint
+    const result = await (this.functionClient.delete as any)(
+      "/functions/{function_id}",
+      {
+        params: {
+          path: { function_id: functionId },
+        },
+      }
+    );
+    return extractResponseData(result);
+  }
+
+  async updateFunction(functionId: string, data: { name?: string }) {
+    // Note: Type assertion needed due to incorrect generated types for this endpoint
+    const result = await (this.functionClient.patch as any)(
+      "/functions/{function_id}",
+      {
+        params: {
+          path: { function_id: functionId },
+        },
+        body: data,
+      }
+    );
+    return extractResponseData(result);
+  }
+
+  async listFunctionVersions(
+    functionId: string,
+    options?: { limit?: number; offset?: number }
+  ) {
+    // Note: Type assertion needed due to incorrect generated types for this endpoint
+    const result = await (this.functionClient.get as any)(
+      "/functions/{function_id}/versions",
+      {
+        params: {
+          path: { function_id: functionId },
+          query: options,
+        },
+      }
+    );
+    return extractResponseData(result);
+  }
+
+  async getFunctionVersion(functionId: string, functionVersion: number) {
+    const result = await this.functionClient.get(
+      "/functions/{function_id}/versions/{function_version}",
+      {
+        params: {
+          path: {
+            function_id: functionId,
+            function_version: functionVersion,
+          },
+        },
+      }
+    );
+    return extractResponseData(result);
+  }
+
+  async listFunctionVersionInvocations(
+    functionId: string,
+    functionVersion: number,
+    options?: { limit?: number; offset?: number }
+  ) {
+    const result = await this.functionClient.get(
+      "/functions/{function_id}/versions/{function_version}/invocations",
+      {
+        params: {
+          path: {
+            function_id: functionId,
+            function_version: functionVersion,
+          },
+          query: options,
+        },
+      }
+    );
+    return extractResponseData(result);
+  }
+
+  async getFunctionVersionById(functionVersionId: string) {
+    const result = await this.functionClient.get(
+      "/function-versions/{function_version_id}",
+      {
+        params: {
+          path: { function_version_id: functionVersionId },
+        },
+      }
+    );
+    return extractResponseData(result);
+  }
+
+  getFunctionByGlobalName(
+    globalFunctionName: string,
+    options: { create: true }
+  ): Promise<Function>;
+  getFunctionByGlobalName(
+    globalFunctionName: string,
+    options: { create?: boolean }
+  ): Promise<Function | undefined>;
+  async getFunctionByGlobalName(
+    globalFunctionName: string,
+    options?: { create?: boolean }
+  ): Promise<Function | undefined> {
+    const result = await this.functionClient.get(
+      "/function/{global_function_name}",
+      {
+        params: {
+          path: { global_function_name: globalFunctionName },
+          query: options,
+        },
+      }
+    );
+    return extractResponseData(result, options?.create ?? false);
+  }
+
+  async uploadFunctionVersion(
+    functionId: string,
+    source: UploadOptions["source"],
+    options?: {
+      headers?: Record<string, string>;
+      timeoutMs?: number;
+      onUploadProgress?: UploadOptions["onUploadProgress"];
+    }
+  ) {
+    return uploadFunctionVersion({
+      functionId,
+      source,
+      baseUrl: this.functionClient.baseUrl,
+      tokenManager: this.functionClient.tokenManager,
+      headers: options?.headers,
+      timeoutMs: options?.timeoutMs,
+      onUploadProgress: options?.onUploadProgress,
+    });
+  }
+}

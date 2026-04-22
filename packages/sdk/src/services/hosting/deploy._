@@ -1,0 +1,132 @@
+// uploadFunctionVersion.ts
+import axios, { AxiosInstance, AxiosProgressEvent } from "axios";
+import JSZip from "jszip";
+import { FunctionVersion } from "~/clients/function/client.js";
+import { TokenManager } from "~/lib/token_manager.js";
+
+type Binary = ArrayBuffer | Uint8Array | Buffer;
+type BrowserFileLike = Blob | File;
+
+type SourceInput =
+  | { kind: "zip"; data: BrowserFileLike | Binary; filename?: string }
+  | { kind: "directory"; dir: string; filename?: string };
+
+export type UploadOptions = {
+  functionId: string;
+  source: SourceInput;
+  baseUrl: string;
+  tokenManager: TokenManager;
+
+  axios?: AxiosInstance;
+  headers?: Record<string, string>;
+  timeoutMs?: number; // default: 120s
+  onUploadProgress?: (e: AxiosProgressEvent) => void;
+};
+
+const isBrowser = () =>
+  typeof window !== "undefined" && typeof document !== "undefined";
+
+/** Zip a Node directory to a Buffer (Node only). */
+async function toZipBufferFromNodeDir(dir: string): Promise<Buffer> {
+  const { promises: fs } = await import("fs");
+  const path = await import("path");
+
+  async function* walk(d: string): AsyncGenerator<string> {
+    for (const entry of await fs.readdir(d, { withFileTypes: true })) {
+      const p = path.join(d, entry.name);
+      if (entry.isDirectory()) yield* walk(p);
+      else yield p;
+    }
+  }
+
+  const zip = new JSZip();
+  for await (const filePath of walk(dir)) {
+    const rel =
+      filePath.slice(dir.endsWith(path.sep) ? dir.length : dir.length + 1) ||
+      "";
+    const content = await fs.readFile(filePath);
+    zip.file(rel, content);
+  }
+  return zip.generateAsync({ type: "nodebuffer" });
+}
+
+/**
+ * Upload a function version (.zip) to /functions/:function_id/versions as "file".
+ * Uses native FormData/Blob in both Browser and Node ≥ 18 (no form-data pkg).
+ */
+export async function uploadFunctionVersion(opts: UploadOptions) {
+  const url = `/functions/${encodeURIComponent(opts.functionId)}/versions`;
+
+  const filename =
+    ("filename" in opts.source && opts.source.filename) || "source.zip";
+
+  // Prepare a Blob for the zip (browser or Node ≥ 18)
+  let zipBlob: Blob;
+
+  if (opts.source.kind === "zip") {
+    const d = opts.source.data as BrowserFileLike | Binary;
+    if (d instanceof Blob) {
+      zipBlob = d;
+    } else if (
+      d instanceof Uint8Array ||
+      (typeof Buffer !== "undefined" && d instanceof Buffer)
+    ) {
+      // Convert to ArrayBuffer for Blob constructor compatibility
+      const arrayBuffer = d.buffer.slice(
+        d.byteOffset,
+        d.byteOffset + d.byteLength
+      );
+      // Ensure we have a proper ArrayBuffer (not SharedArrayBuffer)
+      const properArrayBuffer =
+        arrayBuffer instanceof ArrayBuffer
+          ? arrayBuffer
+          : new ArrayBuffer(d.byteLength);
+      if (properArrayBuffer !== arrayBuffer) {
+        new Uint8Array(properArrayBuffer).set(new Uint8Array(d));
+      }
+      zipBlob = new Blob([properArrayBuffer], { type: "application/zip" });
+    } else {
+      // ArrayBuffer
+      zipBlob = new Blob([d as ArrayBuffer], { type: "application/zip" });
+    }
+  } else {
+    // kind === "directory"
+    if (isBrowser())
+      throw new Error(
+        "directory source is only supported in Node environments."
+      );
+    const buf = await toZipBufferFromNodeDir(opts.source.dir);
+    // Convert Buffer to ArrayBuffer for Blob constructor compatibility
+    const arrayBuffer = buf.buffer.slice(
+      buf.byteOffset,
+      buf.byteOffset + buf.byteLength
+    );
+    const properArrayBuffer =
+      arrayBuffer instanceof ArrayBuffer
+        ? arrayBuffer
+        : new ArrayBuffer(buf.byteLength);
+    if (properArrayBuffer !== arrayBuffer) {
+      new Uint8Array(properArrayBuffer).set(new Uint8Array(buf));
+    }
+    zipBlob = new Blob([properArrayBuffer], { type: "application/zip" });
+  }
+
+  const form = new FormData();
+  const filePart =
+    typeof File !== "undefined"
+      ? new File([zipBlob], filename, { type: "application/zip" })
+      : zipBlob;
+  form.append("file", filePart, filename);
+
+  const res = await axios.post<FunctionVersion>(url, form, {
+    baseURL: opts.baseUrl,
+    timeout: opts.timeoutMs ?? 120_000,
+    headers: {
+      ...opts.headers,
+      Authorization: `Bearer ${await opts.tokenManager.getToken()}`,
+    },
+    onUploadProgress: opts.onUploadProgress,
+  });
+
+  return res.data;
+}
