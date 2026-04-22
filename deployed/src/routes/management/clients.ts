@@ -1,0 +1,93 @@
+import { ubentoApi } from "@ubento/primitives";
+import {
+  chain,
+  dataResponse,
+  enforce,
+  NotFoundError,
+  setNextLink,
+  validate,
+} from "@ubento/service-toolkit";
+import { Router } from "express";
+import z from "zod";
+import {
+  createClient,
+  deleteClient,
+  getClient,
+  listClients,
+} from "../../entities/management/client/client.js";
+
+const clientsRouter: Router = Router();
+
+// List Clients
+clientsRouter.get(
+  "/",
+  chain(
+    enforce(ubentoApi.permissions.identity.client.list),
+    async (req, res) => {
+      const { items, nextCursor } = await listClients({
+        limit: req.query.limit ? Number(req.query.limit) : undefined,
+        cursor: req.query.cursor as string | undefined,
+      });
+      setNextLink(req, res, nextCursor);
+      res.json(dataResponse(items));
+    },
+  ),
+);
+
+// Create Client
+clientsRouter.post(
+  "/",
+  chain(
+    validate({
+      body: z.object({
+        name: z.string(),
+        description: z.string().optional(),
+      }),
+    }),
+    enforce(ubentoApi.permissions.identity.client.create),
+    async (req, res) => {
+      const client = await createClient({
+        name: req.body.name,
+        description: req.body.description,
+      });
+      res.status(201).json(dataResponse(client));
+    },
+  ),
+);
+
+// Get Client
+clientsRouter.get(
+  "/:id",
+  chain(
+    validate({
+      params: z.object({
+        id: z.string(),
+      }),
+    }),
+    enforce(ubentoApi.permissions.identity.client.read),
+    async (req, res) => {
+      const client = await getClient(req.params.id);
+      if (!client) throw new NotFoundError("Client not found");
+      res.json(dataResponse(client));
+    },
+  ),
+);
+
+// Delete Client
+clientsRouter.delete(
+  "/:id",
+  chain(
+    validate({
+      params: z.object({
+        id: z.string(),
+      }),
+    }),
+    enforce(ubentoApi.permissions.identity.client.delete),
+    async (req, res) => {
+      await deleteClient(req.params.id);
+      res.json(dataResponse({ success: true }));
+    },
+  ),
+);
+
+export default clientsRouter;

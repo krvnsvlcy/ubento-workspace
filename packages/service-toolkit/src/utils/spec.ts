@@ -49,7 +49,7 @@ export type JsonSchemaOutput = {
   >;
 };
 export function standardizeJsonSchemaOutput<T extends JsonSchemaOutput>(
-  obj: T
+  obj: T,
 ): T {
   // rebase
   const rebased = rebaseRefs(obj, "#/definitions", "#/components/schemas");
@@ -62,37 +62,37 @@ export function standardizeJsonSchemaOutput<T extends JsonSchemaOutput>(
       // entity type
       assert(
         type.properties.id.type === "string",
-        "entity id must be of type string"
+        "entity id must be of type string",
       );
       assert(
         type.properties.entity.type === "string",
-        "entity type must be of type string"
+        "entity type must be of type string",
       );
 
       // other properties
       assert(
         "version" in type.properties,
-        "every entity must have a version field"
+        "every entity must have a version field",
       );
       assert(
         type.properties.version.type === "integer",
-        "entity version must be of type integer"
+        "entity version must be of type integer",
       );
       assert(
         "created_at" in type.properties,
-        "every entity must have a created_at field"
+        "every entity must have a created_at field",
       );
       assert(
         type.properties.created_at.type === "string",
-        "entity created_at must be of type string"
+        "entity created_at must be of type string",
       );
       assert(
         "updated_at" in type.properties,
-        "every entity must have an updated_at field"
+        "every entity must have an updated_at field",
       );
       assert(
         type.properties.updated_at.type === "string",
-        "entity updated_at must be of type string"
+        "entity updated_at must be of type string",
       );
 
       // make sure all properties are required

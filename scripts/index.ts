@@ -3,6 +3,8 @@
 import { cac } from "cac";
 import { build } from "./build/index.js";
 import { clean } from "./commands/clean/index.js";
+import { containerize } from "./commands/containerize/index.js";
+import { deploy } from "./commands/deploy/index.js";
 import { linkerLink } from "./commands/link/index.js";
 import { lint } from "./commands/lint/index.js";
 import { packup } from "./commands/packup/index.js";
@@ -70,6 +72,41 @@ cli
       config: options.config,
       dryRun: options.dryRun,
       copyFallback: options.copyFallback,
+    });
+  });
+
+cli
+  .command("deploy [service]", "Deploy a service to GCP")
+  .option("--project <id>", "GCP Project ID")
+  .option("--region <name>", "GCP Region", { default: "us-central1" })
+  .option("--dry-run", "Show what would be deployed without making changes", {
+    default: false,
+  })
+  .action(async (service: string | undefined, options: any) => {
+    await deploy({
+      service,
+      project: options.project,
+      region: options.region,
+      dryRun: options.dryRun,
+    });
+  });
+
+cli
+  .command(
+    "containerize [service]",
+    "Create a portable Docker image for a service",
+  )
+  .option("--project <id>", "GCP Project ID")
+  .option("--tag <name>", "Custom image tag")
+  .option("--dry-run", "Show what would be done without making changes", {
+    default: false,
+  })
+  .action(async (service: string | undefined, options: any) => {
+    await containerize({
+      service,
+      project: options.project,
+      tag: options.tag,
+      dryRun: options.dryRun,
     });
   });
 

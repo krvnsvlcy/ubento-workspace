@@ -60,22 +60,24 @@ model User {
   picture        String?
   email_verified Boolean  @default(false)
   roles          String[] @default([])
-  version        Int      @default(1)
-  created_at     DateTime @default(now())
-  updated_at     DateTime @updatedAt
+
+  version    Int      @default(1)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   @@unique([broker, broker_id])
   @@map("users")
 }
 
 model Team {
-  id         String    @id @map("_id")
-  entity     String    @default("team")
-  broker     Broker
-  broker_id  String
-  handle     String    @unique
-  name       String
-  picture    String?
+  id        String  @id @map("_id")
+  entity    String  @default("team")
+  broker    Broker
+  broker_id String
+  handle    String  @unique
+  name      String
+  picture   String?
+
   version    Int       @default(1)
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
@@ -86,11 +88,12 @@ model Team {
 }
 
 model TeamMembership {
-  id         String   @id @map("_id")
-  entity     String   @default("team_membership")
-  team_id    String
-  user_id    String
-  role       String
+  id      String @id @map("_id")
+  entity  String @default("team_membership")
+  team_id String
+  user_id String
+  role    String
+
   version    Int      @default(1)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -115,9 +118,10 @@ model TeamInvite {
   revoked_by  String?
   accepted_at DateTime?
   accepted_by String?
-  version     Int              @default(1)
-  created_at  DateTime         @default(now())
-  updated_at  DateTime         @updatedAt
+
+  version    Int      @default(1)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   @@index([team_id, email, status])
   @@map("team_invites")
@@ -133,9 +137,10 @@ model Client {
   redirect_uris     String[]     @default([])
   status            ClientStatus @default(ACTIVE)
   metadata          Json?
-  version           Int          @default(1)
-  created_at        DateTime     @default(now())
-  updated_at        DateTime     @updatedAt
+
+  version    Int      @default(1)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   @@index([status])
   @@map("clients")
@@ -153,9 +158,10 @@ model ClientCredential {
   last_used_at DateTime?
   last_used_ip String?
   metadata     Json?
-  version      Int                    @default(1)
-  created_at   DateTime               @default(now())
-  updated_at   DateTime               @updatedAt
+
+  version    Int      @default(1)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   @@index([client_id])
   @@index([status])
@@ -170,8 +176,11 @@ model AuthCode {
   user_id    String?
   session_id String?
   scope      String[]
-  expires_at DateTime
+
+  version    Int      @default(1)
   created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  expires_at DateTime
 
   @@index([expires_at])
   @@map("auth_codes")
@@ -189,9 +198,10 @@ model Session {
   user_agent               String?
   revoked_at               DateTime?
   expires_at               DateTime
-  version                  Int           @default(1)
-  created_at               DateTime      @default(now())
-  updated_at               DateTime      @updatedAt
+
+  version    Int      @default(1)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   @@index([user_id])
   @@map("sessions")
@@ -204,9 +214,10 @@ model JwtSigningKey {
   public_jwk            Json
   private_jwk_encrypted String
   status                JwtKeyStatus @default(ACTIVE)
-  version               Int          @default(1)
-  created_at            DateTime     @default(now())
-  updated_at            DateTime     @updatedAt
+
+  version    Int      @default(1)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   @@index([status])
   @@map("jwt_signing_keys")
