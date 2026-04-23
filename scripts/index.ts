@@ -9,6 +9,7 @@ import { linkerLink } from "./commands/link/index.js";
 import { lint } from "./commands/lint/index.js";
 import { packup } from "./commands/packup/index.js";
 import { publish } from "./commands/publish/index.js";
+import { serve } from "./commands/serve/index.js";
 import { watch } from "./commands/watch/index.js";
 
 const cli = cac("scripts");
@@ -83,9 +84,12 @@ cli
     default: false,
   })
   .action(async (service: string | undefined, options: any) => {
+    if (!service) {
+      console.error("❌ Error: service name is required.");
+      process.exit(1);
+    }
     await deploy({
       service,
-      project: options.project,
       region: options.region,
       dryRun: options.dryRun,
     });
@@ -102,10 +106,30 @@ cli
     default: false,
   })
   .action(async (service: string | undefined, options: any) => {
+    if (!service) {
+      console.error("❌ Error: service name is required.");
+      process.exit(1);
+    }
     await containerize({
       service,
-      project: options.project,
-      tag: options.tag,
+      dryRun: options.dryRun,
+    });
+  });
+
+cli
+  .command("serve [service]", "Run the containerized service locally")
+  .option("--port <number>", "Port to expose", { default: "3000" })
+  .option("--dry-run", "Show what would be done without actually running", {
+    default: false,
+  })
+  .action(async (service: string | undefined, options: any) => {
+    if (!service) {
+      console.error("❌ Error: service name is required.");
+      process.exit(1);
+    }
+    await serve({
+      service,
+      port: options.port,
       dryRun: options.dryRun,
     });
   });

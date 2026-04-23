@@ -1,12 +1,13 @@
+import Mustache from "mustache";
 import { execSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { loadParentEnvs } from "../../utils/env.js";
+import { load1PasswordEnvs } from "../../utils/op.js";
 import { findWorkspaceRoot } from "../../utils/workspace.js";
 
 interface DeployOptions {
-  service?: string;
-  project?: string;
+  service: string;
   region?: string;
   dryRun?: boolean;
 }
@@ -15,33 +16,50 @@ interface DeployOptions {
  * Deploys a service to Google Cloud Platform (Cloud Run).
  */
 export async function deploy(options: DeployOptions) {
-  loadParentEnvs();
+  const rootDir = await findWorkspaceRoot();
+  const { service: serviceName } = options;
+  const servicePath = path.join(rootDir, "services", serviceName);
 
-  const {
-    dryRun = false,
-    project = process.env.GCP_PROJECT_ID,
-    region = "us-central1",
-  } = options;
+  loadParentEnvs(servicePath);
 
-  console.log(`🚀 Starting GCP deployment process...`);
+  console.log(`\n🔑 Loading variables from 1Password...`);
+  const opVars = await load1PasswordEnvs();
+  console.log(
+    `✅ Loaded ${Object.keys(opVars).length} variables from 1Password: ${Object.keys(opVars).join(", ")}`,
+  );
 
-  const currentDir = process.cwd();
-  const root = await findWorkspaceRoot();
-  const pjPath = path.join(currentDir, "package.json");
+  const { dryRun = false, region = "us-central1" } = options;
+
+  if (!fs.existsSync(servicePath)) {
+    console.error(`❌ Service directory not found: ${servicePath}`);
+    process.exit(1);
+  }
+
+  const pjPath = path.join(servicePath, "package.json");
 
   if (!fs.existsSync(pjPath)) {
-    console.error("❌ No package.json found in the current directory.");
+    console.error(`❌ No package.json found for service: ${serviceName}`);
     process.exit(1);
   }
 
   const pj = JSON.parse(fs.readFileSync(pjPath, "utf8"));
-  const fullPackageName = pj.name;
-  const serviceName = options.service || pj.name.split("/").pop(); // De-scoped name
+  const localImage = `ubento/${serviceName}`;
 
-  console.log(`📦 Service: ${fullPackageName} (${serviceName})`);
+  // Artifact Registry path configuration
+  const project = opVars.GCP_PROJECT_ID;
+  if (!project) {
+    console.error("❌ Error: GCP project ID is required for deployment.");
+    process.exit(1);
+  }
+
+  const registryHost = `${region}-docker.pkg.dev`;
+  const registryPath = `${project}/ubento-services`;
+  const remoteImage = `${registryHost}/${registryPath}/${serviceName}:latest`;
+
+  console.log(`📦 Service: ${serviceName}`);
   console.log(`🌍 Region: ${region}`);
   console.log(`🆔 Project: ${project || "(unspecified)"}`);
-  console.log(`🏠 Root: ${root}`);
+  console.log(`🐳 Remote Image: ${remoteImage}`);
 
   if (!project && !dryRun) {
     console.error(
@@ -50,60 +68,93 @@ export async function deploy(options: DeployOptions) {
     process.exit(1);
   }
 
-  // 1. Build the service first to ensure dist/ is populated
-  console.log(`\n🛠️ Building service...`);
+  // 1. Tag the image
+  console.log(`\n🏷️  Tagging image...`);
+  const tagCmd = `docker tag ${localImage} ${remoteImage}`;
   if (dryRun) {
-    console.log(`🧪 [DRY RUN] Would run: pnpm build`);
+    console.log(`🧪 [DRY RUN] Would run: ${tagCmd}`);
   } else {
     try {
-      execSync("pnpm build", { stdio: "inherit", cwd: currentDir });
-      console.log(`✅ Build successful.`);
+      execSync(tagCmd, { stdio: "inherit" });
+      console.log(`✅ Tagged successfully.`);
     } catch (error) {
-      console.error(`❌ Build failed. Aborting deployment.`);
+      console.error(`❌ Tagging failed.`);
       process.exit(1);
     }
   }
 
-  // 2. Prepare standalone deployment directory using pnpm deploy
-  // This resolves "workspace:*" dependencies into real files
-  const outDir = path.join(currentDir, "out");
-  console.log(
-    `\n📦 Preparing standalone deployment in ${outDir} using pnpm deploy...`,
-  );
-
-  const deployPrepCmd = `pnpm deploy --legacy --filter ${fullPackageName} ${outDir}`;
-
+  // 2. Push to Artifact Registry
+  console.log(`\n🚀 Pushing to Artifact Registry...`);
+  const pushCmd = `docker push ${remoteImage}`;
   if (dryRun) {
-    console.log(`🧪 [DRY RUN] Would run: ${deployPrepCmd}`);
+    console.log(`🧪 [DRY RUN] Would run: ${pushCmd}`);
   } else {
     try {
-      // Remove old out dir if exists
-      if (fs.existsSync(outDir)) {
-        fs.rmSync(outDir, { recursive: true, force: true });
+      execSync(pushCmd, { stdio: "inherit" });
+      console.log(`✅ Pushed successfully.`);
+    } catch (error) {
+      console.error(
+        `❌ Push failed. Make sure you've run 'gcloud auth configure-docker'.`,
+      );
+      process.exit(1);
+    }
+  }
+
+  const vars = {
+    ...opVars,
+    GCP_IMAGE_TAG: remoteImage,
+    GCP_SERVICE_NAME: `${serviceName}-service`,
+  };
+
+  // 4. Process cloudrun.yaml if it exists
+  const yamlPath = path.join(servicePath, "cloudrun.yaml");
+  let deployCmd = `gcloud run deploy ${serviceName} --image ${remoteImage} --project ${project} --region ${region} --allow-unauthenticated`;
+  let processedYamlPath: string | null = null;
+
+  if (fs.existsSync(yamlPath)) {
+    console.log(`\n📄 Found cloudrun.yaml, processing placeholders...`);
+    const template = fs.readFileSync(yamlPath, "utf-8");
+    // Disable HTML escaping since we're generating YAML/Shell content
+    Mustache.escape = (text) => text;
+    const processed = Mustache.render(template, { vars });
+
+    processedYamlPath = path.join(servicePath, "cloudrun.processed.yaml");
+    fs.writeFileSync(processedYamlPath, processed);
+    console.log(`✅ Generated cloudrun.processed.yaml`);
+
+    deployCmd = `gcloud run services replace ${processedYamlPath} --project ${project} --region ${region}`;
+  }
+
+  // 5. Deploy to Cloud Run
+  console.log(`\n🚀 Deploying to Cloud Run...`);
+  if (dryRun) {
+    console.log(`🧪 [DRY RUN] Would run: ${deployCmd}`);
+    if (processedYamlPath) {
+      console.log(
+        `🧪 [DRY RUN] Would also run: gcloud run services add-iam-policy-binding ${serviceName} --member="allUsers" --role="roles/run.invoker" --project ${project} --region ${region}`,
+      );
+    }
+  } else {
+    try {
+      execSync(deployCmd, { stdio: "inherit" });
+
+      if (processedYamlPath) {
+        // If we used replace, we might need to set the IAM policy separately to match the previous --allow-unauthenticated behavior
+        console.log(`\n🔓 Setting IAM policy for unauthenticated access...`);
+        const iamCmd = `gcloud run services add-iam-policy-binding ${serviceName} --member="allUsers" --role="roles/run.invoker" --project ${project} --region ${region} --quiet`;
+        execSync(iamCmd, { stdio: "inherit" });
       }
-      execSync(deployPrepCmd, { stdio: "inherit", cwd: root });
-      console.log(`✅ pnpm deploy successful.`);
-    } catch (error) {
-      console.error(`❌ pnpm deploy failed.`);
-      process.exit(1);
-    }
-  }
 
-  // 3. Deploy to Cloud Run from the 'out' directory
-  console.log(`\n🚀 Deploying to Cloud Run from ${outDir}...`);
-  const deployCmd = `gcloud run deploy ${serviceName} --source . --project ${project} --region ${region} --allow-unauthenticated`;
-
-  if (dryRun) {
-    console.log(`🧪 [DRY RUN] Would run: ${deployCmd} in ${outDir}`);
-  } else {
-    try {
-      execSync(deployCmd, { stdio: "inherit", cwd: outDir });
       console.log(
         `\n✅ Successfully deployed ${serviceName} to GCP Cloud Run!`,
       );
     } catch (error) {
       console.error(`❌ Deployment to Cloud Run failed.`);
       process.exit(1);
+    } finally {
+      if (processedYamlPath && fs.existsSync(processedYamlPath)) {
+        // fs.unlinkSync(processedYamlPath);
+      }
     }
   }
 }

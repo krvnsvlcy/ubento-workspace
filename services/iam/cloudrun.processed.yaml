@@ -1,0 +1,28 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: "iam-service"
+spec:
+  template:
+    spec:
+      serviceAccountName: "services"
+      containers:
+        - image: "us-central1-docker.pkg.dev/ubento-prod/ubento-services/iam:latest"
+          env:
+            # workos
+            - name: WORKOS_CLIENT_ID
+              value: "client_01KPTV6Q2QM2R0R95H94A7YK8F"
+            - name: WORKOS_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: latest
+                  name: "workos-api-key"
+            # database
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  key: latest
+                  name: "ubento-database-url"
+            # auth
+            - name: AUTH_SERVER_BASE_URL
+              value: "https://auth.ubento.pro"

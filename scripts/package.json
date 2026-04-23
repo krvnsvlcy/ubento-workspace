@@ -20,6 +20,7 @@
     "fast-glob": "^3.3.3",
     "inflection": "^3.0.2",
     "lodash": "^4.17.21",
+    "mustache": "^4.2.0",
     "openapi-typescript": "^7.9.1",
     "pacote": "^21.0.1",
     "semver": "^7.7.2",
@@ -27,6 +28,7 @@
     "tsconfig-paths": "^4.2.0"
   },
   "devDependencies": {
+    "@types/mustache": "^4.2.6",
     "@types/semver": "^7.7.1"
   }
 }

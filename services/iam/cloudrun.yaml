@@ -1,0 +1,28 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: "{{ vars.GCP_SERVICE_NAME }}"
+spec:
+  template:
+    spec:
+      serviceAccountName: "{{ vars.GCP_SERVICE_ACCOUNT_NAME }}"
+      containers:
+        - image: "{{ vars.GCP_IMAGE_TAG }}"
+          env:
+            # workos
+            - name: WORKOS_CLIENT_ID
+              value: "{{ vars.WORKOS_CLIENT_ID }}"
+            - name: WORKOS_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: latest
+                  name: "workos-api-key"
+            # database
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  key: latest
+                  name: "ubento-database-url"
+            # auth
+            - name: AUTH_SERVER_BASE_URL
+              value: "{{ vars.AUTH_SERVER_BASE_URL }}"

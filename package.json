@@ -10,16 +10,20 @@
     "deploy:app:bento.runtime": "turbo deploy --filter=@ubento/bento.runtime",
     "deploy:app:bento.app": "turbo deploy --filter=@ubento/bento.app",
     "deploy:app:ubento": "turbo deploy --filter=@ubento/ubento",
-    "deploy:service:iam": "turbo deploy --filter=@ubento/iam-service",
     "deploy:service:billing": "turbo deploy --filter=@ubento/billing-service",
     "deploy:service:registry": "turbo deploy --filter=@ubento/registry",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "containerize:service:iam": "docker build --secret id=github_token,env=GITHUB_TOKEN -t ubento/iam.service -f services/iam/Dockerfile .",
+    "serve:service:iam": "docker run -p 3000:3000 --env-file services/iam/.env ubento/iam.service",
+    "tag:service:iam": "docker tag ubento/iam.service us-central1-docker.pkg.dev/ubento-prod/ubento-services/iam.service:latest",
+    "push:service:iam": "docker push us-central1-docker.pkg.dev/ubento-prod/ubento-services/iam.service:latest",
+    "auth:docker": "gcloud auth configure-docker us-central1-docker.pkg.dev"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "packageManager": "pnpm@10.26.2",
   "devDependencies": {
+    "@1password/sdk": "^0.4.0",
     "@manypkg/get-packages": "^3.1.0",
     "@repo/scripts": "workspace:*",
     "@types/node": "^25.6.0",

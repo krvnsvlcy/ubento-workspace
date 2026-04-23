@@ -3,11 +3,11 @@ import fs from "node:fs";
 import path from "node:path";
 
 /**
- * Loads .env files from the current directory up to the root directory.
- * Inner .env files (closer to CWD) override outer .env files.
+ * Loads .env files from the specified directory up to the root directory.
+ * Inner .env files (closer to startDir) override outer .env files.
  */
-export function loadParentEnvs() {
-  let current = process.cwd();
+export function loadParentEnvs(startDir: string = process.cwd()) {
+  let current = startDir;
   const envFiles: string[] = [];
 
   while (true) {
