@@ -1,0 +1,20 @@
+import { env } from "@/lib/env";
+
+export const GET = async (request: Request) => {
+  const requestUrl = new URL(request.url);
+  const origin = requestUrl.origin;
+
+  const authUrl = new URL(`${env.AUTH_BASE_URL}/oauth/authorize`);
+  authUrl.searchParams.set("client_id", env.CLIENT_ID);
+  authUrl.searchParams.set(
+    "redirect_uri",
+    new URL("/api/auth/callback", origin).toString(),
+  );
+  authUrl.searchParams.set("response_type", "code");
+  authUrl.searchParams.set("provider", "google");
+  authUrl.searchParams.set("state", Math.random().toString(36).substring(7));
+
+  return Response.redirect(authUrl.toString());
+};
+
+export const dynamic = "force-dynamic";

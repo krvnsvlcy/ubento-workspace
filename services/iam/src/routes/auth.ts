@@ -9,6 +9,7 @@ import { getJwks, verifyAccessToken } from "../entities/auth/jwt.js";
 import {
   createSession,
   getSession,
+  revokeSession,
   validateSession,
 } from "../entities/auth/session.js";
 import {
@@ -161,6 +162,7 @@ authRouter.get("/oauth/authorize", async (req, res) => {
     state: serverState,
     ...(login_hint && { loginHint: String(login_hint) }),
   });
+  console.log(url);
 
   res.redirect(url);
 });
@@ -427,6 +429,31 @@ authRouter.get("/jwks", async (req, res) => {
   const jwks = await getJwks();
   res.set("Cache-Control", "public, max-age=3600");
   res.json(jwks);
+});
+
+/**
+ * GET /oauth/logout
+ * Clears the SSO session and redirects back.
+ */
+authRouter.get("/oauth/logout", async (req, res) => {
+  const { redirect_uri } = req.query;
+
+  const sessionId = req.cookies["auth_sso_session"];
+  if (sessionId) {
+    try {
+      await revokeSession(sessionId);
+    } catch (e) {
+      // Ignore if session not found or already revoked
+    }
+  }
+
+  res.clearCookie("auth_sso_session", COOKIE_OPTS);
+
+  if (redirect_uri) {
+    return res.redirect(String(redirect_uri));
+  }
+
+  res.send("Logged out");
 });
 
 export default authRouter;

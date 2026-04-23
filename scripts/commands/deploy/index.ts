@@ -17,8 +17,9 @@ interface DeployOptions {
  */
 export async function deploy(options: DeployOptions) {
   const rootDir = await findWorkspaceRoot();
-  const { service: serviceName } = options;
-  const servicePath = path.join(rootDir, "services", serviceName);
+  const { service: serviceBarName } = options;
+  const servicePath = path.join(rootDir, "services", serviceBarName);
+  const serviceName = `${serviceBarName}-service`;
 
   loadParentEnvs(servicePath);
 
@@ -38,29 +39,14 @@ export async function deploy(options: DeployOptions) {
   const pjPath = path.join(servicePath, "package.json");
 
   if (!fs.existsSync(pjPath)) {
-    console.error(`❌ No package.json found for service: ${serviceName}`);
+    console.error(`❌ No package.json found for service: ${serviceBarName}`);
     process.exit(1);
   }
 
-  const pj = JSON.parse(fs.readFileSync(pjPath, "utf8"));
   const localImage = `ubento/${serviceName}`;
 
   // Artifact Registry path configuration
   const project = opVars.GCP_PROJECT_ID;
-  if (!project) {
-    console.error("❌ Error: GCP project ID is required for deployment.");
-    process.exit(1);
-  }
-
-  const registryHost = `${region}-docker.pkg.dev`;
-  const registryPath = `${project}/ubento-services`;
-  const remoteImage = `${registryHost}/${registryPath}/${serviceName}:latest`;
-
-  console.log(`📦 Service: ${serviceName}`);
-  console.log(`🌍 Region: ${region}`);
-  console.log(`🆔 Project: ${project || "(unspecified)"}`);
-  console.log(`🐳 Remote Image: ${remoteImage}`);
-
   if (!project && !dryRun) {
     console.error(
       "❌ Error: GCP project ID is required for deployment. Use --project or set GCP_PROJECT_ID env var.",
@@ -68,9 +54,26 @@ export async function deploy(options: DeployOptions) {
     process.exit(1);
   }
 
+  // Generate a human-readable identifier (e.g., "2026-04-23-14-17-36")
+  const deployTag = new Date()
+    .toISOString()
+    .replace(/[:T]/g, "-")
+    .split(".")[0];
+
+  const registryHost = `${region}-docker.pkg.dev`;
+  const registryPath = `${project}/ubento-services`;
+
+  const remoteImage = `${registryHost}/${registryPath}/${serviceName}:${deployTag}`;
+
+  console.log(`📦 Service: ${serviceName}`);
+  console.log(`🌍 Region: ${region}`);
+  console.log(`🆔 Project: ${project || "(unspecified)"}`);
+  console.log(`🐳 Remote Image: ${remoteImage}`);
+
   // 1. Tag the image
   console.log(`\n🏷️  Tagging image...`);
   const tagCmd = `docker tag ${localImage} ${remoteImage}`;
+
   if (dryRun) {
     console.log(`🧪 [DRY RUN] Would run: ${tagCmd}`);
   } else {
@@ -86,6 +89,7 @@ export async function deploy(options: DeployOptions) {
   // 2. Push to Artifact Registry
   console.log(`\n🚀 Pushing to Artifact Registry...`);
   const pushCmd = `docker push ${remoteImage}`;
+
   if (dryRun) {
     console.log(`🧪 [DRY RUN] Would run: ${pushCmd}`);
   } else {
@@ -103,7 +107,7 @@ export async function deploy(options: DeployOptions) {
   const vars = {
     ...opVars,
     GCP_IMAGE_TAG: remoteImage,
-    GCP_SERVICE_NAME: `${serviceName}-service`,
+    GCP_SERVICE_NAME: serviceName,
   };
 
   // 4. Process cloudrun.yaml if it exists
@@ -136,14 +140,12 @@ export async function deploy(options: DeployOptions) {
     }
   } else {
     try {
+      // deploy
       execSync(deployCmd, { stdio: "inherit" });
-
-      if (processedYamlPath) {
-        // If we used replace, we might need to set the IAM policy separately to match the previous --allow-unauthenticated behavior
-        console.log(`\n🔓 Setting IAM policy for unauthenticated access...`);
-        const iamCmd = `gcloud run services add-iam-policy-binding ${serviceName} --member="allUsers" --role="roles/run.invoker" --project ${project} --region ${region} --quiet`;
-        execSync(iamCmd, { stdio: "inherit" });
-      }
+      // set iam policy
+      console.log(`\n🔓 Setting IAM policy for unauthenticated access...`);
+      const iamCmd = `gcloud run services add-iam-policy-binding ${serviceName} --member="allUsers" --role="roles/run.invoker" --project ${project} --region ${region} --quiet`;
+      execSync(iamCmd, { stdio: "inherit" });
 
       console.log(
         `\n✅ Successfully deployed ${serviceName} to GCP Cloud Run!`,
@@ -153,7 +155,7 @@ export async function deploy(options: DeployOptions) {
       process.exit(1);
     } finally {
       if (processedYamlPath && fs.existsSync(processedYamlPath)) {
-        // fs.unlinkSync(processedYamlPath);
+        fs.unlinkSync(processedYamlPath);
       }
     }
   }

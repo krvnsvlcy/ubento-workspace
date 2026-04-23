@@ -451,11 +451,19 @@
             "type": "string"
           }
         },
-        "expires_at": {
+        "version": {
+          "type": "integer",
+          "default": 1
+        },
+        "created_at": {
           "type": "string",
           "format": "date-time"
         },
-        "created_at": {
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expires_at": {
           "type": "string",
           "format": "date-time"
         }
@@ -464,6 +472,7 @@
         "code",
         "client_id",
         "scope",
+        "updated_at",
         "expires_at"
       ]
     },

@@ -19,9 +19,15 @@ export async function containerize(options: ContainerizeOptions) {
   console.log(`🐳 Starting containerization process...`);
 
   const root = await findWorkspaceRoot();
-  const serviceName = options.service;
+  const serviceBarName = options.service;
+  const serviceName = `${serviceBarName}-service`;
   const imageName = `ubento/${serviceName}`;
-  const dockerfilePath = path.join(root, "services", serviceName, "Dockerfile");
+  const dockerfilePath = path.join(
+    root,
+    "services",
+    serviceBarName,
+    "Dockerfile",
+  );
 
   // Relative path from root to Dockerfile
   const relativeDockerfilePath = path.relative(root, dockerfilePath);
