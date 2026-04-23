@@ -2,6 +2,7 @@ import { Broker } from "@prisma/client";
 import {
   generateBareId,
   makeEntityId,
+  ubentoAuth,
   ubentoEntities,
 } from "@ubento/primitives";
 import { ValidationError } from "@ubento/service-toolkit";
@@ -9,12 +10,7 @@ import { User as WorkOSUser } from "@workos-inc/node";
 import prisma from "../../lib/prisma.js";
 import { workos } from "../../lib/workos.js";
 import { listTeamMembers, listUserTeams } from "./team/memberships.js";
-import {
-  createTeam,
-  deleteTeam,
-  getTeamByHandle,
-  teamRoles,
-} from "./team/team.js";
+import { createTeam, deleteTeam, getTeamByHandle } from "./team/team.js";
 
 export async function getUser(id: string) {
   const user = await prisma.user.findUnique({
@@ -123,6 +119,7 @@ export async function syncUserData(user: WorkOSUser) {
         id: newId,
         broker,
         broker_id: brokerId,
+        roles: [ubentoAuth.roles.root.user],
         ...data,
       },
     });
@@ -151,7 +148,7 @@ export async function syncUserData(user: WorkOSUser) {
       members: [
         {
           user_id: syncedUser.id,
-          role: teamRoles.owner,
+          role: ubentoAuth.roles.team.owner,
         },
       ],
     });

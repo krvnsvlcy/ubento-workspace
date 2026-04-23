@@ -1,4 +1,4 @@
-import { ubentoApi } from "@ubento/primitives";
+import { ubentoAuth } from "@ubento/primitives";
 import {
   chain,
   dataResponse,
@@ -28,7 +28,7 @@ usersRouter.get(
         cursor: z.string().optional(),
       }),
     }),
-    enforce(ubentoApi.permissions.identity.user.list),
+    enforce(ubentoAuth.actions.user.list),
     async (req, res) => {
       const users = await listUsers({
         email: req.query.email as string | undefined,
@@ -49,7 +49,7 @@ usersRouter.get(
         user_id: z.string(),
       }),
     }),
-    enforce(ubentoApi.permissions.identity.user.read),
+    enforce(ubentoAuth.actions.user.read),
     async (req, res) => {
       const user = await getUser(req.params.user_id);
       if (!user) {
@@ -69,7 +69,7 @@ usersRouter.delete(
         user_id: z.string(),
       }),
     }),
-    enforce(ubentoApi.permissions.identity.user.delete),
+    enforce(ubentoAuth.actions.user.delete),
     async (req, res) => {
       await deleteUser(req.params.user_id);
       res.json(dataResponse({ success: true }));
@@ -86,7 +86,7 @@ usersRouter.get(
         user_id: z.string(),
       }),
     }),
-    enforce(ubentoApi.permissions.identity.user.read),
+    enforce(ubentoAuth.actions.user.read),
     async (req, res) => {
       const teams = await listUserTeams(req.params.user_id);
       res.json(dataResponse(teams));

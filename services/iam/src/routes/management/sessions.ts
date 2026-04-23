@@ -1,4 +1,4 @@
-import { ubentoApi } from "@ubento/primitives";
+import { ubentoAuth } from "@ubento/primitives";
 import {
   chain,
   dataResponse,
@@ -28,7 +28,7 @@ sessionsRouter.get(
         cursor: z.string().optional(),
       }),
     }),
-    enforce(ubentoApi.permissions.identity.session.list),
+    enforce(ubentoAuth.actions.session.list),
     async (req, res) => {
       const { items, nextCursor } = await listSessions({
         user_id: req.query.user_id as string | undefined,
@@ -50,7 +50,7 @@ sessionsRouter.get(
         id: z.string(),
       }),
     }),
-    enforce(ubentoApi.permissions.identity.session.read),
+    enforce(ubentoAuth.actions.session.read),
     async (req, res) => {
       const session = await getSession(req.params.id);
       if (!session) {
@@ -70,7 +70,7 @@ sessionsRouter.post(
         id: z.string(),
       }),
     }),
-    enforce(ubentoApi.permissions.identity.session.revoke),
+    enforce(ubentoAuth.actions.session.revoke),
     async (req, res) => {
       const session = await revokeSession(req.params.id);
       res.json(dataResponse(session));

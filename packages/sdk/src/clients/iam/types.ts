@@ -1,12 +1,12 @@
 export interface paths {
-    "/organizations": {
+    "/teams": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** List Organizations */
+        /** List Teams */
         get: {
             parameters: {
                 query?: {
@@ -23,19 +23,19 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description A list of organizations */
+                /** @description A list of teams */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["Organization"][];
+                        "application/json": components["schemas"]["Team"][];
                     };
                 };
             };
         };
         put?: never;
-        /** Create Organization */
+        /** Create Team */
         post: {
             parameters: {
                 query?: never;
@@ -53,13 +53,13 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description Organization created */
+                /** @description Team created */
                 201: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["Organization"];
+                        "application/json": components["schemas"]["Team"];
                     };
                 };
                 /** @description Invalid request or validation error */
@@ -80,7 +80,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/organizations/check-handle": {
+    "/teams/check-handle": {
         parameters: {
             query?: never;
             header?: never;
@@ -89,7 +89,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Check Organization Handle */
+        /** Check Team Handle */
         post: {
             parameters: {
                 query?: never;
@@ -105,7 +105,7 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description Organization handle checked */
+                /** @description Team handle checked */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -135,35 +135,35 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/organizations/{organization_id}": {
+    "/teams/{team_id}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get Organization */
+        /** Get Team */
         get: {
             parameters: {
                 query?: never;
                 header?: never;
                 path: {
-                    organization_id: string;
+                    team_id: string;
                 };
                 cookie?: never;
             };
             requestBody?: never;
             responses: {
-                /** @description Organization details */
+                /** @description Team details */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["Organization"];
+                        "application/json": components["schemas"]["Team"];
                     };
                 };
-                /** @description Invalid organization id */
+                /** @description Invalid team id */
                 400: {
                     headers: {
                         [name: string]: unknown;
@@ -172,7 +172,7 @@ export interface paths {
                         "application/json": components["schemas"]["Error"];
                     };
                 };
-                /** @description Organization not found */
+                /** @description Team not found */
                 404: {
                     headers: {
                         [name: string]: unknown;
@@ -185,19 +185,19 @@ export interface paths {
         };
         put?: never;
         post?: never;
-        /** Delete Organization */
+        /** Delete Team */
         delete: {
             parameters: {
                 query?: never;
                 header?: never;
                 path: {
-                    organization_id: string;
+                    team_id: string;
                 };
                 cookie?: never;
             };
             requestBody?: never;
             responses: {
-                /** @description Organization deleted */
+                /** @description Team deleted */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -213,13 +213,13 @@ export interface paths {
         };
         options?: never;
         head?: never;
-        /** Update Organization */
+        /** Update Team */
         patch: {
             parameters: {
                 query?: never;
                 header?: never;
                 path: {
-                    organization_id: string;
+                    team_id: string;
                 };
                 cookie?: never;
             };
@@ -232,16 +232,16 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description Organization updated */
+                /** @description Team updated */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["Organization"];
+                        "application/json": components["schemas"]["Team"];
                     };
                 };
-                /** @description Invalid organization id or validation error */
+                /** @description Invalid team id or validation error */
                 400: {
                     headers: {
                         [name: string]: unknown;
@@ -250,7 +250,7 @@ export interface paths {
                         "application/json": components["schemas"]["Error"];
                     };
                 };
-                /** @description Organization not found */
+                /** @description Team not found */
                 404: {
                     headers: {
                         [name: string]: unknown;
@@ -263,14 +263,14 @@ export interface paths {
         };
         trace?: never;
     };
-    "/organizations/{organization_id}/invites": {
+    "/teams/{team_id}/invites": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** List organization invites */
+        /** List team invites */
         get: {
             parameters: {
                 query?: {
@@ -283,7 +283,7 @@ export interface paths {
                 };
                 header?: never;
                 path: {
-                    organization_id: components["parameters"]["pathOrganizationId"];
+                    team_id: components["parameters"]["pathTeamId"];
                 };
                 cookie?: never;
             };
@@ -296,7 +296,7 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
-                            items: components["schemas"]["OrganizationInvite"][];
+                            items: components["schemas"]["TeamInvite"][];
                             next_cursor?: string | null;
                         };
                     };
@@ -314,7 +314,7 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    organization_id: components["parameters"]["pathOrganizationId"];
+                    team_id: components["parameters"]["pathTeamId"];
                 };
                 cookie?: never;
             };
@@ -337,7 +337,7 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
-                            invite: components["schemas"]["OrganizationInvite"];
+                            invite: components["schemas"]["TeamInvite"];
                             /** @description Plaintext token (returned once) */
                             token: string;
                             /** @description Optional convenience URL if your backend constructs it */
@@ -364,7 +364,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/organization-invites/{invite_id}": {
+    "/team-invites/{invite_id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -389,7 +389,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["OrganizationInvite"];
+                        "application/json": components["schemas"]["TeamInvite"];
                     };
                 };
                 401: components["responses"]["Unauthorized"];
@@ -404,7 +404,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/organization-invites/{invite_id}/revoke": {
+    "/team-invites/{invite_id}/revoke": {
         parameters: {
             query?: never;
             header?: never;
@@ -431,7 +431,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["OrganizationInvite"];
+                        "application/json": components["schemas"]["TeamInvite"];
                     };
                 };
                 401: components["responses"]["Unauthorized"];
@@ -453,7 +453,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/organization-invites/resolve": {
+    "/team-invites/resolve": {
         parameters: {
             query?: never;
             header?: never;
@@ -511,7 +511,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/organization-invites/accept": {
+    "/team-invites/accept": {
         parameters: {
             query?: never;
             header?: never;
@@ -546,8 +546,8 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
-                            invite: components["schemas"]["OrganizationInvite"];
-                            organization: components["schemas"]["Organization"];
+                            invite: components["schemas"]["TeamInvite"];
+                            team: components["schemas"]["Team"];
                             membership: {
                                 id: string;
                                 role: string;
@@ -688,14 +688,14 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/users/{user_id}/organizations": {
+    "/users/{user_id}/teams": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get User Organizations */
+        /** Get User Teams */
         get: {
             parameters: {
                 query?: never;
@@ -707,13 +707,13 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description User organizations */
+                /** @description User teams */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["Organization"][];
+                        "application/json": components["schemas"]["Team"][];
                     };
                 };
             };
@@ -1095,20 +1095,99 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/oauth/token": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Issue Token
+         * @description Exchanges a grant for an access token.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @enum {unknown} */
+                        grant_type: "authorization_code";
+                        code: string;
+                        redirect_uri: string;
+                        client_id: string;
+                        client_secret: string;
+                    } | {
+                        /** @enum {unknown} */
+                        grant_type: "refresh_token";
+                        refresh_token: string;
+                        client_id: string;
+                        client_secret?: string;
+                    } | {
+                        /** @enum {unknown} */
+                        grant_type: "client_credentials";
+                        client_id: string;
+                        client_secret: string;
+                        scope?: string[];
+                        audience?: string;
+                    } | {
+                        /** @enum {unknown} */
+                        grant_type: "password";
+                        /** Format: email */
+                        email: string;
+                        password: string;
+                        client_id: string;
+                        client_secret: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Token response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            access_token: string;
+                            /** @example Bearer */
+                            token_type: string;
+                            expires_in: number;
+                            refresh_token?: string;
+                        };
+                    };
+                };
+                400: components["responses"]["ValidationError"];
+                401: components["responses"]["Unauthorized"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        Organization: {
+        Team: {
             id: string;
-            /** @default organization */
+            /** @default team */
             entity: string;
-            handle: string;
-            name: string;
-            picture?: string | null;
             /** @enum {string} */
             broker: "WORKOS";
             broker_id: string;
+            handle: string;
+            name: string;
+            picture?: string;
             /** @default 1 */
             version: number;
             /** Format: date-time */
@@ -1116,7 +1195,7 @@ export interface components {
             /** Format: date-time */
             updated_at: string;
             /** Format: date-time */
-            deleted_at?: string | null;
+            deleted_at?: string;
         };
         User: {
             id: string;
@@ -1125,11 +1204,12 @@ export interface components {
             /** @enum {string} */
             broker: "WORKOS";
             broker_id: string;
-            roles: string[];
-            email?: string | null;
-            name?: string | null;
-            picture?: string | null;
-            email_verified?: boolean | null;
+            email: string;
+            name: string;
+            picture?: string;
+            /** @default false */
+            email_verified: boolean;
+            roles?: string[];
             /** @default 1 */
             version: number;
             /** Format: date-time */
@@ -1142,21 +1222,21 @@ export interface components {
             /** @default session */
             entity: string;
             user_id: string;
+            refresh_token: string;
+            /** Format: date-time */
+            refresh_token_rotated_at?: string;
             /**
              * @default ACTIVE
              * @enum {string}
              */
-            status: "ACTIVE" | "REVOKED" | "EXPIRED";
-            ip?: string | null;
-            user_agent?: string | null;
-            metadata?: number | string | boolean | Record<string, never> | unknown[] | null;
+            status: "ACTIVE" | "EXPIRED" | "REVOKED";
+            metadata?: Record<string, never>;
+            ip?: string;
+            user_agent?: string;
             /** Format: date-time */
-            revoked_at?: string | null;
+            revoked_at?: string;
             /** Format: date-time */
             expires_at: string;
-            refresh_token: string;
-            /** Format: date-time */
-            refresh_token_rotated_at: string;
             /** @default 1 */
             version: number;
             /** Format: date-time */
@@ -1169,16 +1249,16 @@ export interface components {
             /** @default client */
             entity: string;
             name: string;
-            description?: string | null;
-            allowed_audiences: string[];
+            description?: string;
             allowed_scopes?: string[];
+            allowed_audiences?: string[];
             redirect_uris?: string[];
             /**
              * @default ACTIVE
              * @enum {string}
              */
-            status: "ACTIVE" | "DISABLED";
-            metadata?: number | string | boolean | Record<string, never> | unknown[] | null;
+            status: "ACTIVE" | "INACTIVE";
+            metadata?: Record<string, never>;
             /** @default 1 */
             version: number;
             /** Format: date-time */
@@ -1190,8 +1270,8 @@ export interface components {
             id: string;
             /** @default client_credential */
             entity: string;
-            label?: string | null;
             client_id: string;
+            label?: string;
             secret_hash: string;
             /**
              * @default ACTIVE
@@ -1199,13 +1279,13 @@ export interface components {
              */
             status: "ACTIVE" | "REVOKED" | "EXPIRED";
             /** Format: date-time */
-            expires_at?: string | null;
+            expires_at?: string;
             /** Format: date-time */
-            revoked_at?: string | null;
+            revoked_at?: string;
             /** Format: date-time */
-            last_used_at?: string | null;
-            last_used_ip?: string | null;
-            metadata?: number | string | boolean | Record<string, never> | unknown[] | null;
+            last_used_at?: string;
+            last_used_ip?: string;
+            metadata?: Record<string, never>;
             /** @default 1 */
             version: number;
             /** Format: date-time */
@@ -1215,10 +1295,10 @@ export interface components {
         };
         /** @enum {string} */
         InviteStatus: "PENDING" | "ACCEPTED" | "REVOKED" | "EXPIRED";
-        /** @description Single-use invite to join a organization. Minimal public/admin shape. */
-        OrganizationInvite: {
+        /** @description Single-use invite to join a team. Minimal public/admin shape. */
+        TeamInvite: {
             id: string;
-            organization_id: string;
+            team_id: string;
             /** Format: email */
             email: string;
             role: string;
@@ -1240,7 +1320,7 @@ export interface components {
         ResolvedInvitePublic: {
             /** @description Invite id (safe to reveal) */
             id: string;
-            organization: {
+            team: {
                 id: string;
                 name: string;
             };
@@ -1304,7 +1384,7 @@ export interface components {
         };
     };
     parameters: {
-        pathOrganizationId: string;
+        pathTeamId: string;
         pathInviteId: string;
         pathRoleId: string;
         pathSessionId: string;

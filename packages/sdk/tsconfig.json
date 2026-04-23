@@ -11,7 +11,10 @@
     "resolveJsonModule": true,
     "rootDir": "./src",
     "outDir": "./build",
-    "types": ["node"]
+    "types": ["node"],
+    "paths": {
+      "~/*": ["./src/*"]
+    }
   },
   "include": ["src"]
 }

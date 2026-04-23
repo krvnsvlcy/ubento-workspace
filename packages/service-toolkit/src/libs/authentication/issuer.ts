@@ -10,8 +10,13 @@ export type TrustedIssuer = {
 
 export const defaultTrustedIssuers: TrustedIssuer[] = [
   {
-    issuer: "https://auth.ubento.dev",
-    jwksUri: "https://auth.ubento.dev/jwks",
+    issuer: "http://localhost:48041",
+    jwksUri: "http://localhost:48041/jwks",
+    algorithms: ["RS256"],
+  },
+  {
+    issuer: "https://auth.ubento.pro",
+    jwksUri: "https://auth.ubento.pro/jwks",
     algorithms: ["RS256"],
   },
 ];

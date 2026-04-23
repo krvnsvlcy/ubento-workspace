@@ -1,4 +1,4 @@
-import { ubentoApi } from "@ubento/primitives";
+import { ubentoAuth } from "@ubento/primitives";
 import {
   chain,
   dataResponse,
@@ -27,7 +27,7 @@ clientCredentialsRouter.post(
         label: z.string().optional(),
       }),
     }),
-    enforce(ubentoApi.permissions.identity.clientCredential.create),
+    enforce(ubentoAuth.actions.clientCredential.create),
     async (req, res) => {
       const cred = await createClientCredential({
         clientId: req.body.client_id,
@@ -49,7 +49,7 @@ clientCredentialsRouter.get(
         cursor: z.string().optional(),
       }),
     }),
-    enforce(ubentoApi.permissions.identity.clientCredential.list),
+    enforce(ubentoAuth.actions.clientCredential.list),
     async (req, res) => {
       const clientId =
         (req.params as any).client_id || (req.query.client_id as string);
@@ -76,7 +76,7 @@ clientCredentialsRouter.delete(
         id: z.string(),
       }),
     }),
-    enforce(ubentoApi.permissions.identity.clientCredential.delete),
+    enforce(ubentoAuth.actions.clientCredential.delete),
     async (req, res) => {
       await revokeClientCredential(req.params.id);
       res.json(dataResponse({ success: true }));

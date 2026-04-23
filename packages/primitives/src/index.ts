@@ -1,4 +1,4 @@
-export * from "./api.js";
+export * from "./auth.js";
 export * from "./billing/features.js";
 export * from "./billing/products.js";
 export * from "./entities/entities.js";

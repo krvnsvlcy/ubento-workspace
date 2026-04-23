@@ -1,4 +1,4 @@
-import { ubentoApi } from "@ubento/primitives";
+import { ubentoAuth } from "@ubento/primitives";
 import {
   chain,
   dataResponse,
@@ -21,7 +21,6 @@ import {
   getTeam,
   getTeamByHandle,
   listTeams,
-  teamRoles,
   updateTeam,
 } from "../../entities/management/team/team.js";
 
@@ -40,7 +39,7 @@ teamsRouter.get(
         handle: z.string().optional(),
       }),
     }),
-    enforce(ubentoApi.permissions.identity.team.list),
+    enforce(ubentoAuth.actions.team.list),
     async (req, res) => {
       const { items: teams, nextCursor } = await listTeams({
         limit: req.query.limit ? Number(req.query.limit) : undefined,
@@ -66,14 +65,14 @@ teamsRouter.post(
         owner: z.string(),
       }),
     }),
-    enforce(ubentoApi.permissions.identity.team.create),
+    enforce(ubentoAuth.actions.team.create),
     async (req, res) => {
       const { name, handle, owner } = req.body;
 
       const team = await createTeam({
         name,
         handle,
-        members: [{ user_id: owner, role: teamRoles.owner }],
+        members: [{ user_id: owner, role: ubentoAuth.roles.team.owner }],
       });
       res.status(201).json(dataResponse(team));
     },
@@ -89,7 +88,7 @@ teamsRouter.post(
         handle: z.string(),
       }),
     }),
-    enforce(ubentoApi.permissions.identity.team.create),
+    enforce(ubentoAuth.actions.team.create),
     async (req, res) => {
       const { handle } = req.body;
 
@@ -111,7 +110,7 @@ teamsRouter.get(
         team_id: z.string(),
       }),
     }),
-    enforce(ubentoApi.permissions.identity.team.read),
+    enforce(ubentoAuth.actions.team.read),
     async (req, res) => {
       const team = await getTeam(req.params.team_id);
       if (!team) {
@@ -135,7 +134,7 @@ teamsRouter.patch(
         handle: z.string().optional(),
       }),
     }),
-    enforce(ubentoApi.permissions.identity.team.update),
+    enforce(ubentoAuth.actions.team.update),
     async (req, res) => {
       const team = await updateTeam(req.params.team_id, {
         name: req.body.name,
@@ -158,7 +157,7 @@ teamsRouter.delete(
         team_id: z.string(),
       }),
     }),
-    enforce(ubentoApi.permissions.identity.team.delete),
+    enforce(ubentoAuth.actions.team.delete),
     async (req, res) => {
       await deleteTeam(req.params.team_id);
       res.json(dataResponse({ success: true }));
@@ -181,7 +180,7 @@ teamsRouter.get(
         email: z.string().optional(),
       }),
     }),
-    enforce(ubentoApi.permissions.identity.teamInvite.list),
+    enforce(ubentoAuth.actions.teamInvite.list),
     async (req, res) => {
       const { items: invites, nextCursor } = await listTeamInvites({
         team_id: req.params.team_id as string,
@@ -210,7 +209,7 @@ teamsRouter.post(
         expires_in_seconds: z.number().min(60).optional(),
       }),
     }),
-    enforce(ubentoApi.permissions.identity.teamInvite.create),
+    enforce(ubentoAuth.actions.teamInvite.create),
     async (req, res) => {
       const invitedBy = (req as any).user?.id || "temp-user-id";
       const result = await createTeamInvite({

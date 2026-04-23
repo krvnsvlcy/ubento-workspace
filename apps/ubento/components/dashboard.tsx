@@ -22,6 +22,9 @@ export function Dashboard() {
   >(null);
   const [currentTheme, setCurrentTheme] = useState("sky");
   const [isThemeOpen, setIsThemeOpen] = useState(false);
+  const [apps, setApps] = useState<any[]>([]);
+  const [isFetching, setIsFetching] = useState(true);
+  const [isCreating, setIsCreating] = useState(false);
 
   const activeTheme = themes.find((t) => t.id === currentTheme) || themes[0];
 
@@ -29,12 +32,60 @@ export function Dashboard() {
     const savedTheme = localStorage.getItem("ubento-theme") || "sky";
     setCurrentTheme(savedTheme);
     document.documentElement.setAttribute("data-theme", savedTheme);
+
+    // Fetch apps
+    fetch("/api/ubento/apps", {
+      headers: {
+        "x-ubento-service": "app",
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setApps(data.items || []);
+        setIsFetching(false);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch apps:", err);
+        setIsFetching(false);
+      });
   }, []);
 
   const changeTheme = (themeId: string) => {
     setCurrentTheme(themeId);
     localStorage.setItem("ubento-theme", themeId);
     document.documentElement.setAttribute("data-theme", themeId);
+  };
+
+  const handleCreateApp = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsCreating(true);
+    const formData = new FormData(e.currentTarget);
+    const name = formData.get("name") as string;
+    const team_id = currentSession?.tenantId || "default-team";
+
+    try {
+      const res = await fetch("/api/ubento/apps", {
+        method: "POST",
+        body: JSON.stringify({ name, team_id }),
+        headers: {
+          "Content-Type": "application/json",
+          "x-ubento-service": "app-service",
+        },
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setApps((prev) => [data, ...prev]);
+        setActiveModal(null);
+      } else {
+        alert("Failed to create app");
+      }
+    } catch (err) {
+      console.error("Error creating app:", err);
+      alert("Error creating app");
+    } finally {
+      setIsCreating(false);
+    }
   };
 
   const closeModal = () => setActiveModal(null);
@@ -246,12 +297,32 @@ export function Dashboard() {
 
             {/* Grid of Apps */}
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div
-                  key={i}
-                  className="h-28 cursor-pointer rounded-2xl bg-background-300 transition-colors hover:bg-background-200"
-                ></div>
-              ))}
+              {isFetching ? (
+                [1, 2, 3].map((i) => (
+                  <div
+                    key={i}
+                    className="h-28 animate-pulse rounded-2xl bg-background-300"
+                  />
+                ))
+              ) : apps.length > 0 ? (
+                apps.map((app) => (
+                  <div
+                    key={app.id}
+                    className="group relative flex h-28 cursor-pointer flex-col justify-end overflow-hidden rounded-2xl bg-background-300 p-4 transition-all hover:bg-background-200"
+                  >
+                    <div className="absolute left-4 top-4 h-8 w-8 rounded-lg bg-background-500 transition-transform group-hover:scale-110" />
+                    <h3 className="text-sm font-medium text-foreground">
+                      {app.name}
+                    </h3>
+                  </div>
+                ))
+              ) : (
+                <div className="col-span-full py-12 text-center text-foreground-400">
+                  <p className="text-[13px]">
+                    No apps yet. Create your first one!
+                  </p>
+                </div>
+              )}
             </div>
           </motion.div>
         </div>
@@ -262,14 +333,34 @@ export function Dashboard() {
         onClose={closeModal}
         title="Create New App"
       >
-        <div className="flex h-full flex-col items-center justify-center space-y-4">
-          <div className="h-20 w-20 rounded-2xl bg-background-300 flex items-center justify-center">
-            <Plus className="h-8 w-8 text-foreground-400" />
+        <form
+          onSubmit={handleCreateApp}
+          className="flex flex-col space-y-6 pt-4"
+        >
+          <div className="space-y-2">
+            <label
+              htmlFor="name"
+              className="text-[11px] font-semibold uppercase tracking-wider text-foreground-300"
+            >
+              App Name
+            </label>
+            <input
+              autoFocus
+              id="name"
+              name="name"
+              placeholder="e.g. Stock Manager"
+              required
+              className="w-full rounded-xl border border-background-300 bg-background-200 px-4 py-2.5 text-[13px] text-foreground placeholder:text-foreground-400 focus:border-foreground-300 focus:outline-none transition-colors"
+            />
           </div>
-          <p className="text-foreground-300">
-            Configure your new application details here.
-          </p>
-        </div>
+          <button
+            type="submit"
+            disabled={isCreating}
+            className="flex w-full cursor-pointer items-center justify-center rounded-xl bg-foreground px-6 py-2.5 text-[13px] font-medium text-background transition-all hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {isCreating ? "Creating..." : "Create Application"}
+          </button>
+        </form>
       </Modal>
 
       <Modal

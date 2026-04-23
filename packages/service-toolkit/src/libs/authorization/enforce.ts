@@ -35,7 +35,7 @@ export function enforce<T extends Request>({
   resource,
 }: {
   permissions: string[];
-  resource: (req: Request) => Promise<string> | string;
+  resource: (req: Request) => Promise<string | undefined> | string | undefined;
 }): SafeMiddleware<T, T>;
 export function enforce<T extends Request>(
   ...args:
@@ -43,12 +43,16 @@ export function enforce<T extends Request>(
     | [
         {
           permissions: string[];
-          resource: (req: Request) => Promise<string> | string;
+          resource: (
+            req: Request,
+          ) => Promise<string | undefined> | string | undefined;
         },
       ]
 ): SafeMiddleware<T, T> {
   let permissions: string[];
-  let getResource: ((req: Request) => Promise<string> | string) | undefined;
+  let getResource:
+    | ((req: Request) => Promise<string | undefined> | string | undefined)
+    | undefined;
 
   if (typeof args[0] === "string") {
     permissions = args as string[];
@@ -59,37 +63,37 @@ export function enforce<T extends Request>(
 
   return async (req, res, next) => {
     const auth = req.auth;
+    console.log({ auth });
     if (!auth) return res.status(401).send("Not authenticated");
 
     for (const permission of permissions) {
       if (!auth.scope.some((p) => matchPattern(p, permission))) {
-        return res.status(403).send("Forbidden");
+        return res.status(403).send(`Forbidden: ${permission}`);
       }
     }
 
-    if (auth.access === "global") {
-      next();
-    } else {
-      if (getResource) {
-        const authorizer = req.authorizer;
-        if (!authorizer) {
-          req.context.logger.error(
-            "No authorizer found in enforce middleware",
-            {
-              event: "error",
-            },
-          );
-          return res.status(500).send("Internal Server Error");
-        }
-        const resource = await getResource(req);
-        const can = await Promise.all(
-          permissions.map((permission) =>
-            authorizer.can(auth.subject, resource, permission),
-          ),
-        );
-        if (!can.every((c) => c)) return res.status(403).send("Forbidden");
+    const resource = getResource ? await getResource(req) : undefined;
+    if (resource) {
+      const authorizer = req.authorizer;
+      if (!authorizer) {
+        req.context.logger.error("No authorizer found in enforce middleware", {
+          event: "error",
+        });
+        return res.status(500).send("Internal Server Error");
       }
-      next();
+      const can = await Promise.all(
+        permissions.map((permission) =>
+          authorizer.can(auth.subject, resource, permission),
+        ),
+      );
+      if (!can.every((c) => c))
+        return res.status(403).json({
+          message: "Forbidden",
+          subject: auth.subject,
+          resource,
+          permissions,
+        });
     }
+    next();
   };
 }

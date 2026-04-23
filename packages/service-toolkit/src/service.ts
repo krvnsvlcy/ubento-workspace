@@ -128,7 +128,6 @@ export function createService(options: ServiceOptions): ServiceInstance {
       req.auth = {
         subject: "",
         scope: ["*"],
-        access: "global",
       };
       next();
     });

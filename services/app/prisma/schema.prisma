@@ -1,0 +1,115 @@
+generator client {
+    provider      = "prisma-client-js"
+    binaryTargets = ["native"]
+    output        = "../node_modules/.prisma/client"
+}
+
+generator jsonSchema {
+    provider                 = "prisma-json-schema-generator"
+    output                   = "../src/spec/prisma"
+    keepRelationFields       = "false"
+    includeRequiredFields    = "true"
+    keepRelationScalarFields = "true"
+}
+
+datasource db {
+    provider = "mongodb"
+    url      = env("DATABASE_URL")
+}
+
+enum AppInviteStatus {
+    PENDING
+    ACCEPTED
+    REVOKED
+    EXPIRED
+}
+
+model App {
+    id          String  @id @map("_id")
+    entity      String  @default("app")
+    name        String
+    description String?
+    team_id     String
+    metadata    Json?
+
+    version    Int       @default(1)
+    created_at DateTime  @default(now())
+    updated_at DateTime  @updatedAt
+    deleted_at DateTime?
+
+    @@map("apps")
+}
+
+model Page {
+    id       String @id @map("_id")
+    entity   String @default("page")
+    app_id   String
+    name     String
+    path     String
+    metadata Json?
+
+    version    Int       @default(1)
+    created_at DateTime  @default(now())
+    updated_at DateTime  @updatedAt
+    deleted_at DateTime?
+
+    @@unique([app_id, path])
+    @@map("pages")
+}
+
+model Component {
+    id       String @id @map("_id")
+    entity   String @default("component")
+    app_id   String
+    name     String
+    type     String
+    props    Json?
+    metadata Json?
+
+    version    Int       @default(1)
+    created_at DateTime  @default(now())
+    updated_at DateTime  @updatedAt
+    deleted_at DateTime?
+
+    @@map("components")
+}
+
+model AppMembership {
+    id      String @id @map("_id")
+    entity  String @default("app_membership")
+    app_id  String
+    user_id String
+    role    String
+
+    version    Int      @default(1)
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+
+    @@unique([app_id, user_id])
+    @@index([user_id])
+    @@index([app_id])
+    @@map("app_memberships")
+}
+
+model AppInvite {
+    id          String          @id @map("_id")
+    entity      String          @default("app_invite")
+    app_id      String
+    email       String
+    role        String
+    invited_by  String
+    status      AppInviteStatus @default(PENDING)
+    token_hash  String?         @unique
+    expires_at  DateTime
+    revoked_at  DateTime?
+    revoked_by  String?
+    accepted_at DateTime?
+    accepted_by String?
+
+    version    Int      @default(1)
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+
+    @@index([app_id, email, status])
+    @@map("app_invites")
+}

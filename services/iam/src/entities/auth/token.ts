@@ -1,4 +1,4 @@
-import { ubentoApi } from "@ubento/primitives";
+import { ubentoAuth } from "@ubento/primitives";
 import { AuthorizationError, ValidationError } from "@ubento/service-toolkit";
 import { GenericServerException } from "@workos-inc/node";
 import { env } from "../../env.js";
@@ -32,6 +32,7 @@ export function buildAccessTokenPayload(params: {
   scope: string[];
   teamIds: string[];
 }): AccessTokenPayload {
+  console.log("buildAccessTokenPayload", params);
   return {
     sub: params.subject,
     aud: params.audience,
@@ -60,7 +61,7 @@ export async function getTokenWithAuthorizationCode({
   redirect_uri: string;
 }): Promise<TokenResponse> {
   // 1. Validate Client
-  const audience = ubentoApi.audience;
+  const audience = ubentoAuth.audience;
   const client = await getClient(client_id);
   if (!client) {
     throw new ValidationError("Invalid client_id");
@@ -289,7 +290,7 @@ export async function getTokenWithPassword({
   const jwt = await signAccessToken(
     buildAccessTokenPayload({
       subject: dbUser.id,
-      audience: ubentoApi.audience,
+      audience: ubentoAuth.audience,
       scope: permissions,
       teamIds: teams.map((team) => team.id),
     }),

@@ -7,6 +7,7 @@ import {
 import {
   generateBareId,
   makeEntityId,
+  ubentoAuth,
   ubentoEntities,
 } from "@ubento/primitives";
 import {
@@ -16,6 +17,7 @@ import {
 } from "@ubento/service-toolkit";
 import { OrganizationMembership as WOOrganizationMembership } from "@workos-inc/node";
 import crypto from "crypto";
+import { authorizer } from "../../../lib/authorizer.js";
 import prisma from "../../../lib/prisma.js";
 import { workos } from "../../../lib/workos.js";
 import { getTeam, workosRoleFromInternalRole } from "./team.js";
@@ -218,6 +220,14 @@ export async function acceptTeamInvite({
           roleSlug: workosRoleFromInternalRole(invite.role),
         });
     }
+
+    // SYNC AUTHORIZER
+    await authorizer.assignRole(
+      accepted_by,
+      invite.role,
+      ubentoAuth.scopes.team({ team_id: team.id }),
+    );
+
     const updatedInvite = await prisma.teamInvite.update({
       where: { id },
       data: {

@@ -6,7 +6,6 @@ import { z } from "zod";
 export type AuthorizationPayload = {
   subject: string;
   scope: string[];
-  access: "global" | "granular";
 };
 
 declare global {

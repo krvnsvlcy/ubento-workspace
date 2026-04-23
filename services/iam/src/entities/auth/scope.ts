@@ -7,7 +7,7 @@ export async function authorizeUserScope({
   scope: string;
   audience: string | string[];
 }): Promise<string[] | null> {
-  return [];
+  return ["*"];
 }
 
 export async function authorizeClientScope({
@@ -18,4 +18,6 @@ export async function authorizeClientScope({
   userId: string;
   scope: string;
   audience: string | string[];
-}) {}
+}) {
+  return ["*"];
+}

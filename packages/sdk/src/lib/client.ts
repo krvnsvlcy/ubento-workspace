@@ -21,15 +21,24 @@ export type UbentoClient<Paths extends {}> = {
 export function createClientFactory<Paths extends {}>() {
   return function createUbentoClient({
     baseUrl: _baseUrl,
-    tokenManager,
+    tokenManager = {
+      getToken: async () => "",
+    },
+    headers = {},
   }: {
     baseUrl?: string;
-    tokenManager: TokenManager;
+    tokenManager?: TokenManager;
+    headers?: Record<string, string>;
   }): UbentoClient<Paths> {
-    const baseUrl = _baseUrl ?? "https://api.ubento.dev";
+    const baseUrl = _baseUrl ?? "https://api.ubento.pro";
     const fetcher = async (request: Request) => {
       const accessToken = await tokenManager.getToken();
-      request.headers.set("Authorization", `Bearer ${accessToken}`);
+      if (accessToken) {
+        request.headers.set("Authorization", `Bearer ${accessToken}`);
+      }
+      Object.entries(headers).forEach(([key, value]) => {
+        request.headers.set(key, value);
+      });
       return fetch(request);
     };
     const client = createClient<Paths>({

@@ -2,6 +2,7 @@ import { Broker, Prisma, TeamMembership } from "@prisma/client";
 import {
   generateBareId,
   makeEntityId,
+  ubentoAuth,
   ubentoEntities,
 } from "@ubento/primitives";
 import {
@@ -10,6 +11,7 @@ import {
   ValidationError,
 } from "@ubento/service-toolkit";
 import { OrganizationMembership as WOOrganizationMembership } from "@workos-inc/node";
+import { authorizer } from "../../../lib/authorizer.js";
 import prisma from "../../../lib/prisma.js";
 import { workos } from "../../../lib/workos.js";
 import { workosRoleFromInternalRole } from "./team.js";
@@ -75,6 +77,13 @@ export async function addMemberToTeam({
         });
     }
 
+    // SYNC AUTHORIZER
+    await authorizer.assignRole(
+      userId,
+      role,
+      ubentoAuth.scopes.team({ team_id: teamId }),
+    );
+
     return membership;
   } catch (e) {
     if (workosMembership) {
@@ -119,6 +128,14 @@ export async function removeMemberFromTeam({
     throw new NotFoundError("User not found");
   }
 
+  // Find memberships to know which roles to revoke
+  const memberships = await prisma.teamMembership.findMany({
+    where: {
+      team_id: teamId,
+      user_id: userId,
+    },
+  });
+
   // Delete local membership
   await prisma.teamMembership.deleteMany({
     where: {
@@ -126,6 +143,17 @@ export async function removeMemberFromTeam({
       user_id: userId,
     },
   });
+
+  // SYNC AUTHORIZER
+  await Promise.all(
+    memberships.map((m) =>
+      authorizer.revokeRole(
+        userId,
+        m.role,
+        ubentoAuth.scopes.team({ team_id: teamId }),
+      ),
+    ),
+  );
 
   if (team.broker === Broker.WORKOS && user.broker === Broker.WORKOS) {
     const memberships = await workos.userManagement.listOrganizationMemberships(

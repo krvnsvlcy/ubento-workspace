@@ -73,6 +73,34 @@ export const ubentoEntities = {
     name: "app",
     code: "app",
   },
+  /**
+   * Represents a page in an application.
+   */
+  page: {
+    name: "page",
+    code: "pge",
+  },
+  /**
+   * Represents a component in an application.
+   */
+  component: {
+    name: "component",
+    code: "cmp",
+  },
+  /**
+   * Represents a membership for a user in an application.
+   */
+  appMembership: {
+    name: "app_membership",
+    code: "amb",
+  },
+  /**
+   * Represents an invitation for a user to join an application.
+   */
+  appInvite: {
+    name: "app_invite",
+    code: "aiv",
+  },
 
   // Intelligence
   /**

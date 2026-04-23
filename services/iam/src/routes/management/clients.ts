@@ -1,4 +1,4 @@
-import { ubentoApi } from "@ubento/primitives";
+import { ubentoAuth } from "@ubento/primitives";
 import {
   chain,
   dataResponse,
@@ -21,17 +21,14 @@ const clientsRouter: Router = Router();
 // List Clients
 clientsRouter.get(
   "/",
-  chain(
-    enforce(ubentoApi.permissions.identity.client.list),
-    async (req, res) => {
-      const { items, nextCursor } = await listClients({
-        limit: req.query.limit ? Number(req.query.limit) : undefined,
-        cursor: req.query.cursor as string | undefined,
-      });
-      setNextLink(req, res, nextCursor);
-      res.json(dataResponse(items));
-    },
-  ),
+  chain(enforce(ubentoAuth.actions.client.list), async (req, res) => {
+    const { items, nextCursor } = await listClients({
+      limit: req.query.limit ? Number(req.query.limit) : undefined,
+      cursor: req.query.cursor as string | undefined,
+    });
+    setNextLink(req, res, nextCursor);
+    res.json(dataResponse(items));
+  }),
 );
 
 // Create Client
@@ -44,7 +41,7 @@ clientsRouter.post(
         description: z.string().optional(),
       }),
     }),
-    enforce(ubentoApi.permissions.identity.client.create),
+    enforce(ubentoAuth.actions.client.create),
     async (req, res) => {
       const client = await createClient({
         name: req.body.name,
@@ -64,7 +61,7 @@ clientsRouter.get(
         id: z.string(),
       }),
     }),
-    enforce(ubentoApi.permissions.identity.client.read),
+    enforce(ubentoAuth.actions.client.read),
     async (req, res) => {
       const client = await getClient(req.params.id);
       if (!client) throw new NotFoundError("Client not found");
@@ -82,7 +79,7 @@ clientsRouter.delete(
         id: z.string(),
       }),
     }),
-    enforce(ubentoApi.permissions.identity.client.delete),
+    enforce(ubentoAuth.actions.client.delete),
     async (req, res) => {
       await deleteClient(req.params.id);
       res.json(dataResponse({ success: true }));

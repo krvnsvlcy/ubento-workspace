@@ -16,12 +16,15 @@ export class IamService {
     this.iamClient = createIamServiceClient({
       baseUrl,
       tokenManager,
+      headers: {
+        "x-ubento-service": "iam",
+      },
     });
   }
 
-  // ===== Organizations =====
+  // ===== Teams =====
 
-  async listOrganizations({
+  async listTeams({
     limit,
     cursor,
     ids,
@@ -34,7 +37,7 @@ export class IamService {
     name?: string;
     handle?: string;
   } = {}) {
-    const result = await this.iamClient.get("/organizations", {
+    const result = await this.iamClient.get("/teams", {
       params: {
         query: {
           limit,
@@ -51,60 +54,45 @@ export class IamService {
     });
   }
 
-  async getOrganization(organizationId: string) {
-    const result = await this.iamClient.get(
-      "/organizations/{organization_id}",
-      {
-        params: {
-          path: { organization_id: organizationId },
-        },
+  async getTeam(teamId: string) {
+    const result = await this.iamClient.get("/teams/{team_id}", {
+      params: {
+        path: { team_id: teamId },
       },
-    );
+    });
     return extractResponseData(result);
   }
 
-  async createOrganization(data: {
-    name: string;
-    handle: string;
-    owner: string;
-  }) {
-    const result = await this.iamClient.post("/organizations", {
+  async createTeam(data: { name: string; handle: string; owner: string }) {
+    const result = await this.iamClient.post("/teams", {
       body: data,
     });
     return extractResponseData(result, true);
   }
-  async checkOrganizationHandle(handle: string) {
-    const result = await this.iamClient.post("/organizations/check-handle", {
+
+  async checkTeamHandle(handle: string) {
+    const result = await this.iamClient.post("/teams/check-handle", {
       body: { handle },
     });
     return extractResponseData(result, true);
   }
 
-  async updateOrganization(
-    organizationId: string,
-    data: { name?: string; handle?: string },
-  ) {
-    const result = await this.iamClient.patch(
-      "/organizations/{organization_id}",
-      {
-        params: {
-          path: { organization_id: organizationId },
-        },
-        body: data,
+  async updateTeam(teamId: string, data: { name?: string; handle?: string }) {
+    const result = await this.iamClient.patch("/teams/{team_id}", {
+      params: {
+        path: { team_id: teamId },
       },
-    );
+      body: data,
+    });
     return extractResponseData(result, true);
   }
 
-  async deleteOrganization(organizationId: string) {
-    const result = await this.iamClient.delete(
-      "/organizations/{organization_id}",
-      {
-        params: {
-          path: { organization_id: organizationId },
-        },
+  async deleteTeam(teamId: string) {
+    const result = await this.iamClient.delete("/teams/{team_id}", {
+      params: {
+        path: { team_id: teamId },
       },
-    );
+    });
     return extractResponseData(result, true);
   }
 
@@ -152,8 +140,8 @@ export class IamService {
     return extractResponseData(result, true);
   }
 
-  async getUserOrganizations(userId: string) {
-    const result = await this.iamClient.get("/users/{user_id}/organizations", {
+  async getUserTeams(userId: string) {
+    const result = await this.iamClient.get("/users/{user_id}/teams", {
       params: {
         path: { user_id: userId },
       },
@@ -161,83 +149,74 @@ export class IamService {
     return extractResponseData(result, true);
   }
 
-  // ===== Organization Invites =====
+  // ===== Team Invites =====
 
-  async listOrganizationInvites({
-    organizationId,
+  async listTeamInvites({
+    teamId,
     limit,
     cursor,
     statuses,
     email,
   }: {
-    organizationId: string;
+    teamId: string;
     limit?: number;
     cursor?: string;
     statuses?: ("PENDING" | "ACCEPTED" | "REVOKED" | "EXPIRED")[];
     email?: string;
   }) {
-    const result = await this.iamClient.get(
-      "/organizations/{organization_id}/invites",
-      {
-        params: {
-          path: { organization_id: organizationId },
-          query: {
-            limit,
-            cursor,
-            statuses,
-            email,
-          },
+    const result = await this.iamClient.get("/teams/{team_id}/invites", {
+      params: {
+        path: { team_id: teamId },
+        query: {
+          limit,
+          cursor,
+          statuses,
+          email,
         },
       },
-    );
+    });
     return extractCursorPage(result.response, {
-      items: result.data?.items || [],
+      items: (result.data as any)?.items || [],
       fetcher: this.iamClient.fetch,
     });
   }
 
-  async createOrganizationInvite({
-    organizationId,
+  async createTeamInvite({
+    teamId,
     email,
     role,
     expires_in_seconds,
   }: {
-    organizationId: string;
+    teamId: string;
     email: string;
     role: string;
     expires_in_seconds?: number;
   }) {
-    const result = await this.iamClient.post(
-      "/organizations/{organization_id}/invites",
-      {
-        params: {
-          path: { organization_id: organizationId },
-        },
-        body: {
-          email,
-          role,
-          expires_in_seconds,
-        },
+    const result = await this.iamClient.post("/teams/{team_id}/invites", {
+      params: {
+        path: { team_id: teamId },
       },
-    );
+      body: {
+        email,
+        role,
+        expires_in_seconds,
+      },
+    });
     return extractResponseData(result, true);
   }
 
-  async getOrganizationInvite(inviteId: string) {
-    const result = await this.iamClient.get(
-      "/organization-invites/{invite_id}",
-      {
-        params: {
-          path: { invite_id: inviteId },
-        },
+  async getTeamInvite(inviteId: string) {
+    const result = await this.iamClient.get("/team-invites/{invite_id}", {
+      params: {
+        path: { invite_id: inviteId },
       },
-    );
+    });
     return extractResponseData(result);
   }
 
-  async revokeOrganizationInvite(inviteId: string) {
+  async revokeTeamInvite(inviteId: string) {
     const result = await this.iamClient.post(
-      "/organization-invites/{invite_id}/revoke",
+      "/team-invites/{invite_id}/revoke",
       {
         params: {
           path: { invite_id: inviteId },
@@ -247,15 +226,15 @@ export class IamService {
     return extractResponseData(result, true);
   }
 
-  async resolveOrganizationInvite(token: string) {
-    const result = await this.iamClient.post("/organization-invites/resolve", {
+  async resolveTeamInvite(token: string) {
+    const result = await this.iamClient.post("/team-invites/resolve", {
       body: { token },
     });
     return extractResponseData(result, true);
   }
 
-  async acceptOrganizationInvite(token: string) {
-    const result = await this.iamClient.post("/organization-invites/accept", {
+  async acceptTeamInvite(token: string) {
+    const result = await this.iamClient.post("/team-invites/accept", {
       body: { token },
     });
     return extractResponseData(result, true);
@@ -282,7 +261,7 @@ export class IamService {
       },
     });
     return extractCursorPage(result.response, {
-      items: result.data?.items || [],
+      items: (result.data as any)?.items || [],
       fetcher: this.iamClient.fetch,
     });
   }

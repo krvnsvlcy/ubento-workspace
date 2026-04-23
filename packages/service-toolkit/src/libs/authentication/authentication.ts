@@ -8,7 +8,7 @@ import { withAuthorizer } from "../authorization/enforce.js";
 import { defaultTrustedIssuers, TrustedIssuer } from "./issuer.js";
 import { audMatches, AuthorizationPayload, jwtPayload } from "./schemas.js";
 
-const DEFAULT_AUDIENCE = "https://api.ubento.dev";
+const DEFAULT_AUDIENCE = "https://api.ubento.pro";
 
 export function createAuthenticationMiddleware({
   audience = DEFAULT_AUDIENCE,
@@ -115,7 +115,6 @@ export function createAuthenticationMiddleware({
         req.auth = {
           subject: payload.sub,
           scope: payload.scope,
-          access: payload.access,
         } satisfies AuthorizationPayload;
 
         next();

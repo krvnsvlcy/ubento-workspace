@@ -1,4 +1,4 @@
-import { ubentoApi } from "@ubento/primitives";
+import { ubentoAuth } from "@ubento/primitives";
 import {
   chain,
   dataResponse,
@@ -26,7 +26,7 @@ invitesRouter.get(
         invite_id: z.string(),
       }),
     }),
-    enforce(ubentoApi.permissions.identity.teamInvite.read),
+    enforce(ubentoAuth.actions.teamInvite.read),
     async (req, res) => {
       const invite = await getTeamInvite(req.params.invite_id);
       if (!invite) {
@@ -46,7 +46,7 @@ invitesRouter.post(
         invite_id: z.string(),
       }),
     }),
-    enforce(ubentoApi.permissions.identity.teamInvite.revoke),
+    enforce(ubentoAuth.actions.teamInvite.revoke),
     async (req, res) => {
       const userId = (req as any).user?.id || "temp-user-id";
       const invite = await revokeTeamInvite(req.params.invite_id, userId);

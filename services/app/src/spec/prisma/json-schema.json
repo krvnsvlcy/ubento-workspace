@@ -1,0 +1,337 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "App": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "entity": {
+          "type": "string",
+          "default": "app"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "team_id": {
+          "type": "string"
+        },
+        "metadata": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "version": {
+          "type": "integer",
+          "default": 1
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "deleted_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "team_id",
+        "updated_at"
+      ]
+    },
+    "Page": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "entity": {
+          "type": "string",
+          "default": "page"
+        },
+        "app_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "metadata": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "version": {
+          "type": "integer",
+          "default": 1
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "deleted_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "app_id",
+        "name",
+        "path",
+        "updated_at"
+      ]
+    },
+    "Component": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "entity": {
+          "type": "string",
+          "default": "component"
+        },
+        "app_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "props": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "metadata": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "version": {
+          "type": "integer",
+          "default": 1
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "deleted_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "app_id",
+        "name",
+        "type",
+        "updated_at"
+      ]
+    },
+    "AppMembership": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "entity": {
+          "type": "string",
+          "default": "app_membership"
+        },
+        "app_id": {
+          "type": "string"
+        },
+        "user_id": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "version": {
+          "type": "integer",
+          "default": 1
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "app_id",
+        "user_id",
+        "role",
+        "updated_at"
+      ]
+    },
+    "AppInvite": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "entity": {
+          "type": "string",
+          "default": "app_invite"
+        },
+        "app_id": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "invited_by": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "default": "PENDING",
+          "enum": [
+            "PENDING",
+            "ACCEPTED",
+            "REVOKED",
+            "EXPIRED"
+          ]
+        },
+        "token_hash": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "revoked_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "revoked_by": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "accepted_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "accepted_by": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "version": {
+          "type": "integer",
+          "default": 1
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "app_id",
+        "email",
+        "role",
+        "invited_by",
+        "expires_at",
+        "updated_at"
+      ]
+    }
+  },
+  "type": "object",
+  "properties": {
+    "app": {
+      "$ref": "#/definitions/App"
+    },
+    "page": {
+      "$ref": "#/definitions/Page"
+    },
+    "component": {
+      "$ref": "#/definitions/Component"
+    },
+    "appMembership": {
+      "$ref": "#/definitions/AppMembership"
+    },
+    "appInvite": {
+      "$ref": "#/definitions/AppInvite"
+    }
+  }
+}

@@ -2,6 +2,7 @@ import { Broker, Prisma, Team } from "@prisma/client";
 import {
   generateBareId,
   makeEntityId,
+  ubentoAuth,
   ubentoEntities,
 } from "@ubento/primitives";
 import {
@@ -10,22 +11,18 @@ import {
   prismaListWithCursor,
 } from "@ubento/service-toolkit";
 import { Organization as WOOrganization } from "@workos-inc/node";
+import { authorizer } from "../../../lib/authorizer.js";
 import prisma from "../../../lib/prisma.js";
 import { workos } from "../../../lib/workos.js";
 
 export const teamScopeKind = "team";
-export const teamRoles = {
-  owner: "team:owner",
-  admin: "team:admin",
-  member: "team:member",
-};
 export function workosRoleFromInternalRole(role: string) {
   switch (role) {
-    case teamRoles.owner:
+    case ubentoAuth.roles.team.owner:
       return "admin";
-    case teamRoles.admin:
+    case ubentoAuth.roles.team.admin:
       return "admin";
-    case teamRoles.member:
+    case ubentoAuth.roles.team.member:
       return "member";
     default:
       throw new ValidationError("Invalid role");
@@ -87,7 +84,7 @@ export async function createTeam({
   }[];
 }) {
   // at least one member with owner role
-  if (!members.some((m) => m.role === teamRoles.owner)) {
+  if (!members.some((m) => m.role === ubentoAuth.roles.team.owner)) {
     throw new ValidationError("At least one member must have owner role");
   }
   // validate handle
@@ -157,6 +154,13 @@ export async function createTeam({
             roleSlug: workosRoleFromInternalRole(m.role),
           });
         }
+
+        // SYNC AUTHORIZER
+        await authorizer.assignRole(
+          user.id,
+          m.role,
+          ubentoAuth.scopes.team({ team_id: createdTeam.id }),
+        );
       }),
     );
   } catch (e) {
@@ -223,6 +227,14 @@ export async function updateTeam(
 }
 export async function deleteTeam(id: string) {
   try {
+    const team = await prisma.team.findUnique({ where: { id } });
+    if (!team) return;
+
+    // Find all memberships to revoke in Casbin
+    const memberships = await prisma.teamMembership.findMany({
+      where: { team_id: id },
+    });
+
     const updatedTeam = await prisma.team.update({
       where: {
         id,
@@ -233,12 +245,25 @@ export async function deleteTeam(id: string) {
         deleted_at: new Date(),
       },
     });
-    // revoke all memberships
+
+    // Revoke all memberships in Prisma
     await prisma.teamMembership.deleteMany({
       where: {
         team_id: updatedTeam.id,
       },
     });
+
+    // SYNC AUTHORIZER: Revoke all roles in Casbin for this team
+    await Promise.all(
+      memberships.map((m) =>
+        authorizer.revokeRole(
+          m.user_id,
+          m.role,
+          ubentoAuth.scopes.team({ team_id: id }),
+        ),
+      ),
+    );
+
     // delete workos organization
     await workos.organizations.deleteOrganization(updatedTeam.broker_id);
   } catch (e) {

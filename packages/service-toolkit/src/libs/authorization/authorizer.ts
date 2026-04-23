@@ -1,4 +1,4 @@
-import { newEnforcer, newModelFromString } from "casbin";
+import { Enforcer, newEnforcer, newModelFromString } from "casbin";
 import { MongooseAdapter } from "casbin-mongoose-adapter";
 
 /**
@@ -16,23 +16,26 @@ function matchScope(assignedScope: string, requestObject: string): boolean {
 
 export class Authorizer {
   private initialized = false;
-  private enforcer: any;
+  private enforcer: Enforcer | undefined;
 
   private readonly modelConf = `
-    [request_definition]
-    r = sub, obj, act
-    
-    [policy_definition]
-    p = role, act
-    
-    [role_definition]
-    g = _, _, _
-    
-    [matchers]
-    # We pass the Request Object as the 'domain' to g()
-    # But we define a custom domain matching function for the role manager.
-    m = g(r.sub, p.role, r.obj) && p.act == r.act
-  `;
+[request_definition]
+r = sub, obj, act
+
+[policy_definition]
+p = role, act
+
+[role_definition]
+g = _, _, _
+
+[policy_effect]
+e = some(where (p.eft == allow))
+
+[matchers]
+# We pass the Request Object as the 'domain' to g()
+# But we define a custom domain matching function for the role manager.
+m = g(r.sub, p.role, r.obj) && (p.act == r.act || p.act == "*")
+  `.trim();
 
   constructor(private mongoUri: string) {}
 
@@ -49,7 +52,10 @@ export class Authorizer {
       // REGISTER THE CUSTOM DOMAIN MATCHER
       // This tells Casbin: "When checking if Alice has role X on 'org_1/repo_2',
       // also accept it if she has role X on 'org_1'".
-      this.enforcer.getRoleManager().addDomainMatchingFunc(matchScope);
+      const rm = this.enforcer.getRoleManager();
+      if ("addDomainMatchingFunc" in rm) {
+        (rm as any).addDomainMatchingFunc(matchScope);
+      }
       this.initialized = true;
       this.initializationPromise = null;
     })();
@@ -58,26 +64,54 @@ export class Authorizer {
 
   // --- Management API ---
 
+  async getEnforcer() {
+    await this.ensureInit();
+    if (!this.enforcer) throw new Error("Authorizer not initialized");
+    return this.enforcer;
+  }
+
   // 1. Add User to Role (Scoped)
   async assignRole(user: string, role: string, scope: string) {
-    await this.ensureInit();
-    // e.g. assignRole('alice', 'admin', 'org_1')
-    await this.enforcer.addGroupingPolicy(user, role, scope);
+    const enforcer = await this.getEnforcer();
+    await enforcer.addGroupingPolicy(user, role, scope);
+  }
+  async revokeRole(user: string, role: string, scope: string) {
+    const enforcer = await this.getEnforcer();
+    await enforcer.removeGroupingPolicy(user, role, scope);
   }
 
   // 2. Define What Roles Can Do (Global definitions)
-  async defineRolePermission(role: string, action: string) {
-    await this.ensureInit();
-    // e.g. defineRolePermission('admin', 'write')
-    // This means "Admins can write" (on whatever scope they are assigned to)
-    await this.enforcer.addPolicy(role, action);
+  async assignRolePermission(role: string, action: string) {
+    const enforcer = await this.getEnforcer();
+    await enforcer.addPolicy(role, action);
+  }
+  async revokeRolePermission(role: string, action: string) {
+    const enforcer = await this.getEnforcer();
+    await enforcer.removePolicy(role, action);
+  }
+
+  // 3. Define Role Inheritance (g policies between roles)
+  async assignRoleInheritance(
+    role: string,
+    parentRole: string,
+    scope: string = "/",
+  ) {
+    const enforcer = await this.getEnforcer();
+    await enforcer.addGroupingPolicy(role, parentRole, scope);
+  }
+  async revokeRoleInheritance(
+    role: string,
+    parentRole: string,
+    scope: string = "/",
+  ) {
+    const enforcer = await this.getEnforcer();
+    await enforcer.removeGroupingPolicy(role, parentRole, scope);
   }
 
   // --- Check API ---
 
   async can(user: string, resourceUrn: string, action: string) {
-    await this.ensureInit();
-    // resourceUrn example: "org_1/ws_5/repo_git-flow"
-    return await this.enforcer.enforce(user, resourceUrn, action);
+    const enforcer = await this.getEnforcer();
+    return await enforcer.enforce(user, resourceUrn, action);
   }
 }
