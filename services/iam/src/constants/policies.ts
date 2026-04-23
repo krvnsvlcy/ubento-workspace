@@ -13,6 +13,7 @@ export const policies = {
       // team
       ubentoAuth.actions.team.read,
       // app
+      ubentoAuth.actions.app.list,
       ubentoAuth.actions.app.create,
     ],
     roles: [ubentoAuth.roles.app.viewer],

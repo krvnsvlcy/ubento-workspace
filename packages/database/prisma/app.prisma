@@ -1,15 +1,7 @@
 generator client {
     provider      = "prisma-client-js"
     binaryTargets = ["native"]
-    output        = "../node_modules/.prisma/client"
-}
-
-generator jsonSchema {
-    provider                 = "prisma-json-schema-generator"
-    output                   = "../src/spec/prisma"
-    keepRelationFields       = "false"
-    includeRequiredFields    = "true"
-    keepRelationScalarFields = "true"
+    output        = "./generated/app"
 }
 
 datasource db {

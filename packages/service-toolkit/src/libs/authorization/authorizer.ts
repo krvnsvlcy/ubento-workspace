@@ -3,15 +3,18 @@ import { MongooseAdapter } from "casbin-mongoose-adapter";
 
 /**
  * Custom Matcher: Checks if the user's assigned scope covers the requested object.
- * e.g., Assigned: "org_1", Requested: "org_1/repo_5" -> TRUE
+ * Casbin passes: (requestObject, assignedScope)
  */
-function matchScope(assignedScope: string, requestObject: string): boolean {
-  // 1. Exact match (e.g. assigned on org_1, accessing org_1)
-  if (assignedScope === requestObject) return true;
+function matchScope(requestObject: string, assignedScope: string): boolean {
+  // Global admin override
+  if (assignedScope === "/" || assignedScope === "*") return true;
 
-  // 2. Child match (e.g. assigned on org_1, accessing org_1/repo_5)
-  // We check if the requestObject STARTS WITH the assignedScope + separator
-  return requestObject.startsWith(assignedScope + "/");
+  // Exact match
+  if (requestObject === assignedScope) return true;
+
+  // Child match (e.g. assigned on /team/123, accessing /team/123/app/456)
+  const cleanAssigned = assignedScope.replace(/\/$/, "");
+  return requestObject.startsWith(cleanAssigned + "/");
 }
 
 export class Authorizer {
@@ -54,7 +57,11 @@ m = g(r.sub, p.role, r.obj) && (p.act == r.act || p.act == "*")
       // also accept it if she has role X on 'org_1'".
       const rm = this.enforcer.getRoleManager();
       if ("addDomainMatchingFunc" in rm) {
-        (rm as any).addDomainMatchingFunc(matchScope);
+        (rm as any).addDomainMatchingFunc((...args: any[]) => {
+          const result = matchScope(...(args as [string, string]));
+          // console.log("Match:", result, assignedScope, requestObject);
+          return result;
+        });
       }
       this.initialized = true;
       this.initializationPromise = null;
@@ -112,6 +119,10 @@ m = g(r.sub, p.role, r.obj) && (p.act == r.act || p.act == "*")
 
   async can(user: string, resourceUrn: string, action: string) {
     const enforcer = await this.getEnforcer();
-    return await enforcer.enforce(user, resourceUrn, action);
+    const allowed = await enforcer.enforce(user, resourceUrn, action);
+    if (!allowed) {
+      console.log("No match for", { user, resourceUrn, action });
+    }
+    return allowed;
   }
 }

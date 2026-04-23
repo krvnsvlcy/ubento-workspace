@@ -1,5 +1,6 @@
 "use client";
 
+import { ubento } from "@/lib/ubento";
 import { LayoutGrid, Plus, Settings, Sparkles, User } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
@@ -34,14 +35,10 @@ export function Dashboard() {
     document.documentElement.setAttribute("data-theme", savedTheme);
 
     // Fetch apps
-    fetch("/api/ubento/apps", {
-      headers: {
-        "x-ubento-service": "app",
-      },
-    })
-      .then((res) => res.json())
+    ubento.app
+      .listApps({ team_id: currentSession?.tenantId || "" })
       .then((data) => {
-        setApps(data.items || []);
+        setApps(data[0]);
         setIsFetching(false);
       })
       .catch((err) => {
@@ -64,22 +61,9 @@ export function Dashboard() {
     const team_id = currentSession?.tenantId || "default-team";
 
     try {
-      const res = await fetch("/api/ubento/apps", {
-        method: "POST",
-        body: JSON.stringify({ name, team_id }),
-        headers: {
-          "Content-Type": "application/json",
-          "x-ubento-service": "app-service",
-        },
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        setApps((prev) => [data, ...prev]);
-        setActiveModal(null);
-      } else {
-        alert("Failed to create app");
-      }
+      const app = await ubento.app.createApp({ name, team_id });
+      setApps((prev) => [app, ...prev]);
+      setActiveModal(null);
     } catch (err) {
       console.error("Error creating app:", err);
       alert("Error creating app");

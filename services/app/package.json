@@ -5,7 +5,7 @@
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
-    "build": "prisma generate && esbuild src/index.ts --bundle --platform=node --target=node20 --outfile=dist/index.js --external:@prisma/client",
+    "build": "pnpm -C ../../packages/database generate && esbuild src/index.ts --bundle --platform=node --target=node20 --outfile=dist/index.js --external:@prisma/client",
     "clean": "rm -rf dist",
     "start": "node dist/index.js",
     "dev": "tsx watch src/index.ts",
@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@prisma/client": "5.18.0",
+    "@ubento/database": "workspace:*",
     "@ubento/primitives": "workspace:*",
     "@ubento/service-toolkit": "workspace:*",
     "commander": "^14.0.2",

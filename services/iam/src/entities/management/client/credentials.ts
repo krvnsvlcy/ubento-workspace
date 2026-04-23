@@ -4,7 +4,7 @@ import {
   makeEntityId,
 } from "@ubento/primitives";
 import { prismaListWithCursor } from "@ubento/service-toolkit";
-import { ClientCredential, ClientCredentialStatus } from "@prisma/client";
+import { ClientCredential, ClientCredentialStatus } from "@ubento/database/iam";
 import crypto from "node:crypto";
 import prisma from "../../../lib/prisma.js";
 

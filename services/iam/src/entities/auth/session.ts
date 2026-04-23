@@ -1,4 +1,4 @@
-import { Prisma, Session, SessionStatus } from "@prisma/client";
+import { Prisma, Session, SessionStatus } from "@ubento/database/iam";
 import {
   generateBareId,
   makeEntityId,

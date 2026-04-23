@@ -1,4 +1,4 @@
-import { Broker, Prisma, Team } from "@prisma/client";
+import { Broker, Prisma, Team } from "@ubento/database/iam";
 import {
   generateBareId,
   makeEntityId,

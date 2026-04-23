@@ -3,7 +3,7 @@ import {
   generateBareId,
   makeEntityId,
 } from "@ubento/primitives";
-import { JwtKeyStatus } from "@prisma/client";
+import { JwtKeyStatus } from "@ubento/database/iam";
 import * as jose from "jose";
 import { env } from "../../env.js";
 import prisma from "../../lib/prisma.js";

@@ -1,4 +1,4 @@
-import { AppInvite, AppInviteStatus, AppMembership } from "@prisma/client";
+import { AppInvite, AppInviteStatus, AppMembership } from "@ubento/database/app";
 import {
   generateBareId,
   makeEntityId,

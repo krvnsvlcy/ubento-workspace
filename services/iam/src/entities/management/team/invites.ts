@@ -3,7 +3,7 @@ import {
   TeamInvite,
   TeamInviteStatus,
   TeamMembership,
-} from "@prisma/client";
+} from "@ubento/database/iam";
 import {
   generateBareId,
   makeEntityId,

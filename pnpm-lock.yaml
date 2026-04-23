@@ -247,6 +247,19 @@ importers:
         specifier: ^5.0.0
         version: 5.9.3
 
+  packages/database:
+    dependencies:
+      '@prisma/client':
+        specifier: 5.18.0
+        version: 5.18.0(prisma@5.22.0)
+      '@ubento/service-toolkit':
+        specifier: workspace:*
+        version: link:../service-toolkit
+    devDependencies:
+      prisma:
+        specifier: 5.22.0
+        version: 5.22.0
+
   packages/engine:
     dependencies:
       '@dnd-kit/core':
@@ -427,6 +440,9 @@ importers:
       '@prisma/client':
         specifier: 5.18.0
         version: 5.18.0(prisma@5.22.0)
+      '@ubento/database':
+        specifier: workspace:*
+        version: link:../../packages/database
       '@ubento/primitives':
         specifier: workspace:*
         version: link:../../packages/primitives
@@ -476,9 +492,9 @@ importers:
 
   services/iam:
     dependencies:
-      '@prisma/client':
-        specifier: 5.18.0
-        version: 5.18.0(prisma@5.22.0)
+      '@ubento/database':
+        specifier: workspace:*
+        version: link:../../packages/database
       '@ubento/primitives':
         specifier: workspace:*
         version: link:../../packages/primitives
@@ -7459,13 +7475,11 @@ snapshots:
     optionalDependencies:
       prisma: 5.22.0
 
-  '@prisma/debug@5.22.0':
-    optional: true
+  '@prisma/debug@5.22.0': {}
 
   '@prisma/debug@5.8.1': {}
 
-  '@prisma/engines-version@5.22.0-44.605197351a3c8bdd595af2d2a9bc3025bca48ea2':
-    optional: true
+  '@prisma/engines-version@5.22.0-44.605197351a3c8bdd595af2d2a9bc3025bca48ea2': {}
 
   '@prisma/engines-version@5.8.1-1.78caf6feeaed953168c64e15a249c3e9a033ebe2': {}
 
@@ -7475,7 +7489,6 @@ snapshots:
       '@prisma/engines-version': 5.22.0-44.605197351a3c8bdd595af2d2a9bc3025bca48ea2
       '@prisma/fetch-engine': 5.22.0
       '@prisma/get-platform': 5.22.0
-    optional: true
 
   '@prisma/engines@5.8.1':
     dependencies:
@@ -7489,7 +7502,6 @@ snapshots:
       '@prisma/debug': 5.22.0
       '@prisma/engines-version': 5.22.0-44.605197351a3c8bdd595af2d2a9bc3025bca48ea2
       '@prisma/get-platform': 5.22.0
-    optional: true
 
   '@prisma/fetch-engine@5.8.1':
     dependencies:
@@ -7504,7 +7516,6 @@ snapshots:
   '@prisma/get-platform@5.22.0':
     dependencies:
       '@prisma/debug': 5.22.0
-    optional: true
 
   '@prisma/get-platform@5.8.1':
     dependencies:
@@ -11620,7 +11631,6 @@ snapshots:
       '@prisma/engines': 5.22.0
     optionalDependencies:
       fsevents: 2.3.3
-    optional: true
 
   proc-log@6.1.0: {}
 

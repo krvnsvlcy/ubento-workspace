@@ -1,4 +1,4 @@
-import { AuthCode } from "@prisma/client";
+import { AuthCode } from "@ubento/database/iam";
 import crypto from "crypto";
 import prisma from "../../lib/prisma.js";
 

@@ -1,12 +1,6 @@
-import { Prisma, PrismaClient } from "@prisma/client";
-import {
-  autoIncrementOnUpdate,
-  mongoDbUrlWithDatabase,
-} from "@ubento/service-toolkit";
+import { createAppClient, type AppPrismaClient } from "@ubento/database/app";
 import { env } from "../env.js";
 
-const prisma = new PrismaClient({
-  datasourceUrl: mongoDbUrlWithDatabase(env.DATABASE_URL, "app"),
-}).$extends(autoIncrementOnUpdate(Prisma.defineExtension));
+const prisma: AppPrismaClient = createAppClient(env.DATABASE_URL);
 
 export default prisma;
