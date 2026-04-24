@@ -43,6 +43,8 @@ export const ubentoAuth = {
     roleAssignment: {
       list: "role_assignment:list",
       read: "role_assignment:read",
+      create: "role_assignment:create",
+      delete: "role_assignment:delete",
     },
     scope: {
       list: "scope:list",

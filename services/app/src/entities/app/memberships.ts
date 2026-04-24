@@ -14,6 +14,12 @@ import {
 import { authorizer } from "../../lib/authorizer.js";
 import prisma from "../../lib/prisma.js";
 
+export async function getAppMembership(id: string) {
+  return await prisma.appMembership.findUnique({
+    where: { id },
+  });
+}
+
 export async function listAppMemberships({
   app_id,
   user_id,
