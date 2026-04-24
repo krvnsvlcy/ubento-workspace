@@ -1,38 +1,5 @@
-import { standardizeJsonSchemaOutput } from "@ubento/service-toolkit";
+import { appSchemas } from "@ubento/database/app";
 import { OpenAPIV3 } from "openapi-types";
-import rawPrismaSchemas from "./prisma/json-schema.json" with { type: "json" };
-
-export function cleanUpJsonSchema(schema: any): any {
-  if (schema === null || typeof schema !== "object") {
-    return schema;
-  }
-  if (Array.isArray(schema)) {
-    return schema.map((item) => cleanUpJsonSchema(item));
-  }
-  const cleanedSchema: any = {};
-  for (const key in schema) {
-    if (Object.prototype.hasOwnProperty.call(schema, key)) {
-      const value = schema[key];
-      if (key === "type" && Array.isArray(value)) {
-        const nonNullTypes = value.filter((t) => t !== "null");
-        if (nonNullTypes.length === 1) {
-          cleanedSchema[key] = nonNullTypes[0];
-        } else if (nonNullTypes.includes("object")) {
-          cleanedSchema[key] = "object";
-        } else {
-          cleanedSchema[key] = value;
-        }
-      } else {
-        cleanedSchema[key] = cleanUpJsonSchema(value);
-      }
-    }
-  }
-  return cleanedSchema;
-}
-
-const prismaSchemas = cleanUpJsonSchema(
-  standardizeJsonSchemaOutput(rawPrismaSchemas),
-);
 
 export const spec: OpenAPIV3.Document = {
   openapi: "3.0.0",
@@ -84,6 +51,11 @@ export const spec: OpenAPIV3.Document = {
                 type: "object",
                 properties: {
                   name: { type: "string" },
+                  slug: {
+                    type: "string",
+                    minLength: 3,
+                    pattern: "^[a-z0-9-]+$",
+                  },
                   team_id: { type: "string" },
                   description: { type: "string" },
                 },
@@ -102,6 +74,34 @@ export const spec: OpenAPIV3.Document = {
             },
           },
           "400": { $ref: "#/components/responses/ValidationError" },
+        },
+      },
+    },
+    "/apps/slug/{slug}": {
+      get: {
+        summary: "Get App by Slug",
+        parameters: [
+          {
+            name: "slug",
+            in: "path",
+            required: true,
+            schema: {
+              type: "string",
+              minLength: 3,
+              pattern: "^[a-z0-9-]+$",
+            },
+          },
+        ],
+        responses: {
+          "200": {
+            description: "App details",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/App" },
+              },
+            },
+          },
+          "404": { $ref: "#/components/responses/NotFound" },
         },
       },
     },
@@ -145,6 +145,11 @@ export const spec: OpenAPIV3.Document = {
                 type: "object",
                 properties: {
                   name: { type: "string" },
+                  slug: {
+                    type: "string",
+                    minLength: 3,
+                    pattern: "^[a-z0-9-]+$",
+                  },
                   description: { type: "string" },
                 },
               },
@@ -735,11 +740,11 @@ export const spec: OpenAPIV3.Document = {
       },
     },
     schemas: {
-      App: prismaSchemas.definitions.App as any,
-      Page: prismaSchemas.definitions.Page as any,
-      Component: prismaSchemas.definitions.Component as any,
-      AppMembership: prismaSchemas.definitions.AppMembership as any,
-      AppInvite: prismaSchemas.definitions.AppInvite as any,
+      App: appSchemas.definitions.App as any,
+      Page: appSchemas.definitions.Page as any,
+      Component: appSchemas.definitions.Component as any,
+      AppMembership: appSchemas.definitions.AppMembership as any,
+      AppInvite: appSchemas.definitions.AppInvite as any,
       Error: {
         type: "object",
         properties: {

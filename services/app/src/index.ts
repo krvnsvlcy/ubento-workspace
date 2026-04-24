@@ -5,7 +5,7 @@ import appMembershipsRouter from "./routes/app-memberships.js";
 import appsRouter from "./routes/apps.js";
 import componentsRouter from "./routes/components.js";
 import pagesRouter from "./routes/pages.js";
-import { spec } from "./spec/spec.js";
+import { spec } from "./spec.js";
 
 export const service = createService({
   name: "app-service",

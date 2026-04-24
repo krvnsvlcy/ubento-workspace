@@ -4,6 +4,14 @@ generator client {
     output        = "./generated/iam"
 }
 
+generator jsonSchema {
+    provider                 = "prisma-json-schema-generator"
+    output                   = "../src/schemas/iam"
+    keepRelationFields       = "false"
+    keepRelationScalarFields = "true"
+    includeRequiredFields    = "true"
+}
+
 datasource db {
     provider = "mongodb"
     url      = env("DATABASE_URL")

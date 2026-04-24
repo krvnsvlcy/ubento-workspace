@@ -11,7 +11,13 @@
           "type": "string",
           "default": "app"
         },
+        "team_id": {
+          "type": "string"
+        },
         "name": {
+          "type": "string"
+        },
+        "slug": {
           "type": "string"
         },
         "description": {
@@ -19,9 +25,6 @@
             "string",
             "null"
           ]
-        },
-        "team_id": {
-          "type": "string"
         },
         "metadata": {
           "type": [
@@ -55,8 +58,9 @@
       },
       "required": [
         "id",
-        "name",
         "team_id",
+        "name",
+        "slug",
         "updated_at"
       ]
     },
@@ -74,9 +78,6 @@
           "type": "string"
         },
         "name": {
-          "type": "string"
-        },
-        "path": {
           "type": "string"
         },
         "metadata": {
@@ -113,7 +114,6 @@
         "id",
         "app_id",
         "name",
-        "path",
         "updated_at"
       ]
     },

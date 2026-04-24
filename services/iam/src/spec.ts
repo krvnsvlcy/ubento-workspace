@@ -1,52 +1,5 @@
-import { standardizeJsonSchemaOutput } from "@ubento/service-toolkit";
+import { iamSchemas } from "@ubento/database/iam";
 import { OpenAPIV3 } from "openapi-types";
-import rawPrismaSchemas from "./prisma/json-schema.json" with { type: "json" };
-
-export function cleanUpJsonSchema(schema: any): any {
-  // Base case: If it's a primitive or null, return it as is.
-  if (schema === null || typeof schema !== "object") {
-    return schema;
-  }
-
-  // If the current node is an array, map over it and clean each item.
-  if (Array.isArray(schema)) {
-    return schema.map((item) => cleanUpJsonSchema(item));
-  }
-
-  // If it's an object, we build a new object with the cleaned properties.
-  const cleanedSchema: any = {};
-
-  for (const key in schema) {
-    if (Object.prototype.hasOwnProperty.call(schema, key)) {
-      const value = schema[key];
-
-      // Target the 'type' key specifically
-      if (key === "type" && Array.isArray(value)) {
-        // Filter out 'null' to see what types remain
-        const nonNullTypes = value.filter((t) => t !== "null");
-
-        if (nonNullTypes.length === 1) {
-          // Handle cases like ["string", "null"] -> "string"
-          cleanedSchema[key] = nonNullTypes[0];
-        } else if (nonNullTypes.includes("object")) {
-          // Handle generic multi-type arrays that include "object"
-          cleanedSchema[key] = "object";
-        } else {
-          // If there are multiple valid types but no "object", leave it alone
-          cleanedSchema[key] = value;
-        }
-      } else {
-        // For all other keys, recurse down the tree
-        cleanedSchema[key] = cleanUpJsonSchema(value);
-      }
-    }
-  }
-
-  return cleanedSchema;
-}
-const prismaSchemas = cleanUpJsonSchema(
-  standardizeJsonSchemaOutput(rawPrismaSchemas),
-);
 
 export const spec: OpenAPIV3.Document = {
   openapi: "3.0.0",
@@ -1184,12 +1137,12 @@ export const spec: OpenAPIV3.Document = {
 
     schemas: {
       // Prisma models:
-      Team: prismaSchemas.definitions.Team as any,
-      User: prismaSchemas.definitions.User as any,
+      Team: iamSchemas.definitions.Team as any,
+      User: iamSchemas.definitions.User as any,
 
-      Session: prismaSchemas.definitions.Session as any,
-      Client: prismaSchemas.definitions.Client as any,
-      ClientCredential: prismaSchemas.definitions.ClientCredential as any,
+      Session: iamSchemas.definitions.Session as any,
+      Client: iamSchemas.definitions.Client as any,
+      ClientCredential: iamSchemas.definitions.ClientCredential as any,
 
       // ✅ Missing pieces used by your paths:
       InviteStatus: {

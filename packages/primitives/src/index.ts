@@ -6,3 +6,4 @@ export * from "./entities/id.js";
 export * from "./env.js";
 export * from "./events/events.js";
 export * from "./utils/id.js";
+export * from "./utils/slug.js";

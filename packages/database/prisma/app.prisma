@@ -4,6 +4,14 @@ generator client {
     output        = "./generated/app"
 }
 
+generator jsonSchema {
+    provider                 = "prisma-json-schema-generator"
+    output                   = "../src/schemas/app"
+    keepRelationFields       = "false"
+    keepRelationScalarFields = "true"
+    includeRequiredFields    = "true"
+}
+
 datasource db {
     provider = "mongodb"
     url      = env("DATABASE_URL")
@@ -17,11 +25,13 @@ enum AppInviteStatus {
 }
 
 model App {
-    id          String  @id @map("_id")
-    entity      String  @default("app")
+    id      String @id @map("_id")
+    entity  String @default("app")
+    team_id String
+
     name        String
+    slug        String  @unique
     description String?
-    team_id     String
     metadata    Json?
 
     version    Int       @default(1)
@@ -33,11 +43,11 @@ model App {
 }
 
 model Page {
-    id       String @id @map("_id")
-    entity   String @default("page")
-    app_id   String
+    id     String @id @map("_id")
+    entity String @default("page")
+    app_id String
+
     name     String
-    path     String
     metadata Json?
 
     version    Int       @default(1)
@@ -45,14 +55,14 @@ model Page {
     updated_at DateTime  @updatedAt
     deleted_at DateTime?
 
-    @@unique([app_id, path])
     @@map("pages")
 }
 
 model Component {
-    id       String @id @map("_id")
-    entity   String @default("component")
-    app_id   String
+    id     String @id @map("_id")
+    entity String @default("component")
+    app_id String
+
     name     String
     type     String
     props    Json?
@@ -84,9 +94,10 @@ model AppMembership {
 }
 
 model AppInvite {
-    id          String          @id @map("_id")
-    entity      String          @default("app_invite")
-    app_id      String
+    id     String @id @map("_id")
+    entity String @default("app_invite")
+    app_id String
+
     email       String
     role        String
     invited_by  String

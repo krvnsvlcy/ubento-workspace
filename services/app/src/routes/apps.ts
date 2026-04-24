@@ -12,11 +12,43 @@ import {
   createApp,
   deleteApp,
   getApp,
+  getAppBySlug,
   listApps,
   updateApp,
 } from "../entities/app/app.js";
 
 const appsRouter: Router = Router();
+
+// Get App by Slug
+appsRouter.get(
+  "/slug/:slug",
+  chain(
+    validate({
+      params: z.object({
+        slug: z.string(),
+      }),
+    }),
+    enforce({
+      permissions: [ubentoAuth.actions.app.read],
+      resource: async (req) => {
+        const app = await getAppBySlug(req.params.slug as string);
+        if (!app) throw new NotFoundError("App not found");
+
+        // Cache the app on the request to avoid a double DB query
+        (req as any).resolvedApp = app;
+        return ubentoAuth.scopes.appOrHigher({
+          team_id: app.team_id,
+          app_id: app.id,
+        });
+      },
+    }),
+    async (req, res) => {
+      // Use the cached app
+      const app = (req as any).resolvedApp;
+      res.json(dataResponse(app));
+    },
+  ),
+);
 
 // List Apps (Correct: Checking Team level because we are listing within a team)
 appsRouter.get(
@@ -81,6 +113,7 @@ appsRouter.post(
     validate({
       body: z.object({
         name: z.string(),
+        slug: z.string().optional(),
         description: z.string().optional(),
         team_id: z.string(),
         metadata: z.any().optional(),
@@ -110,6 +143,7 @@ appsRouter.patch(
       }),
       body: z.object({
         name: z.string().optional(),
+        slug: z.string().optional(),
         description: z.string().optional(),
         metadata: z.any().optional(),
       }),

@@ -9,7 +9,7 @@ import teamsRouter from "./routes/management/teams.js";
 
 import sessionsRouter from "./routes/management/sessions.js";
 import usersRouter from "./routes/management/users.js";
-import { spec } from "./spec/spec.js";
+import { spec } from "./spec.js";
 
 export const service = createService({
   name: "iam-service",
