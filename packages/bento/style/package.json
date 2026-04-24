@@ -1,0 +1,14 @@
+{
+  "name": "@ubento/bento-style",
+  "version": "1.0.0",
+  "private": true,
+  "main": "dist/uno.css",
+  "scripts": {
+    "build": "unocss \"../../apps/**/*.tsx\" \"../../packages/**/*.tsx\" -o dist/uno.css",
+    "dev": "unocss \"../../apps/**/*.tsx\" \"../../packages/**/*.tsx\" -o dist/uno.css --watch"
+  },
+  "devDependencies": {
+    "unocss": "^0.65.4",
+    "@unocss/cli": "^0.65.4"
+  }
+}

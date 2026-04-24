@@ -1,12 +1,11 @@
 "use client";
 
-import { ubento } from "@/lib/ubento";
 import { LayoutGrid, Plus, Settings, Sparkles, User } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useState } from "react";
-import { useSession } from "../hooks/session";
-import { Logo } from "./logo";
-import { Modal } from "./modal";
+import { useEffect, useState, useRef } from "react";
+import { Logo } from "./components/logo";
+import { Bridge } from "@ubento/engine";
+import { Modal } from "./components/modal";
 
 const themes = [
   { id: "sky", label: "Sky", color: "bg-blue-300" },
@@ -15,8 +14,24 @@ const themes = [
   { id: "carbon", label: "Carbon", color: "bg-foreground-300" },
 ];
 
-export function Dashboard() {
-  const currentSession = useSession();
+export interface Host {
+  currentSession?: {
+    name?: string;
+    picture?: string;
+    tenantId?: string;
+  } | null;
+  ubento: {
+    app: {
+      listApps: (args: { team_id: string }) => Promise<any[]>;
+      createApp: (args: { name: string; team_id: string }) => Promise<any>;
+    };
+  };
+  iframeUrl?: string; // The URL to load in the iframe, e.g., "http://localhost:4020"
+}
+
+export function Bento({ host }: { host: Host }) {
+  const currentSession = host.currentSession;
+  const ubento = host.ubento;
 
   const [activeModal, setActiveModal] = useState<
     "create" | "ai" | "settings" | null
@@ -27,6 +42,56 @@ export function Dashboard() {
   const [isFetching, setIsFetching] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
 
+  // App opening state
+  const [openedApp, setOpenedApp] = useState<any | null>(null);
+  const [isOverlayVisible, setIsOverlayVisible] = useState(true);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  // For Demo Purposes
+  const DEFAULT_TEMPLATE = {
+    home: {
+      id: "home",
+      rootId: "root",
+      elements: {
+        root: {
+          type: "container",
+          style: {
+            layout: "flex",
+            direction: "column",
+            background: "#0a0a0a",
+            height: "100vh",
+            width: "100%",
+            padding: { top: 40, left: 60 },
+          },
+          content: ["t1"],
+        },
+        t1: {
+          type: "block",
+          component: "text",
+          props: { text: "Authorized Instance" },
+          style: { size: 24, color: "#ffffff" } as any,
+        },
+      },
+    },
+  };
+
+  useEffect(() => {
+    const cleanup = Bridge.listen((type: string) => {
+      if (type === "APP_READY" && openedApp) {
+        if (iframeRef.current?.contentWindow) {
+          Bridge.send(iframeRef.current.contentWindow, "INITIALIZE_GUEST", {
+            app: openedApp.config || {
+              id: openedApp.id,
+              routes: { "/": "home" },
+            },
+            pages: DEFAULT_TEMPLATE,
+          });
+        }
+      }
+    });
+    return cleanup;
+  }, [openedApp]);
+
   const activeTheme = themes.find((t) => t.id === currentTheme) || themes[0];
 
   useEffect(() => {
@@ -34,18 +99,24 @@ export function Dashboard() {
     setCurrentTheme(savedTheme);
     document.documentElement.setAttribute("data-theme", savedTheme);
 
+    if (!currentSession) {
+      setIsFetching(false);
+      return;
+    }
+
     // Fetch apps
     ubento.app
       .listApps({ team_id: currentSession?.tenantId || "" })
       .then((data) => {
-        setApps(data[0]);
+        // Handle case where data might be nested depending on the SDK behavior
+        setApps(Array.isArray(data) && Array.isArray(data[0]) ? data[0] : data);
         setIsFetching(false);
       })
       .catch((err) => {
         console.error("Failed to fetch apps:", err);
         setIsFetching(false);
       });
-  }, []);
+  }, [currentSession, ubento]);
 
   const changeTheme = (themeId: string) => {
     setCurrentTheme(themeId);
@@ -74,6 +145,62 @@ export function Dashboard() {
 
   const closeModal = () => setActiveModal(null);
 
+  const openApp = (app: any) => {
+    setOpenedApp(app);
+    setIsOverlayVisible(true);
+  };
+
+  const closeApp = () => {
+    setOpenedApp(null);
+  };
+
+  // Render App Inline
+  if (openedApp) {
+    return (
+      <div className="relative h-screen w-screen overflow-hidden bg-black">
+        <iframe
+          ref={iframeRef}
+          src={host.iframeUrl || "http://localhost:4020"}
+          className="absolute inset-0 h-full w-full border-none"
+          title="Ubento Runtime"
+        />
+
+        <div
+          className={`absolute inset-0 pointer-events-none transition-opacity duration-300 ${isOverlayVisible ? "opacity-100" : "opacity-0"}`}
+        >
+          <div className="pointer-events-auto flex h-12 w-full items-center justify-between bg-white/80 px-4 backdrop-blur-md shadow-sm">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={closeApp}
+                className="h-8 px-2 rounded hover:bg-black/10 flex items-center justify-center text-sm font-bold transition-colors"
+              >
+                &larr; Back
+              </button>
+              <div className="h-8 w-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold">
+                U
+              </div>
+              <span className="text-sm font-bold text-gray-800">
+                {openedApp?.name}{" "}
+                <span className="font-normal text-gray-400 ml-2">
+                  ({openedApp?.slug || openedApp?.id})
+                </span>
+              </span>
+            </div>
+            <div className="h-8 w-8 rounded-full bg-gray-200"></div>
+          </div>
+        </div>
+
+        <button
+          onClick={() => setIsOverlayVisible(!isOverlayVisible)}
+          className="absolute bottom-6 right-6 h-12 w-12 rounded-full bg-blue-600 text-white shadow-xl hover:bg-blue-700 z-50 flex items-center justify-center text-xl"
+        >
+          {isOverlayVisible ? "✕" : "⌘"}
+        </button>
+      </div>
+    );
+  }
+
+  // Render Dashboard
   return (
     <div className="relative flex min-h-screen justify-center bg-background px-8 py-10 font-sans text-foreground selection:bg-foreground-200 overflow-x-hidden">
       {/* Background Gradient */}
@@ -290,21 +417,16 @@ export function Dashboard() {
                 ))
               ) : apps.length > 0 ? (
                 apps.map((app) => (
-                  <a
+                  <button
                     key={app.id}
-                    href={process.env.NEXT_PUBLIC_APP_URL_TEMPLATE?.replace(
-                      "{slug}",
-                      app.slug,
-                    )}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group relative flex h-28 cursor-pointer flex-col justify-end overflow-hidden rounded-2xl bg-background-300 p-4 transition-all hover:bg-background-200"
+                    onClick={() => openApp(app)}
+                    className="group relative flex h-28 cursor-pointer flex-col justify-end overflow-hidden rounded-2xl bg-background-300 p-4 transition-all hover:bg-background-200 text-left"
                   >
                     <div className="absolute left-4 top-4 h-8 w-8 rounded-lg bg-background-500 transition-transform group-hover:scale-110" />
                     <h3 className="text-sm font-medium text-foreground">
                       {app.name}
                     </h3>
-                  </a>
+                  </button>
                 ))
               ) : (
                 <div className="col-span-full py-12 text-center text-foreground-400">
@@ -362,7 +484,7 @@ export function Dashboard() {
           <div className="h-20 w-20 rounded-2xl bg-background-300 flex items-center justify-center">
             <Sparkles className="h-8 w-8 text-foreground-400" />
           </div>
-          <p className="text-foreground-300">
+          <p className="text-foreground-300 text-center px-4">
             Describe what you want to build and let AI handle the heavy lifting.
           </p>
         </div>
