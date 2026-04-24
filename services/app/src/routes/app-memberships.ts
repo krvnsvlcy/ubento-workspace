@@ -11,6 +11,7 @@ import z from "zod";
 import { getApp } from "../entities/app/app.js";
 import {
   addMemberToApp,
+  getAppMembership,
   listAppMemberships,
   removeMemberFromApp,
 } from "../entities/app/memberships.js";
@@ -69,7 +70,7 @@ appMembershipsRouter.post(
       }),
     }),
     enforce({
-      permissions: [ubentoAuth.actions.roleAssignment.read], // TODO: Use a proper action for adding members
+      permissions: [ubentoAuth.actions.roleAssignment.create],
       resource: async (req) => {
         const app = await getApp(req.body.app_id);
         if (!app) return ubentoAuth.scopes.root;
@@ -100,8 +101,17 @@ appMembershipsRouter.delete(
       }),
     }),
     enforce({
-      permissions: [ubentoAuth.actions.roleAssignment.read], // TODO: Use a proper action for removing members
-      resource: () => ubentoAuth.scopes.root,
+      permissions: [ubentoAuth.actions.roleAssignment.delete],
+      resource: async (req) => {
+        const membership = await getAppMembership(req.params.id);
+        if (!membership) return ubentoAuth.scopes.root;
+        const app = await getApp(membership.app_id);
+        if (!app) return ubentoAuth.scopes.root;
+        return ubentoAuth.scopes.appOrHigher({
+          team_id: app.team_id,
+          app_id: app.id,
+        });
+      },
     }),
     async (req, res) => {
       await removeMemberFromApp(req.params.id);
