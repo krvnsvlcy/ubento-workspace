@@ -63,7 +63,6 @@ export function enforce<T extends Request>(
 
   return async (req, res, next) => {
     const auth = req.auth;
-    console.log({ auth });
     if (!auth) return res.status(401).send("Not authenticated");
 
     for (const permission of permissions) {
