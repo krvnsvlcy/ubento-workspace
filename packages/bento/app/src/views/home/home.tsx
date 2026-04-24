@@ -7,9 +7,9 @@ import { SettingsModal } from "@/modals/SettingsModal";
 import { UserSettingsModal } from "@/modals/UserSettingsModal";
 import { motion } from "motion/react";
 import React, { useEffect, useState } from "react";
-import { AppGrid } from "./AppGrid";
-import { Header } from "./Header";
-import { Sidebar } from "./Sidebar";
+import { AppGrid } from "./app-grid";
+import { Header } from "./header";
+import { Sidebar } from "./sidebar";
 
 export function Home() {
   const host = useBentoHost();
@@ -71,7 +71,7 @@ export function Home() {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 1.2, ease: "easeOut" }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
         className="pointer-events-none absolute inset-x-0 top-0 h-[200px] bg-gradient-to-b from-primary-500/10 dark:from-primary-300/7 to-transparent"
       />
 

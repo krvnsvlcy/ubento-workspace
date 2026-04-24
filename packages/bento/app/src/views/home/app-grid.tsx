@@ -1,4 +1,4 @@
-import { AppCard } from "@/views/home/AppCard";
+import { AppCard } from "@/views/home/app-card";
 
 interface AppGridProps {
   apps: any[];

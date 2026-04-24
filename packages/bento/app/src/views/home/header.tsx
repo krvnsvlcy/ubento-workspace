@@ -47,7 +47,7 @@ export function Header({
       <motion.nav
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
         className="mb-20 flex w-full items-center justify-between"
       >
         <div className="flex items-center text-primary-300">
@@ -140,7 +140,7 @@ export function Header({
       <motion.h1
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
+        transition={{ duration: 0.3, ease: "easeOut", delay: 0.1 }}
         className="mb-16 text-2xl font-medium tracking-tight sm:text-3xl"
       >
         Good afternoon {user?.name || "Guest"}
