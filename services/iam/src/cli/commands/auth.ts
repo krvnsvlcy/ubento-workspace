@@ -78,19 +78,23 @@ export function registerAuthCommands(program: Command) {
 
         // 1. Sync permissions
         if (config.permissions) {
-          for (const permission of config.permissions) {
-            await authorizer.assignRolePermission(role, permission);
-            console.log(`  Added permission: ${permission}`);
-          }
+          await Promise.all(
+            config.permissions.map(async (permission) => {
+              await authorizer.assignRolePermission(role, permission);
+              console.log(`  Added permission: ${permission}`);
+            }),
+          );
         }
 
         // 2. Sync inheritance
         const inheritedRoles = (config as any).roles;
         if (inheritedRoles) {
-          for (const parentRole of inheritedRoles) {
-            await authorizer.assignRoleInheritance(role, parentRole, "/");
-            console.log(`  Added inheritance: ${role} -> ${parentRole}`);
-          }
+          await Promise.all(
+            inheritedRoles.map(async (parentRole: string) => {
+              await authorizer.assignRoleInheritance(role, parentRole, "/");
+              console.log(`  Added inheritance: ${role} -> ${parentRole}`);
+            }),
+          );
         }
       }
 
