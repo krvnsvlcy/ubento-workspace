@@ -1,3 +1,4 @@
+import "@ubento/bento-style/dist/uno.css";
 import { SessionProvider } from "@/components/session";
 import { getSession } from "@/lib/auth";
 import type { Metadata } from "next";

@@ -3,7 +3,7 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**", ".vercel/output/**"]
+      "outputs": ["dist/**", "build/**", ".next/**", ".vercel/output/**"]
     },
     "deploy": {
       "dependsOn": ["build"],
