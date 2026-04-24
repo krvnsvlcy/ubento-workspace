@@ -1,0 +1,97 @@
+[data-theme="forest"] {
+  /* Red - Fresh Apple / Berry */
+  --red-100: rgb(120 20 20);
+  --red-200: rgb(160 30 30);
+  --red-300: rgb(200 50 50);
+  --red-400: rgb(230 80 80);
+  --red-500: rgb(250 120 120);
+
+  /* Orange - Bright Autumn / Citrus */
+  --orange-100: rgb(130 50 10);
+  --orange-200: rgb(170 70 15);
+  --orange-300: rgb(210 100 25);
+  --orange-400: rgb(240 130 50);
+  --orange-500: rgb(255 165 90);
+
+  /* Yellow - Sunbeam */
+  --yellow-100: rgb(140 110 10);
+  --yellow-200: rgb(180 145 15);
+  --yellow-300: rgb(220 180 25);
+  --yellow-400: rgb(245 205 50);
+  --yellow-500: rgb(255 230 100);
+
+  /* Green - Fresh Spring / Emerald */
+  --green-100: rgb(15 65 35);
+  --green-200: rgb(25 100 55);
+  --green-300: rgb(40 140 75);
+  --green-400: rgb(65 180 100);
+  --green-500: rgb(110 215 135);
+
+  /* Cyan - Clear Tropical Water */
+  --cyan-100: rgb(15 70 80);
+  --cyan-200: rgb(25 105 120);
+  --cyan-300: rgb(45 145 165);
+  --cyan-400: rgb(75 185 205);
+  --cyan-500: rgb(120 215 235);
+
+  /* Blue - Clear Sky */
+  --blue-100: rgb(20 55 100);
+  --blue-200: rgb(35 85 145);
+  --blue-300: rgb(55 120 195);
+  --blue-400: rgb(90 155 225);
+  --blue-500: rgb(140 190 245);
+
+  /* Violet - Soft Lavender */
+  --violet-100: rgb(70 40 95);
+  --violet-200: rgb(100 60 135);
+  --violet-300: rgb(135 85 180);
+  --violet-400: rgb(165 115 210);
+  --violet-500: rgb(195 155 235);
+
+  /* Pink - Fresh Blossom */
+  --pink-100: rgb(105 35 75);
+  --pink-200: rgb(145 55 105);
+  --pink-300: rgb(190 80 140);
+  --pink-400: rgb(225 115 175);
+  --pink-500: rgb(245 155 200);
+
+  /* Rose - Vibrant Petal */
+  --rose-100: rgb(110 25 55);
+  --rose-200: rgb(155 40 80);
+  --rose-300: rgb(200 65 110);
+  --rose-400: rgb(230 100 145);
+  --rose-500: rgb(250 140 175);
+
+  /* Gray - Clean Cool Stone */
+  --gray-100: rgb(55 60 65);
+  --gray-200: rgb(85 90 95);
+  --gray-300: rgb(115 120 125);
+  --gray-400: rgb(150 155 160);
+  --gray-500: rgb(190 195 200);
+
+  /* Dark - Crisp Charcoal */
+  --dark-100: rgb(20 22 25);
+  --dark-200: rgb(30 32 36);
+  --dark-300: rgb(42 44 48);
+  --dark-400: rgb(55 58 62);
+  --dark-500: rgb(70 73 78);
+
+  /* Light - Crisp Snow / Paper */
+  --light-100: rgb(225 228 230);
+  --light-200: rgb(235 238 240);
+  --light-300: rgb(242 245 248);
+  --light-400: rgb(248 250 252);
+  --light-500: rgb(252 254 255);
+
+  --primary-100: var(--green-100);
+  --primary-200: var(--green-200);
+  --primary-300: var(--green-300);
+  --primary-400: var(--green-400);
+  --primary-500: var(--green-500);
+
+  --secondary-100: var(--cyan-100);
+  --secondary-200: var(--cyan-200);
+  --secondary-300: var(--cyan-300);
+  --secondary-400: var(--cyan-400);
+  --secondary-500: var(--cyan-500);
+}

@@ -1,35 +1,33 @@
 import { Bridge } from "@ubento/engine";
 import { useEffect, useRef, useState } from "react";
-import { DEFAULT_TEMPLATE } from "../constants";
-import { Host } from "../types";
+import { DEFAULT_TEMPLATE } from "@/constants";
+import { useBentoHost } from "@/contexts/host";
+import { useAppBySlug } from "@/hooks/app";
 
-interface AppViewerProps {
-  openedApp: any;
-  closeApp: () => void;
-  host: Host;
-  templateOverrides?: any;
-}
+export function App({ slug }: { slug: string }) {
+  const host = useBentoHost();
+  const {
+    data: openedApp,
+    isLoading,
+    error,
+  } = useAppBySlug({ slug });
 
-export function AppViewer({
-  openedApp,
-  closeApp,
-  host,
-  templateOverrides,
-}: AppViewerProps) {
   const [isOverlayVisible, setIsOverlayVisible] = useState(false);
   const [mode, setMode] = useState<"view" | "edit">("view");
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
+    if (!openedApp) return;
+
     const cleanup = Bridge.listen((type: string, payload?: any) => {
-      if (type === "APP_READY" && openedApp) {
+      if (type === "APP_READY") {
         if (iframeRef.current?.contentWindow) {
           Bridge.send(iframeRef.current.contentWindow, "INITIALIZE_GUEST", {
-            app: openedApp.config || {
+            app: (openedApp as any).config || {
               id: openedApp.id,
               routes: { "/": "home" },
             },
-            pages: templateOverrides || DEFAULT_TEMPLATE,
+            pages: (openedApp as any).metadata?.pages || DEFAULT_TEMPLATE,
           });
         }
       }
@@ -45,7 +43,7 @@ export function AppViewer({
       }
     });
     return cleanup;
-  }, [openedApp, templateOverrides]);
+  }, [openedApp]);
 
   useEffect(() => {
     let lastShiftTime = 0;
@@ -79,12 +77,42 @@ export function AppViewer({
 
   const handleAiAction = () => {
     const prompt = window.prompt(
-      "What would you like to build? (Try 'add text')"
+      "What would you like to build? (Try 'add text')",
     );
     if (prompt) {
       sendCommand("AI_ACTION", prompt);
     }
   };
+
+  const closeApp = () => {
+    host.goToLocation({ view: "home", params: {} });
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex h-screen w-screen items-center justify-center bg-background">
+        <div className="animate-pulse text-sm font-medium text-foreground-400">
+          Loading Application...
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !openedApp) {
+    return (
+      <div className="flex h-screen w-screen flex-col items-center justify-center bg-background gap-4">
+        <div className="text-sm font-medium text-red-500/80">
+          Failed to load application
+        </div>
+        <button
+          onClick={closeApp}
+          className="text-xs font-semibold text-foreground-400 hover:text-foreground transition-colors"
+        >
+          &larr; Back to Home
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-background">
@@ -97,17 +125,17 @@ export function AppViewer({
 
       {/* Editor Toolbar (Host Side) */}
       {mode === "edit" && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100]">
-          <div className="flex items-center gap-3 bg-background-300/80 backdrop-blur-xl border border-white/10 p-2 rounded-full shadow-2xl">
+        <div className="fixed bottom-6 left-1/2 z-[100] -translate-x-1/2">
+          <div className="flex items-center gap-3 rounded-full border border-white/10 bg-background-300/80 p-2 shadow-2xl backdrop-blur-xl">
             <button
               onClick={() => {
                 setMode("view");
                 sendCommand("SET_MODE", "view");
               }}
-              className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
+              className={`rounded-full px-4 py-1.5 text-xs font-semibold transition-all ${
                 mode === "view"
                   ? "bg-primary-500 text-white shadow-lg shadow-primary-500/20"
-                  : "text-foreground-300 hover:text-foreground hover:bg-white/5"
+                  : "text-foreground-300 hover:bg-white/5 hover:text-foreground"
               }`}
             >
               View
@@ -117,20 +145,20 @@ export function AppViewer({
                 setMode("edit");
                 sendCommand("SET_MODE", "edit");
               }}
-              className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
+              className={`rounded-full px-4 py-1.5 text-xs font-semibold transition-all ${
                 mode === "edit"
                   ? "bg-primary-500 text-white shadow-lg shadow-primary-500/20"
-                  : "text-foreground-300 hover:text-foreground hover:bg-white/5"
+                  : "text-foreground-300 hover:bg-white/5 hover:text-foreground"
               }`}
             >
               Edit
             </button>
 
-            <div className="w-px h-4 bg-white/10" />
+            <div className="h-4 w-px bg-white/10" />
 
             <button
               onClick={handleAiAction}
-              className="px-4 py-1.5 rounded-full text-xs font-semibold bg-violet-600 text-white hover:bg-violet-500 transition-all shadow-lg shadow-violet-600/20 flex items-center gap-2"
+              className="flex items-center gap-2 rounded-full bg-violet-600 px-4 py-1.5 text-xs font-semibold text-white shadow-lg shadow-violet-600/20 transition-all hover:bg-violet-500"
             >
               <span>✨</span> AI Builder
             </button>
@@ -139,22 +167,22 @@ export function AppViewer({
       )}
 
       <div
-        className={`absolute inset-0 pointer-events-none transition-opacity duration-300 ${isOverlayVisible && mode === "edit" ? "opacity-100" : "opacity-0"}`}
+        className={`pointer-events-none absolute inset-0 transition-opacity duration-300 ${isOverlayVisible && mode === "edit" ? "opacity-100" : "opacity-0"}`}
       >
-        <div className="pointer-events-auto flex h-12 w-full items-center justify-between bg-white/80 px-4 backdrop-blur-md shadow-sm">
+        <div className="pointer-events-auto flex h-12 w-full items-center justify-between bg-white/80 px-4 shadow-sm backdrop-blur-md">
           <div className="flex items-center gap-4">
             <button
               onClick={closeApp}
-              className="h-8 px-2 rounded hover:bg-black/10 flex items-center justify-center text-sm font-bold transition-colors"
+              className="flex h-8 items-center justify-center rounded px-2 text-sm font-bold transition-colors hover:bg-black/10"
             >
               &larr; Back
             </button>
-            <div className="h-8 w-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 font-bold text-white">
               U
             </div>
             <span className="text-sm font-bold text-gray-800">
               {openedApp?.name}{" "}
-              <span className="font-normal text-gray-400 ml-2">
+              <span className="ml-2 font-normal text-gray-400">
                 ({openedApp?.slug || openedApp?.id})
               </span>
             </span>
@@ -166,7 +194,7 @@ export function AppViewer({
       {mode === "edit" && (
         <button
           onClick={() => setIsOverlayVisible(!isOverlayVisible)}
-          className="absolute bottom-6 right-6 h-12 w-12 rounded-full bg-blue-600 text-white shadow-xl hover:bg-blue-700 z-50 flex items-center justify-center text-xl"
+          className="z-50 absolute bottom-6 right-6 flex h-12 w-12 items-center justify-center rounded-full bg-blue-600 text-xl text-white shadow-xl transition-all hover:bg-blue-700 active:scale-95"
         >
           {isOverlayVisible ? "✕" : "⌘"}
         </button>

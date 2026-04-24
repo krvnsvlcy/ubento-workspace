@@ -7,10 +7,16 @@ export const env = {
   SESSION_KEY: process.env.SESSION_KEY || "ubento-session",
   APP_URL_TEMPLATE:
     process.env.APP_URL_TEMPLATE || process.env.NEXT_PUBLIC_APP_URL_TEMPLATE!,
+  BENTO_RUNTIME_URL: process.env.BENTO_RUNTIME_URL!,
 };
 
-if (!env.AUTH_BASE_URL || !env.CLIENT_ID || !env.SECRET) {
+if (
+  !env.AUTH_BASE_URL ||
+  !env.CLIENT_ID ||
+  !env.SECRET ||
+  !env.BENTO_RUNTIME_URL
+) {
   console.warn(
-    "Required environment variables (AUTH_ISSUER_URL, AUTH_CLIENT_ID, SECRET) are missing.",
+    "Required environment variables (AUTH_ISSUER_URL, AUTH_CLIENT_ID, SECRET, BENTO_RUNTIME_URL) are missing.",
   );
 }

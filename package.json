@@ -4,7 +4,8 @@
   "private": true,
   "description": "Ubento Monorepo",
   "scripts": {
-    "dev": "turbo run dev --filter=@ubento/bento.runtime --filter=@ubento/bento.app --filter=@ubento/ubento",
+    "dev": "turbo run dev --filter=@ubento/bento.runtime --filter=@ubento/bento.app",
+    "dev:web": "turbo run dev --filter=@ubento/bento.runtime --filter=@ubento/ubento",
     "dev:apps": "turbo dev --filter='./apps/*'",
     "dev:services": "turbo dev --filter='./services/*'",
     "deploy:app:bento.runtime": "turbo deploy --filter=@ubento/bento.runtime",

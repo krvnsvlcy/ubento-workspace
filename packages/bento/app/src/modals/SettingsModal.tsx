@@ -1,4 +1,4 @@
-import { Modal } from "../modal";
+import { Modal } from "@/components/modal";
 
 interface SettingsModalProps {
   isOpen: boolean;

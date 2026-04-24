@@ -1,4 +1,4 @@
-import { createAppServiceClient } from "~/clients/app/client.js";
+import { App, createAppServiceClient } from "~/clients/app/client.js";
 import { extractResponseData } from "~/lib/client.js";
 import { extractCursorPage } from "~/lib/pagination.js";
 import { TokenManager } from "~/lib/token_manager.js";
@@ -42,13 +42,22 @@ export class AppService {
         },
       },
     });
-    return extractResponseData(result);
+    return extractResponseData(result) as unknown as App[];
   }
 
   async getApp(appId: string) {
     const result = await this.appClient.get("/apps/{app_id}", {
       params: {
         path: { app_id: appId },
+      },
+    });
+    return extractResponseData(result);
+  }
+
+  async getAppBySlug(slug: string) {
+    const result = await this.appClient.get("/apps/slug/{slug}", {
+      params: {
+        path: { slug },
       },
     });
     return extractResponseData(result);
@@ -213,6 +222,104 @@ export class AppService {
       params: {
         path: { component_id: componentId },
       },
+    });
+    return extractResponseData(result, true);
+  }
+
+  // ===== App Memberships =====
+
+  async listAppMemberships({
+    app_id,
+    user_id,
+    limit,
+    cursor,
+  }: {
+    app_id?: string;
+    user_id?: string;
+    limit?: number;
+    cursor?: string;
+  } = {}) {
+    const result = await this.appClient.get("/app-memberships", {
+      params: {
+        query: {
+          app_id,
+          user_id,
+          limit,
+          cursor,
+        },
+      },
+    });
+    return extractCursorPage(result.response, {
+      items: (result.data as any)?.items || [],
+      fetcher: this.appClient.fetch,
+    });
+  }
+
+  async createAppMembership(data: {
+    app_id: string;
+    user_id: string;
+    role: string;
+  }) {
+    const result = await this.appClient.post("/app-memberships", {
+      body: data,
+    });
+    return extractResponseData(result, true);
+  }
+
+  async deleteAppMembership(membershipId: string) {
+    const result = await this.appClient.delete(
+      "/app-memberships/{membership_id}",
+      {
+        params: {
+          path: { membership_id: membershipId },
+        },
+      },
+    );
+    return extractResponseData(result, true);
+  }
+
+  // ===== App Invites =====
+
+  async listAppInvites({
+    app_id,
+    limit,
+    cursor,
+  }: {
+    app_id: string;
+    limit?: number;
+    cursor?: string;
+  }) {
+    const result = await this.appClient.get("/app-invites/{app_id}", {
+      params: {
+        path: { app_id },
+        query: {
+          limit,
+          cursor,
+        },
+      },
+    });
+    return extractCursorPage(result.response, {
+      items: (result.data as any)?.items || [],
+      fetcher: this.appClient.fetch,
+    });
+  }
+
+  async createAppInvite(app_id: string, data: { email: string; role: string }) {
+    const result = await this.appClient.post("/app-invites/{app_id}", {
+      params: {
+        path: { app_id },
+      },
+      body: data,
+    });
+    return extractResponseData(result, true);
+  }
+
+  async acceptAppInvite(id: string, token: string) {
+    const result = await this.appClient.post("/app-invites/{id}/accept", {
+      params: {
+        path: { id },
+      },
+      body: { token },
     });
     return extractResponseData(result, true);
   }

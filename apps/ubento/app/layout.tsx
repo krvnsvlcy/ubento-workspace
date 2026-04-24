@@ -1,15 +1,9 @@
-import "@ubento/bento-style/dist/uno.css";
 import { SessionProvider } from "@/components/session";
 import { getSession } from "@/lib/auth";
+import "@ubento/bento-style/dist/uno.css";
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
 import { headers } from "next/headers";
 import "./globals.css";
-
-const plusJakartaSans = Plus_Jakarta_Sans({
-  variable: "--font-plus-jakarta-sans",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Ubento",
@@ -27,10 +21,7 @@ export default async function RootLayout({
   );
 
   return (
-    <html
-      lang="en"
-      className={`${plusJakartaSans.variable} h-full antialiased`}
-    >
+    <html lang="en" className="antialiased">
       <body className="min-h-full flex flex-col">
         <SessionProvider
           session={

@@ -1,14 +1,26 @@
-export interface Host {
-  currentSession?: {
-    name?: string;
-    picture?: string;
-    tenantId?: string;
-  } | null;
-  ubento: {
-    app: {
-      listApps: (args: { team_id: string }) => Promise<any[]>;
-      createApp: (args: { name: string; team_id: string }) => Promise<any>;
-    };
-  };
-  iframeUrl?: string; // The URL to load in the iframe, e.g., "http://localhost:4020"
+import type { UbentoSDK } from "@ubento/sdk";
+
+export type BaseBentoLocation<
+  V extends string = string,
+  P = Record<string, string>,
+> = {
+  view: V;
+  params: P;
+};
+export type BentoLocation =
+  | BaseBentoLocation<"home">
+  | BaseBentoLocation<"apps">
+  | BaseBentoLocation<"app", { slug: string }>;
+
+export type BentoSession = {
+  userId: string;
+  teamId: string;
+};
+
+export interface BentoHost {
+  session: BentoSession;
+  ubento: UbentoSDK;
+  iframeUrl: string;
+  // navigation
+  goToLocation: (location: BentoLocation) => void;
 }

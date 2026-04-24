@@ -2,7 +2,7 @@
 
 import { ArrowRight, Box, Cpu, Globe, Shield, Zap } from "lucide-react";
 import { motion } from "motion/react";
-import { Logo } from "./logo";
+import { Logo } from "../components/logo";
 
 export function LandingPage() {
   return (

@@ -1,11 +1,17 @@
-import { User, LogOut, Settings as SettingsIcon, ChevronDown } from "lucide-react";
-import { motion, AnimatePresence } from "motion/react";
-import { useState, useRef, useEffect } from "react";
-import { Logo } from "../logo";
-import { ThemeSelector } from "../ThemeSelector";
+import { useBentoSession } from "@/contexts/session";
+import { useUser } from "@/hooks/iam";
+import {
+  ChevronDown,
+  LogOut,
+  Settings as SettingsIcon,
+  User,
+} from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
+import { useEffect, useRef, useState } from "react";
+import { Logo } from "@/components/logo";
+import { ThemeSelector } from "@/components/ThemeSelector";
 
 interface HeaderProps {
-  currentSession: any;
   currentTheme: string;
   isThemeOpen: boolean;
   setIsThemeOpen: (open: boolean) => void;
@@ -14,13 +20,15 @@ interface HeaderProps {
 }
 
 export function Header({
-  currentSession,
   currentTheme,
   isThemeOpen,
   setIsThemeOpen,
   onChangeTheme,
   onOpenUserSettings,
 }: HeaderProps) {
+  const session = useBentoSession();
+  const { data: user } = useUser(session?.userId);
+
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -52,24 +60,26 @@ export function Header({
             setIsThemeOpen={setIsThemeOpen}
             onChangeTheme={onChangeTheme}
           />
-          {currentSession ? (
+          {session ? (
             <div className="relative" ref={menuRef}>
               <button
                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                className="flex items-center gap-2 group"
+                className="group flex items-center gap-2"
               >
-                <div className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-background-300 overflow-hidden text-foreground-200 transition-all hover:bg-background-400 hover:scale-105 active:scale-95 ring-2 ring-transparent group-hover:ring-primary-500/30">
-                  {currentSession.picture ? (
+                <div className="flex h-9 w-9 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-background-300 text-foreground-200 ring-2 ring-transparent transition-all hover:scale-105 hover:bg-background-400 active:scale-95 group-hover:ring-primary-500/30">
+                  {user?.picture ? (
                     <img
-                      src={currentSession.picture}
-                      alt={currentSession.name}
+                      src={user.picture}
+                      alt={user.name}
                       className="h-full w-full object-cover"
                     />
                   ) : (
                     <User className="h-4 w-4" />
                   )}
                 </div>
-                <ChevronDown className={`h-3.5 w-3.5 text-foreground-300 transition-transform duration-300 ${isUserMenuOpen ? 'rotate-180' : ''}`} />
+                <ChevronDown
+                  className={`h-3.5 w-3.5 text-foreground-300 transition-transform duration-300 ${isUserMenuOpen ? "rotate-180" : ""}`}
+                />
               </button>
 
               <AnimatePresence>
@@ -79,21 +89,25 @@ export function Header({
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95, y: 10 }}
                     transition={{ duration: 0.2, ease: "easeOut" }}
-                    className="absolute right-0 top-full mt-2 w-56 origin-top-right overflow-hidden rounded-2xl bg-background-200 border border-background-400/50 shadow-2xl z-50 p-1.5"
+                    className="z-50 absolute right-0 top-full mt-2 w-56 origin-top-right overflow-hidden rounded-2xl border border-background-400/50 bg-background-200 p-1.5 shadow-2xl"
                   >
-                    <div className="px-3 py-2 mb-1 border-b border-background-400/30">
-                      <p className="text-xs font-semibold text-foreground-400 uppercase tracking-wider">Account</p>
-                      <p className="text-sm font-medium text-foreground truncate">{currentSession.name}</p>
+                    <div className="mb-1 border-b border-background-400/30 px-3 py-2">
+                      <p className="text-xs font-semibold uppercase tracking-wider text-foreground-400">
+                        Account
+                      </p>
+                      <p className="truncate text-sm font-medium text-foreground">
+                        {user?.name || "Loading..."}
+                      </p>
                     </div>
-                    
+
                     <button
                       onClick={() => {
                         setIsUserMenuOpen(false);
                         onOpenUserSettings();
                       }}
-                      className="flex w-full items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-foreground-200 transition-all hover:bg-background-300 hover:text-foreground group"
+                      className="group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-foreground-200 transition-all hover:bg-background-300 hover:text-foreground"
                     >
-                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-background-400/50 group-hover:bg-primary-500/10 group-hover:text-primary-500 transition-colors">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-background-400/50 transition-colors group-hover:bg-primary-500/10 group-hover:text-primary-500">
                         <SettingsIcon className="h-4 w-4" />
                       </div>
                       Settings
@@ -101,9 +115,9 @@ export function Header({
 
                     <a
                       href="/api/auth/logout"
-                      className="flex w-full items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-400 transition-all hover:bg-red-400/10 hover:text-red-300 group"
+                      className="group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-red-400 transition-all hover:bg-red-400/10 hover:text-red-300"
                     >
-                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-400/5 group-hover:bg-red-400/10 transition-colors">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-400/5 transition-colors group-hover:bg-red-400/10">
                         <LogOut className="h-4 w-4" />
                       </div>
                       Logout
@@ -129,7 +143,7 @@ export function Header({
         transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
         className="mb-16 text-2xl font-medium tracking-tight sm:text-3xl"
       >
-        Good afternoon {currentSession?.name || "Guest"}
+        Good afternoon {user?.name || "Guest"}
       </motion.h1>
     </>
   );

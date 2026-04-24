@@ -2,9 +2,12 @@
   "name": "@ubento/bento-app",
   "version": "1.0.0",
   "private": true,
-  "main": "src/index.tsx",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "dependencies": {
+    "@tanstack/react-query": "^5.100.1",
     "@ubento/engine": "workspace:*",
+    "@ubento/sdk": "workspace:*",
     "lucide-react": "^0.468.0",
     "motion": "^12.38.0",
     "react": "^19.0.0",

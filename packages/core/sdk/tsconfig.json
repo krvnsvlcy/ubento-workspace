@@ -9,6 +9,8 @@
     "skipLibCheck": true,
     "declaration": true,
     "resolveJsonModule": true,
+    "sourceMap": true,
+    "declarationMap": true,
     "rootDir": "./src",
     "outDir": "./build",
     "types": ["node"],

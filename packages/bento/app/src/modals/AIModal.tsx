@@ -1,5 +1,5 @@
+import { Modal } from "@/components/modal";
 import { Sparkles } from "lucide-react";
-import { Modal } from "../modal";
 
 interface AIModalProps {
   isOpen: boolean;

@@ -1,5 +1,5 @@
+import { Modal } from "@/components/modal";
 import React from "react";
-import { Modal } from "../modal";
 
 interface CreateAppModalProps {
   isOpen: boolean;
