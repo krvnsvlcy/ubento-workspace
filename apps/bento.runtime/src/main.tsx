@@ -52,20 +52,56 @@ function GuestApp() {
     // 1. Notify host that we are ready to receive the app config
     Bridge.send(window.parent, "APP_READY", {});
 
+    let lastShiftTime = 0;
+
     // 2. Listen for initialization from host
     const cleanup = Bridge.listen((type, payload) => {
       console.log(`[Guest] Received: ${type}`, payload);
       if (type === "INITIALIZE_GUEST") {
-        const { app, pages } = payload as { app: AppData; pages: Record<string, PageData> };
+        const { app, pages } = payload as {
+          app: AppData;
+          pages: Record<string, PageData>;
+        };
         setInitData({
           app: createApp(app),
-          pages: pages
+          pages: pages,
+        });
+      }
+
+      if (type === "SET_MODE") {
+        editorContext.mode = payload as any;
+        if (payload === "view") {
+          editorContext.selection = [];
+        }
+      }
+
+      if (type === "AI_ACTION") {
+        if (!thinkingAgent) return;
+        thinkingAgent.process(payload as string).catch((e) => {
+          console.error("AI Agent failed:", e);
         });
       }
     });
 
-    return cleanup;
-  }, []);
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Shift") {
+        const currentTime = Date.now();
+        if (currentTime - lastShiftTime < 500) {
+          Bridge.send(window.parent, "TOGGLE_MODE", {});
+          lastShiftTime = 0;
+        } else {
+          lastShiftTime = currentTime;
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      cleanup();
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [thinkingAgent]);
 
   if (!initData) {
     return (
@@ -78,108 +114,7 @@ function GuestApp() {
   return (
     <PageRegistryProvider registry={initData.pages}>
       <App app={initData.app} />
-      <EditorToolbar thinkingAgent={thinkingAgent} />
     </PageRegistryProvider>
-  );
-}
-
-function EditorToolbar({ thinkingAgent }: { thinkingAgent: ThinkingAgent | null }) {
-  const snap = useSnapshot(editorContext);
-  const [isAiLoading, setIsAiLoading] = useState(false);
-
-  const handleAiAction = async () => {
-    if (!thinkingAgent) return;
-    const prompt = window.prompt("What would you like to build? (Try 'add text')");
-    if (!prompt) return;
-
-    setIsAiLoading(true);
-    try {
-      await thinkingAgent.process(prompt);
-    } catch (e) {
-      alert("AI Agent failed: " + e);
-    } finally {
-      setIsAiLoading(false);
-    }
-  };
-
-  return (
-    <div
-      style={{
-        position: "fixed",
-        bottom: 20,
-        left: "50%",
-        transform: "translateX(-50%)",
-        backgroundColor: "#1f2937",
-        padding: "8px 16px",
-        borderRadius: "99px",
-        display: "flex",
-        gap: "12px",
-        alignItems: "center",
-        boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
-        zIndex: 1000,
-        border: "1px solid #374151",
-      }}
-    >
-      <button
-        style={{
-          backgroundColor: snap.mode === "view" ? "#3b82f6" : "transparent",
-          color: "white",
-          border: "none",
-          padding: "4px 12px",
-          borderRadius: "99px",
-          cursor: "pointer",
-          fontSize: "12px",
-          fontWeight: 600,
-        }}
-        onClick={() => {
-          editorContext.mode = "view";
-          editorContext.selection = [];
-        }}
-      >
-        View
-      </button>
-      <button
-        style={{
-          backgroundColor: snap.mode === "edit" ? "#3b82f6" : "transparent",
-          color: "white",
-          border: "none",
-          padding: "4px 12px",
-          borderRadius: "99px",
-          cursor: "pointer",
-          fontSize: "12px",
-          fontWeight: 600,
-        }}
-        onClick={() => (editorContext.mode = "edit")}
-      >
-        Edit
-      </button>
-
-      <div style={{ width: "1px", height: "16px", backgroundColor: "#374151" }} />
-
-      <button
-        style={{
-          backgroundColor: "#8b5cf6",
-          color: "white",
-          border: "none",
-          padding: "4px 12px",
-          borderRadius: "99px",
-          cursor: "pointer",
-          fontSize: "12px",
-          fontWeight: 600,
-          opacity: isAiLoading ? 0.7 : 1,
-        }}
-        disabled={isAiLoading}
-        onClick={handleAiAction}
-      >
-        {isAiLoading ? "Thinking..." : "✨ AI Builder"}
-      </button>
-
-      {snap.selection.length > 0 && (
-        <div style={{ color: "#9ca3af", fontSize: "11px", marginLeft: "8px", borderLeft: "1px solid #374151", paddingLeft: "12px" }}>
-          {snap.selection.length} selected
-        </div>
-      )}
-    </div>
   );
 }
 

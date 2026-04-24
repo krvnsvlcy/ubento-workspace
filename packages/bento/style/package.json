@@ -4,8 +4,8 @@
   "private": true,
   "main": "dist/uno.css",
   "scripts": {
-    "build": "unocss \"../../apps/**/*.tsx\" \"../../packages/**/*.tsx\" -o dist/uno.css",
-    "dev": "unocss \"../../apps/**/*.tsx\" \"../../packages/**/*.tsx\" -o dist/uno.css --watch"
+    "build": "unocss \"../../bento/**/*.(ts|tsx)\" -o dist/uno.css",
+    "dev": "unocss \"../../bento/**/*.(ts|tsx)\" -o dist/uno.css --watch"
   },
   "devDependencies": {
     "unocss": "^0.65.4",

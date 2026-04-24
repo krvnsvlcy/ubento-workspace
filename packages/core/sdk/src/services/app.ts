@@ -42,10 +42,7 @@ export class AppService {
         },
       },
     });
-    return extractCursorPage(result.response, {
-      items: (result.data as any)?.items || [],
-      fetcher: this.appClient.fetch,
-    });
+    return extractResponseData(result);
   }
 
   async getApp(appId: string) {

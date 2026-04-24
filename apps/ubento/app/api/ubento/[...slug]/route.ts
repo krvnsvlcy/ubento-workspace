@@ -45,7 +45,6 @@ async function handle(req: NextRequest) {
         ? await req.json().catch(() => undefined)
         : undefined;
 
-    console.log({ finalUrl, serviceName });
     const response = await axios({
       method: req.method,
       url: finalUrl,

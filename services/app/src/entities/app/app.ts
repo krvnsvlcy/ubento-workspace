@@ -88,7 +88,9 @@ export async function listApps(filter: { team_id?: string }) {
   return await prisma.app.findMany({
     where: {
       team_id: filter.team_id,
-      deleted_at: null,
+      deleted_at: {
+        isSet: false,
+      },
     },
   });
 }

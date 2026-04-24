@@ -32,7 +32,6 @@ export function buildAccessTokenPayload(params: {
   scope: string[];
   teamIds: string[];
 }): AccessTokenPayload {
-  console.log("buildAccessTokenPayload", params);
   return {
     sub: params.subject,
     aud: params.audience,
