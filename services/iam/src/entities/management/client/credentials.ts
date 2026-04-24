@@ -130,11 +130,15 @@ export async function useClientCredential({
 
     const [algo, hashString] = cred.secret_hash.split(":", 2);
     switch (algo) {
-      case "sha256":
-        if (
-          crypto.createHash("sha256").update(secret).digest("hex") ===
-          hashString
-        ) {
+      case "sha256": {
+        const computedHash = crypto
+          .createHash("sha256")
+          .update(secret)
+          .digest("hex");
+        const a = Buffer.from(computedHash);
+        const b = Buffer.from(hashString);
+
+        if (a.length === b.length && crypto.timingSafeEqual(a, b)) {
           await prisma.clientCredential.update({
             where: { id: cred.id },
             data: {
@@ -145,6 +149,7 @@ export async function useClientCredential({
           return cred;
         }
         break;
+      }
       default:
         break;
     }
