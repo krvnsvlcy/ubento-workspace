@@ -1,8 +1,6 @@
 import { PendingView } from "@ubento/bento-primitives";
 import {
   App,
-  createApp,
-  PageRegistryProvider,
   type AppData,
   type GuestRpcInterface,
   type HostRpcInterface,
@@ -54,9 +52,5 @@ export function GuestApp() {
     return <PendingView message="Loading Application..." />;
   }
 
-  return (
-    <PageRegistryProvider registry={{}}>
-      <App app={app} />
-    </PageRegistryProvider>
-  );
+  return <App app={app} />;
 }

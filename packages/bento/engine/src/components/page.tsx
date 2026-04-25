@@ -1,58 +1,34 @@
-import React, { createContext, useContext, useMemo } from "react";
-import { proxy, useSnapshot } from "valtio";
-import { PageData, editorContext, ContainerData } from "../models";
-import { Element, ElementRegistryProvider } from "./element";
-import { 
-  DndContext, 
-  DragEndEvent, 
-  PointerSensor, 
-  useSensor, 
-  useSensors,
+import {
   closestCenter,
-  DragStartEvent
+  DndContext,
+  DragEndEvent,
+  DragStartEvent,
+  PointerSensor,
+  useSensor,
+  useSensors,
 } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
+import { ErrorView, PendingView } from "@ubento/bento-primitives";
+import React, { useEffect, useState } from "react";
+import { useSnapshot } from "valtio";
+import { useAppEngineController } from "../controller";
+import { ContainerData, PageData } from "../models";
+import { Element, ElementRegistryProvider } from "./elements/element";
 
-export interface PageRegistry {
-  [key: string]: PageData;
-}
-export const PageRegistryContext = createContext<PageRegistry>(proxy({}));
-
-export function PageRegistryProvider({
-  children,
-  registry,
-}: {
-  children: React.ReactNode;
-  registry: PageRegistry;
-}): React.JSX.Element {
-  const proxyRegistry = useMemo(() => proxy(registry), [registry]);
-
-  return (
-    <PageRegistryContext.Provider value={proxyRegistry}>
-      {children}
-    </PageRegistryContext.Provider>
-  );
-}
-
-export function Page({ id }: { id: string }): React.JSX.Element {
-  const registry = useContext(PageRegistryContext);
-  const editorSnap = useSnapshot(editorContext);
-  const page = registry[id];
+function PageContent({ page }: { page: PageData }): React.JSX.Element {
+  const controller = useAppEngineController();
+  const snap = useSnapshot(page);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
         distance: 5,
       },
-    })
+    }),
   );
 
-  if (!page) {
-    return <></>;
-  }
-
   const handleDragStart = (event: DragStartEvent) => {
-    editorContext.selection = [event.active.id as string];
+    controller.select([event.active.id as string]);
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -66,43 +42,45 @@ export function Page({ id }: { id: string }): React.JSX.Element {
     let activeParentId: string | null = null;
     let overParentId: string | null = null;
 
-    for (const [key, el] of Object.entries(page.elements)) {
-      if (el.type === "container" && el.content?.includes(activeId)) activeParentId = key;
-      if (el.type === "container" && el.content?.includes(overId)) overParentId = key;
+    for (const [key, el] of Object.entries(snap.elements)) {
+      if (el.type === "container" && el.content?.includes(activeId))
+        activeParentId = key;
+      if (el.type === "container" && el.content?.includes(overId))
+        overParentId = key;
     }
 
     if (!activeParentId || !overParentId) return;
 
-    const sourceParent = page.elements[activeParentId] as ContainerData;
-    const targetParent = page.elements[overParentId] as ContainerData;
+    const sourceParent = snap.elements[activeParentId] as ContainerData;
+    const targetParent = snap.elements[overParentId] as ContainerData;
 
     if (activeParentId === overParentId) {
       // Same container - reorder
       const oldIndex = sourceParent.content.indexOf(activeId);
       const newIndex = sourceParent.content.indexOf(overId);
-      sourceParent.content = arrayMove(sourceParent.content, oldIndex, newIndex);
+      sourceParent.content = arrayMove(
+        sourceParent.content,
+        oldIndex,
+        newIndex,
+      );
     } else {
       // Different containers - move
       const sourceIndex = sourceParent.content.indexOf(activeId);
       const targetIndex = targetParent.content.indexOf(overId);
-      
+
       sourceParent.content.splice(sourceIndex, 1);
       targetParent.content.splice(targetIndex, 0, activeId);
     }
   };
 
   const content = (
-    <ElementRegistryProvider registry={page.elements as any}>
-      <Element id={page.rootId} />
+    <ElementRegistryProvider registry={snap.elements as any}>
+      <Element id={snap.rootId} />
     </ElementRegistryProvider>
   );
 
-  if (editorSnap.mode === "view") {
-    return content;
-  }
-
   return (
-    <DndContext 
+    <DndContext
       sensors={sensors}
       collisionDetection={closestCenter}
       onDragStart={handleDragStart}
@@ -111,4 +89,36 @@ export function Page({ id }: { id: string }): React.JSX.Element {
       {content}
     </DndContext>
   );
+}
+
+export function Page({
+  id,
+}: {
+  id: string;
+  params?: Record<string, any>;
+}): React.JSX.Element {
+  const controller = useAppEngineController();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [page, setPage] = useState<PageData | undefined>();
+
+  useEffect(() => {
+    controller
+      .getPage(id)
+      .then((page) => {
+        setPage(page);
+      })
+      .catch(() => {
+        setError(true);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [id, controller]);
+
+  if (loading) return <PendingView message="Loading page..." />;
+  if (error) return <ErrorView message="Failed to load page" />;
+  if (!page) return <ErrorView message="Page not found" />;
+
+  return <PageContent page={page} />;
 }

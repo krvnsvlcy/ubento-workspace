@@ -1,10 +1,11 @@
-import React, { createContext, useContext, useMemo } from "react";
-import { useSnapshot } from "valtio";
-import { ElementData, editorContext, BaseStyle } from "../models";
-import { Component } from "./component";
-import { Container } from "./core/container";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import React, { createContext, useContext } from "react";
+import { useSnapshot } from "valtio";
+import { useAppEngineController } from "../../controller";
+import { BaseStyle, ElementData } from "../../models";
+import { Component } from "./component";
+import { Container } from "./container";
 
 export type ElementRegistry = {
   [key: string]: ElementData;
@@ -40,13 +41,16 @@ function getBaseStyle(style: BaseStyle): React.CSSProperties {
     borderStyle: style.borderWidth ? "solid" : undefined,
     borderColor: style.borderColor,
     overflow: style.overflow,
-    padding: style.padding ? `${style.padding.top ?? 0}px ${style.padding.right ?? 0}px ${style.padding.bottom ?? 0}px ${style.padding.left ?? 0}px` : undefined,
+    padding: style.padding
+      ? `${style.padding.top ?? 0}px ${style.padding.right ?? 0}px ${style.padding.bottom ?? 0}px ${style.padding.left ?? 0}px`
+      : undefined,
   };
 }
 
 export function Element({ id }: { id: string }): React.JSX.Element {
   const registry = useContext(ElementRegistryContext);
-  const editorSnap = useSnapshot(editorContext);
+  const controller = useAppEngineController();
+  const snap = useSnapshot(controller.state);
   const element = registry[id];
 
   const {
@@ -55,28 +59,33 @@ export function Element({ id }: { id: string }): React.JSX.Element {
     setNodeRef,
     transform,
     transition,
-    isDragging
+    isDragging,
   } = useSortable({ id });
 
   if (!element) {
     return <></>;
   }
 
-  const isSelected = editorSnap.selection.includes(id);
-  const isEditMode = editorSnap.mode === "edit";
+  const isSelected = snap.selection?.includes(id);
+  const isEditMode = snap.mode === "edit";
 
-  const renderContent = () => {
-    if (element.type === "container") {
-      return <Container content={element.content} style={element.style} />;
-    }
-    return (
-      <div style={getBaseStyle(element.style)}>
-        <Component id={element.component} props={element.props} />
-      </div>
-    );
-  };
+  let content: React.JSX.Element;
 
-  const content = renderContent();
+  switch (element.type) {
+    case "container":
+      content = <Container content={element.content} style={element.style} />;
+      break;
+    case "block":
+      content = (
+        <div style={getBaseStyle(element.style)}>
+          <Component id={element.componentId} props={element.props} />
+        </div>
+      );
+      break;
+    default:
+      content = <></>;
+      break;
+  }
 
   if (!isEditMode) {
     return content;
@@ -103,15 +112,7 @@ export function Element({ id }: { id: string }): React.JSX.Element {
       {...listeners}
       onClick={(e) => {
         e.stopPropagation();
-        if (e.shiftKey) {
-          if (isSelected) {
-            editorContext.selection = editorContext.selection.filter((s) => s !== id);
-          } else {
-            editorContext.selection.push(id);
-          }
-        } else {
-          editorContext.selection = [id];
-        }
+        controller.select([id], e.shiftKey);
       }}
     >
       {/* Handle Overlay */}
@@ -130,10 +131,14 @@ export function Element({ id }: { id: string }): React.JSX.Element {
           display: "flex",
           alignItems: "center",
           gap: "4px",
-          whiteSpace: "nowrap"
+          whiteSpace: "nowrap",
         }}
       >
-        <span>{element.type === "container" ? "container" : `block:${element.component}`}</span>
+        <span>
+          {element.type === "container"
+            ? "container"
+            : `block:${element.componentId}`}
+        </span>
         {isSelected && <span style={{ opacity: 0.8 }}>({id})</span>}
       </div>
       {content}

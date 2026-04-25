@@ -251,6 +251,22 @@ export const ubentoEntities = {
     name: "connection",
     code: "cnn",
   },
+
+  // Module
+  /**
+   * Represents a module.
+   */
+  module: {
+    name: "module",
+    code: "mod",
+  },
+  /**
+   * Represents a version of a module.
+   */
+  moduleVersion: {
+    name: "module_version",
+    code: "mdv",
+  },
 } as const;
 
 // Ensure all entities are unique

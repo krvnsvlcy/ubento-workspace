@@ -1,4 +1,3 @@
-import { proxy } from "valtio";
 import { z } from "zod";
 
 export const baseStyleSchema = z.object({
@@ -22,7 +21,6 @@ export const baseStyleSchema = z.object({
     })
     .optional(),
 });
-
 export type BaseStyle = z.infer<typeof baseStyleSchema>;
 
 export const containerStyleSchema = baseStyleSchema.extend({
@@ -41,7 +39,6 @@ export const containerStyleSchema = baseStyleSchema.extend({
     .enum(["start", "end", "center", "stretch", "space-between"])
     .optional(),
 });
-
 export type ContainerStyle = z.infer<typeof containerStyleSchema>;
 
 export const containerDataSchema = z.object({
@@ -49,59 +46,33 @@ export const containerDataSchema = z.object({
   style: containerStyleSchema,
   content: z.array(z.string()), // Children IDs
 });
-
 export type ContainerData = z.infer<typeof containerDataSchema>;
+
+export const componentDataSchema = z.object({
+  id: z.string(),
+});
 
 export const blockDataSchema = z.object({
   type: z.literal("block"),
-  component: z.string(),
+  componentId: z.string(),
   props: z.record(z.string(), z.any()),
   style: baseStyleSchema,
 });
-
 export type BlockData = z.infer<typeof blockDataSchema>;
 
 export const elementDataSchema = z.discriminatedUnion("type", [
   containerDataSchema,
   blockDataSchema,
 ]);
-
 export type ElementData = z.infer<typeof elementDataSchema>;
 
 export const pageDataSchema = z.object({
-  id: z.string(),
   rootId: z.string(),
   elements: z.record(z.string(), elementDataSchema),
 });
-
 export type PageData = z.infer<typeof pageDataSchema>;
 
 export const appDataSchema = z.object({
-  routes: z.record(z.string(), z.string()).optional(), // path -> pageId
+  homePageId: z.string().optional(),
 });
-
 export type AppData = z.infer<typeof appDataSchema>;
-
-export const editorModeSchema = z.enum(["edit", "view"]);
-
-export type EditorMode = z.infer<typeof editorModeSchema>;
-
-export const editorContextSchema = z.object({
-  mode: editorModeSchema,
-  selection: z.array(z.string()),
-});
-
-export type EditorContext = z.infer<typeof editorContextSchema>;
-
-export function createApp(init: AppData) {
-  return proxy(init);
-}
-
-export function createPage(init: PageData) {
-  return proxy(init);
-}
-
-export const editorContext = proxy<EditorContext>({
-  mode: "view",
-  selection: [],
-});

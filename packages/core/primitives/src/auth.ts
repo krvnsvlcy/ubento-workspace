@@ -83,6 +83,13 @@ export const ubentoAuth = {
       update: "component:update",
       delete: "component:delete",
     },
+    module: {
+      read: "module:read",
+      list: "module:list",
+      create: "module:create",
+      update: "module:update",
+      delete: "module:delete",
+    },
   },
   roles: {
     root: {

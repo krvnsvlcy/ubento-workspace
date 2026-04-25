@@ -31,23 +31,9 @@ type Token = {
   token_type: string;
 };
 
-function tokenIsValid(token: string) {
-  if (!token) return false;
-  try {
-    const expiry = JSON.parse(atob(token.split(".")[1])).exp;
-    return expiry - Date.now() / 1000 > 60;
-  } catch (e) {
-    return false;
-  }
-}
-
+let token: Token | null = null;
 async function getToken() {
-  let token: Token | null = null;
-  try {
-    token = JSON.parse(localStorage.getItem("ubento-access-token") || "");
-  } catch (e) {}
-
-  if (token && tokenIsValid(token.access_token)) return token.access_token;
+  if (token) return token.access_token;
   localStorage.removeItem("ubento-access-token");
 
   if (token && token.refresh_token) {
@@ -63,10 +49,8 @@ async function getToken() {
         client_secret: clientSecret,
       }),
     });
-    const data: Token = await res.json();
-    console.log(data);
-    localStorage.setItem("ubento-access-token", JSON.stringify(data));
-    return data.access_token;
+    token = await res.json();
+    return token.access_token;
   }
 
   const res = await fetch(new URL("/oauth/token", authServerBaseUrl), {

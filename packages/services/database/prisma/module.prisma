@@ -1,0 +1,47 @@
+generator client {
+    provider      = "prisma-client-js"
+    binaryTargets = ["native", "debian-openssl-3.0.x"]
+    output        = "./generated/module"
+}
+
+generator jsonSchema {
+    provider                 = "prisma-json-schema-generator"
+    output                   = "../src/schemas/module"
+    keepRelationFields       = "false"
+    keepRelationScalarFields = "true"
+    includeRequiredFields    = "true"
+}
+
+datasource db {
+    provider = "mongodb"
+    url      = env("MODULE_DATABASE_URL")
+}
+
+model Module {
+    id      String @id @map("_id")
+    entity  String @default("module")
+    team_id String
+
+    name              String
+    slug              String @unique
+    latest_version_id String
+
+    version    Int       @default(1)
+    created_at DateTime  @default(now())
+    updated_at DateTime  @updatedAt
+    deleted_at DateTime?
+
+    @@map("modules")
+}
+
+model ModuleVersion {
+    id        String @id @map("_id")
+    entity    String @default("module_version")
+    module_id String
+
+    version    Int      @default(1)
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+
+    @@map("module_versions")
+}

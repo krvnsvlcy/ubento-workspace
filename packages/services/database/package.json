@@ -11,14 +11,23 @@
     "./app": {
       "import": "./build/app.js",
       "types": "./build/app.d.ts"
+    },
+    "./module": {
+      "import": "./build/module.js",
+      "types": "./build/module.d.ts"
     }
   },
   "scripts": {
     "build": "npm run generate && scripts build",
     "watch": "scripts watch",
-    "generate": "npm run generate:iam && npm run generate:app",
+    "generate": "npm run generate:iam && npm run generate:app && npm run generate:module",
     "generate:iam": "prisma generate --schema=./prisma/iam.prisma",
-    "generate:app": "prisma generate --schema=./prisma/app.prisma"
+    "generate:app": "prisma generate --schema=./prisma/app.prisma",
+    "generate:module": "prisma generate --schema=./prisma/module.prisma",
+    "push": "npm run push:iam && npm run push:app && npm run push:module",
+    "push:iam": "prisma db push --schema=./prisma/iam.prisma",
+    "push:app": "prisma db push --schema=./prisma/app.prisma",
+    "push:module": "prisma db push --schema=./prisma/module.prisma"
   },
   "dependencies": {
     "@prisma/client": "5.18.0",
