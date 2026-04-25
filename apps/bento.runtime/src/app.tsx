@@ -12,7 +12,25 @@ export function GuestApp() {
       setInitData(data);
     });
 
-    return () => bridge.dispose();
+    let lastShiftPress = 0;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Shift") {
+        const now = Date.now();
+        if (now - lastShiftPress < 300) {
+          bridge.send("toggle-mode", {});
+          lastShiftPress = 0;
+        } else {
+          lastShiftPress = now;
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      bridge.dispose();
+    };
   }, []);
 
   if (!initData) {

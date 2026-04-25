@@ -4,6 +4,7 @@ import { AppContent } from "./content";
 import { createAppController } from "./controller";
 import { AppInteractor } from "./interactor/interactor";
 import { createAppInteractorState } from "./interactor/state";
+import { Bridge, PostMessageChannel } from "@ubento/engine";
 
 export function App({ slug }: { slug: string }) {
   const { data: appData } = useAppBySlug({ slug });
@@ -31,6 +32,20 @@ export function App({ slug }: { slug: string }) {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [interactorState]);
+
+  useEffect(() => {
+    // We listen to messages from the iframe
+    const bridge = new Bridge(new PostMessageChannel(window));
+    
+    const cleanup = bridge.on("toggle-mode", () => {
+      interactorState.mode = interactorState.mode === "edit" ? "live" : "edit";
+    });
+
+    return () => {
+      cleanup();
+      bridge.dispose();
+    };
   }, [interactorState]);
 
   const appController = useMemo(() => {

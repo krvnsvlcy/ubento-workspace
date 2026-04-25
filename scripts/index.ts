@@ -1,7 +1,7 @@
 #!/usr/bin/env -S npx tsx
 
 import { cac } from "cac";
-import { build } from "./build/index.js";
+import { build } from "./commands/build/index.js";
 import { clean } from "./commands/clean/index.js";
 import { containerize } from "./commands/containerize/index.js";
 import { deploy } from "./commands/deploy/index.js";

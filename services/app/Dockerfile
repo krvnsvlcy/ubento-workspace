@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1
+
 
 ARG NODE_VERSION=20
 
@@ -59,11 +59,9 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
 # -----------------------------------------------------------------------------
 RUN mkdir -p /app/prisma-staging/node_modules/@prisma && \
     CLIENT_PATH=$(find /usr/src/app -type d -path "*/node_modules/@prisma/client" | head -n 1) && \
-    DOT_PATH=$(find /usr/src/app -type d -path "*/node_modules/.prisma" | head -n 1) && \
-    echo "Found Prisma Client at: $CLIENT_PATH" && \
-    echo "Found .prisma engine at: $DOT_PATH" && \
     cp -rL "$CLIENT_PATH" /app/prisma-staging/node_modules/@prisma/client && \
-    cp -rL "$DOT_PATH" /app/prisma-staging/node_modules/.prisma
+    mkdir -p /app/prisma-staging/node_modules/.prisma/client && \
+    cp -rL /usr/src/app/packages/services/database/prisma/generated/app/* /app/prisma-staging/node_modules/.prisma/client/
 
 ################################################################################
 # 3. Final Production Stage

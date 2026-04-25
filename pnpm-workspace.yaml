@@ -1,8 +1,5 @@
 packages:
-  - "apps/*"
-  - "packages/*"
-  - "packages/bento/*"
-  - "packages/core/*"
-  - "packages/services/*"
-  - "services/*"
+  - "apps/**"
+  - "services/**"
+  - "packages/**"
   - "scripts"
