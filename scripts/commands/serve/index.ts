@@ -27,9 +27,10 @@ export async function serve(options: ServeOptions) {
 
   console.log(`🚀 Starting local service execution...`);
 
-  const imageName = `ubento/${serviceName}`;
+  const serviceNameFull = `${serviceName}-service`;
+  const imageName = `ubento/${serviceNameFull}`;
 
-  console.log(`📦 Service: ${serviceName}`);
+  console.log(`📦 Service: ${serviceNameFull}`);
   console.log(`🔌 Port: ${port}`);
   console.log(`🐳 Image: ${imageName}`);
 
