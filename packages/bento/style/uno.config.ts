@@ -8,7 +8,7 @@ import {
 export default defineConfig({
   cli: {
     entry: {
-      patterns: ["../app/src/**/*.{ts,tsx}"],
+      patterns: ["../app/src/**/*.{ts,tsx}", "../primitives/src/**/*.{ts,tsx}"],
       outFile: "./dist/uno.css",
     },
   },
