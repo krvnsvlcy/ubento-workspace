@@ -1,38 +1,58 @@
 import { ErrorView, PendingView } from "@ubento/bento-primitives";
 import React, { useEffect, useState } from "react";
-import { useSnapshot } from "valtio";
-import { ComponentModule, useAppEngineController } from "../../controller";
-
-function ComponentContent({
-  componentModule,
-  props = {},
-}: {
-  componentModule: ComponentModule;
-  props?: Record<string, any>;
-}): React.JSX.Element {
-  const snap = useSnapshot(componentModule);
-  const Component = snap.value as React.ComponentType<any>;
-
-  return <Component {...props} />;
-}
+import { subscribe } from "valtio";
+import { useAppEngineController } from "../../controller";
 
 export function Component({
-  id,
+  moduleId,
+  moduleVersionId,
   props = {},
 }: {
-  id: string;
+  moduleId: string;
+  moduleVersionId?: string;
   props?: Record<string, any>;
 }): React.JSX.Element {
   const controller = useAppEngineController();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [component, setComponent] = useState<ComponentModule | undefined>();
+  const [moduleValue, setModuleValue] = useState<any>();
+  const [versionId, setVersionId] = useState<string | undefined>(
+    moduleVersionId,
+  );
 
+  // resolve module versionId
   useEffect(() => {
+    if (!moduleVersionId) {
+      let mounted = true;
+      let cleanup: (() => void) | undefined;
+      controller
+        .getModule(moduleId)
+        .then((module) => {
+          if (mounted) {
+            cleanup = subscribe(module, (_) => {
+              setVersionId(module.latestVersionId);
+            });
+          }
+        })
+        .catch(() => {
+          setError(true);
+          setLoading(false);
+        });
+
+      return () => {
+        mounted = false;
+        cleanup?.();
+      };
+    }
+  }, [moduleId, controller]);
+
+  // resolve version value
+  useEffect(() => {
+    if (!versionId) return;
     controller
-      .getComponent(id)
-      .then((component) => {
-        setComponent(component);
+      .resolveModuleValue(moduleId, versionId)
+      .then((moduleValue) => {
+        setModuleValue(moduleValue.value);
       })
       .catch(() => {
         setError(true);
@@ -40,11 +60,15 @@ export function Component({
       .finally(() => {
         setLoading(false);
       });
-  }, [id, controller]);
+  }, [versionId, controller]);
 
-  if (loading) return <PendingView message="Loading page..." />;
-  if (error) return <ErrorView message="Failed to load page" />;
-  if (!component) return <ErrorView message="Page not found" />;
+  if (loading) return <PendingView message="Loading component..." />;
+  if (error) return <ErrorView message="Failed to load component" />;
+  if (!moduleValue) return <ErrorView message="Component not found" />;
 
-  return <ComponentContent componentModule={component} props={props} />;
+  const Component = moduleValue.default;
+  if (!Component)
+    return <ErrorView message="No default export found in component module" />;
+
+  return <Component {...props} />;
 }

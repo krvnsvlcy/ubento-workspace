@@ -48,15 +48,17 @@ export const containerDataSchema = z.object({
 });
 export type ContainerData = z.infer<typeof containerDataSchema>;
 
-export const componentDataSchema = z.object({
-  id: z.string(),
+export const moduleDataSchema = z.object({
+  latestVersionId: z.string(),
 });
+export type ModuleData = z.infer<typeof moduleDataSchema>;
 
 export const blockDataSchema = z.object({
   type: z.literal("block"),
-  componentId: z.string(),
-  props: z.record(z.string(), z.any()),
-  style: baseStyleSchema,
+  moduleId: z.string(),
+  moduleVersionId: z.string().optional(),
+  props: z.record(z.string(), z.any()).optional(),
+  style: baseStyleSchema.optional(),
 });
 export type BlockData = z.infer<typeof blockDataSchema>;
 

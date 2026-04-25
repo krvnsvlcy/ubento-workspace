@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import { PageData } from "./models";
+import { ModuleData, PageData } from "./models";
 
 export type EngineMode = "live" | "edit";
 
@@ -13,10 +13,6 @@ export type AppEngineState = {
   location?: AppEngineLocation;
   selectionScope?: string;
   selection?: string[];
-};
-
-export type ComponentModule = {
-  value?: React.ComponentType<any>;
 };
 
 export type AppEngineController = {
@@ -35,7 +31,8 @@ export type AppEngineController = {
 
   // page
   getPage: (pageId: string) => Promise<PageData>;
-  getComponent: (componentId: string) => Promise<ComponentModule>;
+  getModule: (moduleId: string) => Promise<ModuleData>;
+  resolveModuleValue: (moduleId: string, versionId: string) => Promise<any>;
 };
 
 export const AppEngineControllerContext =

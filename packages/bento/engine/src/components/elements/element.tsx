@@ -77,8 +77,12 @@ export function Element({ id }: { id: string }): React.JSX.Element {
       break;
     case "block":
       content = (
-        <div style={getBaseStyle(element.style)}>
-          <Component id={element.componentId} props={element.props} />
+        <div style={getBaseStyle(element.style ?? {})}>
+          <Component
+            moduleId={element.moduleId}
+            moduleVersionId={element.moduleVersionId}
+            props={element.props ?? {}}
+          />
         </div>
       );
       break;
@@ -137,7 +141,7 @@ export function Element({ id }: { id: string }): React.JSX.Element {
         <span>
           {element.type === "container"
             ? "container"
-            : `block:${element.componentId}`}
+            : `block:${element.moduleId}`}
         </span>
         {isSelected && <span style={{ opacity: 0.8 }}>({id})</span>}
       </div>
