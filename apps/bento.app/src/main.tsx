@@ -21,8 +21,8 @@ const clientId = "clt_jibiqhio08v7ids2r0pne1xh";
 const clientSecret =
   "sk_084a0a2105ac4de5049b48670646a671c70c38763a374d11848333e408c91b4e";
 
-// const authServerBaseUrl = "https://auth.ubento.pro";
-const appServerBaseUrl = "http://localhost:48041";
+const authServerBaseUrl = "https://auth.ubento.pro";
+// const authServerBaseUrl = "http://localhost:48041";
 
 type Token = {
   access_token: string;
@@ -51,7 +51,7 @@ async function getToken() {
   localStorage.removeItem("ubento-access-token");
 
   if (token && token.refresh_token) {
-    const res = await fetch(new URL("/oauth/token", appServerBaseUrl), {
+    const res = await fetch(new URL("/oauth/token", authServerBaseUrl), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -69,7 +69,7 @@ async function getToken() {
     return data.access_token;
   }
 
-  const res = await fetch(new URL("/oauth/token", appServerBaseUrl), {
+  const res = await fetch(new URL("/oauth/token", authServerBaseUrl), {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -106,7 +106,7 @@ function BentoApp() {
           getToken,
         },
         serviceBaseUrls: {
-          app: "http://localhost:13020",
+          // app: "http://localhost:13020",
         },
       }),
       iframeUrl: import.meta.env.VITE_RUNTIME_URL || "http://localhost:4020",
