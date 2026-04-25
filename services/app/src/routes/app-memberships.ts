@@ -103,7 +103,7 @@ appMembershipsRouter.delete(
     enforce({
       permissions: [ubentoAuth.actions.roleAssignment.delete],
       resource: async (req) => {
-        const membership = await getAppMembership(req.params.id);
+        const membership = await getAppMembership(req.params.id as string);
         if (!membership) return ubentoAuth.scopes.root;
         const app = await getApp(membership.app_id);
         if (!app) return ubentoAuth.scopes.root;

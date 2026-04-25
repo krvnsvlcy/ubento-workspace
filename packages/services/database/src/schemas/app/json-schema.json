@@ -119,53 +119,6 @@
         "updated_at"
       ]
     },
-    "Component": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
-        },
-        "entity": {
-          "type": "string",
-          "default": "component"
-        },
-        "app_id": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "source": {
-          "type": "string"
-        },
-        "version": {
-          "type": "integer",
-          "default": 1
-        },
-        "created_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "updated_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "deleted_at": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "format": "date-time"
-        }
-      },
-      "required": [
-        "id",
-        "app_id",
-        "name",
-        "source",
-        "updated_at"
-      ]
-    },
     "AppMembership": {
       "type": "object",
       "properties": {
@@ -305,9 +258,6 @@
     },
     "page": {
       "$ref": "#/definitions/Page"
-    },
-    "component": {
-      "$ref": "#/definitions/Component"
     },
     "appMembership": {
       "$ref": "#/definitions/AppMembership"

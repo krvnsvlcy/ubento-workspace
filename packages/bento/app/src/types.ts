@@ -21,6 +21,8 @@ export interface BentoHost {
   session: BentoSession;
   ubento: UbentoSDK;
   iframeUrl: string;
+  moduleUrlTemplate: string;
   // navigation
   goToLocation: (location: BentoLocation) => void;
 }
+

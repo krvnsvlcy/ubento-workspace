@@ -16,6 +16,7 @@ function NotFound(): React.JSX.Element {
 }
 
 export function App({
+  app,
   controller,
 }: {
   app: AppData;

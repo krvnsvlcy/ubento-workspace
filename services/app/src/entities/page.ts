@@ -3,7 +3,7 @@ import {
   makeEntityId,
   ubentoEntities,
 } from "@ubento/primitives";
-import prisma from "../../lib/prisma.js";
+import prisma from "../lib/prisma.js";
 
 export async function getPage(id: string) {
   return await prisma.page.findUnique({
@@ -15,7 +15,7 @@ export async function createPage(data: {
   app_id: string;
   name: string;
   path: string;
-  metadata?: any;
+  data: any;
 }) {
   const id = makeEntityId({
     code: ubentoEntities.page.code,
@@ -35,7 +35,7 @@ export async function updatePage(
   data: Partial<{
     name: string;
     path: string;
-    metadata: any;
+    data: any;
   }>,
 ) {
   return await prisma.page.update({

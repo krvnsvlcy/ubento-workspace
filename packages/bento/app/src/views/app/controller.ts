@@ -1,4 +1,12 @@
-import { AppData, GuestRpcInterface, HostRpcInterface } from "@ubento/engine";
+import type {
+  AppData,
+  AppEngineLocation,
+  EngineMode,
+  GuestRpcInterface,
+  HostRpcInterface,
+  ModuleData,
+  PageData,
+} from "@ubento/engine";
 import {
   createDuplexRpc,
   createWindowPort,
@@ -6,15 +14,15 @@ import {
 } from "@ubento/rpc-utils";
 import { proxy } from "valtio";
 
-export type AppInteractionMode = "edit" | "live";
-
 export type AppState = {
   loading: boolean;
   error: boolean;
-  mode: AppInteractionMode;
-  scope?: string;
+  mode: EngineMode;
+  selectionScope?: string;
   selection: string[];
-  connected: boolean;
+  connected: boolean; // the iframe has established communication
+  ready: boolean; // the iframe has loaded the app and is ready
+  location?: AppEngineLocation;
 };
 
 export type AppController = {
@@ -22,12 +30,27 @@ export type AppController = {
   connect: (target: Window) => void;
   load: (data: AppData) => void;
   dispose: () => void;
+
+  // actions
+  setMode: (mode: EngineMode) => void;
+  select: (blockIds: string[]) => void;
+  setSelectionScope: (selectionScope?: string) => void;
+  goTo: (pageId: string, params?: Record<string, string>) => void;
+};
+
+export type AppControllerHandlers = {
+  getPage: (pageId: string) => Promise<PageData>;
+  getModule: (moduleId: string) => Promise<ModuleData>;
 };
 
 export function createAppController({
   initialState,
+  handlers,
+  moduleUrlTemplate,
 }: {
   initialState?: Partial<AppState>;
+  handlers: AppControllerHandlers;
+  moduleUrlTemplate: string;
 }): AppController {
   const state = proxy<AppState>({
     loading: false,
@@ -35,10 +58,10 @@ export function createAppController({
     mode: "live",
     selection: [],
     connected: false,
+    ready: false,
     ...initialState,
   });
 
-  let isReady = false;
   let pendingLoad: AppData | null = null;
 
   let rpc: DuplexRpc<HostRpcInterface, GuestRpcInterface> | null = null;
@@ -50,21 +73,31 @@ export function createAppController({
       rpc = createDuplexRpc<HostRpcInterface, GuestRpcInterface>({
         port: createWindowPort(window, target),
         handlers: {
-          ready: () => {
-            console.log("[Controller] Received 'ready' from iframe");
-            isReady = true;
+          connect: () => {
             state.connected = true;
-
             if (pendingLoad) {
-              console.log("[Controller] Sending pending load data");
-              rpc!.egress.init(pendingLoad as any);
+              rpc!.egress.init({ app: pendingLoad, moduleUrlTemplate });
               pendingLoad = null;
-            } else {
-              console.log("[Controller] No pending load data");
             }
           },
-          toggleMode: () => {
-            state.mode = state.mode === "edit" ? "live" : "edit";
+          ready: () => {},
+          getPage: async ({ pageId }) => {
+            return await handlers.getPage(pageId);
+          },
+          getModule: async ({ moduleId }) => {
+            return await handlers.getModule(moduleId);
+          },
+          select: ({ elementIds }) => {
+            state.selection = elementIds;
+          },
+          setSelectionScope: ({ scope }) => {
+            state.selectionScope = scope;
+          },
+          setMode: ({ mode }) => {
+            state.mode = mode;
+          },
+          goTo: ({ pageId, params }) => {
+            state.location = { pageId, params: params || {} };
           },
         },
       });
@@ -72,16 +105,30 @@ export function createAppController({
       rpc.run();
     },
     load: (data: AppData) => {
-      console.log("[Controller] Load called. isReady:", isReady);
-      if (rpc) {
-        rpc.egress.init(data as any);
+      if (rpc && state.connected) {
+        rpc.egress.init({ app: data, moduleUrlTemplate });
       } else {
-        console.log("[Controller] Iframe not ready, queuing load");
         pendingLoad = data;
       }
     },
     dispose: () => {
       rpc?.dispose();
+    },
+    setMode: (mode: EngineMode) => {
+      state.mode = mode;
+      rpc?.egress.modeChanged({ mode });
+    },
+    select: (elementIds: string[]) => {
+      state.selection = elementIds;
+      rpc?.egress.selectionChanged({ elementIds });
+    },
+    setSelectionScope: (selectionScope?: string) => {
+      state.selectionScope = selectionScope;
+      rpc?.egress.selectionScopeChanged({ scope: selectionScope });
+    },
+    goTo: (pageId: string, params?: Record<string, string>) => {
+      state.location = { pageId, params: params || {} };
+      rpc?.egress.locationChanged({ pageId, params });
     },
   };
 }

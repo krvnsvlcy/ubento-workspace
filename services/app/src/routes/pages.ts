@@ -15,7 +15,7 @@ import {
   getPage,
   listPages,
   updatePage,
-} from "../entities/page/page.js";
+} from "../entities/page.js";
 
 const pagesRouter: Router = Router();
 
@@ -89,7 +89,7 @@ pagesRouter.post(
         app_id: z.string(),
         name: z.string(),
         path: z.string(),
-        metadata: z.any().optional(),
+        data: z.any(),
       }),
     }),
     enforce({

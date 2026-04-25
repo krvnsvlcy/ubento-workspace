@@ -18,6 +18,9 @@ export type AppEngineState = {
 export type AppEngineController = {
   state: AppEngineState;
 
+  // interaction
+  toggleMode: () => void;
+
   // selection
   select: (blockIds: string[], toggle?: boolean) => void;
   focusSelectionScope: (scope: string) => void;
@@ -25,11 +28,8 @@ export type AppEngineController = {
 
   // navigation
   goTo: (pageId: string, params?: Record<string, string>) => void;
-  goBack: () => void;
-  goForward: () => void;
-  goHome: () => void;
 
-  // page
+  // content retrieval
   getPage: (pageId: string) => Promise<PageData>;
   getModule: (moduleId: string) => Promise<ModuleData>;
   resolveModuleValue: (moduleId: string, versionId: string) => Promise<any>;

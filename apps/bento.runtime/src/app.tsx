@@ -1,56 +1,61 @@
 import { PendingView } from "@ubento/bento-primitives";
-import {
-  App,
-  type AppData,
-  type GuestRpcInterface,
-  type HostRpcInterface,
-} from "@ubento/engine";
-import { createDuplexRpc, createWindowPort } from "@ubento/rpc-utils";
+import { App, type AppData } from "@ubento/engine";
 import { useEffect, useState } from "react";
+import { proxy } from "valtio";
+import { rpc } from "./rpc";
+import { createAppEngineController, setModuleUrlTemplate } from "./state";
+
+const controller = createAppEngineController();
 
 export function GuestApp() {
   const [app, setApp] = useState<AppData | null>(null);
 
   useEffect(() => {
-    const port = createWindowPort(window, window.parent);
-    const rpc = createDuplexRpc<GuestRpcInterface, HostRpcInterface>({
-      port,
-      handlers: {
-        init: (data) => {
-          console.log("[Runtime] Received 'init'", data);
-          setApp(createApp(data));
-        },
+    rpc.setHandlers({
+      init: ({
+        app,
+        moduleUrlTemplate,
+      }: {
+        app: AppData;
+        moduleUrlTemplate: string;
+      }) => {
+        setModuleUrlTemplate(moduleUrlTemplate);
+        setApp(proxy(app));
+        rpc.egress.ready({});
       },
+      modeChanged: ({ mode }) => {
+        controller.state.mode = mode;
+      },
+      selectionChanged: ({ elementIds }) => {
+        controller.state.selection = elementIds;
+      },
+      selectionScopeChanged: ({ scope }) => {
+        controller.state.selectionScope = scope;
+      },
+      locationChanged: ({ pageId, params }) => {
+        controller.state.location = { pageId, params: params || {} };
+      },
+
     });
-    rpc.run();
-
-    console.log("[Runtime] Sending 'ready'...");
-    rpc.egress.ready({});
-
-    let lastShiftPress = 0;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Shift") {
-        const now = Date.now();
-        if (now - lastShiftPress < 300) {
-          rpc.egress.toggleMode({});
-          lastShiftPress = 0;
-        } else {
-          lastShiftPress = now;
-        }
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      rpc.dispose();
-    };
   }, []);
 
+  let content: React.ReactNode;
+
   if (!app) {
-    return <PendingView message="Loading Application..." />;
+    content = <PendingView message="Loading Application..." />;
+  } else {
+    content = <App app={app} controller={controller} />;
   }
 
-  return <App app={app} />;
+  return (
+    <div
+      style={{
+        height: "100vh",
+        width: "100vw",
+        overflow: "hidden",
+      }}
+    >
+      {content}
+    </div>
+  );
 }

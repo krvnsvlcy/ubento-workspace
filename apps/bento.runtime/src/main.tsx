@@ -7,8 +7,6 @@ import "./modules";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <div className="h-screen w-screen" style={{ overflow: "hidden" }}>
-      <GuestApp />
-    </div>
+    <GuestApp />
   </StrictMode>,
 );

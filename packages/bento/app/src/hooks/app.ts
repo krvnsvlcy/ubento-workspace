@@ -1,4 +1,11 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  QueryClient,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { UbentoSDK } from "@ubento/sdk";
+import { queryKeys } from "./keys";
 import { useUbento } from "./ubento";
 
 // ===== Apps =====
@@ -103,10 +110,27 @@ export function usePages({ app_id }: { app_id: string }) {
   });
 }
 
+export function getPage({
+  ubento,
+  pageId,
+  queryClient,
+}: {
+  ubento: UbentoSDK;
+  queryClient: QueryClient;
+  pageId: string;
+}) {
+  return queryClient.fetchQuery({
+    queryKey: queryKeys.page({ pageId }),
+    queryFn: async () => {
+      return await ubento.app.getPage(pageId);
+    },
+  });
+}
+
 export function usePage(pageId: string) {
   const ubento = useUbento();
   return useQuery({
-    queryKey: ["page", pageId],
+    queryKey: queryKeys.page({ pageId }),
     queryFn: async () => {
       return await ubento.app.getPage(pageId);
     },
@@ -164,80 +188,6 @@ export function useDeletePage() {
   });
 }
 
-// ===== Components =====
-
-export function useComponents({ app_id }: { app_id: string }) {
-  const ubento = useUbento();
-  return useQuery({
-    queryKey: ["components", { app_id }],
-    queryFn: async () => {
-      return await ubento.app.listComponents({ app_id });
-    },
-    enabled: !!app_id,
-  });
-}
-
-export function useComponent(componentId: string) {
-  const ubento = useUbento();
-  return useQuery({
-    queryKey: ["component", componentId],
-    queryFn: async () => {
-      return await ubento.app.getComponent(componentId);
-    },
-    enabled: !!componentId,
-  });
-}
-
-export function useCreateComponent() {
-  const ubento = useUbento();
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (data: {
-      app_id: string;
-      name: string;
-      type: string;
-      props?: Record<string, any>;
-    }) => {
-      return await ubento.app.createComponent(data);
-    },
-    onSuccess: (_, { app_id }) => {
-      queryClient.invalidateQueries({ queryKey: ["components", { app_id }] });
-    },
-  });
-}
-
-export function useUpdateComponent() {
-  const ubento = useUbento();
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async ({
-      componentId,
-      data,
-    }: {
-      componentId: string;
-      data: { name?: string; type?: string; props?: Record<string, any> };
-    }) => {
-      return await ubento.app.updateComponent(componentId, data);
-    },
-    onSuccess: (_, { componentId }) => {
-      queryClient.invalidateQueries({ queryKey: ["components"] });
-      queryClient.invalidateQueries({ queryKey: ["component", componentId] });
-    },
-  });
-}
-
-export function useDeleteComponent() {
-  const ubento = useUbento();
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (componentId: string) => {
-      return await ubento.app.deleteComponent(componentId);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["components"] });
-    },
-  });
-}
 
 // ===== App Memberships =====
 

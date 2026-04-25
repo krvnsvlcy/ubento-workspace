@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "./keys";
 import { useUbento } from "./ubento";
 
 // ===== Users =====
@@ -113,6 +114,81 @@ export function useCreateTeamInvite() {
     },
     onSuccess: (_, { teamId }) => {
       queryClient.invalidateQueries({ queryKey: ["team-invites", teamId] });
+    },
+  });
+}
+
+// ===== Modules =====
+
+export function useModules({ team_id }: { team_id?: string } = {}) {
+  const ubento = useUbento();
+  return useQuery({
+    queryKey: queryKeys.modules({ team_id }),
+    queryFn: async () => {
+      return await ubento.module.listModules({ team_id });
+    },
+    enabled: true,
+  });
+}
+
+export function useModule(moduleId: string) {
+  const ubento = useUbento();
+  return useQuery({
+    queryKey: queryKeys.module({ moduleId }),
+    queryFn: async () => {
+      return await ubento.module.getModule(moduleId);
+    },
+    enabled: !!moduleId,
+  });
+}
+
+export function useCreateModule() {
+  const ubento = useUbento();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: {
+      name: string;
+      slug?: string;
+      team_id: string;
+      source: string;
+    }) => {
+      return await ubento.module.createModule(data);
+    },
+    onSuccess: (_, { team_id }) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.modules({ team_id }) });
+    },
+  });
+}
+
+export function useUpdateModule() {
+  const ubento = useUbento();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      moduleId,
+      data,
+    }: {
+      moduleId: string;
+      data: { name?: string; slug?: string };
+    }) => {
+      return await ubento.module.updateModule(moduleId, data);
+    },
+    onSuccess: (_, { moduleId }) => {
+      queryClient.invalidateQueries({ queryKey: ["modules"] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.module({ moduleId }) });
+    },
+  });
+}
+
+export function useDeleteModule() {
+  const ubento = useUbento();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (moduleId: string) => {
+      return await ubento.module.deleteModule(moduleId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["modules"] });
     },
   });
 }

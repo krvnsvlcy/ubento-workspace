@@ -1,5 +1,9 @@
-import { useAppBySlug } from "@/hooks/app";
-import { appDataSchema } from "@ubento/engine";
+import { useBentoHost } from "@/contexts/host";
+import { getPage, useAppBySlug } from "@/hooks/app";
+import { queryKeys } from "@/hooks/keys";
+import { useUbento } from "@/hooks/ubento";
+import { useQueryClient } from "@tanstack/react-query";
+import { appDataSchema, pageDataSchema } from "@ubento/engine";
 import { useEffect, useMemo } from "react";
 import { AppContent } from "./content";
 import { createAppController } from "./controller";
@@ -7,7 +11,10 @@ import { AppInteractor } from "./interactor/interactor";
 import { useKeyboardShortcuts } from "./keyboard";
 
 export function App({ slug }: { slug: string }) {
+  const host = useBentoHost();
+  const queryClient = useQueryClient();
   const { data: appData, isLoading, isError } = useAppBySlug({ slug });
+  const ubento = useUbento();
 
   const appController = useMemo(() => {
     return createAppController({
@@ -16,8 +23,28 @@ export function App({ slug }: { slug: string }) {
         error: false,
         mode: "edit",
       },
+      handlers: {
+        getPage: async (pageId) => {
+          const data = await getPage({ ubento, queryClient, pageId });
+          if (!data) throw new Error("Page not found");
+          const pageData = pageDataSchema.parse(data.data || {});
+          return pageData;
+        },
+        getModule: async (moduleId) => {
+          const res = await queryClient.fetchQuery({
+            queryKey: queryKeys.module({ moduleId }),
+            queryFn: async () => {
+              return await ubento.module.getModule(moduleId);
+            },
+          });
+          return {
+            latestVersionId: res.latest_version_id,
+          };
+        },
+      },
+      moduleUrlTemplate: host.moduleUrlTemplate,
     });
-  }, [slug]);
+  }, [slug, ubento, host.moduleUrlTemplate]);
 
   useEffect(() => {
     return () => appController.dispose();

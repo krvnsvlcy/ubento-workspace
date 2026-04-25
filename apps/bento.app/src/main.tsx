@@ -94,8 +94,12 @@ function BentoApp() {
         },
       }),
       iframeUrl: import.meta.env.VITE_RUNTIME_URL || "http://localhost:4020",
+      moduleUrlTemplate:
+        import.meta.env.VITE_MODULE_URL_TEMPLATE ||
+        "https://modules.ubento.pro/{moduleId}/{versionId}/index.js",
       goToLocation: (loc) => setLocation(loc),
     }),
+
     [],
   );
 

@@ -58,22 +58,6 @@ model Page {
     @@map("pages")
 }
 
-model Component {
-    id     String @id @map("_id")
-    entity String @default("component")
-    app_id String
-
-    name   String
-    source String
-
-    version    Int       @default(1)
-    created_at DateTime  @default(now())
-    updated_at DateTime  @updatedAt
-    deleted_at DateTime?
-
-    @@map("components")
-}
-
 model AppMembership {
     id      String @id @map("_id")
     entity  String @default("app_membership")
