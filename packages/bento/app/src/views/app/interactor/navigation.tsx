@@ -2,16 +2,18 @@ import { useBentoHost } from "@/contexts/host";
 import { ArrowLeft } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
-import { AppInteractorState } from "./state";
+import { useSnapshot } from "valtio";
+import { AppState } from "../controller";
 
 export function AppNavigation({
   app,
   state,
 }: {
   app?: any;
-  state: AppInteractorState;
+  state: AppState;
 }) {
   const host = useBentoHost();
+  const snap = useSnapshot(state);
   const [isVisible, setIsVisible] = useState(true);
   const hideTimer = useRef<any>(null);
 
@@ -83,6 +85,16 @@ export function AppNavigation({
                     </span>
                     <span className="text-[10px] text-foreground-400">
                       {app?.slug}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5 rounded-full border border-white/5 bg-black/20 px-2 py-0.5">
+                    <div
+                      className={`h-1.5 w-1.5 rounded-full ${
+                        snap.connected ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" : "bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]"
+                      }`}
+                    />
+                    <span className="text-[9px] font-bold uppercase tracking-wider text-foreground-500">
+                      {snap.connected ? "Connected" : "Connecting"}
                     </span>
                   </div>
                 </div>

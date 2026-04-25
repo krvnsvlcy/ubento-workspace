@@ -32,7 +32,7 @@ model App {
     name        String
     slug        String  @unique
     description String?
-    metadata    Json?
+    data        Json
 
     version    Int       @default(1)
     created_at DateTime  @default(now())
@@ -47,8 +47,8 @@ model Page {
     entity String @default("page")
     app_id String
 
-    name     String
-    metadata Json?
+    name String
+    data Json
 
     version    Int       @default(1)
     created_at DateTime  @default(now())
@@ -63,10 +63,8 @@ model Component {
     entity String @default("component")
     app_id String
 
-    name     String
-    type     String
-    props    Json?
-    metadata Json?
+    name   String
+    source String
 
     version    Int       @default(1)
     created_at DateTime  @default(now())

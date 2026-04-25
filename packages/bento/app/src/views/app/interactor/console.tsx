@@ -2,9 +2,9 @@ import { Command, Send, Sparkles } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { useSnapshot } from "valtio";
-import { AppInteractorState } from "./state";
+import { AppState } from "../controller";
 
-export function Console({ state }: { state: AppInteractorState }) {
+export function Console({ state }: { state: AppState }) {
   const snap = useSnapshot(state);
   const [input, setInput] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);

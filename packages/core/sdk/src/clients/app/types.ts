@@ -787,7 +787,7 @@ export interface components {
             name: string;
             slug: string;
             description?: string;
-            metadata?: Record<string, never>;
+            data: Record<string, never>;
             /** @default 1 */
             version: number;
             /** Format: date-time */
@@ -803,7 +803,7 @@ export interface components {
             entity: string;
             app_id: string;
             name: string;
-            metadata?: Record<string, never>;
+            data: Record<string, never>;
             /** @default 1 */
             version: number;
             /** Format: date-time */
@@ -819,9 +819,7 @@ export interface components {
             entity: string;
             app_id: string;
             name: string;
-            type: string;
-            props?: Record<string, never>;
-            metadata?: Record<string, never>;
+            source: string;
             /** @default 1 */
             version: number;
             /** Format: date-time */

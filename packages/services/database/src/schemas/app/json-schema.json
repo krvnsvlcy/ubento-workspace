@@ -26,7 +26,7 @@
             "null"
           ]
         },
-        "metadata": {
+        "data": {
           "type": [
             "number",
             "string",
@@ -61,6 +61,7 @@
         "team_id",
         "name",
         "slug",
+        "data",
         "updated_at"
       ]
     },
@@ -80,7 +81,7 @@
         "name": {
           "type": "string"
         },
-        "metadata": {
+        "data": {
           "type": [
             "number",
             "string",
@@ -114,6 +115,7 @@
         "id",
         "app_id",
         "name",
+        "data",
         "updated_at"
       ]
     },
@@ -133,28 +135,8 @@
         "name": {
           "type": "string"
         },
-        "type": {
+        "source": {
           "type": "string"
-        },
-        "props": {
-          "type": [
-            "number",
-            "string",
-            "boolean",
-            "object",
-            "array",
-            "null"
-          ]
-        },
-        "metadata": {
-          "type": [
-            "number",
-            "string",
-            "boolean",
-            "object",
-            "array",
-            "null"
-          ]
         },
         "version": {
           "type": "integer",
@@ -180,7 +162,7 @@
         "id",
         "app_id",
         "name",
-        "type",
+        "source",
         "updated_at"
       ]
     },

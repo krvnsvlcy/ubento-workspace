@@ -116,7 +116,7 @@ appsRouter.post(
         slug: z.string().optional(),
         description: z.string().optional(),
         team_id: z.string(),
-        metadata: z.any().optional(),
+        data: z.any(),
       }),
     }),
     enforce({
@@ -145,7 +145,7 @@ appsRouter.patch(
         name: z.string().optional(),
         slug: z.string().optional(),
         description: z.string().optional(),
-        metadata: z.any().optional(),
+        data: z.any().optional(),
       }),
     }),
     enforce({

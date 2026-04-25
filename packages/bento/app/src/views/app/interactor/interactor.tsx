@@ -1,13 +1,13 @@
 import { Console } from "./console";
 import { AppNavigation } from "./navigation";
-import { AppInteractorState } from "./state";
+import { AppState } from "../controller";
 
 export function AppInteractor({
   app,
   state,
 }: {
   app?: any;
-  state: AppInteractorState;
+  state: AppState;
 }) {
   return (
     <>

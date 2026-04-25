@@ -23,7 +23,7 @@ export async function createApp(data: {
   name: string;
   description?: string;
   team_id: string;
-  metadata?: any;
+  data: any;
   slug?: string;
 }) {
   const id = makeEntityId({
@@ -58,7 +58,7 @@ export async function updateApp(
   data: Partial<{
     name: string;
     description: string;
-    metadata: any;
+    data: any;
     slug: string;
   }>,
 ) {

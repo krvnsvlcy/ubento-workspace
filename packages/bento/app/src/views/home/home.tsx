@@ -49,7 +49,7 @@ export function Home() {
     const team_id = session.teamId;
 
     try {
-      await createApp({ name, team_id });
+      await createApp({ name, team_id, data: {} });
       setActiveModal(null);
     } catch (err) {
       console.error("Error creating app:", err);

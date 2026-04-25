@@ -1,65 +1,46 @@
 import { useAppBySlug } from "@/hooks/app";
-import { useEffect, useMemo, useRef } from "react";
+import { appDataSchema } from "@ubento/engine";
+import { useEffect, useMemo } from "react";
 import { AppContent } from "./content";
 import { createAppController } from "./controller";
 import { AppInteractor } from "./interactor/interactor";
-import { createAppInteractorState } from "./interactor/state";
-import { Bridge, PostMessageChannel } from "@ubento/engine";
+import { useKeyboardShortcuts } from "./keyboard";
 
 export function App({ slug }: { slug: string }) {
-  const { data: appData } = useAppBySlug({ slug });
-
-  const interactorState = useMemo(() => {
-    return createAppInteractorState({
-      mode: "edit",
-      selection: [],
-    });
-  }, [slug]);
-
-  const lastShiftPress = useRef<number>(0);
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Shift") {
-        const now = Date.now();
-        if (now - lastShiftPress.current < 300) {
-          interactorState.mode = interactorState.mode === "edit" ? "live" : "edit";
-          lastShiftPress.current = 0;
-        } else {
-          lastShiftPress.current = now;
-        }
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [interactorState]);
-
-  useEffect(() => {
-    // We listen to messages from the iframe
-    const bridge = new Bridge(new PostMessageChannel(window));
-    
-    const cleanup = bridge.on("toggle-mode", () => {
-      interactorState.mode = interactorState.mode === "edit" ? "live" : "edit";
-    });
-
-    return () => {
-      cleanup();
-      bridge.dispose();
-    };
-  }, [interactorState]);
+  const { data: appData, isLoading, isError } = useAppBySlug({ slug });
 
   const appController = useMemo(() => {
     return createAppController({
       initialState: {
-        loading: true,
+        loading: false,
         error: false,
+        mode: "edit",
       },
     });
   }, [slug]);
 
+  useEffect(() => {
+    return () => appController.dispose();
+  }, [appController]);
+
+  useKeyboardShortcuts({ state: appController.state });
+
+  useEffect(() => {
+    appController.state.loading = isLoading;
+    appController.state.error = isError;
+    if (appData) {
+      try {
+        const data = appDataSchema.parse(appData.data || {});
+        appController.load(data);
+      } catch (err) {
+        appController.load({});
+      }
+    }
+  }, [appData, isLoading, isError]);
+
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-background">
-      <AppInteractor app={appData} state={interactorState} />
+      <AppInteractor app={appData} state={appController.state} />
       <AppContent app={appData} controller={appController} />
     </div>
   );

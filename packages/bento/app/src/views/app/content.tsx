@@ -31,6 +31,11 @@ export function AppContent({
     <iframe
       ref={iframeRef}
       src={host.iframeUrl}
+      onLoad={() => {
+        if (iframeRef.current?.contentWindow) {
+          controller.connect(iframeRef.current.contentWindow);
+        }
+      }}
       style={{
         height: "100%",
         width: "100%",

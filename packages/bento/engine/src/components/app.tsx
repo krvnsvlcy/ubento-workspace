@@ -13,21 +13,22 @@ export function App({
 }): React.JSX.Element {
   const snap = useSnapshot(app);
 
+  if (1) {
+    return <pre>{JSON.stringify(snap, null, 2)}</pre>;
+  }
+
   return (
     <Router hook={locationHook}>
       <Switch>
-        {Object.entries(snap.routes).map(([path, pageId]) => (
+        {Object.entries(snap.routes || {}).map(([path, pageId]) => (
           <Route key={path} path={path}>
             <Page id={pageId} />
           </Route>
         ))}
         <Route>
-          <div className="p-4 text-white">
-            404 - No route matches for {snap.id}
-          </div>
+          <div className="p-4 text-white">404 - No route matches</div>
         </Route>
       </Switch>
     </Router>
   );
 }
-

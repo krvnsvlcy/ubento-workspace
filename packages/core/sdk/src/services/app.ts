@@ -67,6 +67,7 @@ export class AppService {
     name: string;
     team_id: string;
     description?: string;
+    data: Record<string, unknown>;
   }) {
     const result = await this.appClient.post("/apps", {
       body: data,
@@ -76,7 +77,11 @@ export class AppService {
 
   async updateApp(
     appId: string,
-    data: { name?: string; description?: string },
+    data: {
+      name?: string;
+      description?: string;
+      data?: Record<string, unknown>;
+    },
   ) {
     const result = await this.appClient.patch("/apps/{app_id}", {
       params: {

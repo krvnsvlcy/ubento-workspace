@@ -1,70 +1,97 @@
 import { proxy } from "valtio";
+import { z } from "zod";
 
-export interface BaseStyle {
-  width?: string | number;
-  height?: string | number;
-  minWidth?: string | number;
-  maxWidth?: string | number;
-  minHeight?: string | number;
-  maxHeight?: string | number;
-  background?: string;
-  cornerRadius?: number;
-  borderWidth?: number;
-  borderColor?: string;
-  overflow?: "visible" | "hidden" | "scroll" | "auto";
-  padding?: {
-    top?: number;
-    bottom?: number;
-    left?: number;
-    right?: number;
-  };
-}
+export const baseStyleSchema = z.object({
+  width: z.union([z.string(), z.number()]).optional(),
+  height: z.union([z.string(), z.number()]).optional(),
+  minWidth: z.union([z.string(), z.number()]).optional(),
+  maxWidth: z.union([z.string(), z.number()]).optional(),
+  minHeight: z.union([z.string(), z.number()]).optional(),
+  maxHeight: z.union([z.string(), z.number()]).optional(),
+  background: z.string().optional(),
+  cornerRadius: z.number().optional(),
+  borderWidth: z.number().optional(),
+  borderColor: z.string().optional(),
+  overflow: z.enum(["visible", "hidden", "scroll", "auto"]).optional(),
+  padding: z
+    .object({
+      top: z.number().optional(),
+      bottom: z.number().optional(),
+      left: z.number().optional(),
+      right: z.number().optional(),
+    })
+    .optional(),
+});
 
-export interface ContainerStyle extends BaseStyle {
-  layout?: "flex" | "grid" | "none";
-  direction?: "row" | "column";
-  gap?: {
-    x?: number;
-    y?: number;
-  };
-  columns?: number;
-  rows?: number;
-  alignItems?: "start" | "end" | "center" | "stretch";
-  justifyContent?: "start" | "end" | "center" | "stretch" | "space-between";
-}
+export type BaseStyle = z.infer<typeof baseStyleSchema>;
 
-export interface ContainerData {
-  type: "container";
-  style: ContainerStyle;
-  content: string[]; // Children IDs
-}
+export const containerStyleSchema = baseStyleSchema.extend({
+  layout: z.enum(["flex", "grid", "none"]).optional(),
+  direction: z.enum(["row", "column"]).optional(),
+  gap: z
+    .object({
+      x: z.number().optional(),
+      y: z.number().optional(),
+    })
+    .optional(),
+  columns: z.number().optional(),
+  rows: z.number().optional(),
+  alignItems: z.enum(["start", "end", "center", "stretch"]).optional(),
+  justifyContent: z
+    .enum(["start", "end", "center", "stretch", "space-between"])
+    .optional(),
+});
 
-export interface BlockData {
-  type: "block";
-  component: string;
-  props: Record<string, any>;
-  style: BaseStyle;
-}
+export type ContainerStyle = z.infer<typeof containerStyleSchema>;
 
-export type ElementData = ContainerData | BlockData;
+export const containerDataSchema = z.object({
+  type: z.literal("container"),
+  style: containerStyleSchema,
+  content: z.array(z.string()), // Children IDs
+});
 
-export interface PageData {
-  id: string;
-  rootId: string;
-  elements: Record<string, ElementData>;
-}
+export type ContainerData = z.infer<typeof containerDataSchema>;
 
-export interface AppData {
-  id: string;
-  routes: Record<string, string>; // path -> componentId
-}
+export const blockDataSchema = z.object({
+  type: z.literal("block"),
+  component: z.string(),
+  props: z.record(z.string(), z.any()),
+  style: baseStyleSchema,
+});
 
-export type EditorMode = "edit" | "view";
+export type BlockData = z.infer<typeof blockDataSchema>;
 
-export interface EditorContext {
-  mode: EditorMode;
-  selection: string[];
-}
+export const elementDataSchema = z.discriminatedUnion("type", [
+  containerDataSchema,
+  blockDataSchema,
+]);
+
+export type ElementData = z.infer<typeof elementDataSchema>;
+
+export const pageDataSchema = z.object({
+  id: z.string(),
+  rootId: z.string(),
+  elements: z.record(z.string(), elementDataSchema),
+});
+
+export type PageData = z.infer<typeof pageDataSchema>;
+
+export const appDataSchema = z.object({
+  routes: z.record(z.string(), z.string()).optional(), // path -> pageId
+});
+
+export type AppData = z.infer<typeof appDataSchema>;
+
+export const editorModeSchema = z.enum(["edit", "view"]);
+
+export type EditorMode = z.infer<typeof editorModeSchema>;
+
+export const editorContextSchema = z.object({
+  mode: editorModeSchema,
+  selection: z.array(z.string()),
+});
+
+export type EditorContext = z.infer<typeof editorContextSchema>;
 
 export function createApp(init: AppData) {
   return proxy(init);

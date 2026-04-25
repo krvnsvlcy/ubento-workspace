@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@ubento/engine": "workspace:*",
+    "@ubento/rpc-utils": "workspace:*",
     "@ubento/agent": "workspace:*",
     "@ubento/bento-style": "workspace:*",
     "@ubento/bento-primitives": "workspace:*",

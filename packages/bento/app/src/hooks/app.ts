@@ -43,6 +43,7 @@ export function useCreateApp() {
       name: string;
       team_id: string;
       description?: string;
+      data: Record<string, unknown>;
     }) => {
       return await ubento.app.createApp(data);
     },
@@ -61,7 +62,11 @@ export function useUpdateApp() {
       data,
     }: {
       appId: string;
-      data: { name?: string; description?: string };
+      data: {
+        name?: string;
+        description?: string;
+        data: Record<string, unknown>;
+      };
     }) => {
       return await ubento.app.updateApp(appId, data);
     },
