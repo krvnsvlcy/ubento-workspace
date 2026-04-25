@@ -1,9 +1,22 @@
 import { PendingView } from "@ubento/bento-primitives";
-import { App, PageRegistryProvider } from "@ubento/engine";
+import { App, PageRegistryProvider, Bridge, PostMessageChannel } from "@ubento/engine";
+import { useEffect, useState } from "react";
 
 export function GuestApp() {
-  if (1) {
-    return <PendingView message="Stock Manager" />;
+  const [initData, setInitData] = useState<any>(null);
+
+  useEffect(() => {
+    const bridge = new Bridge(new PostMessageChannel(window.parent));
+    
+    bridge.on("init", (data) => {
+      setInitData(data);
+    });
+
+    return () => bridge.dispose();
+  }, []);
+
+  if (!initData) {
+    return <PendingView message="Loading Application..." />;
   }
 
   return (

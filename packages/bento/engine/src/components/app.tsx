@@ -31,21 +31,3 @@ export function App({
   );
 }
 
-// --- Communication Bridge ---
-
-export class Bridge {
-  static send(target: Window, type: string, payload: any) {
-    if (!target) return;
-    target.postMessage({ type, payload }, "*");
-  }
-
-  static listen(callback: (type: string, payload: any) => void) {
-    const handler = (event: MessageEvent) => {
-      if (event.data && typeof event.data.type === "string") {
-        callback(event.data.type, event.data.payload);
-      }
-    };
-    window.addEventListener("message", handler);
-    return () => window.removeEventListener("message", handler);
-  }
-}

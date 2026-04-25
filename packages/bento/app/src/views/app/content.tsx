@@ -1,55 +1,42 @@
+import { ErrorView } from "@/components/error";
 import { useBentoHost } from "@/contexts/host";
 import { useRef } from "react";
+import { useSnapshot } from "valtio";
+import { AppController } from "./controller";
 
 export function AppContent({
   app,
-  loading,
-  error,
+  controller,
 }: {
   app?: any;
-  loading: boolean;
-  error: any;
+  controller: AppController;
 }) {
+  const state = useSnapshot(controller.state);
   const host = useBentoHost();
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
-  if (loading) {
+  if (state.error || (!app && !state.loading)) {
     return (
-      <div className="flex h-screen w-screen items-center justify-center bg-background">
-        <div className="animate-pulse text-sm font-medium text-foreground-400">
-          Loading Application...
-        </div>
-      </div>
-    );
-  }
-
-  if (error || !app) {
-    return (
-      <div className="flex h-screen w-screen flex-col items-center justify-center bg-background gap-4">
-        <div className="text-sm font-medium text-red-500/80">
-          Failed to load application
-        </div>
-        <button
-          onClick={() => host.goToLocation({ view: "home", params: {} })}
-          className="text-xs font-semibold text-foreground-400 hover:text-foreground transition-colors"
-        >
-          &larr; Back to Home
-        </button>
-      </div>
+      <ErrorView
+        message={"Error Loading Application"}
+        action={{
+          label: "Retry",
+          handler: () => window.location.reload(),
+        }}
+      />
     );
   }
 
   return (
     <iframe
       ref={iframeRef}
-      src={host.iframeUrl || "http://localhost:4020"}
+      src={host.iframeUrl}
       style={{
         height: "100%",
         width: "100%",
         border: "none",
         outline: "none",
       }}
-      title="Ubento Runtime"
     />
   );
 }

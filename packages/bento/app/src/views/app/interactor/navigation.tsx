@@ -2,8 +2,15 @@ import { useBentoHost } from "@/contexts/host";
 import { ArrowLeft } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
+import { AppInteractorState } from "./state";
 
-export function AppOverlay({ app }: { app?: any }) {
+export function AppNavigation({
+  app,
+  state,
+}: {
+  app?: any;
+  state: AppInteractorState;
+}) {
   const host = useBentoHost();
   const [isVisible, setIsVisible] = useState(true);
   const hideTimer = useRef<any>(null);

@@ -4,3 +4,4 @@ export * from "./components/core/core";
 export * from "./components/element";
 export * from "./components/page";
 export * from "./models";
+export * from "./bridge";
