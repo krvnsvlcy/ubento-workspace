@@ -1,7 +1,6 @@
 import { PendingView } from "@ubento/bento-primitives";
 import { Workspace, type WorkspaceData } from "@ubento/engine";
 import { useEffect, useState } from "react";
-import { proxy } from "valtio";
 import { useKeyboardController } from "./keyboard.js";
 import { rpc } from "./rpc.js";
 import { createEngineController, setModuleUrlTemplate } from "./state.js";
@@ -22,20 +21,41 @@ export function GuestWorkspace() {
         moduleUrlTemplate: string;
       }) => {
         setModuleUrlTemplate(moduleUrlTemplate);
-        setWorkspace(proxy(workspace));
+        controller.setWorkspace(workspace);
+        setWorkspace(workspace as any);
         rpc.egress.ready({});
       },
-      modeChanged: ({ mode }) => {
-        controller.state.mode = mode;
+      contextChanged: ({ context }) => {
+        controller.state = context;
       },
-      selectionChanged: ({ elementIds }) => {
-        controller.state.selection = elementIds;
+
+      // mutations
+      setHomeBoardId: async ({ homeBoardId }) => {
+        controller.setHomeBoardId(homeBoardId);
       },
-      selectionScopeChanged: ({ scope }) => {
-        controller.state.selectionScope = scope;
+      deleteBoard: async ({ boardId }) => {
+        controller.deleteBoard(boardId);
       },
-      locationChanged: ({ boardId, params }) => {
-        controller.state.location = { boardId, params: params || {} };
+      setBoardContent: async ({ boardId, content }) => {
+        controller.setBoardContent(boardId, content);
+      },
+      addElement: async ({ boardId, containerId, element }) => {
+        return controller.addElement(boardId, containerId, element);
+      },
+      deleteElement: async ({ boardId, elementId }) => {
+        controller.deleteElement(boardId, elementId);
+      },
+      setElementStyle: ({ id, style }) => {
+        controller.setElementStyle(id, style);
+      },
+      setElementProps: ({ id, props }) => {
+        controller.setElementProps(id, props);
+      },
+      setStackContent: async ({ id, content }) => {
+        controller.setStackContent(id, content);
+      },
+      setBlockModule: ({ id, moduleId, moduleVersionId }) => {
+        controller.setBlockModule(id, moduleId, moduleVersionId);
       },
     });
     rpc.egress.connect({});

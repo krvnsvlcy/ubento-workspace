@@ -1,5 +1,3 @@
-import { Console } from "./console.js";
-import { WorkspaceNavigation } from "./navigation.js";
 import { WorkspaceState } from "../controller.js";
 
 export function WorkspaceInteractor({
@@ -9,10 +7,5 @@ export function WorkspaceInteractor({
   workspace?: any;
   state: WorkspaceState;
 }) {
-  return (
-    <>
-      <WorkspaceNavigation state={state} workspace={workspace} />
-      <Console state={state} />
-    </>
-  );
+  return <>{/* <Console state={state} /> */}</>;
 }

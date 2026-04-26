@@ -120,6 +120,7 @@ boardsRouter.patch(
       body: z.object({
         name: z.string().optional(),
         path: z.string().optional(),
+        data: z.any().optional(),
         metadata: z.any().optional(),
       }),
     }),

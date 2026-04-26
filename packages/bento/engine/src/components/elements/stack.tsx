@@ -20,7 +20,8 @@ export function Stack({
   const snap = useSnapshot(controller.state);
   const isEditMode = snap.mode === "edit";
 
-  const layoutStyle: CSSProperties = {
+  const cssStyle: CSSProperties = {
+    position: "relative",
     display: "flex",
     flexWrap: "wrap",
     flexDirection: style.direction,
@@ -45,7 +46,7 @@ export function Stack({
   };
 
   const innerContent = (
-    <div style={layoutStyle}>
+    <div style={cssStyle}>
       {content.map((childId) => (
         <Element key={childId} id={childId} />
       ))}

@@ -9,7 +9,7 @@ export function Console({ state }: { state: WorkspaceState }) {
   const [input, setInput] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const mode = snap.mode;
+  const mode = snap.context.mode;
 
   useEffect(() => {
     if (textareaRef.current) {

@@ -3,17 +3,15 @@ import { ArrowLeft } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { useSnapshot } from "valtio";
-import { WorkspaceState } from "../controller.js";
+import { WorkspaceController } from "../controller.js";
 
 export function WorkspaceNavigation({
-  workspace,
-  state,
+  controller,
 }: {
-  workspace?: any;
-  state: WorkspaceState;
+  controller: WorkspaceController;
 }) {
   const host = useBentoHost();
-  const snap = useSnapshot(state);
+  const snap = useSnapshot(controller.state);
   const [isVisible, setIsVisible] = useState(true);
   const hideTimer = useRef<any>(null);
 
@@ -77,24 +75,34 @@ export function WorkspaceNavigation({
                 <div className="h-4 w-px bg-white/10" />
                 <div className="flex items-center gap-3">
                   <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-500 font-bold text-white shadow-lg shadow-primary-500/20">
-                    {workspace?.name?.[0].toUpperCase() || "W"}
+                    {snap.workspace?.name?.[0].toUpperCase() || "W"}
                   </div>
                   <div className="flex flex-col">
                     <span className="text-sm font-bold text-foreground">
-                      {workspace?.name}
+                      {snap.workspace?.name}
                     </span>
                     <span className="text-[10px] text-foreground-400">
-                      {workspace?.slug}
+                      {snap.workspace?.slug}
                     </span>
                   </div>
                   <div className="flex items-center gap-1.5 rounded-full border border-white/5 bg-black/20 px-2 py-0.5">
                     <div
                       className={`h-1.5 w-1.5 rounded-full ${
-                        snap.connected ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" : "bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]"
+                        snap.connected ? "bg-blue-300" : "bg-yellow-300"
                       }`}
                     />
                     <span className="text-[9px] font-bold uppercase tracking-wider text-foreground-500">
                       {snap.connected ? "Connected" : "Connecting"}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5 rounded-full border border-white/5 bg-black/20 px-2 py-0.5">
+                    <div
+                      className={`h-1.5 w-1.5 rounded-full ${
+                        snap.ready ? "bg-green-300" : "bg-yellow-300"
+                      }`}
+                    />
+                    <span className="text-[9px] font-bold uppercase tracking-wider text-foreground-500">
+                      {snap.ready ? "Ready" : "Loading"}
                     </span>
                   </div>
                 </div>

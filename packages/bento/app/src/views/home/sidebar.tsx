@@ -29,8 +29,8 @@ export function Sidebar({ onOpenModal }: SidebarProps) {
             <div className="group flex h-6 w-6 items-center justify-center rounded-md bg-background-300 hover:bg-background-400">
               <Plus className="h-3.5 w-3.5 text-foreground-200" />
             </div>
-            <span className="text-[13px] font-medium text-foreground-100">
-              Create New Workspace
+            <span className="text-[13px] truncate font-medium text-foreground-100">
+              New Workspace
             </span>
           </button>
           <button
@@ -65,7 +65,9 @@ export function Sidebar({ onOpenModal }: SidebarProps) {
             </span>
           </button>
           <button
-            onClick={() => host.goToLocation({ view: "workspaces", params: {} })}
+            onClick={() =>
+              host.goToLocation({ view: "workspaces", params: {} })
+            }
             className="flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-2 py-1.5 transition-colors hover:bg-background-300"
           >
             <div className="flex h-6 w-6 items-center justify-center rounded-md bg-background-300">

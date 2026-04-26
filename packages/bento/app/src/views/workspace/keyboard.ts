@@ -10,7 +10,7 @@ export function useKeyboardShortcuts({ state }: { state: WorkspaceState }) {
       if (e.key === "Shift") {
         const now = Date.now();
         if (now - lastShiftPress.current < 300) {
-          state.mode = snap.mode === "edit" ? "live" : "edit";
+          state.context.mode = snap.context.mode === "edit" ? "live" : "edit";
           lastShiftPress.current = 0;
         } else {
           lastShiftPress.current = now;
@@ -20,5 +20,5 @@ export function useKeyboardShortcuts({ state }: { state: WorkspaceState }) {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [snap.mode]);
+  }, [snap.context.mode]);
 }

@@ -153,7 +153,10 @@ export class WorkspaceService {
     return extractResponseData(result, true);
   }
 
-  async updateBoard(boardId: string, data: { name?: string; path?: string }) {
+  async updateBoard(
+    boardId: string,
+    data: { name?: string; path?: string; data?: any },
+  ) {
     const result = await this.workspaceClient.patch("/boards/{board_id}", {
       params: {
         path: { board_id: boardId },

@@ -39,15 +39,15 @@ export function NoBoard(): React.JSX.Element {
   }
 
   return (
-    <div className="w-full h-screen overflow-y-auto bg-background-200 overflow-y-auto flex flex-col items-center p-20 animate-in fade-in duration-700">
+    <div className="w-full h-screen overflow-y-auto overflow-y-auto flex flex-col items-center p-20 animate-in fade-in duration-700">
       <div className="max-w-4xl w-full my-auto">
         <header className="text-center mb-12">
           <h1 className="text-4xl font-bold text-foreground-100 tracking-tight mb-3">
             Welcome to your Workspace
           </h1>
           <p className="text-lg text-foreground-300 max-w-xl mx-auto">
-            Choose a board to start building your experience, or create a new one
-            from scratch.
+            Choose a board to start building your experience, or create a new
+            one from scratch.
           </p>
         </header>
 

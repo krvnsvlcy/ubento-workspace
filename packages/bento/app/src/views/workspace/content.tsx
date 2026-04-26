@@ -1,21 +1,23 @@
 import { ErrorView } from "@/components/error";
 import { useBentoHost } from "@/contexts/host";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useSnapshot } from "valtio";
+import { SideSplitView } from "./components/split-view.js";
 import { WorkspaceController } from "./controller.js";
+import { WorkspaceNavigation } from "./interactor/navigation.js";
+import { ControlPanel } from "./panels/control-panel";
 
 export function WorkspaceContent({
-  workspace,
   controller,
 }: {
-  workspace?: any;
   controller: WorkspaceController;
 }) {
   const state = useSnapshot(controller.state);
   const host = useBentoHost();
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [inspectorWidth, setInspectorWidth] = useState(320);
 
-  if (state.error || (!workspace && !state.loading)) {
+  if (state.error) {
     return (
       <ErrorView
         message={"Error Loading Workspace"}
@@ -27,7 +29,7 @@ export function WorkspaceContent({
     );
   }
 
-  return (
+  const engine = (
     <iframe
       ref={iframeRef}
       src={host.iframeUrl}
@@ -43,5 +45,28 @@ export function WorkspaceContent({
         outline: "none",
       }}
     />
+  );
+
+  return (
+    <div className="h-screen w-screen relative">
+      <SideSplitView
+        side={{
+          type: "right",
+          content:
+            state.context.mode === "edit" ? (
+              <ControlPanel controller={controller} />
+            ) : null,
+          size: state.context.mode === "edit" ? inspectorWidth : 0,
+          onSizeChange: setInspectorWidth,
+          minSize: 240,
+          maxSize: 600,
+        }}
+      >
+        <div className="h-full w-full relative">
+          <WorkspaceNavigation controller={controller} />
+          {engine}
+        </div>
+      </SideSplitView>
+    </div>
   );
 }

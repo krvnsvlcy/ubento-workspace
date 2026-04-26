@@ -1,11 +1,9 @@
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
 import React, { createContext, useContext } from "react";
 import { useSnapshot } from "valtio";
-import { useEngineController } from "../../controller";
 import { BaseStyle, ElementData } from "../../models";
 import { Component } from "./component";
 import { Stack } from "./stack";
+import { BoxHandle } from "../handles/box-handle";
 
 export type ElementRegistry = {
   [key: string]: ElementData;
@@ -29,6 +27,7 @@ export function ElementRegistryProvider({
 
 function getBaseStyle(style: BaseStyle): React.CSSProperties {
   return {
+    position: "relative",
     width: style.width,
     height: style.height,
     minWidth: style.minWidth,
@@ -46,103 +45,44 @@ function getBaseStyle(style: BaseStyle): React.CSSProperties {
   };
 }
 
+function ElementContent({
+  element,
+}: {
+  element: ElementData;
+}): React.JSX.Element {
+  const elementSnap = useSnapshot(element);
+
+  switch (elementSnap.type) {
+    case "stack":
+      return (
+        <Stack content={elementSnap.content as any} style={elementSnap.style} />
+      );
+    case "block":
+      return (
+        <Component
+          moduleId={elementSnap.moduleId}
+          moduleVersionId={elementSnap.moduleVersionId}
+          props={elementSnap.props ?? {}}
+        />
+      );
+    default:
+      return <></>;
+  }
+}
+
 export function Element({ id }: { id: string }): React.JSX.Element {
   const registry = useContext(ElementRegistryContext);
-  const controller = useEngineController();
-  const snap = useSnapshot(controller.state);
   const element = registry[id];
-
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id });
+  const elementSnap = useSnapshot(element);
 
   if (!element) {
     return <></>;
   }
 
-  const isSelected = snap.selection?.includes(id);
-  const isEditMode = snap.mode === "edit";
-
-  let content: React.JSX.Element;
-
-  switch (element.type) {
-    case "stack":
-      content = <Stack content={element.content} style={element.style} />;
-      break;
-    case "block":
-      content = (
-        <div style={getBaseStyle(element.style ?? {})}>
-          <Component
-            moduleId={element.moduleId}
-            moduleVersionId={element.moduleVersionId}
-            props={element.props ?? {}}
-          />
-        </div>
-      );
-      break;
-    default:
-      content = <></>;
-      break;
-  }
-
-  if (!isEditMode) {
-    return content;
-  }
-
-  const style: React.CSSProperties = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    position: "relative",
-    outline: isSelected ? "2px solid #3b82f6" : "1px dashed #4b5563",
-    outlineOffset: "-1px",
-    cursor: "grab",
-    opacity: isDragging ? 0.5 : 1,
-    zIndex: isDragging ? 100 : 1,
-    minHeight: "20px",
-    minWidth: "20px",
-  };
-
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      {...listeners}
-      onClick={(e) => {
-        e.stopPropagation();
-        controller.select([id], e.shiftKey);
-      }}
-    >
-      {/* Handle Overlay */}
-      <div
-        style={{
-          position: "absolute",
-          top: -20,
-          left: 0,
-          backgroundColor: isSelected ? "#3b82f6" : "#4b5563",
-          color: "white",
-          fontSize: "10px",
-          padding: "2px 6px",
-          borderRadius: "4px 4px 0 0",
-          pointerEvents: "none",
-          zIndex: 10,
-          display: "flex",
-          alignItems: "center",
-          gap: "4px",
-          whiteSpace: "nowrap",
-        }}
-      >
-        <span>
-          {element.type === "stack" ? "stack" : `block:${element.moduleId}`}
-        </span>
-        {isSelected && <span style={{ opacity: 0.8 }}>({id})</span>}
-      </div>
-      {content}
+    <div style={getBaseStyle(elementSnap.style ?? {})}>
+      <BoxHandle id={id} element={element} />
+      <ElementContent element={element} />
     </div>
   );
 }

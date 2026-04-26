@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const baseStyleSchema = z.object({
+export const baseElementStyleSchema = z.object({
   width: z.number().optional(),
   height: z.number().optional(),
   minWidth: z.number().optional(),
@@ -20,9 +20,9 @@ export const baseStyleSchema = z.object({
     })
     .optional(),
 });
-export type BaseStyle = z.infer<typeof baseStyleSchema>;
+export type BaseStyle = z.infer<typeof baseElementStyleSchema>;
 
-export const stackStyleSchema = baseStyleSchema.extend({
+export const stackStyleSchema = baseElementStyleSchema.extend({
   direction: z.enum(["row", "column"]).optional(),
   gap: z.number().optional(),
   justify: z
@@ -49,7 +49,7 @@ export const blockDataSchema = z.object({
   moduleId: z.string(),
   moduleVersionId: z.string().optional(),
   props: z.record(z.string(), z.any()).optional(),
-  style: baseStyleSchema.optional(),
+  style: baseElementStyleSchema.optional(),
 });
 export type BlockData = z.infer<typeof blockDataSchema>;
 
@@ -59,18 +59,36 @@ export const elementDataSchema = z.discriminatedUnion("type", [
 ]);
 export type ElementData = z.infer<typeof elementDataSchema>;
 
+export const boardStyleSchema = z.object({
+  background: z.string().optional(),
+  padding: z
+    .object({
+      top: z.number().optional(),
+      bottom: z.number().optional(),
+      left: z.number().optional(),
+      right: z.number().optional(),
+    })
+    .optional(),
+  direction: z.enum(["row", "column"]).optional(),
+  gap: z.number().optional(),
+  overflow: z.enum(["visible", "hidden", "scroll", "auto"]).optional(),
+});
+export type BoardStyle = z.infer<typeof boardStyleSchema>;
+
 export const boardDataSchema = z.object({
   id: z.string(),
   name: z.string().optional(),
-  rootId: z.string(),
-  elements: z.record(z.string(), elementDataSchema),
+  style: boardStyleSchema.optional(),
+  content: z.array(z.string()).default([]),
+  elements: z.record(z.string(), elementDataSchema).default({}),
 });
 export type BoardData = z.infer<typeof boardDataSchema>;
 
 export const workspaceDataSchema = z.object({
   id: z.string(),
+  name: z.string(),
+  slug: z.string(),
   homeBoardId: z.string().optional(),
-  routes: z.record(z.string(), z.string()).optional(),
 });
 export type WorkspaceData = z.infer<typeof workspaceDataSchema>;
 
@@ -79,7 +97,7 @@ export function createBoard(
 ): BoardData {
   return {
     name: "Untitled Board",
-    rootId: "root",
+    content: ["root"],
     elements: {},
     ...data,
   };

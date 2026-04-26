@@ -8,12 +8,14 @@ export type EngineLocation = {
   params: Record<string, string>;
 };
 
-export type EngineState = {
+export type WorkspaceContext = {
   mode: EngineMode;
   location?: EngineLocation;
   selectionScope?: string;
-  selection?: string[];
+  selection: string[];
 };
+
+export type EngineState = WorkspaceContext;
 
 export type EngineController = {
   state: EngineState;

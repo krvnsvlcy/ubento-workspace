@@ -164,7 +164,7 @@ export function useUpdateBoard() {
       data,
     }: {
       boardId: string;
-      data: { name?: string; path?: string };
+      data: { name?: string; path?: string; data?: any };
     }) => {
       return await ubento.workspace.updateBoard(boardId, data);
     },
