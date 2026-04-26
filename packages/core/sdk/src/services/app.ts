@@ -1,4 +1,4 @@
-import { App, createAppServiceClient } from "~/clients/app/client.js";
+import { App, createAppServiceClient, Page } from "~/clients/app/client.js";
 import { extractResponseData } from "~/lib/client.js";
 import { extractCursorPage } from "~/lib/pagination.js";
 import { TokenManager } from "~/lib/token_manager.js";
@@ -121,10 +121,7 @@ export class AppService {
         },
       },
     });
-    return extractCursorPage(result.response, {
-      items: (result.data as any)?.items || [],
-      fetcher: this.appClient.fetch,
-    });
+    return extractResponseData(result) as unknown as Page[];
   }
 
   async getPage(pageId: string) {
@@ -136,7 +133,7 @@ export class AppService {
     return extractResponseData(result);
   }
 
-  async createPage(data: { app_id: string; name: string; path: string }) {
+  async createPage(data: { app_id: string; name: string; data: any }) {
     const result = await this.appClient.post("/pages", {
       body: data,
     });
@@ -161,7 +158,6 @@ export class AppService {
     });
     return extractResponseData(result, true);
   }
-
 
   // ===== App Memberships =====
 

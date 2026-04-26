@@ -69,12 +69,15 @@ export const elementDataSchema = z.discriminatedUnion("type", [
 export type ElementData = z.infer<typeof elementDataSchema>;
 
 export const pageDataSchema = z.object({
+  id: z.string(),
+  name: z.string().optional(),
   rootId: z.string(),
   elements: z.record(z.string(), elementDataSchema),
 });
 export type PageData = z.infer<typeof pageDataSchema>;
 
 export const appDataSchema = z.object({
+  id: z.string(),
   homePageId: z.string().optional(),
 });
 export type AppData = z.infer<typeof appDataSchema>;

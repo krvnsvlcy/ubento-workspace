@@ -8,12 +8,17 @@ import {
 export default defineConfig({
   cli: {
     entry: {
-      patterns: ["../app/src/**/*.{ts,tsx}", "../primitives/src/**/*.{ts,tsx}"],
+      patterns: [
+        "../engine/src/**/*.{ts,tsx}",
+        "../app/src/**/*.{ts,tsx}",
+        "../primitives/src/**/*.{ts,tsx}",
+      ],
       outFile: "./dist/uno.css",
     },
   },
   theme: {
     colors: {
+      // Ubento Core Palette (100-500 scale)
       background: {
         DEFAULT: "var(--background)",
         "000": "var(--background-000)",
@@ -31,7 +36,6 @@ export default defineConfig({
         400: "var(--foreground-400)",
         500: "var(--foreground-500)",
       },
-      paper: "var(--paper)",
       primary: {
         100: "var(--primary-100)",
         200: "var(--primary-200)",
@@ -46,6 +50,7 @@ export default defineConfig({
         400: "var(--secondary-400)",
         500: "var(--secondary-500)",
       },
+      // Ubento Functional Colors
       red: {
         100: "var(--red-100)",
         200: "var(--red-200)",
@@ -130,6 +135,7 @@ export default defineConfig({
         400: "var(--light-400)",
         500: "var(--light-500)",
       },
+      paper: "var(--paper)",
     },
   },
   presets: [

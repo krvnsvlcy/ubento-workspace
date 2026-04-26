@@ -14,7 +14,6 @@ export async function getPage(id: string) {
 export async function createPage(data: {
   app_id: string;
   name: string;
-  path: string;
   data: any;
 }) {
   const id = makeEntityId({
@@ -34,7 +33,6 @@ export async function updatePage(
   id: string,
   data: Partial<{
     name: string;
-    path: string;
     data: any;
   }>,
 ) {
@@ -57,7 +55,6 @@ export async function listPages(app_id: string) {
   return await prisma.page.findMany({
     where: {
       app_id,
-      deleted_at: null,
     },
   });
 }

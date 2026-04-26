@@ -11,9 +11,9 @@ import { arrayMove } from "@dnd-kit/sortable";
 import { ErrorView, PendingView } from "@ubento/bento-primitives";
 import React, { useEffect, useState } from "react";
 import { useSnapshot } from "valtio";
-import { useAppEngineController } from "../controller";
-import { ContainerData, PageData } from "../models";
-import { Element, ElementRegistryProvider } from "./elements/element";
+import { useAppEngineController } from "../../controller";
+import { ContainerData, PageData } from "../../models";
+import { Element, ElementRegistryProvider } from "../elements/element";
 
 function PageContent({ page }: { page: PageData }): React.JSX.Element {
   const controller = useAppEngineController();

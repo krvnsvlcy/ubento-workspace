@@ -14,6 +14,8 @@ export type HostRpcInterface = {
 
   // content retrieval
   getPage: (payload: { pageId: string }) => Promise<PageData>;
+  listPages: (payload: {}) => Promise<PageData[]>;
+  createPage: (payload: { name?: string }) => Promise<PageData>;
   getModule: (payload: { moduleId: string }) => Promise<ModuleData>;
 };
 

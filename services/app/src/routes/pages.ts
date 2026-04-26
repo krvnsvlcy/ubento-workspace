@@ -88,7 +88,6 @@ pagesRouter.post(
       body: z.object({
         app_id: z.string(),
         name: z.string(),
-        path: z.string(),
         data: z.any(),
       }),
     }),

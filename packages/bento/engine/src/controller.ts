@@ -31,6 +31,8 @@ export type AppEngineController = {
 
   // content retrieval
   getPage: (pageId: string) => Promise<PageData>;
+  listPages: () => Promise<PageData[]>;
+  createPage: (name?: string) => Promise<PageData>;
   getModule: (moduleId: string) => Promise<ModuleData>;
   resolveModuleValue: (moduleId: string, versionId: string) => Promise<any>;
 };

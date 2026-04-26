@@ -21,7 +21,7 @@ export function Bento({
       content = <Home />;
       break;
     case "app":
-      content = <App slug={location.params.slug} />;
+      content = <App slug={location.params.slug} pageId={location.params.pageId} />;
       break;
     case "apps":
       content = <Apps />;

@@ -3,7 +3,7 @@ import { Bento, type BentoHost, type BentoLocation } from "@ubento/bento-app";
 import "@ubento/bento-style/css/themes.css";
 import "@ubento/bento-style/dist/uno.css";
 import { UbentoSDK } from "@ubento/sdk";
-import { StrictMode, useMemo, useState } from "react";
+import { StrictMode, useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 
 const queryClient = new QueryClient();
@@ -72,11 +72,34 @@ async function getToken() {
   return data.access_token;
 }
 
+function parseLocation(path: string): BentoLocation {
+  const parts = path.split("/").filter(Boolean);
+  if (parts[0] === "a" && parts[1]) {
+    return {
+      view: "app",
+      params: { slug: parts[1], pageId: parts[2] },
+    };
+  }
+  if (parts[0] === "apps") {
+    return { view: "apps", params: {} };
+  }
+  return { view: "home", params: {} };
+}
+
+function buildUrl(location: BentoLocation): string {
+  if (location.view === "app") {
+    return `/a/${location.params.slug}${location.params.pageId ? `/${location.params.pageId}` : ""}`;
+  }
+  if (location.view === "apps") {
+    return "/apps";
+  }
+  return "/";
+}
+
 function BentoApp() {
-  const [location, setLocation] = useState<BentoLocation>({
-    view: "home",
-    params: {},
-  });
+  const [location, setLocation] = useState<BentoLocation>(() =>
+    parseLocation(window.location.pathname),
+  );
 
   const host: BentoHost = useMemo(
     () => ({
@@ -90,18 +113,36 @@ function BentoApp() {
           getToken,
         },
         serviceBaseUrls: {
-          // app: "http://localhost:13020",
+          app: "http://localhost:13020",
         },
       }),
       iframeUrl: import.meta.env.VITE_RUNTIME_URL || "http://localhost:4020",
       moduleUrlTemplate:
         import.meta.env.VITE_MODULE_URL_TEMPLATE ||
         "https://modules.ubento.pro/{moduleId}/{versionId}/index.js",
-      goToLocation: (loc) => setLocation(loc),
+      goToLocation: (loc) => {
+        const url = buildUrl(loc);
+        if (window.location.pathname !== url) {
+          window.history.pushState(null, "", url);
+        }
+        setLocation(loc);
+      },
     }),
 
     [],
   );
+
+  useEffect(() => {
+    const handlePopState = () => {
+      setLocation(parseLocation(window.location.pathname));
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    // initial sync
+    handlePopState();
+
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>

@@ -63,6 +63,22 @@ export function createAppEngineController({
     goTo: (pageId: string, params: Record<string, string> = {}) => {
       rpc.egress.goTo({ pageId, params });
     },
+    listPages: async () => {
+      const pages = await rpc.egress.listPages({});
+      return pages.map((p) => {
+        const page = proxy(p);
+        pageCache.set(p.id, page);
+        return page;
+      });
+    },
+    createPage: async (name) => {
+      const pageData = await rpc.egress.createPage({
+        name,
+      });
+      const page = proxy(pageData);
+      pageCache.set(pageData.id, page);
+      return page;
+    },
     getPage: async (pageId: string) => {
       const cachedPage = pageCache.get(pageId);
       if (cachedPage) {

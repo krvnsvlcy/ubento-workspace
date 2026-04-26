@@ -25,6 +25,32 @@ Instead of a deep nested tree, the engine represents UI as a flat registry of tw
 ### 2. State Modeling (`models.ts`)
 
 - **AppData**: Defines application metadata and routes (mapping paths to Page IDs).
+
+---
+
+## Design System & Styling
+
+Ubento uses a custom design system based on **UnoCSS**. Unlike traditional Tailwind projects, it does not use the default 50-950 color scale. Instead, it uses a simplified **100-500** scale for all colors.
+
+### 1. Color Palette
+
+Every color in Ubento has 5 levels:
+- **100**: Darkest / Most Saturated
+- **300**: Base level
+- **500**: Lightest / Most Desaturated (in Light mode) or Brightest (in Dark mode)
+
+### 2. Core Colors
+- `primary`: The main brand color (mapped to `blue` by default).
+- `secondary`: The secondary brand color (mapped to `cyan` by default).
+- `background`: Managed using `background-000` to `background-500`.
+- `foreground`: Managed using `foreground-100` to `foreground-500`.
+
+### 3. Usage in Utilities
+When using utility classes, always use the 100-500 scale:
+- ✅ `text-primary-300`, `bg-background-100`, `border-red-400`
+- ❌ `text-blue-600`, `bg-gray-50`, `border-indigo-500`
+
+Styling is strictly controlled via CSS variables defined in `@ubento/bento-style`, allowing for dynamic theme switching at runtime.
 - **PageData**: Contains a `rootId` and an `elements` map of all Containers and Blocks.
 - **EditorContext**: Global state for `mode` (`edit` | `view`) and the current `selection`.
 

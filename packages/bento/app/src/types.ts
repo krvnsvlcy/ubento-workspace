@@ -10,7 +10,7 @@ export type BaseBentoLocation<
 export type BentoLocation =
   | BaseBentoLocation<"home">
   | BaseBentoLocation<"apps">
-  | BaseBentoLocation<"app", { slug: string }>;
+  | BaseBentoLocation<"app", { slug: string; pageId?: string }>;
 
 export type BentoSession = {
   userId: string;

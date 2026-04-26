@@ -2,12 +2,14 @@ import { PendingView } from "@ubento/bento-primitives";
 import { App, type AppData } from "@ubento/engine";
 import { useEffect, useState } from "react";
 import { proxy } from "valtio";
+import { useKeyboardController } from "./keyboard";
 import { rpc } from "./rpc";
 import { createAppEngineController, setModuleUrlTemplate } from "./state";
 
 const controller = createAppEngineController();
 
 export function GuestApp() {
+  useKeyboardController();
   const [app, setApp] = useState<AppData | null>(null);
 
   useEffect(() => {
@@ -35,8 +37,8 @@ export function GuestApp() {
       locationChanged: ({ pageId, params }) => {
         controller.state.location = { pageId, params: params || {} };
       },
-
     });
+    rpc.egress.connect({});
   }, []);
 
   let content: React.ReactNode;

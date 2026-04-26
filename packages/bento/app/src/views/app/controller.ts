@@ -27,6 +27,7 @@ export type AppState = {
 
 export type AppController = {
   state: AppState;
+  app: AppData | null;
   connect: (target: Window) => void;
   load: (data: AppData) => void;
   dispose: () => void;
@@ -40,7 +41,10 @@ export type AppController = {
 
 export type AppControllerHandlers = {
   getPage: (pageId: string) => Promise<PageData>;
+  listPages: () => Promise<PageData[]>;
+  createPage: (name?: string) => Promise<PageData>;
   getModule: (moduleId: string) => Promise<ModuleData>;
+  onGoTo?: (pageId: string, params?: Record<string, string>) => void;
 };
 
 export function createAppController({
@@ -52,6 +56,7 @@ export function createAppController({
   handlers: AppControllerHandlers;
   moduleUrlTemplate: string;
 }): AppController {
+  let app: AppData | null = null;
   const state = proxy<AppState>({
     loading: false,
     error: false,
@@ -68,12 +73,15 @@ export function createAppController({
 
   return {
     state,
+    get app() {
+      return app;
+    },
     connect: (target: Window) => {
-      console.log("[Controller] Connecting to iframe window");
       rpc = createDuplexRpc<HostRpcInterface, GuestRpcInterface>({
         port: createWindowPort(window, target),
         handlers: {
           connect: () => {
+            console.log("[Controller] Connected to iframe window");
             state.connected = true;
             if (pendingLoad) {
               rpc!.egress.init({ app: pendingLoad, moduleUrlTemplate });
@@ -83,6 +91,12 @@ export function createAppController({
           ready: () => {},
           getPage: async ({ pageId }) => {
             return await handlers.getPage(pageId);
+          },
+          listPages: async () => {
+            return await handlers.listPages();
+          },
+          createPage: async ({ name }) => {
+            return await handlers.createPage(name);
           },
           getModule: async ({ moduleId }) => {
             return await handlers.getModule(moduleId);
@@ -97,7 +111,7 @@ export function createAppController({
             state.mode = mode;
           },
           goTo: ({ pageId, params }) => {
-            state.location = { pageId, params: params || {} };
+            handlers.onGoTo?.(pageId, params);
           },
         },
       });
@@ -105,6 +119,7 @@ export function createAppController({
       rpc.run();
     },
     load: (data: AppData) => {
+      app = data;
       if (rpc && state.connected) {
         rpc.egress.init({ app: data, moduleUrlTemplate });
       } else {
