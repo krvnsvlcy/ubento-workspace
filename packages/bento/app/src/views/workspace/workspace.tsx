@@ -1,19 +1,33 @@
 import { useBentoHost } from "@/contexts/host";
-import { getBoard, useWorkspaceBySlug } from "@/hooks/workspace";
 import { queryKeys } from "@/hooks/keys";
 import { useUbento } from "@/hooks/ubento";
+import { getBoard, useWorkspaceBySlug } from "@/hooks/workspace";
 import { useQueryClient } from "@tanstack/react-query";
-import { workspaceDataSchema, BoardData, boardDataSchema } from "@ubento/engine";
+import {
+  BoardData,
+  boardDataSchema,
+  workspaceDataSchema,
+} from "@ubento/engine";
 import { useEffect, useMemo } from "react";
 import { WorkspaceContent } from "./content";
 import { createWorkspaceController } from "./controller";
 import { WorkspaceInteractor } from "./interactor/interactor";
 import { useKeyboardShortcuts } from "./keyboard";
 
-export function Workspace({ slug, boardId }: { slug: string; boardId?: string }) {
+export function Workspace({
+  slug,
+  boardId,
+}: {
+  slug: string;
+  boardId?: string;
+}) {
   const host = useBentoHost();
   const queryClient = useQueryClient();
-  const { data: workspaceData, isLoading, isError } = useWorkspaceBySlug({ slug });
+  const {
+    data: workspaceData,
+    isLoading,
+    isError,
+  } = useWorkspaceBySlug({ slug });
   const ubento = useUbento();
 
   const workspaceController = useMemo(() => {
@@ -37,22 +51,31 @@ export function Workspace({ slug, boardId }: { slug: string; boardId?: string })
         listBoards: async () => {
           const boards = await queryClient.fetchQuery({
             queryKey: ["boards", { workspace_id: controller.workspace?.id }],
-            queryFn: () => ubento.workspace.listBoards({ workspace_id: controller.workspace!.id }),
+            queryFn: () =>
+              ubento.workspace.listBoards({
+                workspace_id: controller.workspace!.id,
+              }),
           });
-          return boards.map((p) =>
-            boardDataSchema.parse({
-              id: p.id,
-              name: p.name,
-              ...(p.data as any),
-            }),
-          );
+          return boards
+            .map((p) => {
+              const { data: boardData, error } = boardDataSchema.safeParse({
+                id: p.id,
+                name: p.name,
+                ...(p.data as any),
+              });
+              if (error) {
+                return undefined;
+              }
+              return boardData;
+            })
+            .filter(Boolean) as BoardData[];
         },
         createBoard: async (name) => {
           const data: Omit<BoardData, "id" | "name"> = {
             rootId: "root",
             elements: {
               root: {
-                type: "container",
+                type: "stack",
                 content: [],
                 style: {
                   width: 100,
@@ -132,8 +155,14 @@ export function Workspace({ slug, boardId }: { slug: string; boardId?: string })
 
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-background">
-      <WorkspaceInteractor workspace={workspaceData} state={workspaceController.state} />
-      <WorkspaceContent workspace={workspaceData} controller={workspaceController} />
+      <WorkspaceInteractor
+        workspace={workspaceData}
+        state={workspaceController.state}
+      />
+      <WorkspaceContent
+        workspace={workspaceData}
+        controller={workspaceController}
+      />
     </div>
   );
 }

@@ -5,7 +5,7 @@ import { useSnapshot } from "valtio";
 import { useEngineController } from "../../controller";
 import { BaseStyle, ElementData } from "../../models";
 import { Component } from "./component";
-import { Container } from "./container";
+import { Stack } from "./stack";
 
 export type ElementRegistry = {
   [key: string]: ElementData;
@@ -40,7 +40,6 @@ function getBaseStyle(style: BaseStyle): React.CSSProperties {
     borderWidth: style.borderWidth ? `${style.borderWidth}px` : undefined,
     borderStyle: style.borderWidth ? "solid" : undefined,
     borderColor: style.borderColor,
-    overflow: style.overflow,
     padding: style.padding
       ? `${style.padding.top ?? 0}px ${style.padding.right ?? 0}px ${style.padding.bottom ?? 0}px ${style.padding.left ?? 0}px`
       : undefined,
@@ -72,8 +71,8 @@ export function Element({ id }: { id: string }): React.JSX.Element {
   let content: React.JSX.Element;
 
   switch (element.type) {
-    case "container":
-      content = <Container content={element.content} style={element.style} />;
+    case "stack":
+      content = <Stack content={element.content} style={element.style} />;
       break;
     case "block":
       content = (
@@ -139,9 +138,7 @@ export function Element({ id }: { id: string }): React.JSX.Element {
         }}
       >
         <span>
-          {element.type === "container"
-            ? "container"
-            : `block:${element.moduleId}`}
+          {element.type === "stack" ? "stack" : `block:${element.moduleId}`}
         </span>
         {isSelected && <span style={{ opacity: 0.8 }}>({id})</span>}
       </div>

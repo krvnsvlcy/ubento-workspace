@@ -108,7 +108,7 @@ export class WorkspaceAgent {
       rootId,
       elements: {
         [rootId]: rootElement || {
-          type: "container",
+          type: "stack",
           style: {
             layout: "flex",
             direction: "column",
@@ -149,8 +149,8 @@ export class WorkspaceAgent {
     if (!board) throw new Error(`Board ${boardId} not found`);
 
     const parent = board.elements[parentId];
-    if (!parent || parent.type !== "container") {
-      throw new Error(`Parent ${parentId} not found or is not a container`);
+    if (!parent || parent.type !== "stack") {
+      throw new Error(`Parent ${parentId} not found or is not a stack`);
     }
 
     // Add element to registry
@@ -186,7 +186,7 @@ export class WorkspaceAgent {
 
     // Recursively find and remove from parent's content
     for (const el of Object.values(board.elements) as ElementData[]) {
-      if (el.type === "container") {
+      if (el.type === "stack") {
         const index = el.content.indexOf(elementId);
         if (index > -1) {
           el.content.splice(index, 1);
@@ -209,7 +209,7 @@ export class WorkspaceAgent {
 
     // Remove from old parent
     for (const el of Object.values(board.elements) as ElementData[]) {
-      if (el.type === "container") {
+      if (el.type === "stack") {
         const idx = el.content.indexOf(elementId);
         if (idx > -1) {
           el.content.splice(idx, 1);
@@ -219,9 +219,9 @@ export class WorkspaceAgent {
 
     // Add to new parent
     const targetParent = board.elements[targetParentId];
-    if (!targetParent || targetParent.type !== "container") {
+    if (!targetParent || targetParent.type !== "stack") {
       throw new Error(
-        `Target parent ${targetParentId} not found or is not a container`,
+        `Target parent ${targetParentId} not found or is not a stack`,
       );
     }
 
@@ -273,8 +273,8 @@ Available AgentAction types:
 - move_element: { boardId: string, elementId: string, targetParentId: string, index: number }
 
 ElementData schema:
-- type: "container" | "block"
-- If type: "container" -> { style: ContainerStyle, content: string[] }
+- type: "stack" | "block"
+- If type: "stack" -> { style: StackStyle, content: string[] }
 - If type: "block" -> { component: string, props: Record<string, any>, style: BaseStyle }
 
 Available Style properties:

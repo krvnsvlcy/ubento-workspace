@@ -35,15 +35,6 @@ let token: Token | null = null;
 async function getToken() {
   if (token) return token.access_token;
 
-  const stored = localStorage.getItem("ubento-access-token");
-  if (stored) {
-    token = JSON.parse(stored);
-  }
-
-  if (token && token.access_token) {
-    return token.access_token;
-  }
-
   const res = await fetch(new URL("/oauth/token", authServerBaseUrl), {
     method: "POST",
     headers: {

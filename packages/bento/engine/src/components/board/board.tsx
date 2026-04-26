@@ -12,7 +12,7 @@ import { ErrorView, PendingView } from "@ubento/bento-primitives";
 import React, { useEffect, useState } from "react";
 import { useSnapshot } from "valtio";
 import { useEngineController } from "../../controller.js";
-import { BoardData, ContainerData } from "../../models.js";
+import { BoardData, StackData } from "../../models.js";
 import { Element, ElementRegistryProvider } from "../elements/element.js";
 
 function BoardContent({ board }: { board: BoardData }): React.JSX.Element {
@@ -43,19 +43,19 @@ function BoardContent({ board }: { board: BoardData }): React.JSX.Element {
     let overParentId: string | null = null;
 
     for (const [key, el] of Object.entries(snap.elements)) {
-      if (el.type === "container" && el.content?.includes(activeId))
+      if (el.type === "stack" && el.content?.includes(activeId))
         activeParentId = key;
-      if (el.type === "container" && el.content?.includes(overId))
+      if (el.type === "stack" && el.content?.includes(overId))
         overParentId = key;
     }
 
     if (!activeParentId || !overParentId) return;
 
-    const sourceParent = snap.elements[activeParentId] as ContainerData;
-    const targetParent = snap.elements[overParentId] as ContainerData;
+    const sourceParent = snap.elements[activeParentId] as StackData;
+    const targetParent = snap.elements[overParentId] as StackData;
 
     if (activeParentId === overParentId) {
-      // Same container - reorder
+      // Same stack - reorder
       const oldIndex = sourceParent.content.indexOf(activeId);
       const newIndex = sourceParent.content.indexOf(overId);
       sourceParent.content = arrayMove(
@@ -64,7 +64,7 @@ function BoardContent({ board }: { board: BoardData }): React.JSX.Element {
         newIndex,
       );
     } else {
-      // Different containers - move
+      // Different stacks - move
       const sourceIndex = sourceParent.content.indexOf(activeId);
       const targetIndex = targetParent.content.indexOf(overId);
 

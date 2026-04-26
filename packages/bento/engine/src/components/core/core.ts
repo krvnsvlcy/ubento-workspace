@@ -1,2 +1,2 @@
-export * from "../elements/container";
+export * from "../elements/stack";
 export * from "./text";

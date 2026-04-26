@@ -11,7 +11,7 @@ export const DEFAULT_TEMPLATE = {
     rootId: "root",
     elements: {
       root: {
-        type: "container",
+        type: "stack",
         style: {
           layout: "flex",
           direction: "column",

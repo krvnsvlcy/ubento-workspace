@@ -6,33 +6,30 @@ import {
 import { CSSProperties } from "react";
 import { useSnapshot } from "valtio";
 import { useEngineController } from "../../controller";
-import { ContainerStyle } from "../../models";
+import { StackStyle } from "../../models";
 import { Element } from "./element";
 
-export function Container({
+export function Stack({
   content,
   style,
 }: {
   content: string[];
-  style: ContainerStyle;
+  style: StackStyle;
 }) {
   const controller = useEngineController();
   const snap = useSnapshot(controller.state);
   const isEditMode = snap.mode === "edit";
 
   const layoutStyle: CSSProperties = {
-    display: style.layout === "none" ? "block" : style.layout || "flex",
+    display: "flex",
+    flexWrap: "wrap",
     flexDirection: style.direction,
-    gap: style.gap ? `${style.gap.y ?? 0}px ${style.gap.x ?? 0}px` : undefined,
+    gap: style.gap,
     padding: style.padding
       ? `${style.padding.top ?? 0}px ${style.padding.right ?? 0}px ${style.padding.bottom ?? 0}px ${style.padding.left ?? 0}px`
       : undefined,
-    gridTemplateColumns: style.columns
-      ? `repeat(${style.columns}, 1fr)`
-      : undefined,
-    gridTemplateRows: style.rows ? `repeat(${style.rows}, 1fr)` : undefined,
-    alignItems: style.alignItems,
-    justifyContent: style.justifyContent,
+    alignItems: "stretch",
+    justifyContent: style.justify,
     width: style.width,
     height: style.height,
     minWidth: style.minWidth,

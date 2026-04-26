@@ -1,17 +1,16 @@
 import { z } from "zod";
 
 export const baseStyleSchema = z.object({
-  width: z.union([z.string(), z.number()]).optional(),
-  height: z.union([z.string(), z.number()]).optional(),
-  minWidth: z.union([z.string(), z.number()]).optional(),
-  maxWidth: z.union([z.string(), z.number()]).optional(),
-  minHeight: z.union([z.string(), z.number()]).optional(),
-  maxHeight: z.union([z.string(), z.number()]).optional(),
+  width: z.number().optional(),
+  height: z.number().optional(),
+  minWidth: z.number().optional(),
+  maxWidth: z.number().optional(),
+  minHeight: z.number().optional(),
+  maxHeight: z.number().optional(),
   background: z.string().optional(),
   cornerRadius: z.number().optional(),
   borderWidth: z.number().optional(),
   borderColor: z.string().optional(),
-  overflow: z.enum(["visible", "hidden", "scroll", "auto"]).optional(),
   padding: z
     .object({
       top: z.number().optional(),
@@ -23,30 +22,22 @@ export const baseStyleSchema = z.object({
 });
 export type BaseStyle = z.infer<typeof baseStyleSchema>;
 
-export const containerStyleSchema = baseStyleSchema.extend({
-  layout: z.enum(["flex", "grid", "none"]).optional(),
+export const stackStyleSchema = baseStyleSchema.extend({
   direction: z.enum(["row", "column"]).optional(),
-  gap: z
-    .object({
-      x: z.number().optional(),
-      y: z.number().optional(),
-    })
+  gap: z.number().optional(),
+  justify: z
+    .enum(["start", "end", "center", "space-between", "space-around"])
     .optional(),
-  columns: z.number().optional(),
-  rows: z.number().optional(),
-  alignItems: z.enum(["start", "end", "center", "stretch"]).optional(),
-  justifyContent: z
-    .enum(["start", "end", "center", "stretch", "space-between"])
-    .optional(),
+  overflow: z.enum(["visible", "hidden", "scroll", "auto"]).optional(),
 });
-export type ContainerStyle = z.infer<typeof containerStyleSchema>;
+export type StackStyle = z.infer<typeof stackStyleSchema>;
 
-export const containerDataSchema = z.object({
-  type: z.literal("container"),
-  style: containerStyleSchema,
-  content: z.array(z.string()), // Children IDs
+export const stackDataSchema = z.object({
+  type: z.literal("stack"),
+  style: stackStyleSchema,
+  content: z.array(z.string()),
 });
-export type ContainerData = z.infer<typeof containerDataSchema>;
+export type StackData = z.infer<typeof stackDataSchema>;
 
 export const moduleDataSchema = z.object({
   latestVersionId: z.string(),
@@ -63,7 +54,7 @@ export const blockDataSchema = z.object({
 export type BlockData = z.infer<typeof blockDataSchema>;
 
 export const elementDataSchema = z.discriminatedUnion("type", [
-  containerDataSchema,
+  stackDataSchema,
   blockDataSchema,
 ]);
 export type ElementData = z.infer<typeof elementDataSchema>;
@@ -83,7 +74,9 @@ export const workspaceDataSchema = z.object({
 });
 export type WorkspaceData = z.infer<typeof workspaceDataSchema>;
 
-export function createBoard(data: Partial<BoardData> & { id: string }): BoardData {
+export function createBoard(
+  data: Partial<BoardData> & { id: string },
+): BoardData {
   return {
     name: "Untitled Board",
     rootId: "root",
