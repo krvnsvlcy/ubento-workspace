@@ -5,7 +5,7 @@ export function SideSplitView({
   children,
 }: PropsWithChildren<{
   side: {
-    type: "left" | "right";
+    edge: "left" | "right";
     size: number;
     onSizeChange?: (size: number) => void;
     content?: React.ReactNode;
@@ -20,7 +20,7 @@ export function SideSplitView({
 
     const onMouseMove = (e: MouseEvent) => {
       let newSize = side.size;
-      if (side.type === "right") {
+      if (side.edge === "right") {
         newSize = window.innerWidth - e.clientX;
       } else {
         newSize = e.clientX;
@@ -44,7 +44,14 @@ export function SideSplitView({
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("mouseup", onMouseUp);
     };
-  }, [isDragging, side.minSize, side.maxSize, side.type, side.onSizeChange, side.size]);
+  }, [
+    isDragging,
+    side.minSize,
+    side.maxSize,
+    side.edge,
+    side.onSizeChange,
+    side.size,
+  ]);
 
   const sidebarStyle: React.CSSProperties = {
     flex: `0 0 ${side.size}px`,
@@ -65,7 +72,7 @@ export function SideSplitView({
 
   const handleStyle: React.CSSProperties = {
     position: "absolute",
-    [side.type === "right" ? "left" : "right"]: 0,
+    [side.edge === "right" ? "left" : "right"]: 0,
     top: 0,
     bottom: 0,
     width: 4,
@@ -85,7 +92,7 @@ export function SideSplitView({
         flexDirection: "row",
       }}
     >
-      {side.type === "left" && (
+      {side.edge === "left" && (
         <div style={sidebarStyle}>
           <div style={{ width: side.size, height: "100%" }}>{side.content}</div>
           {side.size > 0 && (
@@ -103,7 +110,7 @@ export function SideSplitView({
 
       <div style={mainStyle}>{children}</div>
 
-      {side.type === "right" && (
+      {side.edge === "right" && (
         <div style={sidebarStyle}>
           {side.size > 0 && (
             <div

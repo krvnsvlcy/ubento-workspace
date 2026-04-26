@@ -51,7 +51,7 @@ export function WorkspaceContent({
     <div className="h-screen w-screen relative">
       <SideSplitView
         side={{
-          type: "right",
+          edge: "right",
           content:
             state.context.mode === "edit" ? (
               <ControlPanel controller={controller} />
