@@ -1,5 +1,6 @@
 import { createContext, useContext } from "react";
-import { BoardData, ModuleData } from "./models.js";
+import { StoreApi } from "zustand";
+import { BaseStyle, BoardData, ElementData, ModuleData } from "./models.js";
 
 export type EngineMode = "live" | "edit";
 
@@ -15,11 +16,12 @@ export type WorkspaceContext = {
   selection: string[];
 };
 
-export type EngineState = WorkspaceContext;
+export type EngineState = WorkspaceContext & {
+  boards: Record<string, BoardData>;
+  modules: Record<string, ModuleData>;
+};
 
-export type EngineController = {
-  state: EngineState;
-
+export type EngineStore = EngineState & {
   // interaction
   toggleMode: () => void;
 
@@ -37,7 +39,19 @@ export type EngineController = {
   createBoard: (name?: string) => Promise<BoardData>;
   getModule: (moduleId: string) => Promise<ModuleData>;
   resolveModuleValue: (moduleId: string, versionId: string) => Promise<any>;
+
+  // mutators
+  setElementStyle: (id: string, style: Partial<BaseStyle>) => void;
+  setElementProps: (id: string, props: any) => void;
+  setStackContent: (id: string, content: string[]) => void;
+  setBlockModule: (
+    id: string,
+    moduleId: string,
+    moduleVersionId: string,
+  ) => void;
 };
+
+export type EngineController = StoreApi<EngineStore>;
 
 export const EngineControllerContext =
   createContext<EngineController | null>(null);

@@ -1,5 +1,9 @@
 import { PendingView } from "@ubento/bento-primitives";
-import { Workspace, type WorkspaceData } from "@ubento/engine";
+import {
+  Workspace,
+  type EngineController,
+  type WorkspaceData,
+} from "@ubento/engine";
 import { useEffect, useState } from "react";
 import { useKeyboardController } from "./keyboard.js";
 import { rpc } from "./rpc.js";
@@ -8,7 +12,7 @@ import { createEngineController, setModuleUrlTemplate } from "./state.js";
 const controller = createEngineController();
 
 export function GuestWorkspace() {
-  useKeyboardController();
+  useKeyboardController(controller as EngineController);
   const [workspace, setWorkspace] = useState<WorkspaceData | null>(null);
 
   useEffect(() => {
@@ -21,42 +25,41 @@ export function GuestWorkspace() {
         moduleUrlTemplate: string;
       }) => {
         setModuleUrlTemplate(moduleUrlTemplate);
-        controller.setWorkspace(workspace);
+        controller.getState().setWorkspace(workspace);
         setWorkspace(workspace as any);
         rpc.egress.ready({});
       },
       contextChanged: ({ context }) => {
-        alert(JSON.stringify(context));
-        controller.state = context;
+        controller.setState(context);
       },
 
       // mutations
       setHomeBoardId: async ({ homeBoardId }) => {
-        controller.setHomeBoardId(homeBoardId);
+        controller.getState().setHomeBoardId(homeBoardId);
       },
       deleteBoard: async ({ boardId }) => {
-        controller.deleteBoard(boardId);
+        controller.getState().deleteBoard(boardId);
       },
       setBoardContent: async ({ boardId, content }) => {
-        controller.setBoardContent(boardId, content);
+        controller.getState().setBoardContent(boardId, content);
       },
       addElement: async ({ boardId, containerId, element }) => {
-        return controller.addElement(boardId, containerId, element);
+        return controller.getState().addElement(boardId, containerId, element);
       },
       deleteElement: async ({ boardId, elementId }) => {
-        controller.deleteElement(boardId, elementId);
+        controller.getState().deleteElement(boardId, elementId);
       },
       setElementStyle: ({ id, style }) => {
-        controller.setElementStyle(id, style);
+        controller.getState().setElementStyle(id, style);
       },
       setElementProps: ({ id, props }) => {
-        controller.setElementProps(id, props);
+        controller.getState().setElementProps(id, props);
       },
       setStackContent: async ({ id, content }) => {
-        controller.setStackContent(id, content);
+        controller.getState().setStackContent(id, content);
       },
       setBlockModule: ({ id, moduleId, moduleVersionId }) => {
-        controller.setBlockModule(id, moduleId, moduleVersionId);
+        controller.getState().setBlockModule(id, moduleId, moduleVersionId);
       },
     });
     rpc.egress.connect({});
@@ -67,7 +70,12 @@ export function GuestWorkspace() {
   if (!workspace) {
     content = <PendingView message="Loading Workspace..." />;
   } else {
-    content = <Workspace workspace={workspace} controller={controller} />;
+    content = (
+      <Workspace
+        workspace={workspace}
+        controller={controller as EngineController}
+      />
+    );
   }
 
   return (

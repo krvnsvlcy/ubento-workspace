@@ -13,12 +13,14 @@
     "deploy": "pnpm vercel:build && pnpm vercel:deploy"
   },
   "dependencies": {
+    "@ubento/agent": "workspace:*",
+    "@ubento/bento-primitives": "workspace:*",
+    "@ubento/bento-style": "workspace:*",
     "@ubento/engine": "workspace:*",
     "@ubento/rpc-utils": "workspace:*",
-    "@ubento/agent": "workspace:*",
-    "@ubento/bento-style": "workspace:*",
-    "@ubento/bento-primitives": "workspace:*",
-    "wouter": "^3.6.0"
+    "immer": "^11.1.4",
+    "wouter": "^3.6.0",
+    "zustand": "^5.0.12"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",

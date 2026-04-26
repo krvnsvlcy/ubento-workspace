@@ -1,15 +1,15 @@
 import { useBentoHost } from "@/contexts/host";
 import { useBentoSession } from "@/contexts/session";
-import { useWorkspaces, useCreateWorkspace } from "@/hooks/workspace";
+import { useCreateWorkspace, useWorkspaces } from "@/hooks/workspace";
 import { AIModal } from "@/modals/AIModal";
 import { CreateWorkspaceModal } from "@/modals/CreateWorkspaceModal";
 import { SettingsModal } from "@/modals/SettingsModal";
 import { UserSettingsModal } from "@/modals/UserSettingsModal";
 import { motion } from "motion/react";
 import React, { useEffect, useState } from "react";
-import { WorkspaceGrid } from "./workspace-grid";
 import { Header } from "./header";
 import { Sidebar } from "./sidebar";
+import { WorkspaceGrid } from "./workspace-grid";
 
 export function Home() {
   const host = useBentoHost();
@@ -53,7 +53,6 @@ export function Home() {
       setActiveModal(null);
     } catch (err) {
       console.error("Error creating workspace:", err);
-      alert("Error creating workspace");
     } finally {
       setIsCreating(false);
     }

@@ -1,6 +1,5 @@
 import { type EngineController } from "@ubento/engine";
 import { useEffect } from "react";
-import { rpc } from "./rpc.js";
 
 export function useKeyboardController(controller?: EngineController) {
   useEffect(() => {
@@ -11,7 +10,7 @@ export function useKeyboardController(controller?: EngineController) {
       if (e.key === "Shift") {
         const now = Date.now();
         if (now - lastShiftPress < 300) {
-          controller.toggleMode();
+          controller.getState().toggleMode();
           lastShiftPress = 0;
         } else {
           lastShiftPress = now;
@@ -23,7 +22,6 @@ export function useKeyboardController(controller?: EngineController) {
 
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
-      rpc.dispose();
     };
   }, [controller]);
 }

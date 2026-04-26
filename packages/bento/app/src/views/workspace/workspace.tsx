@@ -27,15 +27,15 @@ export function Workspace({
   );
 
   useEffect(() => {
-    workspaceController.current.load();
-    return () => workspaceController.current.dispose();
+    workspaceController.current.getState().load();
+    return () => workspaceController.current.getState().dispose();
   }, []);
 
-  useKeyboardShortcuts({ state: workspaceController.current.state });
+  useKeyboardShortcuts({ controller: workspaceController.current });
 
   useEffect(() => {
     if (boardId) {
-      workspaceController.current.goTo(boardId);
+      workspaceController.current.getState().goTo(boardId);
     }
   }, [boardId, workspaceController]);
 

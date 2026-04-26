@@ -1,5 +1,4 @@
 import React, { createContext, useContext } from "react";
-import { useSnapshot } from "valtio";
 import { BaseStyle, ElementData } from "../../models";
 import { Component } from "./component";
 import { Stack } from "./stack";
@@ -50,19 +49,15 @@ function ElementContent({
 }: {
   element: ElementData;
 }): React.JSX.Element {
-  const elementSnap = useSnapshot(element);
-
-  switch (elementSnap.type) {
+  switch (element.type) {
     case "stack":
-      return (
-        <Stack content={elementSnap.content as any} style={elementSnap.style} />
-      );
+      return <Stack content={element.content as any} style={element.style} />;
     case "block":
       return (
         <Component
-          moduleId={elementSnap.moduleId}
-          moduleVersionId={elementSnap.moduleVersionId}
-          props={elementSnap.props ?? {}}
+          moduleId={element.moduleId}
+          moduleVersionId={element.moduleVersionId}
+          props={element.props ?? {}}
         />
       );
     default:
@@ -73,14 +68,13 @@ function ElementContent({
 export function Element({ id }: { id: string }): React.JSX.Element {
   const registry = useContext(ElementRegistryContext);
   const element = registry[id];
-  const elementSnap = useSnapshot(element);
 
   if (!element) {
     return <></>;
   }
 
   return (
-    <div style={getBaseStyle(elementSnap.style ?? {})}>
+    <div style={getBaseStyle(element.style ?? {})}>
       <BoxHandle id={id} element={element} />
       <ElementContent element={element} />
     </div>

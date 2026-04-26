@@ -2,7 +2,7 @@ import { useBentoHost } from "@/contexts/host";
 import { ArrowLeft, Pin, PinOff } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
-import { useSnapshot } from "valtio";
+import { useStore } from "zustand";
 import { WorkspaceController } from "../controller.js";
 
 export function WorkspaceNavigation({
@@ -15,7 +15,7 @@ export function WorkspaceNavigation({
   onTogglePinned: () => void;
 }) {
   const host = useBentoHost();
-  const snap = useSnapshot(controller.state);
+  const snap = useStore(controller);
   const [isVisible, setIsVisible] = useState(isPinned);
   const hideTimer = useRef<any>(null);
 

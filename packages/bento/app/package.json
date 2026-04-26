@@ -9,6 +9,7 @@
     "@ubento/engine": "workspace:*",
     "@ubento/rpc-utils": "workspace:*",
     "@ubento/sdk": "workspace:*",
+    "dequal": "^2.0.3",
     "lucide-react": "^0.468.0",
     "motion": "^12.38.0",
     "react": "^19.0.0",

@@ -1,7 +1,7 @@
 import { ErrorView, PendingView } from "@ubento/bento-primitives";
 import React, { useEffect, useState } from "react";
-import { subscribe } from "valtio";
 import { useEngineController } from "../../controller";
+import { ModuleData } from "../../models";
 
 export function Component({
   moduleId,
@@ -23,16 +23,20 @@ export function Component({
   // resolve module versionId
   useEffect(() => {
     if (!moduleVersionId) {
-      let mounted = true;
       let cleanup: (() => void) | undefined;
       controller
+        .getState()
         .getModule(moduleId)
-        .then((module) => {
-          if (mounted) {
-            cleanup = subscribe(module, (_) => {
-              setVersionId(module.latestVersionId);
-            });
-          }
+        .then((module: ModuleData) => {
+          setVersionId(module.latestVersionId);
+          cleanup = controller.subscribe((curr, prev) => {
+            if (
+              curr.modules[moduleId]?.latestVersionId !==
+              prev.modules[moduleId]?.latestVersionId
+            ) {
+              setVersionId(curr.modules[moduleId]?.latestVersionId);
+            }
+          });
         })
         .catch(() => {
           setError(true);
@@ -40,18 +44,18 @@ export function Component({
         });
 
       return () => {
-        mounted = false;
         cleanup?.();
       };
     }
-  }, [moduleId, controller]);
+  }, [moduleId, controller, moduleVersionId]);
 
   // resolve version value
   useEffect(() => {
     if (!versionId) return;
     controller
+      .getState()
       .resolveModuleValue(moduleId, versionId)
-      .then((moduleValue) => {
+      .then((moduleValue: any) => {
         setModuleValue(moduleValue.value);
       })
       .catch(() => {
@@ -60,7 +64,7 @@ export function Component({
       .finally(() => {
         setLoading(false);
       });
-  }, [versionId, controller]);
+  }, [versionId, controller, moduleId]);
 
   if (loading) return <PendingView message="Loading component..." />;
   if (error) return <ErrorView message="Failed to load component" />;

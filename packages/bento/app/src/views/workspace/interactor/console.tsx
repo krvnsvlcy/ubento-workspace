@@ -1,11 +1,11 @@
 import { Command, Send, Sparkles } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
-import { useSnapshot } from "valtio";
-import { WorkspaceState } from "../controller.js";
+import { useStore } from "zustand";
+import { WorkspaceController } from "../controller.js";
 
-export function Console({ state }: { state: WorkspaceState }) {
-  const snap = useSnapshot(state);
+export function Console({ controller }: { controller: WorkspaceController }) {
+  const snap = useStore(controller);
   const [input, setInput] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 

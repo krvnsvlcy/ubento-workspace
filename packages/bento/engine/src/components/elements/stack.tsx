@@ -4,7 +4,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSSProperties } from "react";
-import { useSnapshot } from "valtio";
+import { useStore } from "zustand";
 import { useEngineController } from "../../controller";
 import { StackStyle } from "../../models";
 import { Element } from "./element";
@@ -17,7 +17,7 @@ export function Stack({
   style: StackStyle;
 }) {
   const controller = useEngineController();
-  const snap = useSnapshot(controller.state);
+  const snap = useStore(controller);
   const isEditMode = snap.mode === "edit";
 
   const cssStyle: CSSProperties = {

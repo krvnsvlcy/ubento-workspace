@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useSnapshot } from "valtio";
+import { useStore } from "zustand";
 import { useEngineController } from "../../controller";
 import { ElementData } from "../../models";
 
@@ -111,7 +111,7 @@ export function BoxHandle({
   element: ElementData;
 }) {
   const controller = useEngineController();
-  const controllerStateSnap = useSnapshot(controller.state);
+  const controllerStateSnap = useStore(controller);
   const [dragType, setDragType] = useState<ResizeDirection | null>(null);
 
   const isSelected = controllerStateSnap.selection?.includes(id);
@@ -126,28 +126,33 @@ export function BoxHandle({
 
       if (!element.style) return;
 
+      const styleUpdates: any = {};
+
       if (dragType === "radius") {
         const current = element.style.cornerRadius ?? 0;
         const change = deltaY - deltaX;
-        element.style.cornerRadius = Math.max(0, current + change / 2);
-        return;
+        styleUpdates.cornerRadius = Math.max(0, current + change / 2);
+      } else {
+        if (dragType.includes("e")) {
+          if (typeof element.style.width === "number")
+            styleUpdates.width = element.style.width + deltaX;
+        }
+        if (dragType.includes("w")) {
+          if (typeof element.style.width === "number")
+            styleUpdates.width = element.style.width - deltaX;
+        }
+        if (dragType.includes("s")) {
+          if (typeof element.style.height === "number")
+            styleUpdates.height = element.style.height + deltaY;
+        }
+        if (dragType.includes("n")) {
+          if (typeof element.style.height === "number")
+            styleUpdates.height = element.style.height - deltaY;
+        }
       }
 
-      if (dragType.includes("e")) {
-        if (typeof element.style.width === "number")
-          element.style.width += deltaX;
-      }
-      if (dragType.includes("w")) {
-        if (typeof element.style.width === "number")
-          element.style.width -= deltaX;
-      }
-      if (dragType.includes("s")) {
-        if (typeof element.style.height === "number")
-          element.style.height += deltaY;
-      }
-      if (dragType.includes("n")) {
-        if (typeof element.style.height === "number")
-          element.style.height -= deltaY;
+      if (Object.keys(styleUpdates).length > 0) {
+        controller.getState().setElementStyle(id, styleUpdates);
       }
     };
 
@@ -162,7 +167,7 @@ export function BoxHandle({
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("mouseup", onMouseUp);
     };
-  }, [dragType, element]);
+  }, [dragType, element, id, controller]);
 
   if (!isEditMode) return null;
 
@@ -179,7 +184,7 @@ export function BoxHandle({
     <div
       onClick={(e) => {
         e.stopPropagation();
-        controller.select([id], e.shiftKey);
+        controller.getState().select([id], e.shiftKey);
       }}
       style={{
         position: "absolute",

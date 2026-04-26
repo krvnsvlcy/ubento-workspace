@@ -1,4 +1,4 @@
-import { useSnapshot } from "valtio";
+import { useStore } from "zustand";
 import { WorkspaceController } from "../controller";
 
 export function ControlPanel({
@@ -6,7 +6,7 @@ export function ControlPanel({
 }: {
   controller: WorkspaceController;
 }) {
-  const state = useSnapshot(controller.state);
+  const state = useStore(controller);
   const selectedId = state.context.selection?.[0];
   const workspace = state.boards[selectedId];
 

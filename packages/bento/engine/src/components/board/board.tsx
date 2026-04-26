@@ -1,14 +1,17 @@
 import { ErrorView, PendingView } from "@ubento/bento-primitives";
 import React, { useEffect, useState } from "react";
-import { useSnapshot } from "valtio";
+import { useStore } from "zustand";
 import { useEngineController } from "../../controller.js";
 import { BoardData } from "../../models.js";
 import { Element, ElementRegistryProvider } from "../elements/element.js";
 
-function BoardContent({ board }: { board: BoardData }): React.JSX.Element {
-  const snap = useSnapshot(board);
+function BoardContent({ boardId }: { boardId: string }): React.JSX.Element {
+  const controller = useEngineController();
+  const board = useStore(controller, (s) => s.boards[boardId]);
 
-  const content = snap.content.map((id) => <Element key={id} id={id} />);
+  if (!board) return <></>;
+
+  const content = board.content.map((id) => <Element key={id} id={id} />);
 
   return (
     <ElementRegistryProvider registry={board.elements as any}>
@@ -34,13 +37,13 @@ export function Board({
   const controller = useEngineController();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [board, setBoard] = useState<BoardData | undefined>();
 
   useEffect(() => {
     controller
+      .getState()
       .getBoard(id)
-      .then((board) => {
-        setBoard(board);
+      .then(() => {
+        // Data is now in controller.state
       })
       .catch(() => {
         setError(true);
@@ -52,7 +55,6 @@ export function Board({
 
   if (loading) return <PendingView message="Loading board..." />;
   if (error) return <ErrorView message="Failed to load board" />;
-  if (!board) return <ErrorView message="Board not found" />;
 
-  return <BoardContent board={board} />;
+  return <BoardContent boardId={id} />;
 }

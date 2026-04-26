@@ -1,7 +1,7 @@
 import { ErrorView } from "@/components/error";
 import { useBentoHost } from "@/contexts/host";
 import { useRef, useState } from "react";
-import { useSnapshot } from "valtio";
+import { useStore } from "zustand";
 import { SideSplitView } from "./components/split-view.js";
 import { WorkspaceController } from "./controller.js";
 import { WorkspaceNavigation } from "./interactor/navigation.js";
@@ -12,7 +12,7 @@ export function WorkspaceContent({
 }: {
   controller: WorkspaceController;
 }) {
-  const state = useSnapshot(controller.state);
+  const state = useStore(controller);
   const host = useBentoHost();
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [inspectorWidth, setInspectorWidth] = useState(320);
@@ -47,7 +47,7 @@ export function WorkspaceContent({
       src={host.iframeUrl}
       onLoad={() => {
         if (iframeRef.current?.contentWindow) {
-          controller.connect(iframeRef.current.contentWindow);
+          controller.getState().connect(iframeRef.current.contentWindow);
         }
       }}
       style={{

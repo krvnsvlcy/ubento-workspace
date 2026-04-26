@@ -1,5 +1,5 @@
 import React from "react";
-import { useSnapshot } from "valtio";
+import { useStore } from "zustand";
 import { EngineController, EngineControllerContext } from "../controller.js";
 import { WorkspaceData } from "../models.js";
 import { Board } from "./board/board.js";
@@ -12,7 +12,7 @@ export function Workspace({
   workspace: WorkspaceData;
   controller: EngineController;
 }): React.JSX.Element {
-  const snap = useSnapshot(controller.state);
+  const snap = useStore(controller);
   let content = <></>;
 
   if (snap.location?.boardId) {

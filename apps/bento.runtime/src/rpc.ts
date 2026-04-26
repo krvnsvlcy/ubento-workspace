@@ -7,3 +7,7 @@ export const rpc = createDuplexRpc<GuestRpcInterface, HostRpcInterface>({
 });
 
 rpc.run();
+
+rpc.watch((event) => {
+  console.log(`[guest.rpc.event] ${event.type}`, event);
+});
