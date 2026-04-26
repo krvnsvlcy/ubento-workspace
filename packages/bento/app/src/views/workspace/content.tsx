@@ -17,6 +17,18 @@ export function WorkspaceContent({
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [inspectorWidth, setInspectorWidth] = useState(320);
 
+  const [isNavPinned, setIsNavPinned] = useState(() => {
+    return localStorage.getItem("ubento:nav-pinned") === "true";
+  });
+
+  const toggleNavPinned = () => {
+    setIsNavPinned((prev) => {
+      const next = !prev;
+      localStorage.setItem("ubento:nav-pinned", String(next));
+      return next;
+    });
+  };
+
   if (state.error) {
     return (
       <ErrorView
@@ -48,7 +60,7 @@ export function WorkspaceContent({
   );
 
   return (
-    <div className="h-screen w-screen relative">
+    <div className="h-screen w-screen relative overflow-hidden bg-background">
       <SideSplitView
         side={{
           edge: "right",
@@ -62,9 +74,13 @@ export function WorkspaceContent({
           maxSize: 600,
         }}
       >
-        <div className="h-full w-full relative">
-          <WorkspaceNavigation controller={controller} />
-          {engine}
+        <div className="h-full w-full relative flex flex-col">
+          <WorkspaceNavigation
+            controller={controller}
+            isPinned={isNavPinned}
+            onTogglePinned={toggleNavPinned}
+          />
+          <div className="flex-1 relative">{engine}</div>
         </div>
       </SideSplitView>
     </div>

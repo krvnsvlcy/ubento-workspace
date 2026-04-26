@@ -75,9 +75,12 @@ export function createEngineController({
     },
     select: (elementIds: string[], toggle?: boolean) => {
       const currentSelection = state.selection || [];
-      state.selection = toggle
+      const nextSelection = toggle
         ? currentSelection.filter((id) => !elementIds.includes(id))
         : [...currentSelection, ...elementIds];
+      rpc.egress.updateContext({
+        selection: nextSelection,
+      });
     },
     focusSelectionScope: (scope: string) => {
       state.selectionScope = scope;

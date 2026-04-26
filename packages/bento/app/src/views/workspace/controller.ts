@@ -98,7 +98,7 @@ export function createWorkspaceController({
     loading: false,
     error: false,
     context: {
-      mode: "live",
+      mode: "edit",
       selection: [],
     },
     connected: false,
@@ -110,6 +110,15 @@ export function createWorkspaceController({
   });
 
   let rpc: DuplexRpc<HostRpcInterface, GuestRpcInterface> | null = null;
+
+  const cleanupContextSubscription = subscribe(state, (ops) => {
+    for (const op of ops) {
+      console.log(op[1]);
+      // rpc?.egress.contextChanged({
+      //   context: JSON.parse(JSON.stringify(state.context)),
+      // });
+    }
+  });
 
   const controller: WorkspaceController = {
     state,
@@ -211,8 +220,8 @@ export function createWorkspaceController({
             state.modules[moduleId] = module;
             return module;
           },
-          updateContext: ({ context }) => {
-            state.context = context;
+          updateContext: (update) => {
+            Object.assign(state.context, update);
           },
 
           // sync
@@ -227,14 +236,11 @@ export function createWorkspaceController({
         },
       });
 
-      subscribe(state.context, () => {
-        rpc?.egress.contextChanged({ context: state.context });
-      });
-
       rpc.run();
     },
     dispose: () => {
       rpc?.dispose();
+      cleanupContextSubscription();
     },
     load: async () => {
       state.loading = true;
@@ -281,19 +287,15 @@ export function createWorkspaceController({
     // actions
     setMode: (mode: EngineMode) => {
       state.context.mode = mode;
-      rpc?.egress.contextChanged({ context: state.context });
     },
     select: (elementIds: string[]) => {
       state.context.selection = elementIds;
-      rpc?.egress.contextChanged({ context: state.context });
     },
     setSelectionScope: (selectionScope?: string) => {
       state.context.selectionScope = selectionScope;
-      rpc?.egress.contextChanged({ context: state.context });
     },
     goTo: (boardId: string, params?: Record<string, string>) => {
       state.context.location = { boardId, params: params || {} };
-      rpc?.egress.contextChanged({ context: state.context });
       host.goToLocation({
         view: "workspace",
         params: { slug, boardId, ...params },

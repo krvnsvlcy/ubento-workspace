@@ -26,6 +26,7 @@ export function GuestWorkspace() {
         rpc.egress.ready({});
       },
       contextChanged: ({ context }) => {
+        alert(JSON.stringify(context));
         controller.state = context;
       },
 

@@ -7,7 +7,7 @@ export type HostRpcInterface = {
   ready: (payload: {}) => void; // sent when engine is ready
 
   // interactions
-  updateContext: (payload: { context: WorkspaceContext }) => void;
+  updateContext: (update: Partial<WorkspaceContext>) => void;
 
   // content retrieval
   getBoard: (payload: { boardId: string }) => Promise<BoardData>;
