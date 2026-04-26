@@ -62,19 +62,19 @@ export const ubentoAuth = {
       read: "session:read",
       revoke: "session:revoke",
     },
-    app: {
-      read: "app:read",
-      list: "app:list",
-      create: "app:create",
-      update: "app:update",
-      delete: "app:delete",
+    workspace: {
+      read: "workspace:read",
+      list: "workspace:list",
+      create: "workspace:create",
+      update: "workspace:update",
+      delete: "workspace:delete",
     },
-    page: {
-      read: "page:read",
-      list: "page:list",
-      create: "page:create",
-      update: "page:update",
-      delete: "page:delete",
+    board: {
+      read: "board:read",
+      list: "board:list",
+      create: "board:create",
+      update: "board:update",
+      delete: "board:delete",
     },
     component: {
       read: "component:read",
@@ -101,11 +101,11 @@ export const ubentoAuth = {
       admin: "team:admin",
       member: "team:member",
     },
-    app: {
-      owner: "app:owner",
-      admin: "app:admin",
-      editor: "app:editor",
-      viewer: "app:viewer",
+    workspace: {
+      owner: "workspace:owner",
+      admin: "workspace:admin",
+      editor: "workspace:editor",
+      viewer: "workspace:viewer",
     },
   },
   scopes: {
@@ -113,17 +113,22 @@ export const ubentoAuth = {
     team: ({ team_id }: { team_id: string }) => `/team/${team_id}`,
     teamOrHigher: ({ team_id }: { team_id?: string }) =>
       team_id ? `/team/${team_id}` : "/",
-    app: ({ team_id, app_id }: { team_id: string; app_id: string }) =>
-      `/team/${team_id}/app/${app_id}`,
-    appOrHigher: ({
+    workspace: ({
       team_id,
-      app_id,
+      workspace_id,
+    }: {
+      team_id: string;
+      workspace_id: string;
+    }) => `/team/${team_id}/workspace/${workspace_id}`,
+    workspaceOrHigher: ({
+      team_id,
+      workspace_id,
     }: {
       team_id?: string;
-      app_id?: string;
+      workspace_id?: string;
     }) =>
-      team_id && app_id
-        ? `/team/${team_id}/app/${app_id}`
+      team_id && workspace_id
+        ? `/team/${team_id}/workspace/${workspace_id}`
         : team_id
           ? `/team/${team_id}`
           : "/",

@@ -1,8 +1,8 @@
 import { ErrorView } from "@/components/error";
 import { BentoHostContext } from "@/contexts/host";
 import { BentoHost, BentoLocation } from "@/types";
-import { App } from "@/views/app/app";
-import { Apps } from "@/views/apps/apps";
+import { Workspace } from "@/views/workspace/workspace";
+import { Workspaces } from "@/views/workspaces/workspaces";
 import { Home } from "@/views/home/home";
 import { AnimatePresence, motion } from "motion/react";
 import { BentoSessionContext } from "./contexts/session";
@@ -20,11 +20,11 @@ export function Bento({
     case "home":
       content = <Home />;
       break;
-    case "app":
-      content = <App slug={location.params.slug} pageId={location.params.pageId} />;
+    case "workspace":
+      content = <Workspace slug={location.params.slug} boardId={location.params.boardId} />;
       break;
-    case "apps":
-      content = <Apps />;
+    case "workspaces":
+      content = <Workspaces />;
       break;
     default:
       content = (
@@ -45,8 +45,8 @@ export function Bento({
           <AnimatePresence mode="wait">
             <motion.div
               key={
-                location.view === "app"
-                  ? `app-${location.params.slug}`
+                location.view === "workspace"
+                  ? `workspace-${location.params.slug}`
                   : location.view
               }
               initial={{ opacity: 0, y: 5 }}

@@ -65,41 +65,41 @@ export const ubentoEntities = {
     code: "jsk",
   },
 
-  // App
+  // Workspace
   /**
-   * Represents an application.
+   * Represents a workspace.
    */
-  app: {
-    name: "app",
-    code: "app",
+  workspace: {
+    name: "workspace",
+    code: "wks",
   },
   /**
-   * Represents a page in an application.
+   * Represents a board in a workspace.
    */
-  page: {
-    name: "page",
-    code: "pge",
+  board: {
+    name: "board",
+    code: "brd",
   },
   /**
-   * Represents a component in an application.
+   * Represents a component in a workspace.
    */
   component: {
     name: "component",
     code: "cmp",
   },
   /**
-   * Represents a membership for a user in an application.
+   * Represents a membership for a user in a workspace.
    */
-  appMembership: {
-    name: "app_membership",
-    code: "amb",
+  workspaceMembership: {
+    name: "workspace_membership",
+    code: "wmb",
   },
   /**
-   * Represents an invitation for a user to join an application.
+   * Represents an invitation for a user to join a workspace.
    */
-  appInvite: {
-    name: "app_invite",
-    code: "aiv",
+  workspaceInvite: {
+    name: "workspace_invite",
+    code: "wiv",
   },
 
   // Intelligence

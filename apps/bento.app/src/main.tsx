@@ -34,22 +34,13 @@ type Token = {
 let token: Token | null = null;
 async function getToken() {
   if (token) return token.access_token;
-  localStorage.removeItem("ubento-access-token");
 
-  if (token && token.refresh_token) {
-    const res = await fetch(new URL("/oauth/token", authServerBaseUrl), {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        grant_type: "refresh_token",
-        refresh_token: token.refresh_token,
-        client_id: clientId,
-        client_secret: clientSecret,
-      }),
-    });
-    token = await res.json();
+  const stored = localStorage.getItem("ubento-access-token");
+  if (stored) {
+    token = JSON.parse(stored);
+  }
+
+  if (token && token.access_token) {
     return token.access_token;
   }
 
@@ -67,36 +58,36 @@ async function getToken() {
     }),
   });
   const data: Token = await res.json();
-  console.log(data);
+  token = data;
   localStorage.setItem("ubento-access-token", JSON.stringify(data));
   return data.access_token;
 }
 
 function parseLocation(path: string): BentoLocation {
   const parts = path.split("/").filter(Boolean);
-  if (parts[0] === "a" && parts[1]) {
+  if (parts[0] === "w" && parts[1]) {
     return {
-      view: "app",
-      params: { slug: parts[1], pageId: parts[2] },
+      view: "workspace",
+      params: { slug: parts[1], boardId: parts[2] },
     };
   }
-  if (parts[0] === "apps") {
-    return { view: "apps", params: {} };
+  if (parts[0] === "workspaces") {
+    return { view: "workspaces", params: {} };
   }
   return { view: "home", params: {} };
 }
 
 function buildUrl(location: BentoLocation): string {
-  if (location.view === "app") {
-    return `/a/${location.params.slug}${location.params.pageId ? `/${location.params.pageId}` : ""}`;
+  if (location.view === "workspace") {
+    return `/w/${location.params.slug}${location.params.boardId ? `/${location.params.boardId}` : ""}`;
   }
-  if (location.view === "apps") {
-    return "/apps";
+  if (location.view === "workspaces") {
+    return "/workspaces";
   }
   return "/";
 }
 
-function BentoApp() {
+function BentoShell() {
   const [location, setLocation] = useState<BentoLocation>(() =>
     parseLocation(window.location.pathname),
   );
@@ -106,6 +97,9 @@ function BentoApp() {
       session: {
         userId: user.id,
         teamId: team.id,
+        email: user.email,
+        name: user.name,
+        picture: user.picture,
       },
       ubento: new UbentoSDK({
         baseUrl: "https://api.ubento.pro",
@@ -113,7 +107,7 @@ function BentoApp() {
           getToken,
         },
         serviceBaseUrls: {
-          app: "http://localhost:13020",
+          workspace: "http://localhost:39694",
         },
       }),
       iframeUrl: import.meta.env.VITE_RUNTIME_URL || "http://localhost:4020",
@@ -153,6 +147,6 @@ function BentoApp() {
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <BentoApp />
+    <BentoShell />
   </StrictMode>,
 );

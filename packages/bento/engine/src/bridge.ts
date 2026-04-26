@@ -1,5 +1,5 @@
-import { EngineMode } from "./controller";
-import { AppData, ModuleData, PageData } from "./models";
+import { EngineMode } from "./controller.js";
+import { BoardData, ModuleData, WorkspaceData } from "./models.js";
 
 export type HostRpcInterface = {
   // connection
@@ -10,24 +10,24 @@ export type HostRpcInterface = {
   select: (payload: { elementIds: string[] }) => void;
   setSelectionScope: (payload: { scope?: string }) => void;
   setMode: (payload: { mode: EngineMode }) => void;
-  goTo: (payload: { pageId: string; params?: Record<string, string> }) => void;
+  goTo: (payload: { boardId: string; params?: Record<string, string> }) => void;
 
   // content retrieval
-  getPage: (payload: { pageId: string }) => Promise<PageData>;
-  listPages: (payload: {}) => Promise<PageData[]>;
-  createPage: (payload: { name?: string }) => Promise<PageData>;
+  getBoard: (payload: { boardId: string }) => Promise<BoardData>;
+  listBoards: (payload: {}) => Promise<BoardData[]>;
+  createBoard: (payload: { name?: string }) => Promise<BoardData>;
   getModule: (payload: { moduleId: string }) => Promise<ModuleData>;
 };
 
 export type GuestRpcInterface = {
   // connection
-  init: (payload: { app: AppData; moduleUrlTemplate: string }) => void; // sent to initialize the guest app
+  init: (payload: { workspace: WorkspaceData; moduleUrlTemplate: string }) => void; // sent to initialize the guest app
 
   // state synchronization (events from host)
   modeChanged: (payload: { mode: EngineMode }) => void;
   selectionChanged: (payload: { elementIds: string[] }) => void;
   selectionScopeChanged: (payload: { scope?: string }) => void;
-  locationChanged: (payload: { pageId: string; params?: Record<string, string> }) => void;
+  locationChanged: (payload: { boardId: string; params?: Record<string, string> }) => void;
 };
 
 

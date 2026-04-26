@@ -1,7 +1,7 @@
 import { ErrorView, PendingView } from "@ubento/bento-primitives";
 import React, { useEffect, useState } from "react";
 import { subscribe } from "valtio";
-import { useAppEngineController } from "../../controller";
+import { useEngineController } from "../../controller";
 
 export function Component({
   moduleId,
@@ -12,7 +12,7 @@ export function Component({
   moduleVersionId?: string;
   props?: Record<string, any>;
 }): React.JSX.Element {
-  const controller = useAppEngineController();
+  const controller = useEngineController();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [moduleValue, setModuleValue] = useState<any>();

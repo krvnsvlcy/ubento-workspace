@@ -1,13 +1,13 @@
 import { useBentoHost } from "@/contexts/host";
 import { useBentoSession } from "@/contexts/session";
-import { useApps, useCreateApp } from "@/hooks/app";
+import { useWorkspaces, useCreateWorkspace } from "@/hooks/workspace";
 import { AIModal } from "@/modals/AIModal";
-import { CreateAppModal } from "@/modals/CreateAppModal";
+import { CreateWorkspaceModal } from "@/modals/CreateWorkspaceModal";
 import { SettingsModal } from "@/modals/SettingsModal";
 import { UserSettingsModal } from "@/modals/UserSettingsModal";
 import { motion } from "motion/react";
 import React, { useEffect, useState } from "react";
-import { AppGrid } from "./app-grid";
+import { WorkspaceGrid } from "./workspace-grid";
 import { Header } from "./header";
 import { Sidebar } from "./sidebar";
 
@@ -15,12 +15,12 @@ export function Home() {
   const host = useBentoHost();
   const session = useBentoSession();
 
-  const { data: appsData, isFetching } = useApps({
+  const { data: workspacesData, isFetching } = useWorkspaces({
     team_id: session.teamId,
   });
-  const apps = appsData || [];
+  const workspaces = workspacesData || [];
 
-  const { mutateAsync: createApp } = useCreateApp();
+  const { mutateAsync: createWorkspace } = useCreateWorkspace();
 
   const [activeModal, setActiveModal] = useState<
     "create" | "ai" | "settings" | "user-settings" | null
@@ -41,7 +41,7 @@ export function Home() {
     document.documentElement.setAttribute("data-theme", themeId);
   };
 
-  const handleCreateApp = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleCreateWorkspace = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsCreating(true);
     const formData = new FormData(e.currentTarget);
@@ -49,18 +49,18 @@ export function Home() {
     const team_id = session.teamId;
 
     try {
-      await createApp({ name, team_id, data: {} });
+      await createWorkspace({ name, team_id, data: {} });
       setActiveModal(null);
     } catch (err) {
-      console.error("Error creating app:", err);
-      alert("Error creating app");
+      console.error("Error creating workspace:", err);
+      alert("Error creating workspace");
     } finally {
       setIsCreating(false);
     }
   };
 
-  const onOpenApp = (app: any) => {
-    host.goToLocation({ view: "app", params: { slug: app.slug } });
+  const onOpenWorkspace = (workspace: any) => {
+    host.goToLocation({ view: "workspace", params: { slug: workspace.slug } });
   };
 
   const closeModal = () => setActiveModal(null);
@@ -89,7 +89,7 @@ export function Home() {
 
           <div className="col-span-3 flex flex-col px-0">
             <h2 className="mb-4 text-lg font-medium tracking-tight text-foreground-400">
-              Your Apps
+              Your Workspaces
             </h2>
 
             {/* Main Action Card */}
@@ -107,19 +107,19 @@ export function Home() {
               </div>
             </div>
 
-            <AppGrid
-              apps={apps}
+            <WorkspaceGrid
+              workspaces={workspaces}
               isFetching={isFetching}
-              onOpenApp={onOpenApp}
+              onOpenWorkspace={onOpenWorkspace}
             />
           </div>
         </div>
       </div>
 
-      <CreateAppModal
+      <CreateWorkspaceModal
         isOpen={activeModal === "create"}
         onClose={closeModal}
-        onSubmit={handleCreateApp}
+        onSubmit={handleCreateWorkspace}
         isCreating={isCreating}
       />
 
@@ -130,6 +130,7 @@ export function Home() {
       <UserSettingsModal
         isOpen={activeModal === "user-settings"}
         onClose={closeModal}
+        user={session}
       />
     </div>
   );

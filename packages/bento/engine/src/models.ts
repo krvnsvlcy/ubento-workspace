@@ -68,16 +68,26 @@ export const elementDataSchema = z.discriminatedUnion("type", [
 ]);
 export type ElementData = z.infer<typeof elementDataSchema>;
 
-export const pageDataSchema = z.object({
+export const boardDataSchema = z.object({
   id: z.string(),
   name: z.string().optional(),
   rootId: z.string(),
   elements: z.record(z.string(), elementDataSchema),
 });
-export type PageData = z.infer<typeof pageDataSchema>;
+export type BoardData = z.infer<typeof boardDataSchema>;
 
-export const appDataSchema = z.object({
+export const workspaceDataSchema = z.object({
   id: z.string(),
-  homePageId: z.string().optional(),
+  homeBoardId: z.string().optional(),
+  routes: z.record(z.string(), z.string()).optional(),
 });
-export type AppData = z.infer<typeof appDataSchema>;
+export type WorkspaceData = z.infer<typeof workspaceDataSchema>;
+
+export function createBoard(data: Partial<BoardData> & { id: string }): BoardData {
+  return {
+    name: "Untitled Board",
+    rootId: "root",
+    elements: {},
+    ...data,
+  };
+}

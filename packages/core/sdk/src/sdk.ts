@@ -1,5 +1,5 @@
 import { TokenManager } from "./lib/token_manager.js";
-import { AppService } from "./services/app.js";
+import { WorkspaceService } from "./services/workspace.js";
 import { IamService } from "./services/iam.js";
 import { ModuleService } from "./services/module.js";
 
@@ -14,12 +14,12 @@ export interface UbentoSDKOptions {
 }
 
 /** Union of service keys */
-export type ServiceKey = "iam" | "app" | "module";
+export type ServiceKey = "iam" | "workspace" | "module";
 
 export class UbentoSDK {
   public readonly tokenManager: TokenManager;
   public readonly iam: IamService;
-  public readonly app: AppService;
+  public readonly workspace: WorkspaceService;
   public readonly module: ModuleService;
 
   constructor(options: UbentoSDKOptions) {
@@ -33,7 +33,7 @@ export class UbentoSDK {
     });
 
     this.iam = new IamService(makeConfig("iam"));
-    this.app = new AppService(makeConfig("app"));
+    this.workspace = new WorkspaceService(makeConfig("workspace"));
     this.module = new ModuleService(makeConfig("module"));
   }
 }

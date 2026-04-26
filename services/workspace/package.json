@@ -1,0 +1,41 @@
+{
+  "name": "@ubento/workspace-service",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc --noemit && esbuild src/index.ts --bundle --platform=node --target=node20 --outfile=dist/index.js --external:@prisma/client",
+    "clean": "rm -rf dist",
+    "start": "node dist/index.js",
+    "dev": "tsx watch src/index.ts",
+    "cli": "tsx src/cli/cli.ts",
+    "prisma": "prisma generate",
+    "prisma:client": "prisma generate --generator client",
+    "prisma:push": "prisma db push",
+    "deploy": "scripts containerize workspace && scripts deploy workspace"
+  },
+  "dependencies": {
+    "@prisma/client": "5.18.0",
+    "@ubento/database": "workspace:*",
+    "@ubento/primitives": "workspace:*",
+    "@ubento/service-toolkit": "workspace:*",
+    "commander": "^14.0.2",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^16.3.1",
+    "express": "^5",
+    "openapi-types": "^12.1.3",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/cookie-parser": "^1.4.10",
+    "@types/express": "^5.0.3",
+    "tsx": "^4.15.2",
+    "typescript": "^5.0.4"
+  },
+  "dependenciesMeta": {
+    "@prisma/client": {
+      "injected": true
+    }
+  }
+}

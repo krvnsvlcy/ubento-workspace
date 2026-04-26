@@ -30,7 +30,7 @@ export function Sidebar({ onOpenModal }: SidebarProps) {
               <Plus className="h-3.5 w-3.5 text-foreground-200" />
             </div>
             <span className="text-[13px] font-medium text-foreground-100">
-              Create New App
+              Create New Workspace
             </span>
           </button>
           <button
@@ -65,14 +65,14 @@ export function Sidebar({ onOpenModal }: SidebarProps) {
             </span>
           </button>
           <button
-            onClick={() => host.goToLocation({ view: "apps", params: {} })}
+            onClick={() => host.goToLocation({ view: "workspaces", params: {} })}
             className="flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-2 py-1.5 transition-colors hover:bg-background-300"
           >
             <div className="flex h-6 w-6 items-center justify-center rounded-md bg-background-300">
               <LayoutGrid className="h-3.5 w-3.5 text-foreground-200" />
             </div>
             <span className="text-[13px] font-medium text-foreground-100">
-              All apps
+              All workspaces
             </span>
           </button>
         </div>

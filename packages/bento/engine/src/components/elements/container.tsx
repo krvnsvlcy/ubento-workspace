@@ -5,7 +5,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSSProperties } from "react";
 import { useSnapshot } from "valtio";
-import { useAppEngineController } from "../../controller";
+import { useEngineController } from "../../controller";
 import { ContainerStyle } from "../../models";
 import { Element } from "./element";
 
@@ -16,7 +16,7 @@ export function Container({
   content: string[];
   style: ContainerStyle;
 }) {
-  const controller = useAppEngineController();
+  const controller = useEngineController();
   const snap = useSnapshot(controller.state);
   const isEditMode = snap.mode === "edit";
 

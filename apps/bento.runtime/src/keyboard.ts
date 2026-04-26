@@ -1,8 +1,8 @@
-import { type AppEngineController } from "@ubento/engine";
+import { type EngineController } from "@ubento/engine";
 import { useEffect } from "react";
-import { rpc } from "./rpc";
+import { rpc } from "./rpc.js";
 
-export function useKeyboardController(controller?: AppEngineController) {
+export function useKeyboardController(controller?: EngineController) {
   useEffect(() => {
     if (!controller) return;
 

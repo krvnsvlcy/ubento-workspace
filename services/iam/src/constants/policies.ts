@@ -13,10 +13,10 @@ export const policies = {
       // team
       ubentoAuth.actions.team.read,
       // app
-      ubentoAuth.actions.app.list,
-      ubentoAuth.actions.app.create,
+      ubentoAuth.actions.workspace.list,
+      ubentoAuth.actions.workspace.create,
     ],
-    roles: [ubentoAuth.roles.app.viewer],
+    roles: [ubentoAuth.roles.workspace.viewer],
   },
   [ubentoAuth.roles.team.admin]: {
     permissions: [
@@ -28,39 +28,39 @@ export const policies = {
       ubentoAuth.actions.teamInvite.revoke,
       ubentoAuth.actions.teamInvite.read,
     ],
-    roles: [ubentoAuth.roles.team.member, ubentoAuth.roles.app.admin],
+    roles: [ubentoAuth.roles.team.member, ubentoAuth.roles.workspace.admin],
   },
   [ubentoAuth.roles.team.owner]: {
     permissions: [ubentoAuth.actions.team.delete],
     roles: [ubentoAuth.roles.team.admin],
   },
-  [ubentoAuth.roles.app.viewer]: {
+  [ubentoAuth.roles.workspace.viewer]: {
     permissions: [
-      ubentoAuth.actions.app.read,
-      ubentoAuth.actions.page.read,
-      ubentoAuth.actions.page.list,
+      ubentoAuth.actions.workspace.read,
+      ubentoAuth.actions.board.read,
+      ubentoAuth.actions.board.list,
       ubentoAuth.actions.component.read,
       ubentoAuth.actions.component.list,
     ],
   },
-  [ubentoAuth.roles.app.editor]: {
+  [ubentoAuth.roles.workspace.editor]: {
     permissions: [
-      ubentoAuth.actions.app.update,
-      ubentoAuth.actions.page.create,
-      ubentoAuth.actions.page.update,
-      ubentoAuth.actions.page.delete,
+      ubentoAuth.actions.workspace.update,
+      ubentoAuth.actions.board.create,
+      ubentoAuth.actions.board.update,
+      ubentoAuth.actions.board.delete,
       ubentoAuth.actions.component.create,
       ubentoAuth.actions.component.update,
       ubentoAuth.actions.component.delete,
     ],
-    roles: [ubentoAuth.roles.app.viewer],
+    roles: [ubentoAuth.roles.workspace.viewer],
   },
-  [ubentoAuth.roles.app.admin]: {
+  [ubentoAuth.roles.workspace.admin]: {
     permissions: [],
-    roles: [ubentoAuth.roles.app.editor],
+    roles: [ubentoAuth.roles.workspace.editor],
   },
-  [ubentoAuth.roles.app.owner]: {
-    permissions: [ubentoAuth.actions.app.delete],
-    roles: [ubentoAuth.roles.app.admin],
+  [ubentoAuth.roles.workspace.owner]: {
+    permissions: [ubentoAuth.actions.workspace.delete],
+    roles: [ubentoAuth.roles.workspace.admin],
   },
 };

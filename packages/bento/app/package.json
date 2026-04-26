@@ -15,7 +15,8 @@
     "react-dom": "^19.0.0"
   },
   "scripts": {
-    "watch": "scripts watch"
+    "watch": "scripts watch",
+    "build": "scripts build"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",

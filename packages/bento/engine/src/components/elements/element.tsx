@@ -2,7 +2,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import React, { createContext, useContext } from "react";
 import { useSnapshot } from "valtio";
-import { useAppEngineController } from "../../controller";
+import { useEngineController } from "../../controller";
 import { BaseStyle, ElementData } from "../../models";
 import { Component } from "./component";
 import { Container } from "./container";
@@ -49,7 +49,7 @@ function getBaseStyle(style: BaseStyle): React.CSSProperties {
 
 export function Element({ id }: { id: string }): React.JSX.Element {
   const registry = useContext(ElementRegistryContext);
-  const controller = useAppEngineController();
+  const controller = useEngineController();
   const snap = useSnapshot(controller.state);
   const element = registry[id];
 

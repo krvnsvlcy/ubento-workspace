@@ -1,8 +1,8 @@
 import type {
-  AppEngineController,
-  AppEngineState,
+  EngineController,
+  EngineState,
   ModuleData,
-  PageData,
+  BoardData,
 } from "@ubento/engine";
 import { proxy } from "valtio";
 import { rpc } from "./rpc";
@@ -26,21 +26,21 @@ function buildModuleUrl({
     .replace("{versionId}", versionId);
 }
 
-export function createAppEngineController({
+export function createEngineController({
   initialState,
 }: {
-  initialState?: Partial<AppEngineState>;
-} = {}): AppEngineController {
-  const pageCache = new Map<string, PageData>();
+  initialState?: Partial<EngineState>;
+} = {}): EngineController {
+  const boardCache = new Map<string, BoardData>();
   const moduleCache = new Map<string, ModuleData>();
   const moduleValueCache = new Map<string, any>();
 
-  const state = proxy<AppEngineState>({
+  const state = proxy<EngineState>({
     mode: "live",
     ...initialState,
   });
 
-  const controller: AppEngineController = {
+  const controller: EngineController = {
     state,
     toggleMode: () => {
       rpc.egress.setMode({
@@ -60,34 +60,34 @@ export function createAppEngineController({
     blurSelectionScope: () => {
       rpc.egress.setSelectionScope({ scope: undefined });
     },
-    goTo: (pageId: string, params: Record<string, string> = {}) => {
-      rpc.egress.goTo({ pageId, params });
+    goTo: (boardId: string, params: Record<string, string> = {}) => {
+      rpc.egress.goTo({ boardId, params });
     },
-    listPages: async () => {
-      const pages = await rpc.egress.listPages({});
-      return pages.map((p) => {
-        const page = proxy(p);
-        pageCache.set(p.id, page);
-        return page;
+    listBoards: async () => {
+      const boards = await rpc.egress.listBoards({});
+      return boards.map((p) => {
+        const board = proxy(p);
+        boardCache.set(p.id, board);
+        return board;
       });
     },
-    createPage: async (name) => {
-      const pageData = await rpc.egress.createPage({
+    createBoard: async (name) => {
+      const boardData = await rpc.egress.createBoard({
         name,
       });
-      const page = proxy(pageData);
-      pageCache.set(pageData.id, page);
-      return page;
+      const board = proxy(boardData);
+      boardCache.set(boardData.id, board);
+      return board;
     },
-    getPage: async (pageId: string) => {
-      const cachedPage = pageCache.get(pageId);
-      if (cachedPage) {
-        return cachedPage;
+    getBoard: async (boardId: string) => {
+      const cachedBoard = boardCache.get(boardId);
+      if (cachedBoard) {
+        return cachedBoard;
       }
-      const pageData = await rpc.egress.getPage({ pageId });
-      const page = proxy(pageData);
-      pageCache.set(pageId, page);
-      return page;
+      const boardData = await rpc.egress.getBoard({ boardId });
+      const board = proxy(boardData);
+      boardCache.set(boardId, board);
+      return board;
     },
     getModule: async (moduleId: string) => {
       const cachedModule = moduleCache.get(moduleId);

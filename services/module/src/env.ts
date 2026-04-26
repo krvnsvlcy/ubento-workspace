@@ -23,14 +23,4 @@ export const env = defineEnv({
     required: true,
     default: "ubento-prod-user-content",
   },
-  GCS_PUBLIC_BUCKET: {
-    type: "string",
-    required: true,
-    default: "ubento-prod-public",
-  },
-  USER_CONTENT_BASE_URL: {
-    type: "string",
-    required: true,
-    default: "https://ubentousercontent.com",
-  },
 });

@@ -9,12 +9,15 @@ export type BaseBentoLocation<
 };
 export type BentoLocation =
   | BaseBentoLocation<"home">
-  | BaseBentoLocation<"apps">
-  | BaseBentoLocation<"app", { slug: string; pageId?: string }>;
+  | BaseBentoLocation<"workspaces">
+  | BaseBentoLocation<"workspace", { slug: string; boardId?: string }>;
 
 export type BentoSession = {
   userId: string;
   teamId: string;
+  email: string;
+  name: string;
+  picture?: string;
 };
 
 export interface BentoHost {

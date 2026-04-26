@@ -13,18 +13,18 @@
       "clean": true,
     },
     {
-      "service": "app-service",
-      "output": "./src/clients/app",
-      "clientName": "createAppServiceClient",
+      "service": "workspace-service",
+      "output": "./src/clients/workspace",
+      "clientName": "createWorkspaceServiceClient",
       "clean": true,
-      "host": "http://localhost:13020",
+      // "host": "http://localhost:13020",
     },
     {
       "service": "module-service",
       "output": "./src/clients/module",
       "clientName": "createModuleServiceClient",
       "clean": true,
-      "host": "http://localhost:28888",
+      // "host": "http://localhost:28888",
     },
   ],
 }

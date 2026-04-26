@@ -1,22 +1,22 @@
 import { createContext, useContext } from "react";
-import { ModuleData, PageData } from "./models";
+import { BoardData, ModuleData } from "./models.js";
 
 export type EngineMode = "live" | "edit";
 
-export type AppEngineLocation = {
-  pageId: string;
+export type EngineLocation = {
+  boardId: string;
   params: Record<string, string>;
 };
 
-export type AppEngineState = {
+export type EngineState = {
   mode: EngineMode;
-  location?: AppEngineLocation;
+  location?: EngineLocation;
   selectionScope?: string;
   selection?: string[];
 };
 
-export type AppEngineController = {
-  state: AppEngineState;
+export type EngineController = {
+  state: EngineState;
 
   // interaction
   toggleMode: () => void;
@@ -27,25 +27,25 @@ export type AppEngineController = {
   blurSelectionScope: () => void;
 
   // navigation
-  goTo: (pageId: string, params?: Record<string, string>) => void;
+  goTo: (boardId: string, params?: Record<string, string>) => void;
 
   // content retrieval
-  getPage: (pageId: string) => Promise<PageData>;
-  listPages: () => Promise<PageData[]>;
-  createPage: (name?: string) => Promise<PageData>;
+  getBoard: (boardId: string) => Promise<BoardData>;
+  listBoards: () => Promise<BoardData[]>;
+  createBoard: (name?: string) => Promise<BoardData>;
   getModule: (moduleId: string) => Promise<ModuleData>;
   resolveModuleValue: (moduleId: string, versionId: string) => Promise<any>;
 };
 
-export const AppEngineControllerContext =
-  createContext<AppEngineController | null>(null);
+export const EngineControllerContext =
+  createContext<EngineController | null>(null);
 
-export function useAppEngineController() {
-  const controller = useContext(AppEngineControllerContext);
+export function useEngineController() {
+  const controller = useContext(EngineControllerContext);
 
   if (!controller) {
     throw new Error(
-      "useAppEngineController must be used within an AppEngineControllerProvider",
+      "useEngineController must be used within an EngineControllerProvider",
     );
   }
 
