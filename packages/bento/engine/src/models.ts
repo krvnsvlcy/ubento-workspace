@@ -89,6 +89,7 @@ export const workspaceDataSchema = z.object({
   id: z.string(),
   name: z.string(),
   slug: z.string(),
+  teamId: z.string(),
   homeBoardId: z.string().optional(),
 });
 export type WorkspaceData = z.infer<typeof workspaceDataSchema>;

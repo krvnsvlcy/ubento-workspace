@@ -14,6 +14,12 @@ export type HostRpcInterface = {
   listBoards: (payload: {}) => Promise<BoardData[]>;
   createBoard: (payload: { name?: string }) => Promise<BoardData>;
   getModule: (payload: { moduleId: string }) => Promise<ModuleData>;
+  searchModules: (payload: {
+    query: string;
+  }) => Promise<{ id: string; name: string }[]>;
+  createModule: (payload: {
+    name: string;
+  }) => Promise<ModuleData & { id: string }>;
 
   // state synchronization (events from guest)
   boardChanged: (payload: { boardId: string; board: BoardData }) => void;

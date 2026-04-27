@@ -232,6 +232,33 @@ export function createWorkspaceController({
               });
               return module;
             },
+            searchModules: async ({ query }) => {
+              const current = get();
+              if (!current.workspace) return [];
+              const modules = await ubento.module.listModules({
+                team_id: current.workspace.teamId,
+              });
+              return modules
+                .filter(
+                  (m) =>
+                    m.name.toLowerCase().includes(query.toLowerCase()) ||
+                    m.id.toLowerCase().includes(query.toLowerCase()),
+                )
+                .map((m) => ({ id: m.id, name: m.name }));
+            },
+            createModule: async ({ name }) => {
+              const current = get();
+              if (!current.workspace) throw new Error("No workspace loaded");
+              const res = await ubento.module.createModule({
+                name,
+                team_id: current.workspace.teamId,
+                source: `export default function Component() { return <div>${name}</div> }`,
+              });
+              return {
+                id: res.id,
+                latestVersionId: res.latest_version_id,
+              };
+            },
             updateContext: (update) => {
               set((s) => {
                 Object.assign(s.context, update);
@@ -284,6 +311,7 @@ export function createWorkspaceController({
               id: workspaceData.id,
               name: workspaceData.name,
               slug: workspaceData.slug,
+              teamId: workspaceData.team_id,
               ...(workspaceData.data || {}),
             });
           } catch (err) {
@@ -291,6 +319,7 @@ export function createWorkspaceController({
               id: workspaceData.id,
               name: workspaceData.name,
               slug: workspaceData.slug,
+              teamId: workspaceData.team_id,
             });
           }
 

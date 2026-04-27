@@ -178,6 +178,14 @@ export function createEngineController({
         moduleValueCache.set(url, mod);
         return mod;
       },
+ 
+      searchModules: async (query: string) => {
+        return await rpc.egress.searchModules({ query });
+      },
+ 
+      createModule: async (name: string) => {
+        return await rpc.egress.createModule({ name });
+      },
 
       // mutations
       setWorkspace: (_workspace: WorkspaceData) => {

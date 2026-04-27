@@ -39,6 +39,8 @@ export type EngineStore = EngineState & {
   createBoard: (name?: string) => Promise<BoardData>;
   getModule: (moduleId: string) => Promise<ModuleData>;
   resolveModuleValue: (moduleId: string, versionId: string) => Promise<any>;
+  searchModules: (query: string) => Promise<{ id: string; name: string }[]>;
+  createModule: (name: string) => Promise<ModuleData & { id: string }>;
 
   // mutators
   setElementStyle: (id: string, style: Partial<BaseStyle>) => void;
