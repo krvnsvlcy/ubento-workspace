@@ -14,6 +14,10 @@ export type HostRpcInterface = {
   listBoards: (payload: {}) => Promise<BoardData[]>;
   createBoard: (payload: { name?: string }) => Promise<BoardData>;
   getModule: (payload: { moduleId: string }) => Promise<ModuleData>;
+  getModuleArtifact: (payload: {
+    moduleId: string;
+    versionId: string;
+  }) => Promise<string>;
   searchModules: (payload: {
     query: string;
   }) => Promise<{ id: string; name: string }[]>;
@@ -63,9 +67,24 @@ export type GuestRpcInterface = {
     id: string;
     content: string[];
   }) => Promise<void>;
-  setBlockModule: (payload: {
-    id: string;
-    moduleId: string;
-    moduleVersionId: string;
-  }) => void;
+  setBlockModule: (
+    id: string,
+    moduleId: string,
+    moduleVersionId: string,
+  ) => void;
+};
+
+export type ComponentHostRpcInterface = {
+  // connection
+  connect: (payload: {}) => void; // sent to initialize connection with the host
+  ready: (payload: {}) => void; // sent when engine is ready
+};
+
+export type ComponentGuestRpcInterface = {
+  // connection
+  init: (payload: { code: string; props: any }) => void; // sent to initialize the guest app
+
+  // state synchronization (events from host)
+  updateCode: (payload: { code: string }) => void;
+  updateProps: (payload: { props: any }) => void;
 };

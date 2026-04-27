@@ -18,9 +18,10 @@ export async function persistModule({
   tsx: string;
 }) {
   const { bareId: bareVersionId } = parseEntityId(versionId);
+  const { bareId: bareModuleId } = parseEntityId(moduleId);
 
-  const internalTsxPath = `modules/${moduleId}/${bareVersionId}.tsx`;
-  const internalJsPath = `modules/${moduleId}/${bareVersionId}.js`;
+  const internalTsxPath = `modules/${bareModuleId}/${bareVersionId}.tsx`;
+  const internalJsPath = `modules/${bareModuleId}/${bareVersionId}.js`;
 
   const tsxFile = moduleBucket.file(internalTsxPath);
   const jsFile = userContentBucket.file(internalJsPath);
@@ -36,4 +37,25 @@ export async function persistModule({
       metadata: { cacheControl: "public, max-age=31536000" },
     }),
   ]);
+}
+
+export async function readModuleFile({
+  moduleId,
+  versionId,
+  type,
+}: {
+  moduleId: string;
+  versionId: string;
+  type: "tsx" | "js";
+}) {
+  const { bareId: bareVersionId } = parseEntityId(versionId);
+  const { bareId: bareModuleId } = parseEntityId(moduleId);
+
+  const path = `modules/${bareModuleId}/${bareVersionId}.${type}`;
+  const bucket = type === "tsx" ? moduleBucket : userContentBucket;
+
+  const file = bucket.file(path);
+  const [content] = await file.download();
+
+  return content.toString();
 }

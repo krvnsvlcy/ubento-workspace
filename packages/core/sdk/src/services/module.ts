@@ -1,4 +1,8 @@
-import { createModuleServiceClient, Module, ModuleVersion } from "~/clients/module/client.js";
+import {
+  createModuleServiceClient,
+  Module,
+  ModuleVersion,
+} from "~/clients/module/client.js";
 import { extractResponseData } from "~/lib/client.js";
 import { TokenManager } from "~/lib/token_manager.js";
 
@@ -56,6 +60,7 @@ export class ModuleService {
     slug?: string;
     team_id: string;
     source: string;
+    scope: "public" | "team";
   }) {
     const result = await this.moduleClient.post("/modules", {
       body: data,
@@ -85,11 +90,14 @@ export class ModuleService {
   // ===== Versions =====
 
   async listModuleVersions(moduleId: string) {
-    const result = await this.moduleClient.get("/modules/{module_id}/versions", {
-      params: {
-        path: { module_id: moduleId },
+    const result = await this.moduleClient.get(
+      "/modules/{module_id}/versions",
+      {
+        params: {
+          path: { module_id: moduleId },
+        },
       },
-    });
+    );
     const data = extractResponseData(result) as any;
     return data.data as ModuleVersion[];
   }
@@ -117,5 +125,31 @@ export class ModuleService {
       },
     );
     return extractResponseData(result) as ModuleVersion;
+  }
+
+  async getModuleVersionSource(moduleId: string, versionId: string) {
+    const result = await this.moduleClient.get(
+      "/modules/{module_id}/versions/{version_id}/source",
+      {
+        params: {
+          path: { module_id: moduleId, version_id: versionId },
+        },
+      },
+    );
+    const data = extractResponseData(result) as any;
+    return data.source as string;
+  }
+
+  async getModuleVersionArtifact(moduleId: string, versionId: string) {
+    const result = await this.moduleClient.get(
+      "/modules/{module_id}/versions/{version_id}/artifact",
+      {
+        params: {
+          path: { module_id: moduleId, version_id: versionId },
+        },
+      },
+    );
+    const data = extractResponseData(result) as any;
+    return data.artifact as string;
   }
 }

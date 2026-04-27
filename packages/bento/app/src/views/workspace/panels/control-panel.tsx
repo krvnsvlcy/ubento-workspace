@@ -1,5 +1,8 @@
+import { useBentoHost } from "@/contexts/host";
+import { useModule } from "@/hooks/module";
 import {
   BaseStyle,
+  BlockData,
   BoardData,
   BoardStyle,
   ElementData,
@@ -8,6 +11,7 @@ import {
 import {
   Box,
   ChevronRight,
+  Code2,
   Eye,
   Layers,
   Layout,
@@ -73,7 +77,10 @@ export function ControlPanel({
 
     return (
       <div className="flex h-full flex-col border-l border-background-300 bg-background-100">
-        <BoardHeader board={board} onAddElement={() => handleAddElement("root")} />
+        <BoardHeader
+          board={board}
+          onAddElement={() => handleAddElement("root")}
+        />
         <div className="flex-1 overflow-y-auto pb-8">
           <Section title="Layout" icon={Layout}>
             <PropertyRow label="Direction">
@@ -243,44 +250,11 @@ export function ControlPanel({
         </Section>
 
         {element.type === "block" && (
-          <Section title="Module" icon={Box}>
-            <PropertyRow label="Module ID">
-              <TextInput
-                value={element.moduleId}
-                onChange={(v) => {
-                  if (element.type !== "block") return;
-                  controller
-                    .getState()
-                    .setBlockModule(
-                      selectedId!,
-                      v,
-                      element.moduleVersionId || "",
-                    );
-                }}
-              />
-            </PropertyRow>
-            <PropertyRow label="Version">
-              <TextInput
-                value={element.moduleVersionId}
-                onChange={(v) => {
-                  if (element.type !== "block") return;
-                  controller
-                    .getState()
-                    .setBlockModule(selectedId!, element.moduleId, v);
-                }}
-              />
-            </PropertyRow>
-            <PropertyRow label="Props">
-              <button
-                onClick={() => {
-                  console.log("Editing props for", selectedId);
-                }}
-                className="w-full rounded-md bg-background-300 py-1 text-center text-[10px] font-bold text-foreground-300 hover:bg-background-400"
-              >
-                EDIT PROPS (JSON)
-              </button>
-            </PropertyRow>
-          </Section>
+          <ModuleSection
+            element={element as BlockData}
+            selectedId={selectedId!}
+            controller={controller}
+          />
         )}
 
         <Section title="Settings" icon={Settings2}>
@@ -313,6 +287,88 @@ export function ControlPanel({
 }
 
 // Sub-components
+
+function ModuleSection({
+  element,
+  selectedId,
+  controller,
+}: {
+  element: BlockData;
+  selectedId: string;
+  controller: WorkspaceController;
+}) {
+  const host = useBentoHost();
+  const { data: moduleMetadata, isLoading } = useModule(element.moduleId);
+
+  return (
+    <Section title="Module" icon={Box}>
+      <PropertyRow label="Module ID">
+        <TextInput
+          value={element.moduleId}
+          onChange={(v) => {
+            controller
+              .getState()
+              .setBlockModule(selectedId, v, element.moduleVersionId || "");
+          }}
+        />
+      </PropertyRow>
+      <PropertyRow label="Version">
+        <div className="flex w-full items-center gap-1">
+          <TextInput
+            value={element.moduleVersionId}
+            onChange={(v) => {
+              controller
+                .getState()
+                .setBlockModule(selectedId, element.moduleId, v);
+            }}
+          />
+          {!isLoading &&
+            moduleMetadata &&
+            element.moduleVersionId !== moduleMetadata.latest_version_id && (
+              <button
+                onClick={() => {
+                  controller
+                    .getState()
+                    .setBlockModule(
+                      selectedId,
+                      element.moduleId,
+                      moduleMetadata.latest_version_id,
+                    );
+                }}
+                className="shrink-0 rounded-md bg-orange-500 px-2 py-1 text-[8px] font-bold uppercase tracking-tight text-white hover:bg-orange-400"
+                title={`Update to latest: ${moduleMetadata.latest_version_id}`}
+              >
+                Update
+              </button>
+            )}
+        </div>
+      </PropertyRow>
+      <div className="mt-2 flex flex-col gap-2 px-4">
+        <button
+          onClick={() => {
+            console.log("Editing props for", selectedId);
+          }}
+          className="w-full rounded-md bg-background-300 py-1.5 text-center text-[10px] font-bold uppercase tracking-wider text-foreground-300 transition-colors hover:bg-background-400"
+        >
+          Edit Props
+        </button>
+        <button
+          onClick={() => {
+            host.goToLocation({
+              view: "builder",
+              params: { moduleId: element.moduleId },
+            });
+          }}
+          className="flex w-full items-center justify-center gap-2 rounded-md bg-primary-500 py-2 text-center text-[10px] font-bold uppercase tracking-wider text-white transition-colors hover:bg-primary-600"
+        >
+          <Code2 size={12} />
+          Edit Component
+        </button>
+      </div>
+    </Section>
+  );
+}
+
 function PanelHeader({
   element,
   id,
@@ -327,7 +383,11 @@ function PanelHeader({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="rounded-lg bg-primary-500/10 p-1.5 text-primary-500">
-            {element.type === "stack" ? <Layers size={14} /> : <Box size={14} />}
+            {element.type === "stack" ? (
+              <Layers size={14} />
+            ) : (
+              <Box size={14} />
+            )}
           </div>
           <div className="flex flex-col">
             <span className="text-[10px] font-bold uppercase leading-none tracking-widest text-foreground-400">

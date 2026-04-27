@@ -55,7 +55,7 @@ export function Block({
       .getState()
       .resolveModuleValue(data.moduleId, versionId)
       .then((moduleValue: any) => {
-        setModuleValue(moduleValue.value);
+        setModuleValue(moduleValue);
       })
       .catch(() => {
         setError(true);

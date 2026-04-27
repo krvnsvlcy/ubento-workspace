@@ -4,6 +4,7 @@ import { BentoHost, BentoLocation } from "@/types";
 import { Workspace } from "@/views/workspace/workspace";
 import { Workspaces } from "@/views/workspaces/workspaces";
 import { Home } from "@/views/home/home";
+import { Builder } from "@/views/builder/builder";
 import { AnimatePresence, motion } from "motion/react";
 import { BentoSessionContext } from "./contexts/session";
 
@@ -21,10 +22,15 @@ export function Bento({
       content = <Home />;
       break;
     case "workspace":
-      content = <Workspace slug={location.params.slug} boardId={location.params.boardId} />;
+      content = (
+        <Workspace slug={location.params.slug} boardId={location.params.boardId} />
+      );
       break;
     case "workspaces":
       content = <Workspaces />;
+      break;
+    case "builder":
+      content = <Builder moduleId={location.params.moduleId} />;
       break;
     default:
       content = (
@@ -47,7 +53,9 @@ export function Bento({
               key={
                 location.view === "workspace"
                   ? `workspace-${location.params.slug}`
-                  : location.view
+                  : location.view === "builder"
+                    ? `builder-${location.params.moduleId}`
+                    : location.view
               }
               initial={{ opacity: 0, y: 5 }}
               animate={{ opacity: 1, y: 0 }}

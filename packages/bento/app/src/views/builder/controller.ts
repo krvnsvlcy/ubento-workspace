@@ -1,0 +1,133 @@
+import {
+  ComponentGuestRpcInterface,
+  ComponentHostRpcInterface,
+} from "@ubento/engine";
+import {
+  createDuplexRpc,
+  createWindowPort,
+  DuplexRpc,
+} from "@ubento/rpc-utils";
+import { UbentoSDK } from "@ubento/sdk";
+import { immer } from "zustand/middleware/immer";
+import { createStore, StoreApi } from "zustand/vanilla";
+
+export type BuilderState = {
+  loading: boolean;
+  error: boolean;
+  connected: boolean;
+  ready: boolean;
+  moduleId: string;
+  code: string;
+  props: any;
+};
+
+export type BuilderStore = BuilderState & {
+  connect: (target: Window) => void;
+  dispose: () => void;
+  load: () => Promise<void>;
+  updateCode: (code: string) => void;
+  updateProps: (props: any) => void;
+  save: () => Promise<void>;
+};
+
+export type BuilderController = StoreApi<BuilderStore>;
+
+export function createBuilderController({
+  ubento,
+  moduleId,
+}: {
+  ubento: UbentoSDK;
+  moduleId: string;
+}): BuilderController {
+  let rpc: DuplexRpc<
+    ComponentHostRpcInterface,
+    ComponentGuestRpcInterface
+  > | null = null;
+
+  return createStore<BuilderStore>()(
+    immer((set, get) => ({
+      loading: false,
+      error: false,
+      connected: false,
+      ready: false,
+      moduleId,
+      code: "",
+      props: {},
+
+      connect: (target: Window) => {
+        rpc = createDuplexRpc<
+          ComponentHostRpcInterface,
+          ComponentGuestRpcInterface
+        >({
+          port: createWindowPort(window, target),
+          handlers: {
+            connect: () => {
+              set((s) => {
+                s.connected = true;
+              });
+              const current = get();
+              rpc?.egress.init({
+                code: current.code,
+                props: current.props,
+              });
+            },
+            ready: () => {
+              set((s) => {
+                s.ready = true;
+              });
+            },
+          },
+        });
+        rpc.run();
+      },
+
+      dispose: () => {
+        rpc?.dispose();
+      },
+
+      load: async () => {
+        set((s) => {
+          s.loading = true;
+        });
+        try {
+          const module = await ubento.module.getModule(moduleId);
+          const source = await ubento.module.getModuleVersionSource(
+            moduleId,
+            module.latest_version_id,
+          );
+          set((s) => {
+            s.code = source;
+            s.loading = false;
+          });
+          rpc?.egress.init({ code: source, props: get().props });
+        } catch (err) {
+          set((s) => {
+            s.error = true;
+            s.loading = false;
+          });
+        }
+      },
+
+      updateCode: (code: string) => {
+        set((s) => {
+          s.code = code;
+        });
+        rpc?.egress.updateCode({ code });
+      },
+
+      updateProps: (props: any) => {
+        set((s) => {
+          s.props = props;
+        });
+        rpc?.egress.updateProps({ props });
+      },
+
+      save: async () => {
+        const current = get();
+        await ubento.module.publishModuleVersion(moduleId, {
+          source: current.code,
+        });
+      },
+    })),
+  );
+}

@@ -85,6 +85,8 @@ export interface paths {
                         slug?: string;
                         team_id: string;
                         source: string;
+                        /** @enum {string} */
+                        scope: "team" | "public";
                     };
                 };
             };
@@ -304,6 +306,92 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/modules/{module_id}/versions/{version_id}/source": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Module Version Source */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    module_id: string;
+                    version_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Module version source code (TSX) */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                source: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/modules/{module_id}/versions/{version_id}/artifact": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Module Version Artifact */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    module_id: string;
+                    version_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Module version transpiled artifact (JS) */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                artifact: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -316,6 +404,7 @@ export interface components {
             name: string;
             slug: string;
             latest_version_id: string;
+            scope: string;
             /** @default 1 */
             version: number;
             /** Format: date-time */

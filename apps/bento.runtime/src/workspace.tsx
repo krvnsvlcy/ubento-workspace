@@ -7,7 +7,7 @@ import {
 import { useEffect, useState } from "react";
 import { useKeyboardController } from "./keyboard.js";
 import { rpc } from "./rpc.js";
-import { createEngineController, setModuleUrlTemplate } from "./state.js";
+import { createEngineController } from "./state.js";
 
 const controller = createEngineController();
 
@@ -17,14 +17,7 @@ export function GuestWorkspace() {
 
   useEffect(() => {
     rpc.setHandlers({
-      init: ({
-        workspace,
-        moduleUrlTemplate,
-      }: {
-        workspace: WorkspaceData;
-        moduleUrlTemplate: string;
-      }) => {
-        setModuleUrlTemplate(moduleUrlTemplate);
+      init: ({ workspace }: { workspace: WorkspaceData }) => {
         controller.getState().setWorkspace(workspace);
         setWorkspace(workspace as any);
         rpc.egress.ready({});

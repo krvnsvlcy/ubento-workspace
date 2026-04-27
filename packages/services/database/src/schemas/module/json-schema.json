@@ -23,6 +23,9 @@
         "latest_version_id": {
           "type": "string"
         },
+        "scope": {
+          "type": "string"
+        },
         "version": {
           "type": "integer",
           "default": 1
@@ -49,6 +52,7 @@
         "name",
         "slug",
         "latest_version_id",
+        "scope",
         "updated_at"
       ]
     },

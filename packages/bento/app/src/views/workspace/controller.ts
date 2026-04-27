@@ -232,6 +232,18 @@ export function createWorkspaceController({
               });
               return module;
             },
+            getModuleArtifact: async ({
+              moduleId,
+              versionId,
+            }: {
+              moduleId: string;
+              versionId: string;
+            }) => {
+              return await ubento.module.getModuleVersionArtifact(
+                moduleId,
+                versionId,
+              );
+            },
             searchModules: async ({ query }) => {
               const current = get();
               if (!current.workspace) return [];
@@ -253,6 +265,7 @@ export function createWorkspaceController({
                 name,
                 team_id: current.workspace.teamId,
                 source: `export default function Component() { return <div>${name}</div> }`,
+                scope: "team",
               });
               return {
                 id: res.id,

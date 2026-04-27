@@ -151,11 +151,14 @@ export function useCreateModule() {
       slug?: string;
       team_id: string;
       source: string;
+      scope: "public" | "team";
     }) => {
       return await ubento.module.createModule(data);
     },
     onSuccess: (_, { team_id }) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.modules({ team_id }) });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.modules({ team_id }),
+      });
     },
   });
 }
@@ -175,7 +178,9 @@ export function useUpdateModule() {
     },
     onSuccess: (_, { moduleId }) => {
       queryClient.invalidateQueries({ queryKey: ["modules"] });
-      queryClient.invalidateQueries({ queryKey: queryKeys.module({ moduleId }) });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.module({ moduleId }),
+      });
     },
   });
 }

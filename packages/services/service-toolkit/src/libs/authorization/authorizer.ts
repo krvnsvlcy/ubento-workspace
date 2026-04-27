@@ -120,9 +120,6 @@ m = g(r.sub, p.role, r.obj) && (p.act == r.act || p.act == "*")
   async can(user: string, resourceUrn: string, action: string) {
     const enforcer = await this.getEnforcer();
     const allowed = await enforcer.enforce(user, resourceUrn, action);
-    if (!allowed) {
-      console.log("No match for", { user, resourceUrn, action });
-    }
     return allowed;
   }
 }

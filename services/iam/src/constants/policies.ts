@@ -2,7 +2,13 @@ import { ubentoAuth } from "@ubento/primitives";
 
 export const policies = {
   [ubentoAuth.roles.root.user]: {
-    permissions: [ubentoAuth.actions.team.create],
+    permissions: [
+      ubentoAuth.actions.team.create,
+
+      // modules
+      ubentoAuth.actions.module.list,
+      ubentoAuth.actions.module.read,
+    ],
   },
   [ubentoAuth.roles.root.admin]: {
     permissions: ["*"],
@@ -15,6 +21,14 @@ export const policies = {
       // app
       ubentoAuth.actions.workspace.list,
       ubentoAuth.actions.workspace.create,
+      // modules
+      ubentoAuth.actions.module.list,
+      ubentoAuth.actions.module.source.read,
+      ubentoAuth.actions.module.source.update,
+      ubentoAuth.actions.module.create,
+      ubentoAuth.actions.module.delete,
+      ubentoAuth.actions.module.read,
+      ubentoAuth.actions.module.update,
     ],
     roles: [ubentoAuth.roles.workspace.viewer],
   },

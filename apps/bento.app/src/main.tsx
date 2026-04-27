@@ -98,13 +98,16 @@ function BentoShell() {
           getToken,
         },
         serviceBaseUrls: {
-          workspace: "http://localhost:39694",
+          // workspace: "http://localhost:39694",
+          module: "http://localhost:28888",
         },
       }),
       iframeUrl: import.meta.env.VITE_RUNTIME_URL || "http://localhost:4020",
       moduleUrlTemplate:
         import.meta.env.VITE_MODULE_URL_TEMPLATE ||
         "https://modules.ubento.pro/{moduleId}/{versionId}/index.js",
+      componentIframeUrl:
+        import.meta.env.VITE_COMPONENT_RUNTIME_URL || "http://localhost:4030",
       goToLocation: (loc) => {
         const url = buildUrl(loc);
         if (window.location.pathname !== url) {

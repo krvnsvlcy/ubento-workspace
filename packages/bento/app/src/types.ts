@@ -10,7 +10,8 @@ export type BaseBentoLocation<
 export type BentoLocation =
   | BaseBentoLocation<"home">
   | BaseBentoLocation<"workspaces">
-  | BaseBentoLocation<"workspace", { slug: string; boardId?: string }>;
+  | BaseBentoLocation<"workspace", { slug: string; boardId?: string }>
+  | BaseBentoLocation<"builder", { moduleId: string }>;
 
 export type BentoSession = {
   userId: string;
@@ -24,8 +25,8 @@ export interface BentoHost {
   session: BentoSession;
   ubento: UbentoSDK;
   iframeUrl: string;
+  componentIframeUrl: string;
   moduleUrlTemplate: string;
   // navigation
   goToLocation: (location: BentoLocation) => void;
 }
-

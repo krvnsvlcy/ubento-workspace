@@ -74,8 +74,9 @@ export const spec: OpenAPIV3.Document = {
                   slug: { type: "string" },
                   team_id: { type: "string" },
                   source: { type: "string" },
+                  scope: { type: "string", enum: ["team", "public"] },
                 },
-                required: ["name", "team_id", "source"],
+                required: ["name", "team_id", "source", "scope"],
               },
             },
           },
@@ -263,6 +264,88 @@ export const spec: OpenAPIV3.Document = {
             content: {
               "application/json": {
                 schema: { $ref: "#/components/schemas/ModuleVersion" },
+              },
+            },
+          },
+        },
+      },
+    },
+    "/modules/{module_id}/versions/{version_id}/source": {
+      get: {
+        summary: "Get Module Version Source",
+        parameters: [
+          {
+            name: "module_id",
+            in: "path",
+            required: true,
+            schema: { type: "string" },
+          },
+          {
+            name: "version_id",
+            in: "path",
+            required: true,
+            schema: { type: "string" },
+          },
+        ],
+        responses: {
+          "200": {
+            description: "Module version source code (TSX)",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    data: {
+                      type: "object",
+                      properties: {
+                        source: { type: "string" },
+                      },
+                      required: ["source"],
+                    },
+                  },
+                  required: ["data"],
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    "/modules/{module_id}/versions/{version_id}/artifact": {
+      get: {
+        summary: "Get Module Version Artifact",
+        parameters: [
+          {
+            name: "module_id",
+            in: "path",
+            required: true,
+            schema: { type: "string" },
+          },
+          {
+            name: "version_id",
+            in: "path",
+            required: true,
+            schema: { type: "string" },
+          },
+        ],
+        responses: {
+          "200": {
+            description: "Module version transpiled artifact (JS)",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    data: {
+                      type: "object",
+                      properties: {
+                        artifact: { type: "string" },
+                      },
+                      required: ["artifact"],
+                    },
+                  },
+                  required: ["data"],
+                },
               },
             },
           },

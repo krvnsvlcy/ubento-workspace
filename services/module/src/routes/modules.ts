@@ -15,8 +15,10 @@ import {
   getModule,
   getModuleBySlug,
   getModuleVersion,
+  getModuleVersionCode,
   getModuleVersions,
   listModules,
+  ModuleScope,
   updateModule,
 } from "../entities/module.js";
 
@@ -37,9 +39,13 @@ modulesRouter.get(
         const module = await getModuleBySlug(req.params.slug as string);
         if (!module) throw new NotFoundError("Module not found");
 
-        return ubentoAuth.scopes.teamOrHigher({
-          team_id: module.team_id,
-        });
+        if (module.scope === ModuleScope.TEAM) {
+          return ubentoAuth.scopes.team({
+            team_id: module.team_id,
+          });
+        } else {
+          return ubentoAuth.scopes.root;
+        }
       },
     }),
     async (req, res) => {
@@ -89,9 +95,13 @@ modulesRouter.get(
         const module = await getModule(req.params.module_id as string);
         if (!module) throw new NotFoundError("Module not found");
 
-        return ubentoAuth.scopes.teamOrHigher({
-          team_id: module.team_id,
-        });
+        if (module.scope === ModuleScope.TEAM) {
+          return ubentoAuth.scopes.team({
+            team_id: module.team_id,
+          });
+        } else {
+          return ubentoAuth.scopes.root;
+        }
       },
     }),
     async (req, res) => {
@@ -116,9 +126,13 @@ modulesRouter.get(
         const module = await getModule(req.params.module_id as string);
         if (!module) throw new NotFoundError("Module not found");
 
-        return ubentoAuth.scopes.teamOrHigher({
-          team_id: module.team_id,
-        });
+        if (module.scope === ModuleScope.TEAM) {
+          return ubentoAuth.scopes.team({
+            team_id: module.team_id,
+          });
+        } else {
+          return ubentoAuth.scopes.root;
+        }
       },
     }),
     async (req, res) => {
@@ -144,9 +158,13 @@ modulesRouter.get(
         const module = await getModule(req.params.module_id as string);
         if (!module) throw new NotFoundError("Module not found");
 
-        return ubentoAuth.scopes.teamOrHigher({
-          team_id: module.team_id,
-        });
+        if (module.scope === ModuleScope.TEAM) {
+          return ubentoAuth.scopes.team({
+            team_id: module.team_id,
+          });
+        } else {
+          return ubentoAuth.scopes.root;
+        }
       },
     }),
     async (req, res) => {
@@ -155,6 +173,80 @@ modulesRouter.get(
         throw new NotFoundError("Version not found");
       }
       res.json(dataResponse(version));
+    },
+  ),
+);
+
+// Get Module Version Source
+modulesRouter.get(
+  "/:module_id/versions/:version_id/source",
+  chain(
+    validate({
+      params: z.object({
+        module_id: z.string(),
+        version_id: z.string(),
+      }),
+    }),
+    enforce({
+      permissions: [ubentoAuth.actions.module.source.read],
+      resource: async (req) => {
+        const module = await getModule(req.params.module_id as string);
+        if (!module) throw new NotFoundError("Module not found");
+
+        if (module.scope === ModuleScope.TEAM) {
+          return ubentoAuth.scopes.team({
+            team_id: module.team_id,
+          });
+        } else {
+          return ubentoAuth.scopes.root;
+        }
+      },
+    }),
+    async (req, res) => {
+      const code = await getModuleVersionCode({
+        moduleId: req.params.module_id,
+        versionId: req.params.version_id,
+        type: "tsx",
+      });
+      if (code === null) throw new NotFoundError("Version not found");
+      res.json(dataResponse({ source: code }));
+    },
+  ),
+);
+
+// Get Module Version Artifact
+modulesRouter.get(
+  "/:module_id/versions/:version_id/artifact",
+  chain(
+    validate({
+      params: z.object({
+        module_id: z.string(),
+        version_id: z.string(),
+      }),
+    }),
+    enforce({
+      permissions: [ubentoAuth.actions.module.read],
+      resource: async (req) => {
+        const module = await getModule(req.params.module_id as string);
+        if (!module) throw new NotFoundError("Module not found");
+
+        if (module.scope === ModuleScope.TEAM) {
+          return ubentoAuth.scopes.team({
+            team_id: module.team_id,
+          });
+        } else {
+          return ubentoAuth.scopes.root;
+        }
+      },
+    }),
+    async (req, res) => {
+      const code = await getModuleVersionCode({
+        moduleId: req.params.module_id,
+        versionId: req.params.version_id,
+        type: "js",
+      });
+      if (code === null) throw new NotFoundError("Version not found");
+      res.json(dataResponse({ artifact: code }));
     },
   ),
 );
@@ -177,9 +269,13 @@ modulesRouter.post(
         const module = await getModule(req.params.module_id as string);
         if (!module) throw new NotFoundError("Module not found");
 
-        return ubentoAuth.scopes.teamOrHigher({
-          team_id: module.team_id,
-        });
+        if (module.scope === ModuleScope.TEAM) {
+          return ubentoAuth.scopes.team({
+            team_id: module.team_id,
+          });
+        } else {
+          return ubentoAuth.scopes.root;
+        }
       },
     }),
     async (req, res) => {
@@ -202,6 +298,7 @@ modulesRouter.post(
         slug: z.string().optional(),
         team_id: z.string(),
         source: z.string(),
+        scope: z.enum([ModuleScope.TEAM, ModuleScope.PUBLIC]),
       }),
     }),
     enforce({
@@ -237,9 +334,13 @@ modulesRouter.patch(
         const module = await getModule(req.params.module_id as string);
         if (!module) throw new NotFoundError("Module not found");
 
-        return ubentoAuth.scopes.teamOrHigher({
-          team_id: module.team_id,
-        });
+        if (module.scope === ModuleScope.TEAM) {
+          return ubentoAuth.scopes.team({
+            team_id: module.team_id,
+          });
+        } else {
+          return ubentoAuth.scopes.root;
+        }
       },
     }),
     async (req, res) => {
@@ -264,9 +365,13 @@ modulesRouter.delete(
         const module = await getModule(req.params.module_id as string);
         if (!module) throw new NotFoundError("Module not found");
 
-        return ubentoAuth.scopes.teamOrHigher({
-          team_id: module.team_id,
-        });
+        if (module.scope === ModuleScope.TEAM) {
+          return ubentoAuth.scopes.team({
+            team_id: module.team_id,
+          });
+        } else {
+          return ubentoAuth.scopes.root;
+        }
       },
     }),
     async (req, res) => {

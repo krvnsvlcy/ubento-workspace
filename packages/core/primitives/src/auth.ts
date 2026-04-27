@@ -89,6 +89,10 @@ export const ubentoAuth = {
       create: "module:create",
       update: "module:update",
       delete: "module:delete",
+      source: {
+        read: "module:source:read",
+        update: "module:source:update",
+      },
     },
   },
   roles: {

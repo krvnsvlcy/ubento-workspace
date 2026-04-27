@@ -6,7 +6,7 @@ import {
   ubentoEntities,
 } from "@ubento/primitives";
 import { customAlphabet } from "nanoid";
-import { persistModule } from "../lib/gcs.js";
+import { persistModule, readModuleFile } from "../lib/gcs.js";
 import prisma from "../lib/prisma.js";
 import { transpileTsx } from "../lib/transpiler.js";
 
@@ -14,6 +14,11 @@ const nanoid = customAlphabet(
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
   6,
 );
+
+export enum ModuleScope {
+  TEAM = "team",
+  PUBLIC = "public",
+}
 
 export async function getModule(id: string) {
   return await prisma.module.findUnique({
@@ -32,6 +37,7 @@ export async function createModule(data: {
   slug?: string;
   team_id: string;
   source: string;
+  scope: ModuleScope;
 }) {
   const moduleId = makeEntityId({
     code: ubentoEntities.module.code,
@@ -63,6 +69,7 @@ export async function createModule(data: {
       slug,
       team_id: data.team_id,
       latest_version_id: version.id,
+      scope: data.scope,
     },
   });
 
@@ -157,4 +164,21 @@ export async function getModuleVersion(id: string) {
   return await prisma.moduleVersion.findUnique({
     where: { id },
   });
+}
+
+export async function getModuleVersionCode({
+  moduleId,
+  versionId,
+  type,
+}: {
+  moduleId: string;
+  versionId: string;
+  type: "tsx" | "js";
+}) {
+  const version = await getModuleVersion(versionId);
+  if (!version || version.module_id !== moduleId) {
+    return null;
+  }
+
+  return await readModuleFile({ moduleId, versionId, type });
 }
