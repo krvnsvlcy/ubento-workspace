@@ -1,9 +1,29 @@
 import { ErrorView, PendingView } from "@ubento/bento-primitives";
 import React, { useEffect, useState } from "react";
 import { useStore } from "zustand";
+import { spacingBaseUnit } from "../../constants.js";
 import { useEngineController } from "../../controller.js";
-import { BoardData } from "../../models.js";
+import { BoardStyle } from "../../models.js";
 import { Element, ElementRegistryProvider } from "../elements/element.js";
+
+function getBoardStyle(style: BoardStyle = {}): React.CSSProperties {
+  return {
+    position: "relative",
+    width: "100vw",
+    height: "100vh",
+    backgroundColor: style.background,
+    display: "flex",
+    alignContent: "start",
+    flexDirection: style.direction || "row",
+    flexWrap: "wrap",
+    gap: style.gap ? `${style.gap * spacingBaseUnit}px` : undefined,
+    padding: style.padding
+      ? `${(style.padding.top || 0) * spacingBaseUnit}px ${(style.padding.right || 0) * spacingBaseUnit}px ${(style.padding.bottom || 0) * spacingBaseUnit}px ${(style.padding.left || 0) * spacingBaseUnit}px`
+      : undefined,
+    overflow: style.direction === "row" ? "hidden auto" : "auto hidden",
+    pointerEvents: "auto",
+  };
+}
 
 function BoardContent({ boardId }: { boardId: string }): React.JSX.Element {
   const controller = useEngineController();
@@ -16,11 +36,10 @@ function BoardContent({ boardId }: { boardId: string }): React.JSX.Element {
   return (
     <ElementRegistryProvider registry={board.elements as any}>
       <div
-        style={{
-          position: "relative",
-          width: "100vw",
-          height: "100vh",
+        onClick={() => {
+          controller.getState().select([]);
         }}
+        style={getBoardStyle(board.style)}
       >
         {content}
       </div>

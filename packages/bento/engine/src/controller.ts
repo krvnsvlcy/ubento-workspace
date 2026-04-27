@@ -49,6 +49,10 @@ export type EngineStore = EngineState & {
     moduleId: string,
     moduleVersionId: string,
   ) => void;
+
+  addElement: (containerId: string, element: ElementData) => string;
+  deleteElement: (id: string) => void;
+  replaceElement: (id: string, element: ElementData) => void;
 };
 
 export type EngineController = StoreApi<EngineStore>;

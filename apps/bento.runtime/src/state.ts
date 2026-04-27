@@ -38,11 +38,13 @@ export type InternalEngineStore = EngineStore & {
   deleteBoard: (boardId: string) => void;
   setBoardContent: (boardId: string, content: string[]) => void;
   addElement: (
-    boardId: string,
     containerId: string,
     element: ElementData,
+    boardId?: string,
   ) => string;
-  deleteElement: (boardId: string, elementId: string) => void;
+  deleteElement: (elementId: string, boardId?: string) => void;
+  replaceElement: (id: string, element: ElementData) => void;
+  setBoardStyle: (boardId: string, style: Partial<BaseStyle>) => void;
   setElementStyle: (id: string, style: Partial<BaseStyle>) => void;
   setElementProps: (id: string, props: any) => void;
   setStackContent: (id: string, content: string[]) => void;
@@ -83,7 +85,7 @@ export function createEngineController({
           ...new Set(
             toggle
               ? currentSelection.filter((id) => !elementIds.includes(id))
-              : [...currentSelection, ...elementIds],
+              : elementIds,
           ),
         ];
 
@@ -93,21 +95,21 @@ export function createEngineController({
       },
 
       focusSelectionScope: (scope: string) => {
-        set((s) => {
-          s.selectionScope = scope;
+        rpc.egress.updateContext({
+          selectionScope: scope,
         });
       },
 
       blurSelectionScope: () => {
-        set((s) => {
-          s.selectionScope = undefined;
+        rpc.egress.updateContext({
+          selectionScope: undefined,
         });
       },
 
       // navigation
       goTo: (boardId: string, params: Record<string, string> = {}) => {
-        set((s) => {
-          s.location = { boardId, params };
+        rpc.egress.updateContext({
+          location: { boardId, params },
         });
       },
 
@@ -178,10 +180,10 @@ export function createEngineController({
       },
 
       // mutations
-      setWorkspace: (workspace: WorkspaceData) => {
+      setWorkspace: (_workspace: WorkspaceData) => {
         // sync if needed
       },
-      setHomeBoardId: (homeBoardId: string) => {
+      setHomeBoardId: (_homeBoardId: string) => {
         // sync if needed
       },
       deleteBoard: (boardId: string) => {
@@ -197,10 +199,12 @@ export function createEngineController({
           }
         });
       },
-      addElement: (boardId, containerId, element) => {
+      addElement: (containerId, element, boardId?: string) => {
         const elementId = generateId();
         set((s) => {
-          const board = s.boards[boardId];
+          const targetBoardId = boardId || s.location?.boardId;
+          if (!targetBoardId) return;
+          const board = s.boards[targetBoardId];
           if (!board) return;
           board.elements[elementId] = element;
 
@@ -215,9 +219,11 @@ export function createEngineController({
         });
         return elementId;
       },
-      deleteElement: (boardId, elementId) => {
+      deleteElement: (elementId, boardId?: string) => {
         set((s) => {
-          const board = s.boards[boardId];
+          const targetBoardId = boardId || s.location?.boardId;
+          if (!targetBoardId) return;
+          const board = s.boards[targetBoardId];
           if (!board) return;
 
           delete board.elements[elementId];
@@ -238,6 +244,22 @@ export function createEngineController({
               }
             }
           }
+        });
+      },
+      replaceElement: (id, element) => {
+        set((s) => {
+          const boardId = s.location?.boardId;
+          if (!boardId) return;
+          const board = s.boards[boardId];
+          if (!board) return;
+          board.elements[id] = element;
+        });
+      },
+      setBoardStyle: (boardId, style) => {
+        set((s) => {
+          const board = s.boards[boardId];
+          if (!board) return;
+          board.style = { ...(board.style || {}), ...style } as any;
         });
       },
       setElementStyle: (id, style) => {

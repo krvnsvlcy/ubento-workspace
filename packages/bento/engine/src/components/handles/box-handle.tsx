@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useStore } from "zustand";
+import { baseLengthUnit, spacingBaseUnit } from "../../constants";
 import { useEngineController } from "../../controller";
 import { ElementData } from "../../models";
 
@@ -79,8 +80,11 @@ export function RadiusHandle({
   width: number;
   height: number;
 }) {
-  const limit = Math.min(width / 2, height / 2);
-  const pos = Math.min(limit, Math.max(9, radius));
+  const widthPx = width * baseLengthUnit;
+  const heightPx = height * baseLengthUnit;
+  const radiusPx = radius * spacingBaseUnit;
+  const limitPx = Math.min(widthPx / 2, heightPx / 2);
+  const pos = Math.min(limitPx, Math.max(12, radiusPx));
 
   return (
     <div
@@ -113,51 +117,70 @@ export function BoxHandle({
   const controller = useEngineController();
   const controllerStateSnap = useStore(controller);
   const [dragType, setDragType] = useState<ResizeDirection | null>(null);
+  const [dragStart, setDragStart] = useState<{
+    x: number;
+    y: number;
+    initialStyle: any;
+  } | null>(null);
 
   const isSelected = controllerStateSnap.selection?.includes(id);
   const isEditMode = controllerStateSnap.mode === "edit";
 
   useEffect(() => {
-    if (!dragType) return;
+    if (!dragType || !dragStart) return;
 
     const onMouseMove = (e: MouseEvent) => {
-      const deltaX = e.movementX;
-      const deltaY = e.movementY;
+      if (!dragStart) return;
+
+      const totalDeltaX = e.clientX - dragStart.x;
+      const totalDeltaY = e.clientY - dragStart.y;
+
+      const unitDeltaX = Math.round(totalDeltaX / baseLengthUnit);
+      const unitDeltaY = Math.round(totalDeltaY / baseLengthUnit);
 
       if (!element.style) return;
 
       const styleUpdates: any = {};
 
       if (dragType === "radius") {
-        const current = element.style.cornerRadius ?? 0;
-        const change = deltaY - deltaX;
-        styleUpdates.cornerRadius = Math.max(0, current + change / 2);
+        const initialRadius = dragStart.initialStyle.cornerRadius ?? 0;
+        // For radius, we use a combination of horizontal and vertical movement
+        const pixelChange = (totalDeltaY - totalDeltaX) / 2;
+        const unitChange = Math.round(pixelChange / spacingBaseUnit);
+        styleUpdates.cornerRadius = Math.max(0, initialRadius + unitChange);
       } else {
+        const initialWidth = dragStart.initialStyle.width ?? 0;
+        const initialHeight = dragStart.initialStyle.height ?? 0;
+
         if (dragType.includes("e")) {
-          if (typeof element.style.width === "number")
-            styleUpdates.width = element.style.width + deltaX;
+          styleUpdates.width = Math.max(1, initialWidth + unitDeltaX);
         }
         if (dragType.includes("w")) {
-          if (typeof element.style.width === "number")
-            styleUpdates.width = element.style.width - deltaX;
+          styleUpdates.width = Math.max(1, initialWidth - unitDeltaX);
         }
         if (dragType.includes("s")) {
-          if (typeof element.style.height === "number")
-            styleUpdates.height = element.style.height + deltaY;
+          styleUpdates.height = Math.max(1, initialHeight + unitDeltaY);
         }
         if (dragType.includes("n")) {
-          if (typeof element.style.height === "number")
-            styleUpdates.height = element.style.height - deltaY;
+          styleUpdates.height = Math.max(1, initialHeight - unitDeltaY);
         }
       }
 
       if (Object.keys(styleUpdates).length > 0) {
-        controller.getState().setElementStyle(id, styleUpdates);
+        // Only update if the unit-based values have actually changed
+        const currentStyle = element.style as any;
+        const hasChanged = Object.entries(styleUpdates).some(
+          ([key, value]) => currentStyle[key] !== value,
+        );
+        if (hasChanged) {
+          controller.getState().setElementStyle(id, styleUpdates);
+        }
       }
     };
 
     const onMouseUp = () => {
       setDragType(null);
+      setDragStart(null);
     };
 
     window.addEventListener("mousemove", onMouseMove);
@@ -167,7 +190,7 @@ export function BoxHandle({
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("mouseup", onMouseUp);
     };
-  }, [dragType, element, id, controller]);
+  }, [dragType, dragStart, element, id, controller]);
 
   if (!isEditMode) return null;
 
@@ -175,6 +198,11 @@ export function BoxHandle({
     e.stopPropagation();
     e.preventDefault();
     setDragType(dir);
+    setDragStart({
+      x: e.clientX,
+      y: e.clientY,
+      initialStyle: { ...element.style },
+    });
   };
 
   const width = element.style?.width ?? 0;
@@ -195,8 +223,9 @@ export function BoxHandle({
           ? "0 0 0 2px #3b82f6"
           : "0 0 0 1px rgba(59, 130, 246, 0.3)",
         borderRadius: element.style?.cornerRadius
-          ? `${element.style.cornerRadius}px`
+          ? `${element.style.cornerRadius * spacingBaseUnit}px`
           : undefined,
+
         pointerEvents: "auto",
       }}
     >
@@ -218,7 +247,7 @@ export function BoxHandle({
             height={height}
           />
 
-          {/* Label */}
+          {/* Label
           <div
             style={{
               position: "absolute",
@@ -234,7 +263,7 @@ export function BoxHandle({
             }}
           >
             {element.type}
-          </div>
+          </div> */}
         </>
       )}
     </div>

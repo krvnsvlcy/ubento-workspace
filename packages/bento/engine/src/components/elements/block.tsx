@@ -1,40 +1,39 @@
 import { ErrorView, PendingView } from "@ubento/bento-primitives";
 import React, { useEffect, useState } from "react";
 import { useEngineController } from "../../controller";
-import { ModuleData } from "../../models";
+import { BlockData, ModuleData } from "../../models";
+import { BaseElement, getBaseStyle } from "./base_element";
 
-export function Component({
-  moduleId,
-  moduleVersionId,
-  props = {},
+export function Block({
+  id,
+  data,
 }: {
-  moduleId: string;
-  moduleVersionId?: string;
-  props?: Record<string, any>;
+  id: string;
+  data: BlockData;
 }): React.JSX.Element {
   const controller = useEngineController();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [moduleValue, setModuleValue] = useState<any>();
   const [versionId, setVersionId] = useState<string | undefined>(
-    moduleVersionId,
+    data.moduleVersionId,
   );
 
   // resolve module versionId
   useEffect(() => {
-    if (!moduleVersionId) {
+    if (!data.moduleVersionId) {
       let cleanup: (() => void) | undefined;
       controller
         .getState()
-        .getModule(moduleId)
+        .getModule(data.moduleId)
         .then((module: ModuleData) => {
           setVersionId(module.latestVersionId);
           cleanup = controller.subscribe((curr, prev) => {
             if (
-              curr.modules[moduleId]?.latestVersionId !==
-              prev.modules[moduleId]?.latestVersionId
+              curr.modules[data.moduleId]?.latestVersionId !==
+              prev.modules[data.moduleId]?.latestVersionId
             ) {
-              setVersionId(curr.modules[moduleId]?.latestVersionId);
+              setVersionId(curr.modules[data.moduleId]?.latestVersionId);
             }
           });
         })
@@ -47,14 +46,14 @@ export function Component({
         cleanup?.();
       };
     }
-  }, [moduleId, controller, moduleVersionId]);
+  }, [data.moduleId, controller, data.moduleVersionId]);
 
   // resolve version value
   useEffect(() => {
     if (!versionId) return;
     controller
       .getState()
-      .resolveModuleValue(moduleId, versionId)
+      .resolveModuleValue(data.moduleId, versionId)
       .then((moduleValue: any) => {
         setModuleValue(moduleValue.value);
       })
@@ -64,7 +63,7 @@ export function Component({
       .finally(() => {
         setLoading(false);
       });
-  }, [versionId, controller, moduleId]);
+  }, [versionId, controller, data.moduleId]);
 
   if (loading) return <PendingView message="Loading component..." />;
   if (error) return <ErrorView message="Failed to load component" />;
@@ -74,5 +73,9 @@ export function Component({
   if (!Component)
     return <ErrorView message="No default export found in component module" />;
 
-  return <Component {...props} />;
+  return (
+    <BaseElement id={id} data={data} style={getBaseStyle(data.style || {})}>
+      <Component {...data.props} />
+    </BaseElement>
+  );
 }

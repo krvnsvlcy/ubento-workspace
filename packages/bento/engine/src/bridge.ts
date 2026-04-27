@@ -35,6 +35,7 @@ export type GuestRpcInterface = {
 
   // board mutators
   deleteBoard: (payload: { boardId: string }) => Promise<void>;
+  setBoardStyle: (payload: { boardId: string; style: any }) => void;
   setBoardContent: (payload: {
     boardId: string;
     content: string[];

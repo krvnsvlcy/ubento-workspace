@@ -44,10 +44,10 @@ export function GuestWorkspace() {
         controller.getState().setBoardContent(boardId, content);
       },
       addElement: async ({ boardId, containerId, element }) => {
-        return controller.getState().addElement(boardId, containerId, element);
+        return controller.getState().addElement(containerId, element, boardId);
       },
       deleteElement: async ({ boardId, elementId }) => {
-        controller.getState().deleteElement(boardId, elementId);
+        controller.getState().deleteElement(elementId, boardId);
       },
       setElementStyle: ({ id, style }) => {
         controller.getState().setElementStyle(id, style);
@@ -60,6 +60,9 @@ export function GuestWorkspace() {
       },
       setBlockModule: ({ id, moduleId, moduleVersionId }) => {
         controller.getState().setBlockModule(id, moduleId, moduleVersionId);
+      },
+      setBoardStyle: ({ boardId, style }) => {
+        controller.getState().setBoardStyle(boardId, style);
       },
     });
     rpc.egress.connect({});

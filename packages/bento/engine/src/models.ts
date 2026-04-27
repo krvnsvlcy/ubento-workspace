@@ -11,6 +11,7 @@ export const baseElementStyleSchema = z.object({
   cornerRadius: z.number().optional(),
   borderWidth: z.number().optional(),
   borderColor: z.string().optional(),
+  flex: z.number().optional(),
   padding: z
     .object({
       top: z.number().optional(),

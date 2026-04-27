@@ -1,3 +1,23 @@
+import {
+  BaseStyle,
+  BoardData,
+  BoardStyle,
+  ElementData,
+  StackStyle,
+} from "@ubento/engine";
+import {
+  Box,
+  ChevronRight,
+  Eye,
+  Layers,
+  Layout,
+  Palette,
+  Plus,
+  Settings2,
+  X,
+} from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
+import { useEffect, useState } from "react";
 import { useStore } from "zustand";
 import { WorkspaceController } from "../controller";
 
@@ -7,23 +27,628 @@ export function ControlPanel({
   controller: WorkspaceController;
 }) {
   const state = useStore(controller);
+  const currentBoardId = state.context.location?.boardId;
+  const board = currentBoardId ? state.boards[currentBoardId] : null;
   const selectedId = state.context.selection?.[0];
-  const workspace = state.boards[selectedId];
+  const element = selectedId && board ? board.elements[selectedId] : null;
 
-  const element =
-    selectedId && workspace ? workspace.elements[selectedId] : null;
+  if (!element) {
+    if (!board) {
+      return (
+        <div className="flex h-full flex-col items-center justify-center gap-4 p-8 text-center text-foreground-400">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-background-200">
+            <Eye size={24} />
+          </div>
+          <div>
+            <h3 className="text-sm font-bold text-foreground">No selection</h3>
+            <p className="mt-1 text-xs">
+              Select an element on the board to edit its properties.
+            </p>
+          </div>
+        </div>
+      );
+    }
+
+    const updateBoardStyle = (style: Partial<BoardStyle>) => {
+      if (!currentBoardId) return;
+      controller.getState().setBoardStyle(currentBoardId, {
+        ...board.style,
+        ...style,
+      });
+    };
+
+    const handleAddElement = (containerId: string) => {
+      if (!currentBoardId) return;
+      controller.getState().addElement(currentBoardId, containerId, {
+        type: "stack",
+        content: [],
+        style: {
+          width: 100,
+          height: 100,
+          background: "#3939dc44",
+          cornerRadius: 12,
+        },
+      });
+    };
+
+    return (
+      <div className="flex h-full flex-col border-l border-background-300 bg-background-100">
+        <BoardHeader board={board} onAddElement={() => handleAddElement("root")} />
+        <div className="flex-1 overflow-y-auto pb-8">
+          <Section title="Layout" icon={Layout}>
+            <PropertyRow label="Direction">
+              <Select
+                value={board.style?.direction || "column"}
+                options={["row", "column"]}
+                onChange={(v) => updateBoardStyle({ direction: v as any })}
+              />
+            </PropertyRow>
+            <PropertyRow label="Gap">
+              <NumberInput
+                value={board.style?.gap}
+                onChange={(v) => updateBoardStyle({ gap: v })}
+                unit="px"
+              />
+            </PropertyRow>
+          </Section>
+          <Section title="Appearance" icon={Palette}>
+            <PropertyRow label="Background">
+              <ColorInput
+                value={board.style?.background}
+                onChange={(v) => updateBoardStyle({ background: v })}
+              />
+            </PropertyRow>
+            <PaddingControl
+              value={board.style?.padding}
+              onChange={(v) => updateBoardStyle({ padding: v })}
+            />
+          </Section>
+
+          <Section title="Settings" icon={Settings2}>
+            <PropertyRow label="Board ID">
+              <span className="font-mono text-[10px] text-foreground-500">
+                {board.id}
+              </span>
+            </PropertyRow>
+            <PropertyRow label="Name">
+              <TextInput
+                value={board.name}
+                onChange={(v) => {
+                  // We might need a setBoardName action too, but for now just showing it
+                }}
+              />
+            </PropertyRow>
+          </Section>
+        </div>
+      </div>
+    );
+  }
+
+  const updateStyle = (style: Partial<BaseStyle | StackStyle>) => {
+    if (!selectedId || !element) return;
+    controller.getState().setElementStyle(selectedId, {
+      ...element.style,
+      ...style,
+    });
+  };
+
+  const handleAddElement = (containerId: string) => {
+    if (!currentBoardId) return;
+    controller.getState().addElement(currentBoardId, containerId, {
+      type: "stack",
+      content: [],
+      style: {
+        width: 100,
+        height: 100,
+        background: "#3939dc44",
+        cornerRadius: 12,
+      },
+    });
+  };
 
   return (
-    <div
-      style={{
-        width: "100%",
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        overflowY: "auto",
-      }}
+    <div className="flex h-full flex-col border-l border-background-300 bg-background-100">
+      <PanelHeader
+        element={element}
+        id={selectedId!}
+        onAddElement={() => handleAddElement(selectedId!)}
+      />
+
+      <div className="flex-1 overflow-y-auto pb-8">
+        <Section title="Layout" icon={Layout}>
+          <PropertyRow label="Width">
+            <NumberInput
+              value={element.style?.width}
+              onChange={(v) => updateStyle({ width: v })}
+              unit="px"
+            />
+          </PropertyRow>
+          <PropertyRow label="Height">
+            <NumberInput
+              value={element.style?.height}
+              onChange={(v) => updateStyle({ height: v })}
+              unit="px"
+            />
+          </PropertyRow>
+          <PropertyRow label="Flex">
+            <NumberInput
+              value={element.style?.flex}
+              onChange={(v) => updateStyle({ flex: v })}
+            />
+          </PropertyRow>
+          {element.type === "stack" && (
+            <>
+              <PropertyRow label="Direction">
+                <Select
+                  value={element.style.direction || "column"}
+                  options={["row", "column"]}
+                  onChange={(v) => updateStyle({ direction: v as any })}
+                />
+              </PropertyRow>
+              <PropertyRow label="Gap">
+                <NumberInput
+                  value={element.style.gap}
+                  onChange={(v) => updateStyle({ gap: v })}
+                  unit="px"
+                />
+              </PropertyRow>
+              <PropertyRow label="Justify">
+                <Select
+                  value={element.style.justify || "start"}
+                  options={[
+                    "start",
+                    "end",
+                    "center",
+                    "space-between",
+                    "space-around",
+                  ]}
+                  onChange={(v) => updateStyle({ justify: v as any })}
+                />
+              </PropertyRow>
+            </>
+          )}
+        </Section>
+
+        <Section title="Appearance" icon={Palette}>
+          <PropertyRow label="Background">
+            <ColorInput
+              value={element.style?.background}
+              onChange={(v) => updateStyle({ background: v })}
+            />
+          </PropertyRow>
+          <PropertyRow label="Corner Radius">
+            <NumberInput
+              value={element.style?.cornerRadius}
+              onChange={(v) => updateStyle({ cornerRadius: v })}
+              unit="px"
+            />
+          </PropertyRow>
+          <PropertyRow label="Border Width">
+            <NumberInput
+              value={element.style?.borderWidth}
+              onChange={(v) => updateStyle({ borderWidth: v })}
+              unit="px"
+            />
+          </PropertyRow>
+          <PropertyRow label="Border Color">
+            <ColorInput
+              value={element.style?.borderColor}
+              onChange={(v) => updateStyle({ borderColor: v })}
+            />
+          </PropertyRow>
+          <PaddingControl
+            value={element.style?.padding}
+            onChange={(v) => updateStyle({ padding: v })}
+          />
+        </Section>
+
+        {element.type === "block" && (
+          <Section title="Module" icon={Box}>
+            <PropertyRow label="Module ID">
+              <TextInput
+                value={element.moduleId}
+                onChange={(v) => {
+                  if (element.type !== "block") return;
+                  controller
+                    .getState()
+                    .setBlockModule(
+                      selectedId!,
+                      v,
+                      element.moduleVersionId || "",
+                    );
+                }}
+              />
+            </PropertyRow>
+            <PropertyRow label="Version">
+              <TextInput
+                value={element.moduleVersionId}
+                onChange={(v) => {
+                  if (element.type !== "block") return;
+                  controller
+                    .getState()
+                    .setBlockModule(selectedId!, element.moduleId, v);
+                }}
+              />
+            </PropertyRow>
+            <PropertyRow label="Props">
+              <button
+                onClick={() => {
+                  console.log("Editing props for", selectedId);
+                }}
+                className="w-full rounded-md bg-background-300 py-1 text-center text-[10px] font-bold text-foreground-300 hover:bg-background-400"
+              >
+                EDIT PROPS (JSON)
+              </button>
+            </PropertyRow>
+          </Section>
+        )}
+
+        <Section title="Settings" icon={Settings2}>
+          <PropertyRow label="ID">
+            <span className="font-mono text-[10px] text-foreground-500">
+              {selectedId}
+            </span>
+          </PropertyRow>
+          <PropertyRow label="Type">
+            <span className="text-[10px] font-bold uppercase text-foreground-500">
+              {element.type}
+            </span>
+          </PropertyRow>
+          <div className="mt-4 px-4">
+            <button
+              onClick={() =>
+                currentBoardId &&
+                selectedId &&
+                controller.getState().deleteElement(currentBoardId, selectedId)
+              }
+              className="w-full rounded-md bg-red-500/10 py-2 text-[10px] font-bold uppercase tracking-wider text-red-500 transition-colors hover:bg-red-500/20"
+            >
+              Delete Element
+            </button>
+          </div>
+        </Section>
+      </div>
+    </div>
+  );
+}
+
+// Sub-components
+function PanelHeader({
+  element,
+  id,
+  onAddElement,
+}: {
+  element: ElementData;
+  id: string;
+  onAddElement?: () => void;
+}) {
+  return (
+    <div className="sticky top-0 z-10 border-b border-background-300 bg-background-200/50 px-4 py-4 backdrop-blur-sm">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className="rounded-lg bg-primary-500/10 p-1.5 text-primary-500">
+            {element.type === "stack" ? <Layers size={14} /> : <Box size={14} />}
+          </div>
+          <div className="flex flex-col">
+            <span className="text-[10px] font-bold uppercase leading-none tracking-widest text-foreground-400">
+              {element.type}
+            </span>
+            <span className="max-w-[180px] truncate text-sm font-bold text-foreground">
+              {id}
+            </span>
+          </div>
+        </div>
+
+        {element.type === "stack" && onAddElement && (
+          <button
+            onClick={onAddElement}
+            className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-500/10 text-primary-500 transition-colors hover:bg-primary-500/20"
+            title="Add Element"
+          >
+            <Plus size={16} />
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function BoardHeader({
+  board,
+  onAddElement,
+}: {
+  board: BoardData;
+  onAddElement?: () => void;
+}) {
+  return (
+    <div className="sticky top-0 z-10 border-b border-background-300 bg-background-200/50 px-4 py-4 backdrop-blur-sm">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className="rounded-lg bg-orange-500/10 p-1.5 text-orange-500">
+            <Layout size={14} />
+          </div>
+          <div className="flex flex-col">
+            <span className="text-[10px] font-bold uppercase leading-none tracking-widest text-foreground-400">
+              Board
+            </span>
+            <span className="max-w-[180px] truncate text-sm font-bold text-foreground">
+              {board.name || "Untitled Board"}
+            </span>
+          </div>
+        </div>
+
+        {onAddElement && (
+          <button
+            onClick={onAddElement}
+            className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-500/10 text-primary-500 transition-colors hover:bg-primary-500/20"
+            title="Add Element"
+          >
+            <Plus size={16} />
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function PaddingControl({
+  value,
+  onChange,
+}: {
+  value?: BaseStyle["padding"];
+  onChange: (v: BaseStyle["padding"]) => void;
+}) {
+  return (
+    <div className="mt-2 px-4">
+      <span className="text-[10px] font-bold uppercase tracking-wider text-foreground-500">
+        Padding
+      </span>
+      <div className="mt-1 grid grid-cols-2 gap-2">
+        <NumberInput
+          value={value?.top}
+          onChange={(v) => onChange({ ...value, top: v })}
+          unit="T"
+        />
+        <NumberInput
+          value={value?.right}
+          onChange={(v) => onChange({ ...value, right: v })}
+          unit="R"
+        />
+        <NumberInput
+          value={value?.bottom}
+          onChange={(v) => onChange({ ...value, bottom: v })}
+          unit="B"
+        />
+        <NumberInput
+          value={value?.left}
+          onChange={(v) => onChange({ ...value, left: v })}
+          unit="L"
+        />
+      </div>
+    </div>
+  );
+}
+
+function Section({
+  title,
+  icon: Icon,
+  children,
+}: {
+  title: string;
+  icon: any;
+  children: React.ReactNode;
+}) {
+  const [isOpen, setIsOpen] = useState(true);
+  return (
+    <div className="flex flex-col border-b border-background-300">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="group flex items-center gap-2 px-4 py-3 transition-colors hover:bg-background-200"
+      >
+        <Icon
+          size={14}
+          className="text-foreground-400 transition-colors group-hover:text-primary-400"
+        />
+        <span className="text-[11px] font-bold uppercase tracking-wider text-foreground-400 group-hover:text-foreground-200">
+          {title}
+        </span>
+        <div className="ml-auto">
+          <ChevronRight
+            size={14}
+            className={`text-foreground-500 transition-transform duration-300 ${
+              isOpen ? "rotate-90" : ""
+            }`}
+          />
+        </div>
+      </button>
+      <AnimatePresence initial={false}>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2, ease: "easeInOut" }}
+            className="overflow-hidden"
+          >
+            <div className="pb-4">{children}</div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+function PropertyRow({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="flex items-center justify-between px-4 py-1.5">
+      <span className="text-xs font-medium text-foreground-400">{label}</span>
+      <div className="flex max-w-[60%] flex-1 justify-end">{children}</div>
+    </div>
+  );
+}
+
+function NumberInput({
+  value,
+  onChange,
+  unit,
+}: {
+  value?: number;
+  onChange: (v: number | undefined) => void;
+  unit?: string;
+}) {
+  const [localValue, setLocalValue] = useState<string>(value?.toString() ?? "");
+  const [isFocused, setIsFocused] = useState(false);
+
+  useEffect(() => {
+    if (!isFocused) {
+      setLocalValue(value?.toString() ?? "");
+    }
+  }, [value, isFocused]);
+
+  const handleChange = (newValue: string) => {
+    setLocalValue(newValue);
+    if (newValue === "") {
+      onChange(undefined);
+      return;
+    }
+    const num = Number(newValue);
+    if (!isNaN(num)) {
+      onChange(num);
+    }
+  };
+
+  return (
+    <div className="group flex items-center rounded-md bg-background-300 px-2 py-1 transition-all focus-within:ring-1 focus-within:ring-primary-500/50">
+      <input
+        type="number"
+        value={localValue}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+        onChange={(e) => handleChange(e.target.value)}
+        className="w-full border-none bg-transparent font-mono text-xs text-right outline-none text-foreground-200 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+      />
+      {unit && (
+        <span className="ml-1 text-[10px] font-medium text-foreground-500">
+          {unit}
+        </span>
+      )}
+      {value !== undefined && (
+        <button
+          onClick={() => {
+            onChange(undefined);
+            setLocalValue("");
+          }}
+          className="ml-1 text-foreground-500 opacity-0 transition-opacity hover:text-red-400 group-hover:opacity-100"
+          title="Clear"
+        >
+          <X size={10} />
+        </button>
+      )}
+    </div>
+  );
+}
+
+function TextInput({
+  value,
+  onChange,
+}: {
+  value?: string;
+  onChange: (v: string) => void;
+}) {
+  const [localValue, setLocalValue] = useState<string>(value ?? "");
+  const [isFocused, setIsFocused] = useState(false);
+
+  useEffect(() => {
+    if (!isFocused) {
+      setLocalValue(value ?? "");
+    }
+  }, [value, isFocused]);
+
+  const handleChange = (newValue: string) => {
+    setLocalValue(newValue);
+    onChange(newValue);
+  };
+
+  return (
+    <div className="flex w-full items-center rounded-md bg-background-300 px-2 py-1 transition-all focus-within:ring-1 focus-within:ring-primary-500/50">
+      <input
+        type="text"
+        value={localValue}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+        onChange={(e) => handleChange(e.target.value)}
+        className="w-full border-none bg-transparent text-xs text-foreground-200 outline-none"
+      />
+    </div>
+  );
+}
+
+function Select({
+  value,
+  options,
+  onChange,
+}: {
+  value: string;
+  options: string[];
+  onChange: (v: string) => void;
+}) {
+  return (
+    <select
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      className="cursor-pointer rounded-md border-none bg-background-300 px-2 py-1 text-xs text-foreground-200 outline-none transition-colors hover:bg-background-400"
     >
-      <pre>{JSON.stringify(state.context, null, 2)}</pre>
+      {options.map((opt) => (
+        <option key={opt} value={opt}>
+          {opt.charAt(0).toUpperCase() + opt.slice(1)}
+        </option>
+      ))}
+    </select>
+  );
+}
+
+function ColorInput({
+  value,
+  onChange,
+}: {
+  value?: string;
+  onChange: (v: string) => void;
+}) {
+  const [localValue, setLocalValue] = useState<string>(value ?? "");
+  const [isFocused, setIsFocused] = useState(false);
+
+  useEffect(() => {
+    if (!isFocused) {
+      setLocalValue(value ?? "");
+    }
+  }, [value, isFocused]);
+
+  const handleChange = (newValue: string) => {
+    setLocalValue(newValue);
+    onChange(newValue);
+  };
+
+  return (
+    <div className="flex w-full items-center gap-2 rounded-md bg-background-300 px-2 py-1">
+      <div
+        className="h-4 w-4 shrink-0 rounded-sm border border-foreground-500/20"
+        style={{ background: localValue || "transparent" }}
+      />
+      <input
+        type="text"
+        value={localValue}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+        onChange={(e) => handleChange(e.target.value)}
+        className="w-full border-none bg-transparent font-mono text-[10px] text-foreground-200 outline-none"
+        placeholder="#000000"
+      />
     </div>
   );
 }

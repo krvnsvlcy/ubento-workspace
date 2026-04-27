@@ -67,6 +67,7 @@ export type WorkspaceStore = WorkspaceState & {
     element: ElementData,
   ) => Promise<string>;
   deleteElement: (boardId: string, elementId: string) => Promise<void>;
+  setBoardStyle: (boardId: string, style: BoardData["style"]) => void;
 
   // element mutators
   setElementStyle: (id: string, style: ElementData["style"]) => void;
@@ -410,6 +411,9 @@ export function createWorkspaceController({
       },
       deleteElement: async (boardId, elementId) => {
         await rpc?.egress.deleteElement({ boardId, elementId });
+      },
+      setBoardStyle: (boardId, style) => {
+        rpc?.egress.setBoardStyle({ boardId, style });
       },
 
       // element mutators
