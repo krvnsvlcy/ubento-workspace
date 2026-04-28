@@ -26,18 +26,6 @@ export function WorkspaceContent({
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [inspectorWidth, setInspectorWidth] = useState(320);
 
-  const [isNavPinned, setIsNavPinned] = useState(() => {
-    return localStorage.getItem("ubento:nav-pinned") === "true";
-  });
-
-  const toggleNavPinned = () => {
-    setIsNavPinned((prev) => {
-      const next = !prev;
-      localStorage.setItem("ubento:nav-pinned", String(next));
-      return next;
-    });
-  };
-
   if (state.error) {
     return (
       <ErrorView
@@ -102,11 +90,7 @@ export function WorkspaceContent({
         }}
       >
         <div className="h-full w-full relative flex flex-col">
-          <WorkspaceNavigation
-            controller={controller}
-            isPinned={isNavPinned}
-            onTogglePinned={toggleNavPinned}
-          />
+          <WorkspaceNavigation controller={controller} />
           <div
             className="flex-1 relative"
             style={{
