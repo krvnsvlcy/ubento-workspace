@@ -1,7 +1,7 @@
-import { type EngineController } from "@ubento/engine";
+import { type EngineStoreApi } from "@ubento/engine";
 import { useEffect } from "react";
 
-export function useKeyboardController(controller?: EngineController) {
+export function useKeyboardController(controller?: EngineStoreApi) {
   useEffect(() => {
     if (!controller) return;
 

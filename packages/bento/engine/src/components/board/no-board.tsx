@@ -1,18 +1,19 @@
 import { EmptyView, PendingView } from "@ubento/bento-primitives";
 import React, { useEffect, useState } from "react";
-import { useEngineController } from "../../controller.js";
+import { useEngine } from "../../engine.js";
 import { BoardData } from "../../models.js";
 
 export function NoBoard(): React.JSX.Element {
-  const controller = useEngineController();
+  const listBoards = useEngine((s) => s.listBoards);
+  const createBoard = useEngine((s) => s.createBoard);
+  const goTo = useEngine((s) => s.goTo);
+
   const [boards, setBoards] = useState<BoardData[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
 
   useEffect(() => {
-    controller
-      .getState()
-      .listBoards()
+    listBoards()
       .then((res: BoardData[]) => {
         setBoards(res);
         setLoading(false);
@@ -20,14 +21,14 @@ export function NoBoard(): React.JSX.Element {
       .catch(() => {
         setLoading(false);
       });
-  }, [controller]);
+  }, [listBoards]);
 
   const handleCreateBoard = async () => {
     setCreating(true);
     try {
       const name = `Board ${boards.length + 1}`;
-      const newBoard = await controller.getState().createBoard(name);
-      controller.getState().goTo(newBoard.id);
+      const newBoard = await createBoard(name);
+      goTo(newBoard.id);
     } catch (err) {
       console.error("Failed to create board", err);
     } finally {
@@ -73,7 +74,7 @@ export function NoBoard(): React.JSX.Element {
               <button
                 key={board.id}
                 onClick={() => {
-                  controller.getState().goTo(board.id);
+                  goTo(board.id);
                 }}
                 className="group relative flex flex-col items-start p-6 bg-paper border border-background-400 rounded-2xl text-left transition-all hover:border-primary-400 hover:shadow-xl hover:shadow-primary-500/10 hover:-translate-y-1"
               >

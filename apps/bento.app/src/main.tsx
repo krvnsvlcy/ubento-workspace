@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Bento, type BentoHost, type BentoLocation } from "@ubento/bento-app";
+import { Bento, createBentoHost, type BentoHostStoreApi, type BentoLocation } from "@ubento/bento-app";
 import "@ubento/bento-style/css/themes.css";
 import "@ubento/bento-style/dist/uno.css";
 import { UbentoSDK } from "@ubento/sdk";
@@ -79,12 +79,8 @@ function buildUrl(location: BentoLocation): string {
 }
 
 function BentoShell() {
-  const [location, setLocation] = useState<BentoLocation>(() =>
-    parseLocation(window.location.pathname),
-  );
-
-  const host: BentoHost = useMemo(
-    () => ({
+  const host = useMemo(() => {
+    const h = createBentoHost({
       session: {
         userId: user.id,
         teamId: team.id,
@@ -92,13 +88,13 @@ function BentoShell() {
         name: user.name,
         picture: user.picture,
       },
+      location: parseLocation(window.location.pathname),
       ubento: new UbentoSDK({
         baseUrl: "https://api.ubento.pro",
         tokenManager: {
           getToken,
         },
         serviceBaseUrls: {
-          // workspace: "http://localhost:39694",
           module: "http://localhost:28888",
         },
       }),
@@ -108,33 +104,34 @@ function BentoShell() {
         "https://modules.ubento.pro/{moduleId}/{versionId}/index.js",
       componentIframeUrl:
         import.meta.env.VITE_COMPONENT_RUNTIME_URL || "http://localhost:4030",
+    });
+
+    const originalGoToLocation = h.getState().goToLocation;
+    h.setState({
       goToLocation: (loc) => {
         const url = buildUrl(loc);
         if (window.location.pathname !== url) {
           window.history.pushState(null, "", url);
         }
-        setLocation(loc);
+        originalGoToLocation(loc);
       },
-    }),
+    });
 
-    [],
-  );
+    return h;
+  }, []);
 
   useEffect(() => {
     const handlePopState = () => {
-      setLocation(parseLocation(window.location.pathname));
+      host.getState().goToLocation(parseLocation(window.location.pathname));
     };
 
     window.addEventListener("popstate", handlePopState);
-    // initial sync
-    handlePopState();
-
     return () => window.removeEventListener("popstate", handlePopState);
-  }, []);
+  }, [host]);
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Bento host={host} location={location} />
+      <Bento host={host} />
     </QueryClientProvider>
   );
 }

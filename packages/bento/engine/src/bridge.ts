@@ -1,4 +1,4 @@
-import { WorkspaceContext } from "./controller.js";
+import { EngineLocation, EngineMode } from "./engine.js";
 import { BoardData, ElementData, ModuleData, WorkspaceData } from "./models.js";
 
 export type HostRpcInterface = {
@@ -7,7 +7,10 @@ export type HostRpcInterface = {
   ready: (payload: {}) => void; // sent when engine is ready
 
   // interactions
-  updateContext: (update: Partial<WorkspaceContext>) => void;
+  setMode: (payload: { mode: EngineMode }) => void;
+  setLocation: (payload: { location?: EngineLocation }) => void;
+  setSelectionScope: (payload: { selectionScope?: string }) => void;
+  setSelection: (payload: { selection: string[] }) => void;
 
   // content retrieval
   getBoard: (payload: { boardId: string }) => Promise<BoardData>;
@@ -38,11 +41,16 @@ export type GuestRpcInterface = {
   }) => void; // sent to initialize the guest app
 
   // state synchronization (events from host)
-  contextChanged: (payload: { context: WorkspaceContext }) => void;
+  modeChanged: (payload: { mode: EngineMode }) => void;
+  locationChanged: (payload: { location?: EngineLocation }) => void;
+  selectionScopeChanged: (payload: { selectionScope?: string }) => void;
+  selectionChanged: (payload: { selection: string[] }) => void;
 
   // workspace mutators
   setHomeBoardId: (payload: { homeBoardId: string }) => Promise<void>;
-  updateWorkspace: (payload: { workspace: Partial<WorkspaceData> }) => Promise<void>;
+  updateWorkspace: (payload: {
+    workspace: Partial<WorkspaceData>;
+  }) => Promise<void>;
 
   // board mutators
   deleteBoard: (payload: { boardId: string }) => Promise<void>;
@@ -68,11 +76,11 @@ export type GuestRpcInterface = {
     id: string;
     content: string[];
   }) => Promise<void>;
-  setBlockModule: (
-    id: string,
-    moduleId: string,
-    moduleVersionId: string,
-  ) => void;
+  setBlockModule: (payload: {
+    id: string;
+    moduleId: string;
+    moduleVersionId: string;
+  }) => void;
 };
 
 export type ComponentHostRpcInterface = {

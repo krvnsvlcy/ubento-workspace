@@ -17,14 +17,34 @@
         "name": {
           "type": "string"
         },
-        "slug": {
+        "type": {
+          "type": "string"
+        },
+        "summary": {
           "type": "string"
         },
         "latest_version_id": {
-          "type": "string"
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "scope": {
-          "type": "string"
+          "type": "string",
+          "enum": [
+            "public",
+            "private"
+          ]
+        },
+        "files": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
         },
         "version": {
           "type": "integer",
@@ -50,13 +70,14 @@
         "id",
         "team_id",
         "name",
-        "slug",
-        "latest_version_id",
+        "type",
+        "summary",
         "scope",
+        "files",
         "updated_at"
       ]
     },
-    "ModuleVersion": {
+    "ModuleFileRevision": {
       "type": "object",
       "properties": {
         "id": {
@@ -64,9 +85,18 @@
         },
         "entity": {
           "type": "string",
-          "default": "module_version"
+          "default": "module_file_revision"
         },
         "module_id": {
+          "type": "string"
+        },
+        "filename": {
+          "type": "string"
+        },
+        "hash": {
+          "type": "string"
+        },
+        "author_id": {
           "type": "string"
         },
         "version": {
@@ -85,6 +115,52 @@
       "required": [
         "id",
         "module_id",
+        "filename",
+        "hash",
+        "author_id",
+        "updated_at"
+      ]
+    },
+    "ModuleVersion": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "entity": {
+          "type": "string",
+          "default": "module_version"
+        },
+        "module_id": {
+          "type": "string"
+        },
+        "files": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "version": {
+          "type": "integer",
+          "default": 1
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "module_id",
+        "files",
         "updated_at"
       ]
     }
@@ -93,6 +169,9 @@
   "properties": {
     "module": {
       "$ref": "#/definitions/Module"
+    },
+    "moduleFileRevision": {
+      "$ref": "#/definitions/ModuleFileRevision"
     },
     "moduleVersion": {
       "$ref": "#/definitions/ModuleVersion"

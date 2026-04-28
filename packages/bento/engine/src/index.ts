@@ -5,5 +5,5 @@ export * from "./components/elements/block.js";
 export * from "./components/elements/element.js";
 export * from "./components/workspace.js";
 export * from "./constants.js";
-export * from "./controller.js";
+export * from "./engine.js";
 export * from "./models.js";

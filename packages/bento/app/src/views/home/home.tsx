@@ -5,7 +5,6 @@ import { AIModal } from "@/modals/AIModal";
 import { CreateWorkspaceModal } from "@/modals/CreateWorkspaceModal";
 import { SettingsModal } from "@/modals/SettingsModal";
 import { UserSettingsModal } from "@/modals/UserSettingsModal";
-import { motion } from "motion/react";
 import React, { useEffect, useState } from "react";
 import { Header } from "./header";
 import { Sidebar } from "./sidebar";
@@ -65,15 +64,7 @@ export function Home() {
   const closeModal = () => setActiveModal(null);
 
   return (
-    <div className="relative flex min-h-screen justify-center bg-background px-8 py-10 font-sans text-foreground selection:bg-foreground-200 overflow-x-hidden">
-      {/* Background Gradient */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-        className="pointer-events-none absolute inset-x-0 top-0 h-[200px] bg-gradient-to-b from-primary-500/10 dark:from-primary-300/7 to-transparent"
-      />
-
+    <div className="relative flex min-h-screen justify-center px-8 py-10 font-sans text-foreground selection:bg-foreground-200 overflow-x-hidden">
       <div className="relative flex w-full max-w-5xl flex-col">
         <Header
           currentTheme={currentTheme}

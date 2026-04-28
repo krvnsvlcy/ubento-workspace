@@ -5,6 +5,7 @@ import { useStore } from "zustand";
 import { createBuilderController } from "./controller.js";
 import Editor from "@monaco-editor/react";
 import { Code2, Eye, Save } from "lucide-react";
+import { CopilotPanel } from "../../components/copilot/CopilotPanel.js";
 
 export function Builder({ moduleId }: { moduleId: string }) {
   const host = useBentoHost();
@@ -43,33 +44,7 @@ export function Builder({ moduleId }: { moduleId: string }) {
   return (
     <div className="flex h-screen w-full overflow-hidden bg-background-000 text-foreground">
       {/* Sidebar / Context Panel */}
-      <div className="flex w-80 flex-col border-r border-background-300 bg-background-100/50 backdrop-blur-xl">
-        <div className="flex h-14 items-center justify-between border-b border-background-300 px-4">
-          <h2 className="font-semibold text-foreground-100">AI Builder</h2>
-        </div>
-        <div className="flex-1 overflow-y-auto p-4">
-          <div className="flex flex-col gap-4">
-            <div className="rounded-xl border border-background-300 bg-background-200/50 p-3 text-sm text-foreground-400">
-              Tell the AI what you want to build or change in this component.
-            </div>
-            {/* AI Chat Placeholder */}
-            <div className="flex flex-col gap-2">
-              <div className="self-start rounded-2xl bg-background-200 px-4 py-2 text-sm text-foreground-200">
-                How can I help you today?
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="border-t border-background-300 p-4">
-          <div className="relative">
-            <textarea
-              className="w-full resize-none rounded-xl border border-background-400 bg-background-200 px-4 py-2 text-sm text-foreground-100 focus:border-primary-500 focus:outline-none"
-              placeholder="Ask AI to generate code..."
-              rows={3}
-            />
-          </div>
-        </div>
-      </div>
+      <CopilotPanel />
 
       {/* Main Area */}
       <div className="relative flex flex-1 flex-col bg-background-000">

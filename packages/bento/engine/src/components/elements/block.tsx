@@ -1,6 +1,6 @@
 import { ErrorView, PendingView } from "@ubento/bento-primitives";
 import React, { useEffect, useState } from "react";
-import { useEngineController } from "../../controller";
+import { useEngine } from "../../engine";
 import { BlockData, ModuleData } from "../../models";
 import { BaseElement, getBaseStyle } from "./base_element";
 
@@ -11,49 +11,32 @@ export function Block({
   id: string;
   data: BlockData;
 }): React.JSX.Element {
-  const controller = useEngineController();
+  const getModule = useEngine((s) => s.getModule);
+  const resolveModuleValue = useEngine((s) => s.resolveModuleValue);
+  const latestVersionId = useEngine(
+    (s) => s.modules[data.moduleId]?.latestVersionId,
+  );
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [moduleValue, setModuleValue] = useState<any>();
-  const [versionId, setVersionId] = useState<string | undefined>(
-    data.moduleVersionId,
-  );
+
+  const versionId = data.moduleVersionId || latestVersionId;
 
   // resolve module versionId
   useEffect(() => {
-    if (!data.moduleVersionId) {
-      let cleanup: (() => void) | undefined;
-      controller
-        .getState()
-        .getModule(data.moduleId)
-        .then((module: ModuleData) => {
-          setVersionId(module.latestVersionId);
-          cleanup = controller.subscribe((curr, prev) => {
-            if (
-              curr.modules[data.moduleId]?.latestVersionId !==
-              prev.modules[data.moduleId]?.latestVersionId
-            ) {
-              setVersionId(curr.modules[data.moduleId]?.latestVersionId);
-            }
-          });
-        })
-        .catch(() => {
-          setError(true);
-          setLoading(false);
-        });
-
-      return () => {
-        cleanup?.();
-      };
+    if (!data.moduleVersionId && !latestVersionId) {
+      getModule(data.moduleId).catch(() => {
+        setError(true);
+        setLoading(false);
+      });
     }
-  }, [data.moduleId, controller, data.moduleVersionId]);
+  }, [data.moduleId, data.moduleVersionId, latestVersionId, getModule]);
 
   // resolve version value
   useEffect(() => {
     if (!versionId) return;
-    controller
-      .getState()
-      .resolveModuleValue(data.moduleId, versionId)
+    resolveModuleValue(data.moduleId, versionId)
       .then((moduleValue: any) => {
         setModuleValue(moduleValue);
       })
@@ -63,7 +46,7 @@ export function Block({
       .finally(() => {
         setLoading(false);
       });
-  }, [versionId, controller, data.moduleId]);
+  }, [versionId, resolveModuleValue, data.moduleId]);
 
   if (loading) return <PendingView message="Loading component..." />;
   if (error) return <ErrorView message="Failed to load component" />;

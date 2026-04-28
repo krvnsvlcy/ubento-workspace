@@ -4,19 +4,21 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSSProperties, useState } from "react";
-import { useStore } from "zustand";
 import { spacingBaseUnit } from "../../constants";
-import { useEngineController } from "../../controller";
+import { useEngine } from "../../engine";
 import { StackData, StackStyle } from "../../models";
 import { BaseElement, getBaseStyle } from "./base_element";
 
-import { Element } from "./element";
 import { ComponentSelector } from "./component_selector";
+import { Element } from "./element";
 
 export function Stack({ id, data }: { id: string; data: StackData }) {
-  const controller = useEngineController();
-  const snap = useStore(controller);
-  const isEditMode = snap.mode === "edit";
+  const isEditMode = useEngine((s) => s.mode === "edit");
+  const setElementStyle = useEngine((s) => s.setElementStyle);
+  const addElement = useEngine((s) => s.addElement);
+  const getModule = useEngine((s) => s.getModule);
+  const replaceElement = useEngine((s) => s.replaceElement);
+
   const [showMenu, setShowMenu] = useState(false);
 
   const style = data.style;
@@ -38,7 +40,7 @@ export function Stack({ id, data }: { id: string; data: StackData }) {
 
   const onAddStack = (direction: "row" | "column") => {
     // Update current stack style
-    controller.getState().setElementStyle(id, {
+    setElementStyle(id, {
       ...style,
       direction,
       gap: 1,
@@ -46,7 +48,7 @@ export function Stack({ id, data }: { id: string; data: StackData }) {
     } as StackStyle);
 
     // Add 2 colored elements directly to this stack
-    controller.getState().addElement(id, {
+    addElement(id, {
       type: "stack",
       content: [],
       style: {
@@ -57,7 +59,7 @@ export function Stack({ id, data }: { id: string; data: StackData }) {
       },
     });
 
-    controller.getState().addElement(id, {
+    addElement(id, {
       type: "stack",
       content: [],
       style: {
@@ -70,18 +72,15 @@ export function Stack({ id, data }: { id: string; data: StackData }) {
   };
 
   const onSelectComponent = (moduleId: string) => {
-    controller
-      .getState()
-      .getModule(moduleId)
-      .then((m) => {
-        controller.getState().replaceElement(id, {
-          type: "block",
-          moduleId,
-          moduleVersionId: m.latestVersionId,
-          style: data.style as any,
-          props: {},
-        });
+    getModule(moduleId).then((m) => {
+      replaceElement(id, {
+        type: "block",
+        moduleId,
+        moduleVersionId: m.latestVersionId,
+        style: data.style as any,
+        props: {},
       });
+    });
     setShowMenu(false);
   };
 

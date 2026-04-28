@@ -2,6 +2,7 @@ import { TokenManager } from "./lib/token_manager.js";
 import { WorkspaceService } from "./services/workspace.js";
 import { IamService } from "./services/iam.js";
 import { ModuleService } from "./services/module.js";
+import { IntelligenceService } from "./services/intelligence.js";
 
 export interface UbentoSDKOptions {
   /** Global baseUrl fallback for all services */
@@ -14,13 +15,14 @@ export interface UbentoSDKOptions {
 }
 
 /** Union of service keys */
-export type ServiceKey = "iam" | "workspace" | "module";
+export type ServiceKey = "iam" | "workspace" | "module" | "intelligence";
 
 export class UbentoSDK {
   public readonly tokenManager: TokenManager;
   public readonly iam: IamService;
   public readonly workspace: WorkspaceService;
   public readonly module: ModuleService;
+  public readonly intelligence: IntelligenceService;
 
   constructor(options: UbentoSDKOptions) {
     const { baseUrl, serviceBaseUrls = {}, tokenManager } = options;
@@ -35,5 +37,6 @@ export class UbentoSDK {
     this.iam = new IamService(makeConfig("iam"));
     this.workspace = new WorkspaceService(makeConfig("workspace"));
     this.module = new ModuleService(makeConfig("module"));
+    this.intelligence = new IntelligenceService(makeConfig("intelligence"));
   }
 }

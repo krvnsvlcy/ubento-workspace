@@ -3,24 +3,42 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "main": "./build/index.js",
-  "module": "./build/index.js",
-  "types": "./build/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./build/index.d.ts",
-      "import": "./build/index.js"
-    }
-  },
+  "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
-    "watch": "tsc --watch",
-    "dev": "tsx src/index.ts",
-    "deploy": "gcloud run deploy intelligence-service --source ."
+    "build": "tsc --noEmit && esbuild src/index.ts --bundle --platform=node --target=node20 --outfile=dist/index.js --external:@prisma/client",
+    "clean": "rm -rf dist",
+    "start": "node dist/index.js",
+    "dev": "tsx watch src/index.ts",
+    "deploy": "scripts containerize intelligence && scripts deploy intelligence"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@ai-sdk/openai": "^2.0.24",
+    "@ubento/sdk": "workspace:*",
+    "@ubento/primitives": "workspace:*",
+    "@ubento/service-toolkit": "workspace:*",
+    "@ubento/database": "workspace:*",
+    "@google-cloud/storage": "^7.19.0",
+    "ai": "^6.0.111",
+    "cheerio": "^1.0.0",
+    "dotenv": "^16.3.1",
+    "express": "^5",
+    "express-validator": "^7.0.1",
+    "front-matter": "^4.0.2",
+    "http-proxy-middleware": "^3.0.5",
+    "multer": "^2.1.0",
+    "openapi-types": "^12.1.3",
+    "sharp": "^0.34.5",
+    "turndown": "^7.2.0",
+    "zod": "^4.3.6",
+    "zod-from-json-schema": "^0.5.0"
+  },
   "devDependencies": {
-    "typescript": "^5.0.0",
-    "tsx": "^4.0.0"
+    "@types/dotenv": "^8.2.0",
+    "@types/multer": "^2.0.0",
+    "@types/turndown": "^5.0.6",
+    "@types/express": "^5.0.3",
+    "esbuild": "^0.23.0",
+    "tsx": "^4.15.7",
+    "typescript": "^5.0.4"
   }
 }

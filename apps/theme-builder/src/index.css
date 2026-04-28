@@ -1,0 +1,9 @@
+body {
+  background-color: var(--background-100, #ffffff);
+  color: var(--foreground-500, #191919);
+}
+
+.dark body {
+  background-color: var(--background-100, #000000);
+  color: var(--foreground-500, #ffffff);
+}

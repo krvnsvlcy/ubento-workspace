@@ -1,0 +1,73 @@
+generator client {
+    provider      = "prisma-client-js"
+    binaryTargets = ["native", "debian-openssl-3.0.x"]
+    output        = "./generated/intelligence"
+}
+
+generator jsonSchema {
+    provider                 = "prisma-json-schema-generator"
+    output                   = "../src/schemas/intelligence"
+    keepRelationFields       = "false"
+    keepRelationScalarFields = "true"
+    includeRequiredFields    = "true"
+}
+
+datasource db {
+    provider = "mongodb"
+    url      = env("INTELLIGENCE_DATABASE_URL")
+}
+
+model Thread {
+    id              String   @id @map("_id")
+    entity          String   @default("intelligence_thread")
+    organization_id String
+    workspace_id    String
+
+    title           String?
+    status          String
+    context Json?
+    message Message[]
+
+    version    Int      @default(1) @db.Long
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+    last_message_at DateTime @default(now())
+
+    @@map("threads")
+}
+
+model Message {
+    id        String @id @map("_id")
+    entity    String @default("intelligence_message")
+    organization_id String
+    workspace_id    String
+    thread_id String
+    thread    Thread @relation(fields: [thread_id], references: [id])
+
+    role    String
+    author  String?
+    data    Json
+    error   String?
+
+    version    Int      @default(1) @db.Long
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+
+    @@map("messages")
+}
+
+model File {
+    id           String   @id @map("_id")
+    entity       String   @default("intelligence_file")  
+    workspace_id String
+    
+    name         String
+    type         String
+    size         Int
+    
+    version      Int      @default(1) @db.Long
+    created_at   DateTime @default(now())
+    updated_at   DateTime @updatedAt
+
+    @@map("files")
+}

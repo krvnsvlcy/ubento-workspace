@@ -24,7 +24,14 @@
       "output": "./src/clients/module",
       "clientName": "createModuleServiceClient",
       "clean": true,
-      "host": "http://localhost:28888",
+      "host": "http://localhost:28888"
     },
-  ],
+    {
+      "service": "intelligence-service",
+      "output": "./src/clients/intelligence",
+      "clientName": "createIntelligenceServiceClient",
+      "clean": true,
+      "host": "http://localhost:44513"
+    }
+  ]
 }

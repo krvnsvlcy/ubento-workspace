@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useStore } from "zustand";
 import { baseLengthUnit, spacingBaseUnit } from "../../constants";
-import { useEngineController } from "../../controller";
+import { useEngine } from "../../engine";
 import { ElementData } from "../../models";
 
 type ResizeDirection =
@@ -114,17 +113,17 @@ export function BoxHandle({
   id: string;
   element: ElementData;
 }) {
-  const controller = useEngineController();
-  const controllerStateSnap = useStore(controller);
+  const setElementStyle = useEngine((e) => e.setElementStyle);
+  const select = useEngine((e) => e.select);
+  const isSelected = useEngine((e) => e.selection?.includes(id));
+  const isEditMode = useEngine((e) => e.mode === "edit");
+
   const [dragType, setDragType] = useState<ResizeDirection | null>(null);
   const [dragStart, setDragStart] = useState<{
     x: number;
     y: number;
     initialStyle: any;
   } | null>(null);
-
-  const isSelected = controllerStateSnap.selection?.includes(id);
-  const isEditMode = controllerStateSnap.mode === "edit";
 
   useEffect(() => {
     if (!dragType || !dragStart) return;
@@ -173,7 +172,7 @@ export function BoxHandle({
           ([key, value]) => currentStyle[key] !== value,
         );
         if (hasChanged) {
-          controller.getState().setElementStyle(id, styleUpdates);
+          setElementStyle(id, styleUpdates);
         }
       }
     };
@@ -190,7 +189,7 @@ export function BoxHandle({
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("mouseup", onMouseUp);
     };
-  }, [dragType, dragStart, element, id, controller]);
+  }, [dragType, dragStart, element, id]);
 
   if (!isEditMode) return null;
 
@@ -212,7 +211,7 @@ export function BoxHandle({
     <div
       onClick={(e) => {
         e.stopPropagation();
-        controller.getState().select([id], e.shiftKey);
+        select([id], e.shiftKey);
       }}
       style={{
         position: "absolute",

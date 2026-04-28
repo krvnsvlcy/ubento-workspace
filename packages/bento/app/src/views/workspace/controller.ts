@@ -6,11 +6,11 @@ import {
   BoardData,
   boardDataSchema,
   ElementData,
+  EngineLocation,
   EngineMode,
   GuestRpcInterface,
   HostRpcInterface,
   ModuleData,
-  WorkspaceContext,
   WorkspaceData,
   workspaceDataSchema,
 } from "@ubento/engine";
@@ -31,7 +31,12 @@ export type WorkspaceState = {
   error: boolean;
 
   // context
-  context: WorkspaceContext;
+  context: {
+    mode: EngineMode;
+    location?: EngineLocation;
+    selectionScope?: string;
+    selection: string[];
+  };
 
   // rpc
   connected: boolean; // the iframe has established communication
@@ -86,13 +91,11 @@ export type WorkspaceStore = WorkspaceState & {
 export type WorkspaceController = StoreApi<WorkspaceStore>;
 
 export function createWorkspaceController({
-  initialState,
   ubento,
   queryClient,
   host,
   slug,
 }: {
-  initialState?: Partial<WorkspaceState>;
   ubento: UbentoSDK;
   queryClient: QueryClient;
   host: BentoHost;
@@ -113,7 +116,6 @@ export function createWorkspaceController({
       workspace: null,
       boards: {},
       modules: {},
-      ...initialState,
 
       connect: (target: Window) => {
         rpc = createDuplexRpc<HostRpcInterface, GuestRpcInterface>({
@@ -273,9 +275,32 @@ export function createWorkspaceController({
                 latestVersionId: res.latest_version_id,
               };
             },
-            updateContext: (update) => {
+            setMode: ({ mode }) => {
               set((s) => {
-                Object.assign(s.context, update);
+                s.context.mode = mode;
+              });
+            },
+            setLocation: ({ location }) => {
+              if (location) {
+                host.goToLocation({
+                  view: "workspace",
+                  params: {
+                    slug,
+                    boardId: location.boardId,
+                  },
+                });
+              } else {
+                host.goToLocation({ view: "workspace", params: { slug } });
+              }
+            },
+            setSelectionScope: ({ selectionScope }) => {
+              set((s) => {
+                s.context.selectionScope = selectionScope;
+              });
+            },
+            setSelection: ({ selection }) => {
+              set((s) => {
+                s.context.selection = selection;
               });
             },
 
@@ -484,9 +509,19 @@ export function createWorkspaceController({
   );
 
   store.subscribe((curr, prev) => {
-    console.log(`[controlle] changed`);
-    if (!dequal(curr.context, prev.context)) {
-      rpc?.egress.contextChanged({ context: curr.context });
+    if (curr.context.mode !== prev.context.mode) {
+      rpc?.egress.modeChanged({ mode: curr.context.mode });
+    }
+    if (!dequal(curr.context.location, prev.context.location)) {
+      rpc?.egress.locationChanged({ location: curr.context.location });
+    }
+    if (curr.context.selectionScope !== prev.context.selectionScope) {
+      rpc?.egress.selectionScopeChanged({
+        selectionScope: curr.context.selectionScope,
+      });
+    }
+    if (!dequal(curr.context.selection, prev.context.selection)) {
+      rpc?.egress.selectionChanged({ selection: curr.context.selection });
     }
   });
 

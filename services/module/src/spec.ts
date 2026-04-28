@@ -205,6 +205,7 @@ export const spec: OpenAPIV3.Document = {
           },
         },
       },
+    },
     "/modules/{module_id}/files/{filename}": {
       put: {
         summary: "Update Module File",

@@ -1,8 +1,7 @@
 import { ErrorView, PendingView } from "@ubento/bento-primitives";
 import React, { useEffect, useState } from "react";
-import { useStore } from "zustand";
 import { spacingBaseUnit } from "../../constants.js";
-import { useEngineController } from "../../controller.js";
+import { useEngine } from "../../engine.js";
 import { BoardStyle } from "../../models.js";
 import { Element, ElementRegistryProvider } from "../elements/element.js";
 
@@ -37,8 +36,8 @@ function getBoardStyle(style: BoardStyle = {}): React.CSSProperties {
 }
 
 function BoardContent({ boardId }: { boardId: string }): React.JSX.Element {
-  const controller = useEngineController();
-  const board = useStore(controller, (s) => s.boards[boardId]);
+  const select = useEngine((s) => s.select);
+  const board = useEngine((s) => s.boards[boardId]);
 
   if (!board) return <></>;
 
@@ -48,7 +47,7 @@ function BoardContent({ boardId }: { boardId: string }): React.JSX.Element {
     <ElementRegistryProvider registry={board.elements as any}>
       <div
         onClick={() => {
-          controller.getState().select([]);
+          select([]);
         }}
         style={getBoardStyle(board.style)}
       >
@@ -64,14 +63,12 @@ export function Board({
   id: string;
   params?: Record<string, any>;
 }): React.JSX.Element {
-  const controller = useEngineController();
+  const getBoard = useEngine((s) => s.getBoard);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    controller
-      .getState()
-      .getBoard(id)
+    getBoard(id)
       .then(() => {
         // Data is now in controller.state
       })
@@ -81,7 +78,7 @@ export function Board({
       .finally(() => {
         setLoading(false);
       });
-  }, [id, controller]);
+  }, [id, getBoard]);
 
   if (loading) return <PendingView message="Loading board..." />;
   if (error) return <ErrorView message="Failed to load board" />;

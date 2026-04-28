@@ -21,12 +21,18 @@ export type BentoSession = {
   picture?: string;
 };
 
-export interface BentoHost {
+export type BentoHostState = {
   session: BentoSession;
+  location: BentoLocation;
   ubento: UbentoSDK;
   iframeUrl: string;
   componentIframeUrl: string;
   moduleUrlTemplate: string;
+};
+
+export type BentoHostStore = BentoHostState & {
   // navigation
   goToLocation: (location: BentoLocation) => void;
-}
+};
+
+export type BentoHost = BentoHostStore;

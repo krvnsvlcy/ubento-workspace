@@ -67,14 +67,16 @@ export function WorkspaceContent({
   return (
     <div
       className="h-screen w-screen relative overflow-hidden"
-      style={{
-        padding: isEditMode ? "6px" : "0px",
-        background: isEditMode
-          ? `color-mix(in srgb, #0f172a 40%, ${background})`
-          : background,
-        transition: "background 0.3s ease-in-out, padding 0.2s ease-in-out",
-        "--page-background": background,
-      }}
+      style={
+        {
+          padding: isEditMode ? "6px" : "0px",
+          background: isEditMode
+            ? `color-mix(in srgb, #0f172a 40%, ${background})`
+            : background,
+          transition: "background 0.3s ease-in-out, padding 0.2s ease-in-out",
+          "--page-background": background,
+        } as any
+      }
     >
       <SideSplitView
         side={{

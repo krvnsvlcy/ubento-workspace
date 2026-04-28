@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from "react";
-import { useEngineController } from "../../controller";
+import { useEffect, useRef, useState } from "react";
+import { useEngine } from "../../engine";
 
 export function ComponentSelector({
   onSelect,
@@ -7,7 +7,8 @@ export function ComponentSelector({
   onSelect: (moduleId: string) => void;
   onClose: () => void;
 }) {
-  const controller = useEngineController();
+  const searchModules = useEngine((s) => s.searchModules);
+  const createModule = useEngine((s) => s.createModule);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<{ id: string; name: string }[]>([]);
   const [loading, setLoading] = useState(false);
@@ -25,7 +26,7 @@ export function ComponentSelector({
       }
       setLoading(true);
       try {
-        const res = await controller.getState().searchModules(query);
+        const res = await searchModules(query);
         setResults(res);
       } catch (err) {
         console.error("Search failed", err);
@@ -36,13 +37,13 @@ export function ComponentSelector({
 
     const timer = setTimeout(search, 300);
     return () => clearTimeout(timer);
-  }, [query, controller]);
+  }, [query, searchModules]);
 
   const onCreate = async () => {
     if (!query.trim()) return;
     setLoading(true);
     try {
-      const res = await controller.getState().createModule(query);
+      const res = await createModule(query);
       onSelect(res.id);
     } catch (err) {
       console.error("Creation failed", err);
@@ -122,7 +123,9 @@ export function ComponentSelector({
             onMouseOver={(e) =>
               (e.currentTarget.style.background = "rgba(255,255,255,0.08)")
             }
-            onMouseOut={(e) => (e.currentTarget.style.background = "transparent")}
+            onMouseOut={(e) =>
+              (e.currentTarget.style.background = "transparent")
+            }
           >
             <div style={{ fontWeight: "600" }}>{res.name}</div>
             <div style={{ fontSize: "10px", color: "rgba(255,255,255,0.4)" }}>

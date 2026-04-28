@@ -1,31 +1,22 @@
 import React from "react";
 import { useStore } from "zustand";
-import { EngineController, EngineControllerContext } from "../controller.js";
-import { WorkspaceData } from "../models.js";
+import { EngineContext, EngineStoreApi } from "../engine.js";
 import { Board } from "./board/board.js";
 import { NoBoard } from "./board/no-board.js";
 
 export function Workspace({
-  workspace,
-  controller,
+  engine,
 }: {
-  workspace: WorkspaceData;
-  controller: EngineController;
+  engine: EngineStoreApi;
 }): React.JSX.Element {
-  const snap = useStore(controller);
+  const location = useStore(engine, (s) => s.location);
   let content = <></>;
 
-  if (snap.location?.boardId) {
-    content = (
-      <Board id={snap.location.boardId} params={snap.location.params || {}} />
-    );
+  if (location?.boardId) {
+    content = <Board id={location.boardId} params={location.params || {}} />;
   } else {
     content = <NoBoard />;
   }
 
-  return (
-    <EngineControllerContext value={controller}>
-      {content}
-    </EngineControllerContext>
-  );
+  return <EngineContext value={engine}>{content}</EngineContext>;
 }
