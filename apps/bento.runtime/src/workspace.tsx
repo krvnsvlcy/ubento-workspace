@@ -5,13 +5,17 @@ import {
   type WorkspaceData,
 } from "@ubento/engine";
 import { useEffect, useState } from "react";
+import { useStore } from "zustand";
 import { useKeyboardController } from "./keyboard.js";
 import { rpc } from "./rpc.js";
 import { createEngineController } from "./state.js";
 
 const controller = createEngineController();
+const searchParams = new URLSearchParams(window.location.search);
+const editPaddingSize = searchParams.get("editPaddingSize");
 
 export function GuestWorkspace() {
+  const isEditMode = useStore(controller, (state) => state.mode === "edit");
   useKeyboardController(controller as EngineController);
   const [workspace, setWorkspace] = useState<WorkspaceData | null>(null);
 
@@ -83,6 +87,8 @@ export function GuestWorkspace() {
         height: "100vh",
         width: "100vw",
         overflow: "hidden",
+        "--root-padding": isEditMode ? editPaddingSize : undefined,
+        transition: "padding 0.2s",
       }}
     >
       {content}

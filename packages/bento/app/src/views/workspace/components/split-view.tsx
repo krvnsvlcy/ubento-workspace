@@ -2,6 +2,8 @@ import React, { PropsWithChildren, useEffect, useState } from "react";
 
 export function SideSplitView({
   side,
+  padding,
+  gap,
   children,
 }: PropsWithChildren<{
   side: {
@@ -12,6 +14,8 @@ export function SideSplitView({
     minSize?: number;
     maxSize?: number;
   };
+  padding?: number;
+  gap?: number;
 }>) {
   const [isDragging, setIsDragging] = useState(false);
 
@@ -90,6 +94,8 @@ export function SideSplitView({
         height: "100%",
         overflow: "hidden",
         flexDirection: "row",
+        padding,
+        gap,
       }}
     >
       {side.edge === "left" && (

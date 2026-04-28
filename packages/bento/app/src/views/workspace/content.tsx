@@ -1,6 +1,6 @@
 import { ErrorView } from "@/components/error";
 import { useBentoHost } from "@/contexts/host";
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useStore } from "zustand";
 import { SideSplitView } from "./components/split-view.js";
 import { WorkspaceController } from "./controller.js";
@@ -12,6 +12,15 @@ export function WorkspaceContent({
 }: {
   controller: WorkspaceController;
 }) {
+  const isEditMode = useStore(
+    controller,
+    (state) => state.context.mode === "edit",
+  );
+  const background = useStore(controller, (state) => {
+    const activeBoardId = state.context.location?.boardId;
+    const boardData = activeBoardId ? state.boards[activeBoardId] : null;
+    return boardData?.style?.background;
+  });
   const state = useStore(controller);
   const host = useBentoHost();
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -41,26 +50,44 @@ export function WorkspaceContent({
     );
   }
 
+  const iframeUrl = useMemo(() => {
+    const url = new URL(host.iframeUrl);
+    url.searchParams.set("editPaddingSize", "6px");
+    return url.toString();
+  }, [host.iframeUrl]);
+
   const engine = (
     <iframe
       ref={iframeRef}
-      src={host.iframeUrl}
+      src={iframeUrl}
       onLoad={() => {
         if (iframeRef.current?.contentWindow) {
           controller.getState().connect(iframeRef.current.contentWindow);
         }
       }}
+      className="rounded-2xl"
       style={{
         height: "100%",
         width: "100%",
         border: "none",
         outline: "none",
+        overflow: "hidden",
       }}
     />
   );
 
   return (
-    <div className="h-screen w-screen relative overflow-hidden bg-background">
+    <div
+      className="h-screen w-screen relative overflow-hidden"
+      style={{
+        padding: isEditMode ? "6px" : "0px",
+        background: isEditMode
+          ? `color-mix(in srgb, #0f172a 40%, ${background})`
+          : background,
+        transition: "background 0.3s ease-in-out, padding 0.2s ease-in-out",
+        "--page-background": background,
+      }}
+    >
       <SideSplitView
         side={{
           edge: "right",
@@ -80,7 +107,15 @@ export function WorkspaceContent({
             isPinned={isNavPinned}
             onTogglePinned={toggleNavPinned}
           />
-          <div className="flex-1 relative">{engine}</div>
+          <div
+            className="flex-1 relative"
+            style={{
+              padding: isEditMode ? 6 : 0,
+              transition: "padding 0.2s ease-in-out",
+            }}
+          >
+            {engine}
+          </div>
         </div>
       </SideSplitView>
     </div>

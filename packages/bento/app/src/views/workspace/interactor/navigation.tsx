@@ -30,11 +30,12 @@ export function WorkspaceNavigation({
 
   const navContent = (
     <div
-      className={`mx-auto flex h-14 w-full items-center justify-between px-4 transition-all ${
-        isPinned
-          ? "border-b border-white/5 bg-transparent"
-          : "max-w-5xl rounded-2xl border border-white/10 bg-background-300/80 shadow-2xl backdrop-blur-xl"
+      className={`mx-auto flex h-14 w-full items-center justify-between px-4 transition-all rounded-2xl bg-background-100/70 ${
+        isPinned ? "" : "max-w-5xl shadow-2xl backdrop-blur-xl"
       }`}
+      style={{
+        background: "var(--page-background)",
+      }}
     >
       <div className="flex items-center gap-4">
         <button
@@ -105,9 +106,9 @@ export function WorkspaceNavigation({
       <motion.div
         initial={false}
         animate={{
-          height: isPinned ? 56 : 0,
+          height: isPinned ? 68 : 0,
           opacity: isPinned ? 1 : 0,
-          marginBottom: isPinned ? 0 : 0,
+          padding: isPinned ? 6 : 0,
         }}
         transition={{ duration: 0.2, ease: "easeInOut" }}
         className="relative z-[200] w-full overflow-hidden"

@@ -3,3 +3,7 @@
 @import "./themes/sunset.css";
 @import "./themes/forest.css";
 @import "./themes/carbon.css";
+
+* {
+  scrollbar-width: none;
+}

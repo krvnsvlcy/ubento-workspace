@@ -6,22 +6,33 @@ import { useEngineController } from "../../controller.js";
 import { BoardStyle } from "../../models.js";
 import { Element, ElementRegistryProvider } from "../elements/element.js";
 
+function paddingStyle(padding: BoardStyle["padding"]) {
+  const sidePadding = (value?: number) =>
+    `calc(${(value || 0) * spacingBaseUnit}px + var(--root-padding, 0px))`;
+
+  return [
+    sidePadding(padding?.top),
+    sidePadding(padding?.right),
+    sidePadding(padding?.bottom),
+    sidePadding(padding?.left),
+  ].join(" ");
+}
+
 function getBoardStyle(style: BoardStyle = {}): React.CSSProperties {
   return {
     position: "relative",
-    width: "100vw",
-    height: "100vh",
+    width: "100%",
+    height: "100%",
     backgroundColor: style.background,
     display: "flex",
     alignContent: "start",
     flexDirection: style.direction || "row",
     flexWrap: "wrap",
     gap: style.gap ? `${style.gap * spacingBaseUnit}px` : undefined,
-    padding: style.padding
-      ? `${(style.padding.top || 0) * spacingBaseUnit}px ${(style.padding.right || 0) * spacingBaseUnit}px ${(style.padding.bottom || 0) * spacingBaseUnit}px ${(style.padding.left || 0) * spacingBaseUnit}px`
-      : undefined,
     overflow: style.direction === "row" ? "hidden auto" : "auto hidden",
     pointerEvents: "auto",
+    padding: paddingStyle(style.padding),
+    transition: "padding 0.2s",
   };
 }
 

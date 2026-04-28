@@ -105,7 +105,7 @@ export function createWorkspaceController({
       loading: false,
       error: false,
       context: {
-        mode: "edit",
+        mode: "live",
         selection: [],
       },
       connected: false,

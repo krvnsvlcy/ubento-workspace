@@ -219,9 +219,7 @@ export function BoxHandle({
         inset: 0,
         zIndex: 10,
         cursor: isSelected ? "default" : "pointer",
-        boxShadow: isSelected
-          ? "0 0 0 2px #3b82f6"
-          : "0 0 0 1px rgba(59, 130, 246, 0.3)",
+        boxShadow: isSelected ? "0 0 0 2px #3b82f6" : "none",
         borderRadius: element.style?.cornerRadius
           ? `${element.style.cornerRadius * spacingBaseUnit}px`
           : undefined,

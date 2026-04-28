@@ -14,7 +14,6 @@ import {
   Code2,
   Eye,
   Globe,
-  Home,
   Layers,
   Layout,
   Palette,
@@ -35,20 +34,22 @@ export function ControlPanel({
   controller: WorkspaceController;
 }) {
   const state = useStore(controller);
-  const [activeTab, setActiveTab] = useState<"context" | "workspace">("context");
+  const [activeTab, setActiveTab] = useState<"context" | "workspace">(
+    "context",
+  );
   const currentBoardId = state.context.location?.boardId;
   const board = currentBoardId ? state.boards[currentBoardId] : null;
   const selectedId = state.context.selection?.[0];
   const element = selectedId && board ? board.elements[selectedId] : null;
 
   const renderTabs = () => (
-    <div className="flex border-b border-background-300 bg-background-200 p-1">
+    <div className="flex p-1">
       <button
         onClick={() => setActiveTab("context")}
         className={`flex flex-1 items-center justify-center gap-2 rounded-md py-1.5 text-[10px] font-bold uppercase tracking-wider transition-all ${
           activeTab === "context"
-            ? "bg-background-100 text-primary-500 shadow-sm"
-            : "text-foreground-500 hover:bg-background-100/50 hover:text-foreground-300"
+            ? "text-primary-500"
+            : "text-foreground-500 hover:text-foreground-300"
         }`}
       >
         <Layout size={12} />
@@ -58,8 +59,8 @@ export function ControlPanel({
         onClick={() => setActiveTab("workspace")}
         className={`flex flex-1 items-center justify-center gap-2 rounded-md py-1.5 text-[10px] font-bold uppercase tracking-wider transition-all ${
           activeTab === "workspace"
-            ? "bg-background-100 text-primary-500 shadow-sm"
-            : "text-foreground-500 hover:bg-background-100/50 hover:text-foreground-300"
+            ? "text-primary-500"
+            : "text-foreground-500 hover:text-foreground-300"
         }`}
       >
         <Globe size={12} />
@@ -68,38 +69,120 @@ export function ControlPanel({
     </div>
   );
 
-  if (activeTab === "workspace") {
-    return (
-      <div className="flex h-full flex-col border-l border-background-300 bg-background-100">
-        {renderTabs()}
-        <div className="flex-1 overflow-y-auto">
-          <WorkspaceSettings controller={controller} />
-        </div>
-      </div>
-    );
-  }
-
-  if (!element) {
-    if (!board) {
+  const renderContent = () => {
+    if (activeTab === "workspace") {
       return (
-        <div className="flex h-full flex-col items-center justify-center gap-4 p-8 text-center text-foreground-400">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-background-200">
-            <Eye size={24} />
-          </div>
-          <div>
-            <h3 className="text-sm font-bold text-foreground">No selection</h3>
-            <p className="mt-1 text-xs">
-              Select an element on the board to edit its properties.
-            </p>
+        <div className="flex h-full flex-col">
+          {renderTabs()}
+          <div className="flex-1 overflow-y-auto">
+            <WorkspaceSettings controller={controller} />
           </div>
         </div>
       );
     }
 
-    const updateBoardStyle = (style: Partial<BoardStyle>) => {
-      if (!currentBoardId) return;
-      controller.getState().setBoardStyle(currentBoardId, {
-        ...board.style,
+    if (!element) {
+      if (!board) {
+        return (
+          <div className="flex h-full flex-col items-center justify-center gap-4 p-8 text-center text-foreground-400">
+            <div className="flex h-16 w-16 items-center justify-center rounded-full">
+              <Eye size={24} />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-foreground">
+                No selection
+              </h3>
+              <p className="mt-1 text-xs">
+                Select an element on the board to edit its properties.
+              </p>
+            </div>
+          </div>
+        );
+      }
+
+      const updateBoardStyle = (style: Partial<BoardStyle>) => {
+        if (!currentBoardId) return;
+        controller.getState().setBoardStyle(currentBoardId, {
+          ...board.style,
+          ...style,
+        });
+      };
+
+      const handleAddElement = (containerId: string) => {
+        if (!currentBoardId) return;
+        controller.getState().addElement(currentBoardId, containerId, {
+          type: "stack",
+          content: [],
+          style: {
+            width: 100,
+            height: 100,
+            background: "#3939dc44",
+            cornerRadius: 12,
+          },
+        });
+      };
+
+      return (
+        <div className="flex h-full flex-col">
+          {renderTabs()}
+          <BoardHeader
+            board={board}
+            onAddElement={() => handleAddElement("root")}
+          />
+          <div className="flex-1 overflow-y-auto pb-8">
+            <Section title="Layout" icon={Layout}>
+              <PropertyRow label="Direction">
+                <Select
+                  value={board.style?.direction || "column"}
+                  options={["row", "column"]}
+                  onChange={(v) => updateBoardStyle({ direction: v as any })}
+                />
+              </PropertyRow>
+              <PropertyRow label="Gap">
+                <NumberInput
+                  value={board.style?.gap}
+                  onChange={(v) => updateBoardStyle({ gap: v })}
+                  unit="px"
+                />
+              </PropertyRow>
+            </Section>
+            <Section title="Appearance" icon={Palette}>
+              <PropertyRow label="Background">
+                <ColorInput
+                  value={board.style?.background}
+                  onChange={(v) => updateBoardStyle({ background: v })}
+                />
+              </PropertyRow>
+              <PaddingControl
+                value={board.style?.padding}
+                onChange={(v) => updateBoardStyle({ padding: v })}
+              />
+            </Section>
+
+            <Section title="Settings" icon={Settings2}>
+              <PropertyRow label="Board ID">
+                <span className="font-mono text-[10px] text-foreground-500">
+                  {board.id}
+                </span>
+              </PropertyRow>
+              <PropertyRow label="Name">
+                <TextInput
+                  value={board.name}
+                  onChange={(v) => {
+                    // We might need a setBoardName action too, but for now just showing it
+                  }}
+                />
+              </PropertyRow>
+            </Section>
+          </div>
+        </div>
+      );
+    }
+
+    const updateStyle = (style: Partial<BaseStyle | StackStyle>) => {
+      if (!selectedId || !element) return;
+      controller.getState().setElementStyle(selectedId, {
+        ...element.style,
         ...style,
       });
     };
@@ -119,213 +202,150 @@ export function ControlPanel({
     };
 
     return (
-      <div className="flex h-full flex-col border-l border-background-300 bg-background-100">
+      <div className="flex h-full flex-col">
         {renderTabs()}
-        <BoardHeader
-          board={board}
-          onAddElement={() => handleAddElement("root")}
+        <PanelHeader
+          element={element}
+          id={selectedId!}
+          onAddElement={() => handleAddElement(selectedId!)}
         />
+
         <div className="flex-1 overflow-y-auto pb-8">
           <Section title="Layout" icon={Layout}>
-            <PropertyRow label="Direction">
-              <Select
-                value={board.style?.direction || "column"}
-                options={["row", "column"]}
-                onChange={(v) => updateBoardStyle({ direction: v as any })}
-              />
-            </PropertyRow>
-            <PropertyRow label="Gap">
+            <PropertyRow label="Width">
               <NumberInput
-                value={board.style?.gap}
-                onChange={(v) => updateBoardStyle({ gap: v })}
+                value={element.style?.width}
+                onChange={(v) => updateStyle({ width: v })}
                 unit="px"
               />
             </PropertyRow>
+            <PropertyRow label="Height">
+              <NumberInput
+                value={element.style?.height}
+                onChange={(v) => updateStyle({ height: v })}
+                unit="px"
+              />
+            </PropertyRow>
+            <PropertyRow label="Flex">
+              <NumberInput
+                value={element.style?.flex}
+                onChange={(v) => updateStyle({ flex: v })}
+              />
+            </PropertyRow>
+            {element.type === "stack" && (
+              <>
+                <PropertyRow label="Direction">
+                  <Select
+                    value={element.style.direction || "column"}
+                    options={["row", "column"]}
+                    onChange={(v) => updateStyle({ direction: v as any })}
+                  />
+                </PropertyRow>
+                <PropertyRow label="Gap">
+                  <NumberInput
+                    value={element.style.gap}
+                    onChange={(v) => updateStyle({ gap: v })}
+                    unit="px"
+                  />
+                </PropertyRow>
+                <PropertyRow label="Justify">
+                  <Select
+                    value={element.style.justify || "start"}
+                    options={[
+                      "start",
+                      "end",
+                      "center",
+                      "space-between",
+                      "space-around",
+                    ]}
+                    onChange={(v) => updateStyle({ justify: v as any })}
+                  />
+                </PropertyRow>
+              </>
+            )}
           </Section>
+
           <Section title="Appearance" icon={Palette}>
             <PropertyRow label="Background">
               <ColorInput
-                value={board.style?.background}
-                onChange={(v) => updateBoardStyle({ background: v })}
+                value={element.style?.background}
+                onChange={(v) => updateStyle({ background: v })}
+              />
+            </PropertyRow>
+            <PropertyRow label="Corner Radius">
+              <NumberInput
+                value={element.style?.cornerRadius}
+                onChange={(v) => updateStyle({ cornerRadius: v })}
+                unit="px"
+              />
+            </PropertyRow>
+            <PropertyRow label="Border Width">
+              <NumberInput
+                value={element.style?.borderWidth}
+                onChange={(v) => updateStyle({ borderWidth: v })}
+                unit="px"
+              />
+            </PropertyRow>
+            <PropertyRow label="Border Color">
+              <ColorInput
+                value={element.style?.borderColor}
+                onChange={(v) => updateStyle({ borderColor: v })}
               />
             </PropertyRow>
             <PaddingControl
-              value={board.style?.padding}
-              onChange={(v) => updateBoardStyle({ padding: v })}
+              value={element.style?.padding}
+              onChange={(v) => updateStyle({ padding: v })}
             />
           </Section>
 
+          {element.type === "block" && (
+            <ModuleSection
+              element={element as BlockData}
+              selectedId={selectedId!}
+              controller={controller}
+            />
+          )}
+
           <Section title="Settings" icon={Settings2}>
-            <PropertyRow label="Board ID">
+            <PropertyRow label="ID">
               <span className="font-mono text-[10px] text-foreground-500">
-                {board.id}
+                {selectedId}
               </span>
             </PropertyRow>
-            <PropertyRow label="Name">
-              <TextInput
-                value={board.name}
-                onChange={(v) => {
-                  // We might need a setBoardName action too, but for now just showing it
-                }}
-              />
+            <PropertyRow label="Type">
+              <span className="text-[10px] font-bold uppercase text-foreground-500">
+                {element.type}
+              </span>
             </PropertyRow>
+            <div className="mt-4 px-4">
+              <button
+                onClick={() =>
+                  currentBoardId &&
+                  selectedId &&
+                  controller
+                    .getState()
+                    .deleteElement(currentBoardId, selectedId)
+                }
+                className="w-full rounded-md py-2 text-[10px] font-bold uppercase tracking-wider text-red-500 transition-colors"
+              >
+                Delete Element
+              </button>
+            </div>
           </Section>
         </div>
       </div>
     );
-  }
-
-  const updateStyle = (style: Partial<BaseStyle | StackStyle>) => {
-    if (!selectedId || !element) return;
-    controller.getState().setElementStyle(selectedId, {
-      ...element.style,
-      ...style,
-    });
-  };
-
-  const handleAddElement = (containerId: string) => {
-    if (!currentBoardId) return;
-    controller.getState().addElement(currentBoardId, containerId, {
-      type: "stack",
-      content: [],
-      style: {
-        width: 100,
-        height: 100,
-        background: "#3939dc44",
-        cornerRadius: 12,
-      },
-    });
   };
 
   return (
-    <div className="flex h-full flex-col border-l border-background-300 bg-background-100">
-      {renderTabs()}
-      <PanelHeader
-        element={element}
-        id={selectedId!}
-        onAddElement={() => handleAddElement(selectedId!)}
-      />
-
-      <div className="flex-1 overflow-y-auto pb-8">
-        <Section title="Layout" icon={Layout}>
-          <PropertyRow label="Width">
-            <NumberInput
-              value={element.style?.width}
-              onChange={(v) => updateStyle({ width: v })}
-              unit="px"
-            />
-          </PropertyRow>
-          <PropertyRow label="Height">
-            <NumberInput
-              value={element.style?.height}
-              onChange={(v) => updateStyle({ height: v })}
-              unit="px"
-            />
-          </PropertyRow>
-          <PropertyRow label="Flex">
-            <NumberInput
-              value={element.style?.flex}
-              onChange={(v) => updateStyle({ flex: v })}
-            />
-          </PropertyRow>
-          {element.type === "stack" && (
-            <>
-              <PropertyRow label="Direction">
-                <Select
-                  value={element.style.direction || "column"}
-                  options={["row", "column"]}
-                  onChange={(v) => updateStyle({ direction: v as any })}
-                />
-              </PropertyRow>
-              <PropertyRow label="Gap">
-                <NumberInput
-                  value={element.style.gap}
-                  onChange={(v) => updateStyle({ gap: v })}
-                  unit="px"
-                />
-              </PropertyRow>
-              <PropertyRow label="Justify">
-                <Select
-                  value={element.style.justify || "start"}
-                  options={[
-                    "start",
-                    "end",
-                    "center",
-                    "space-between",
-                    "space-around",
-                  ]}
-                  onChange={(v) => updateStyle({ justify: v as any })}
-                />
-              </PropertyRow>
-            </>
-          )}
-        </Section>
-
-        <Section title="Appearance" icon={Palette}>
-          <PropertyRow label="Background">
-            <ColorInput
-              value={element.style?.background}
-              onChange={(v) => updateStyle({ background: v })}
-            />
-          </PropertyRow>
-          <PropertyRow label="Corner Radius">
-            <NumberInput
-              value={element.style?.cornerRadius}
-              onChange={(v) => updateStyle({ cornerRadius: v })}
-              unit="px"
-            />
-          </PropertyRow>
-          <PropertyRow label="Border Width">
-            <NumberInput
-              value={element.style?.borderWidth}
-              onChange={(v) => updateStyle({ borderWidth: v })}
-              unit="px"
-            />
-          </PropertyRow>
-          <PropertyRow label="Border Color">
-            <ColorInput
-              value={element.style?.borderColor}
-              onChange={(v) => updateStyle({ borderColor: v })}
-            />
-          </PropertyRow>
-          <PaddingControl
-            value={element.style?.padding}
-            onChange={(v) => updateStyle({ padding: v })}
-          />
-        </Section>
-
-        {element.type === "block" && (
-          <ModuleSection
-            element={element as BlockData}
-            selectedId={selectedId!}
-            controller={controller}
-          />
-        )}
-
-        <Section title="Settings" icon={Settings2}>
-          <PropertyRow label="ID">
-            <span className="font-mono text-[10px] text-foreground-500">
-              {selectedId}
-            </span>
-          </PropertyRow>
-          <PropertyRow label="Type">
-            <span className="text-[10px] font-bold uppercase text-foreground-500">
-              {element.type}
-            </span>
-          </PropertyRow>
-          <div className="mt-4 px-4">
-            <button
-              onClick={() =>
-                currentBoardId &&
-                selectedId &&
-                controller.getState().deleteElement(currentBoardId, selectedId)
-              }
-              className="w-full rounded-md bg-red-500/10 py-2 text-[10px] font-bold uppercase tracking-wider text-red-500 transition-colors hover:bg-red-500/20"
-            >
-              Delete Element
-            </button>
-          </div>
-        </Section>
+    <div className="h-full" style={{ padding: 6 }}>
+      <div
+        className="h-full overflow-hidden rounded-2xl"
+        style={{
+          background: "var(--page-background)",
+        }}
+      >
+        {renderContent()}
       </div>
     </div>
   );
@@ -392,16 +412,13 @@ function WorkspaceSettings({
       <Section title="Services" icon={Puzzle}>
         <div className="px-4 py-2">
           {Object.entries(workspace.services || {}).map(([name, data]) => (
-            <div
-              key={name}
-              className="mb-2 flex flex-col rounded-md bg-background-200 p-2"
-            >
+            <div key={name} className="mb-2 flex flex-col rounded-md p-2">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-bold text-foreground">
                   {name}
                 </span>
                 <div className="flex items-center gap-2">
-                   <button
+                  <button
                     onClick={() => handleRemoveService(name)}
                     className="text-foreground-500 hover:text-red-500 transition-colors"
                   >
@@ -409,7 +426,7 @@ function WorkspaceSettings({
                   </button>
                 </div>
               </div>
-              <div className="mt-1 flex flex-col gap-1 border-t border-background-300 pt-1">
+              <div className="mt-1 flex flex-col gap-1 pt-1">
                 <div className="flex items-center justify-between">
                   <span className="text-[9px] uppercase tracking-wider text-foreground-500">
                     Module
@@ -431,7 +448,7 @@ function WorkspaceSettings({
           ))}
           <button
             onClick={handleAddService}
-            className="mt-2 flex w-full items-center justify-center gap-2 rounded-md border border-dashed border-background-400 py-2 text-[10px] font-bold uppercase tracking-wider text-foreground-400 transition-colors hover:border-primary-500 hover:bg-primary-500/5 hover:text-primary-500"
+            className="mt-2 flex w-full items-center justify-center gap-2 rounded-md py-2 text-[10px] font-bold uppercase tracking-wider text-foreground-400 transition-colors hover:text-primary-500"
           >
             <Plus size={12} />
             Add Service
@@ -504,7 +521,7 @@ function ModuleSection({
                       moduleMetadata.latest_version_id,
                     );
                 }}
-                className="shrink-0 rounded-md bg-orange-500 px-2 py-1 text-[8px] font-bold uppercase tracking-tight text-white hover:bg-orange-400"
+                className="shrink-0 rounded-md px-2 py-1 text-[8px] font-bold uppercase tracking-tight text-white"
                 title={`Update to latest: ${moduleMetadata.latest_version_id}`}
               >
                 Update
@@ -517,7 +534,7 @@ function ModuleSection({
           onClick={() => {
             console.log("Editing props for", selectedId);
           }}
-          className="w-full rounded-md bg-background-300 py-1.5 text-center text-[10px] font-bold uppercase tracking-wider text-foreground-300 transition-colors hover:bg-background-400"
+          className="w-full rounded-md py-1.5 text-center text-[10px] font-bold uppercase tracking-wider text-foreground-300 transition-colors"
         >
           Edit Props
         </button>
@@ -528,7 +545,7 @@ function ModuleSection({
               params: { moduleId: element.moduleId },
             });
           }}
-          className="flex w-full items-center justify-center gap-2 rounded-md bg-primary-500 py-2 text-center text-[10px] font-bold uppercase tracking-wider text-white transition-colors hover:bg-primary-600"
+          className="flex w-full items-center justify-center gap-2 rounded-md py-2 text-center text-[10px] font-bold uppercase tracking-wider text-primary-500 transition-colors"
         >
           <Code2 size={12} />
           Edit Component
@@ -548,10 +565,10 @@ function PanelHeader({
   onAddElement?: () => void;
 }) {
   return (
-    <div className="sticky top-0 z-10 border-b border-background-300 bg-background-200/50 px-4 py-4 backdrop-blur-sm">
+    <div className="sticky top-0 z-10 px-4 py-4 backdrop-blur-sm">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="rounded-lg bg-primary-500/10 p-1.5 text-primary-500">
+          <div className="rounded-lg p-1.5 text-primary-500">
             {element.type === "stack" ? (
               <Layers size={14} />
             ) : (
@@ -571,7 +588,7 @@ function PanelHeader({
         {element.type === "stack" && onAddElement && (
           <button
             onClick={onAddElement}
-            className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-500/10 text-primary-500 transition-colors hover:bg-primary-500/20"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-primary-500 transition-colors"
             title="Add Element"
           >
             <Plus size={16} />
@@ -590,10 +607,10 @@ function BoardHeader({
   onAddElement?: () => void;
 }) {
   return (
-    <div className="sticky top-0 z-10 border-b border-background-300 bg-background-200/50 px-4 py-4 backdrop-blur-sm">
+    <div className="sticky top-0 z-10 px-4 py-4 backdrop-blur-sm">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="rounded-lg bg-orange-500/10 p-1.5 text-orange-500">
+          <div className="rounded-lg p-1.5 text-orange-500">
             <Layout size={14} />
           </div>
           <div className="flex flex-col">
@@ -609,7 +626,7 @@ function BoardHeader({
         {onAddElement && (
           <button
             onClick={onAddElement}
-            className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-500/10 text-primary-500 transition-colors hover:bg-primary-500/20"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-primary-500 transition-colors"
             title="Add Element"
           >
             <Plus size={16} />
@@ -669,10 +686,10 @@ function Section({
 }) {
   const [isOpen, setIsOpen] = useState(true);
   return (
-    <div className="flex flex-col border-b border-background-300">
+    <div className="flex flex-col">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="group flex items-center gap-2 px-4 py-3 transition-colors hover:bg-background-200"
+        className="group flex items-center gap-2 px-4 py-3 transition-colors"
       >
         <Icon
           size={14}
@@ -753,7 +770,7 @@ function NumberInput({
   };
 
   return (
-    <div className="group flex items-center rounded-md bg-background-300 px-2 py-1 transition-all focus-within:ring-1 focus-within:ring-primary-500/50">
+    <div className="group flex items-center rounded-md px-2 py-1 transition-all focus-within:ring-1 focus-within:ring-primary-500/50">
       <input
         type="number"
         value={localValue}
@@ -805,7 +822,7 @@ function TextInput({
   };
 
   return (
-    <div className="flex w-full items-center rounded-md bg-background-300 px-2 py-1 transition-all focus-within:ring-1 focus-within:ring-primary-500/50">
+    <div className="flex w-full items-center rounded-md px-2 py-1 transition-all focus-within:ring-1 focus-within:ring-primary-500/50">
       <input
         type="text"
         value={localValue}
@@ -831,7 +848,7 @@ function Select({
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="cursor-pointer rounded-md border-none bg-background-300 px-2 py-1 text-xs text-foreground-200 outline-none transition-colors hover:bg-background-400"
+      className="cursor-pointer rounded-md border-none px-2 py-1 text-xs text-foreground-200 outline-none transition-colors"
     >
       {options.map((opt) => (
         <option key={opt} value={opt}>
@@ -864,9 +881,9 @@ function ColorInput({
   };
 
   return (
-    <div className="flex w-full items-center gap-2 rounded-md bg-background-300 px-2 py-1">
+    <div className="flex w-full items-center gap-2 rounded-md px-2 py-1">
       <div
-        className="h-4 w-4 shrink-0 rounded-sm border border-foreground-500/20"
+        className="h-4 w-4 shrink-0 rounded-sm"
         style={{ background: localValue || "transparent" }}
       />
       <input
