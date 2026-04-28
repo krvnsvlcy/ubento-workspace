@@ -85,12 +85,20 @@ export const boardDataSchema = z.object({
 });
 export type BoardData = z.infer<typeof boardDataSchema>;
 
+export const serviceDataSchema = z.object({
+  moduleId: z.string(),
+  moduleVersionId: z.string().optional(),
+  args: z.record(z.string(), z.any()).optional(),
+});
+export type ServiceData = z.infer<typeof serviceDataSchema>;
+
 export const workspaceDataSchema = z.object({
   id: z.string(),
   name: z.string(),
   slug: z.string(),
   teamId: z.string(),
   homeBoardId: z.string().optional(),
+  services: z.record(z.string(), serviceDataSchema).default({}),
 });
 export type WorkspaceData = z.infer<typeof workspaceDataSchema>;
 

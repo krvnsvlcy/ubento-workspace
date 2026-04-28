@@ -1,19 +1,25 @@
-import { BaseService } from "@ubento/services-common";
-import { Request, Response, Router } from "express";
+import { createService } from "@ubento/service-toolkit";
+import express from "express";
+import { env } from "./env.js";
+import authRouter from "./routes/auth.js";
+import connectionRouter from "./routes/connection.js";
+import connectionProviderRouter from "./routes/connection_provider.js";
+import { proxyRouter } from "./routes/proxy.js";
+import { spec } from "./spec.js";
 
-export class IntegrationService extends BaseService {
-  constructor() {
-    super({ name: "Integration", port: 4004 });
-  }
+const service = createService({
+  name: "integration-service",
+  port: env.PORT,
+  spec,
+  auth: false,
+  bodyParser: false,
+});
 
-  protected setupRoutes(): void {
-    const router = Router();
-    router.get("/status", async (req: Request, res: Response) => {
-      res.json({ status: "ok" });
-    });
-    this.app.use("/integration", router);
-  }
-}
+service.app.use(proxyRouter);
 
-const service = new IntegrationService();
+service.app.use(express.json());
+service.app.use(authRouter);
+service.app.use("/integration/connection-providers", connectionProviderRouter);
+service.app.use("/integration/connections", connectionRouter);
+
 service.start();

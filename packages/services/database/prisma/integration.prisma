@@ -1,0 +1,82 @@
+generator client {
+    provider      = "prisma-client-js"
+    binaryTargets = ["native", "debian-openssl-3.0.x"]
+    output        = "./generated/integration"
+}
+
+generator jsonSchema {
+    provider                 = "prisma-json-schema-generator"
+    output                   = "../src/schemas/integration"
+    keepRelationFields       = "false"
+    keepRelationScalarFields = "true"
+    includeRequiredFields    = "true"
+}
+
+datasource db {
+    provider = "mongodb"
+    url      = env("INTEGRATION_DATABASE_URL")
+}
+
+model ConnectionProvider {
+    id              String @id @map("_id")
+    entity          String @default("connection_provider")
+    organization_id String
+
+    name         String
+    display_name String
+    description  String?
+    config       Json?
+
+    // Relations
+    connections Connection[]
+
+    version    Int      @default(1) @db.Long
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+
+    @@unique([name, organization_id])
+    @@map("connection_providers")
+}
+
+model Connection {
+    id              String @id @map("_id")
+    entity          String @default("connection")
+    organization_id String
+
+    provider_id   String
+    provider      ConnectionProvider @relation(fields: [provider_id], references: [id])
+    auth_strategy String?
+    auth          EncryptedData?
+
+    version    Int      @default(1) @db.Long
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+
+    @@unique([provider_id, organization_id])
+    @@map("connections")
+}
+
+type EncryptedData {
+    iv          String
+    auth_tag    String
+    cipher_text String
+}
+
+model OAuthConnectionState {
+    id              String @id @default(uuid()) @map("_id")
+    entity          String @default("oauth_connection_state")
+    organization_id String
+    provider_id     String
+
+    state        String?
+    redirect_uri String?
+    expires_at   DateTime
+
+    version    Int      @default(1) @db.Long
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+
+    @@map("oauth_connection_states")
+}
+
+

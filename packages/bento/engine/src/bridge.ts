@@ -42,6 +42,7 @@ export type GuestRpcInterface = {
 
   // workspace mutators
   setHomeBoardId: (payload: { homeBoardId: string }) => Promise<void>;
+  updateWorkspace: (payload: { workspace: Partial<WorkspaceData> }) => Promise<void>;
 
   // board mutators
   deleteBoard: (payload: { boardId: string }) => Promise<void>;

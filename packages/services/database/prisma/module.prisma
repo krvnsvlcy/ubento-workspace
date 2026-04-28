@@ -17,22 +17,48 @@ datasource db {
     url      = env("MODULE_DATABASE_URL")
 }
 
+enum ModuleScope {
+    public
+    private
+}
+
 model Module {
     id      String @id @map("_id")
     entity  String @default("module")
     team_id String
 
     name              String
-    slug              String @unique
-    latest_version_id String
-    scope             String
+    type              String
+    summary           String
+    latest_version_id String?
+    scope             ModuleScope
+
+    files Json // Record<string, string> filename -> hash
 
     version    Int       @default(1)
     created_at DateTime  @default(now())
     updated_at DateTime  @updatedAt
     deleted_at DateTime?
 
+    @@index([team_id])
+    @@index([scope])
     @@map("modules")
+}
+
+model ModuleFileRevision {
+    id        String @id @map("_id")
+    entity    String @default("module_file_revision")
+    module_id String
+    filename  String
+    hash      String
+    author_id String
+
+    version    Int      @default(1)
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+
+    @@index([module_id, filename])
+    @@map("module_file_revisions")
 }
 
 model ModuleVersion {
@@ -40,9 +66,12 @@ model ModuleVersion {
     entity    String @default("module_version")
     module_id String
 
+    files Json // Record<string, string> filename -> hash
+
     version    Int      @default(1)
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt
 
+    @@index([module_id])
     @@map("module_versions")
 }

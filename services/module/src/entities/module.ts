@@ -5,8 +5,9 @@ import {
   slugify,
   ubentoEntities,
 } from "@ubento/primitives";
+import crypto from "crypto";
 import { customAlphabet } from "nanoid";
-import { persistModule, readModuleFile } from "../lib/gcs.js";
+import { publishFilesToUserContent, readFromCAS, storeInCAS } from "../lib/gcs.js";
 import prisma from "../lib/prisma.js";
 import { transpileTsx } from "../lib/transpiler.js";
 
@@ -18,6 +19,21 @@ const nanoid = customAlphabet(
 export enum ModuleScope {
   TEAM = "team",
   PUBLIC = "public",
+}
+
+function hashContent(content: string | Buffer): string {
+  return crypto.createHash("sha256").update(content).digest("hex");
+}
+
+function getContentType(filename: string): string {
+  if (filename.endsWith('.js')) return 'application/javascript';
+  if (filename.endsWith('.map')) return 'application/json';
+  if (filename.endsWith('.d.ts')) return 'application/typescript';
+  if (filename.endsWith('.ts')) return 'application/typescript';
+  if (filename.endsWith('.tsx')) return 'application/typescript';
+  if (filename.endsWith('.json')) return 'application/json';
+  if (filename.endsWith('.css')) return 'text/css';
+  return 'text/plain';
 }
 
 export async function getModule(id: string) {
@@ -37,6 +53,7 @@ export async function createModule(data: {
   slug?: string;
   team_id: string;
   source: string;
+  author_id: string;
   scope: ModuleScope;
 }) {
   const moduleId = makeEntityId({
@@ -44,11 +61,6 @@ export async function createModule(data: {
     bareId: generateBareId(),
   });
   let slug = data.slug ? slugify(data.slug) : generateSlug(data.name);
-
-  const version = await createNewModuleVersion({
-    moduleId,
-    source: data.source,
-  });
 
   // Ensure slug uniqueness
   let attempts = 0;
@@ -61,19 +73,200 @@ export async function createModule(data: {
     attempts++;
   }
 
-  // 3. Create module with latest_version_id
+  // Create module with empty files initially
   const module = await prisma.module.create({
     data: {
       id: moduleId,
       name: data.name,
       slug,
       team_id: data.team_id,
-      latest_version_id: version.id,
       scope: data.scope,
+      files: {},
     },
   });
 
-  return module;
+  // Store initial source file
+  await updateModuleFile({
+    moduleId,
+    filename: "index.tsx",
+    content: data.source,
+    authorId: data.author_id,
+    autoTranspile: true,
+  });
+
+  return await getModule(moduleId);
+}
+
+export async function updateModuleFile({
+  moduleId,
+  filename,
+  content,
+  authorId,
+  autoTranspile = false,
+}: {
+  moduleId: string;
+  filename: string;
+  content: string;
+  authorId: string;
+  autoTranspile?: boolean;
+}) {
+  const hash = hashContent(content);
+
+  await storeInCAS({
+    moduleId,
+    hash,
+    content,
+    contentType: getContentType(filename),
+  });
+
+  const revisionId = makeEntityId({
+    code: "module_file_revision",
+    bareId: generateBareId(),
+  });
+
+  await prisma.moduleFileRevision.create({
+    data: {
+      id: revisionId,
+      module_id: moduleId,
+      filename,
+      hash,
+      author_id: authorId,
+    },
+  });
+
+  const fileUpdates: Record<string, string> = { [filename]: hash };
+
+  if (autoTranspile && filename.endsWith(".tsx")) {
+    const { js, map, dts } = await transpileTsx(content, filename);
+
+    const jsFilename = filename.replace(/\.tsx$/, ".js");
+    const mapFilename = filename.replace(/\.tsx$/, ".js.map");
+    const dtsFilename = filename.replace(/\.tsx$/, ".d.ts");
+
+    const jsHash = hashContent(js);
+    await storeInCAS({ moduleId, hash: jsHash, content: js, contentType: "application/javascript" });
+    fileUpdates[jsFilename] = jsHash;
+    await prisma.moduleFileRevision.create({
+      data: {
+        id: makeEntityId({ code: "module_file_revision", bareId: generateBareId() }),
+        module_id: moduleId,
+        filename: jsFilename,
+        hash: jsHash,
+        author_id: authorId,
+      },
+    });
+
+    const mapHash = hashContent(map);
+    await storeInCAS({ moduleId, hash: mapHash, content: map, contentType: "application/json" });
+    fileUpdates[mapFilename] = mapHash;
+    await prisma.moduleFileRevision.create({
+      data: {
+        id: makeEntityId({ code: "module_file_revision", bareId: generateBareId() }),
+        module_id: moduleId,
+        filename: mapFilename,
+        hash: mapHash,
+        author_id: authorId,
+      },
+    });
+
+    if (dts) {
+      const dtsHash = hashContent(dts);
+      await storeInCAS({ moduleId, hash: dtsHash, content: dts, contentType: "application/typescript" });
+      fileUpdates[dtsFilename] = dtsHash;
+      await prisma.moduleFileRevision.create({
+        data: {
+          id: makeEntityId({ code: "module_file_revision", bareId: generateBareId() }),
+          module_id: moduleId,
+          filename: dtsFilename,
+          hash: dtsHash,
+          author_id: authorId,
+        },
+      });
+    }
+  }
+
+  const module = await getModule(moduleId);
+  if (module) {
+    const currentFiles = (module.files as Record<string, string>) || {};
+    await prisma.module.update({
+      where: { id: moduleId },
+      data: {
+        files: {
+          ...currentFiles,
+          ...fileUpdates,
+        },
+      },
+    });
+  }
+
+  return fileUpdates;
+}
+
+export async function publishModuleVersion(moduleId: string) {
+  const module = await getModule(moduleId);
+  if (!module) throw new Error("Module not found");
+
+  const versionId = makeEntityId({
+    code: ubentoEntities.moduleVersion.code,
+    bareId: generateBareId(),
+  });
+
+  const files = (module.files as Record<string, string>) || {};
+
+  await publishFilesToUserContent({ moduleId, versionId, files });
+
+  const version = await prisma.moduleVersion.create({
+    data: {
+      id: versionId,
+      module_id: moduleId,
+      files,
+    },
+  });
+
+  await prisma.module.update({
+    where: { id: moduleId },
+    data: { latest_version_id: versionId },
+  });
+
+  return version;
+}
+
+export async function restoreModuleFile(
+  moduleId: string,
+  filename: string,
+  hash: string,
+  authorId: string
+) {
+  // To restore, we just add this existing hash to the module's file map 
+  // and possibly create a new revision record to mark who restored it.
+  const revisionId = makeEntityId({
+    code: "module_file_revision",
+    bareId: generateBareId(),
+  });
+
+  await prisma.moduleFileRevision.create({
+    data: {
+      id: revisionId,
+      module_id: moduleId,
+      filename,
+      hash,
+      author_id: authorId,
+    },
+  });
+
+  const module = await getModule(moduleId);
+  if (module) {
+    const currentFiles = (module.files as Record<string, string>) || {};
+    await prisma.module.update({
+      where: { id: moduleId },
+      data: {
+        files: {
+          ...currentFiles,
+          [filename]: hash,
+        },
+      },
+    });
+  }
 }
 
 export async function updateModule(
@@ -93,44 +286,6 @@ export async function updateModule(
   });
 
   return module;
-}
-
-export async function createNewModuleVersion({
-  moduleId,
-  source,
-}: {
-  moduleId: string;
-  source: string;
-}) {
-  const code = await transpileTsx(source);
-  const versionId = makeEntityId({
-    code: ubentoEntities.moduleVersion.code,
-    bareId: generateBareId(),
-  });
-
-  await persistModule({
-    moduleId,
-    versionId,
-    tsx: source,
-    js: code,
-  });
-
-  const version = await prisma.moduleVersion.create({
-    data: {
-      id: versionId,
-      module_id: moduleId,
-    },
-  });
-
-  const module = await prisma.module.findUnique({ where: { id: moduleId } });
-  if (module) {
-    await prisma.module.update({
-      where: { id: moduleId },
-      data: { latest_version_id: version.id },
-    });
-  }
-
-  return version;
 }
 
 export async function deleteModule(id: string) {
@@ -166,19 +321,32 @@ export async function getModuleVersion(id: string) {
   });
 }
 
-export async function getModuleVersionCode({
+export async function getModuleFile(moduleId: string, hash: string) {
+  return await readFromCAS({ moduleId, hash });
+}
+
+export async function getModuleFileHistory(moduleId: string, filename: string) {
+  return await prisma.moduleFileRevision.findMany({
+    where: { module_id: moduleId, filename },
+    orderBy: { created_at: "desc" },
+  });
+}
+
+export async function getModuleVersionFile({
   moduleId,
   versionId,
-  type,
+  filename,
 }: {
   moduleId: string;
   versionId: string;
-  type: "tsx" | "js";
+  filename: string;
 }) {
   const version = await getModuleVersion(versionId);
-  if (!version || version.module_id !== moduleId) {
-    return null;
-  }
+  if (!version || version.module_id !== moduleId) return null;
 
-  return await readModuleFile({ moduleId, versionId, type });
+  const files = version.files as Record<string, string>;
+  const hash = files[filename];
+  if (!hash) return null;
+
+  return await getModuleFile(moduleId, hash);
 }

@@ -15,19 +15,25 @@
     "./module": {
       "import": "./build/module.js",
       "types": "./build/module.d.ts"
+    },
+    "./integration": {
+      "import": "./build/integration.js",
+      "types": "./build/integration.d.ts"
     }
   },
   "scripts": {
     "build": "npm run generate && scripts build",
     "watch": "scripts watch",
-    "generate": "npm run generate:iam && npm run generate:workspace && npm run generate:module",
+    "generate": "npm run generate:iam && npm run generate:workspace && npm run generate:module && npm run generate:integration",
     "generate:iam": "prisma generate --schema=./prisma/iam.prisma",
     "generate:workspace": "prisma generate --schema=./prisma/workspace.prisma",
     "generate:module": "prisma generate --schema=./prisma/module.prisma",
-    "push": "npm run push:iam && npm run push:workspace && npm run push:module",
+    "generate:integration": "prisma generate --schema=./prisma/integration.prisma",
+    "push": "npm run push:iam && npm run push:workspace && npm run push:module && npm run push:integration",
     "push:iam": "prisma db push --schema=./prisma/iam.prisma",
     "push:workspace": "prisma db push --schema=./prisma/workspace.prisma",
-    "push:module": "prisma db push --schema=./prisma/module.prisma"
+    "push:module": "prisma db push --schema=./prisma/module.prisma",
+    "push:integration": "prisma db push --schema=./prisma/integration.prisma"
   },
   "dependencies": {
     "@prisma/client": "5.18.0",

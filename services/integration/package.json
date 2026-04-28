@@ -3,24 +3,33 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "main": "./build/index.js",
-  "module": "./build/index.js",
-  "types": "./build/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./build/index.d.ts",
-      "import": "./build/index.js"
-    }
-  },
+  "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
-    "watch": "tsc --watch",
-    "dev": "tsx src/index.ts",
-    "deploy": "gcloud run deploy integration-service --source ."
+    "build": "tsc --noEmit && esbuild src/index.ts --bundle --platform=node --target=node20 --outfile=dist/index.js --external:@prisma/client",
+    "clean": "rm -rf dist",
+    "start": "node dist/index.js",
+    "dev": "tsx watch src/index.ts",
+    "deploy": "scripts containerize integration && scripts deploy integration"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@ubento/database": "workspace:*",
+    "@ubento/primitives": "workspace:*",
+    "@ubento/service-toolkit": "workspace:*",
+    "@google-cloud/storage": "^7.19.0",
+    "body-parser": "^2.2.0",
+    "dotenv": "^16.3.1",
+    "express": "^5",
+    "lodash.get": "^4.4.2",
+    "mime-types": "^3.0.2",
+    "zod": "^4.3.6"
+  },
   "devDependencies": {
-    "typescript": "^5.0.0",
-    "tsx": "^4.0.0"
+    "@types/dotenv": "^8.2.0",
+    "@types/express": "^5.0.3",
+    "@types/lodash.get": "^4.4.9",
+    "@types/mime-types": "^3.0.1",
+    "@types/semver": "^7.7.1",
+    "tsx": "^4.15.2",
+    "typescript": "^5.0.4"
   }
 }

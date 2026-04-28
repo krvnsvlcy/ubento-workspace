@@ -6,56 +6,91 @@ const storage = new Storage();
 const moduleBucket = storage.bucket(env.GCS_MODULE_BUCKET);
 const userContentBucket = storage.bucket(env.GCS_USER_CONTENT_BUCKET);
 
-export async function persistModule({
+/**
+ * Stores a file in the CAS bucket.
+ */
+export async function storeInCAS({
   moduleId,
-  versionId,
-  js: jsCode,
-  tsx: tsxCode,
+  hash,
+  content,
+  contentType,
 }: {
   moduleId: string;
-  versionId: string;
-  js: string;
-  tsx: string;
+  hash: string;
+  content: string | Buffer;
+  contentType: string;
 }) {
-  const { bareId: bareVersionId } = parseEntityId(versionId);
   const { bareId: bareModuleId } = parseEntityId(moduleId);
-
-  const internalTsxPath = `modules/${bareModuleId}/${bareVersionId}.tsx`;
-  const internalJsPath = `modules/${bareModuleId}/${bareVersionId}.js`;
-
-  const tsxFile = moduleBucket.file(internalTsxPath);
-  const jsFile = userContentBucket.file(internalJsPath);
-
-  await Promise.all([
-    tsxFile.save(tsxCode, {
-      contentType: "application/typescript",
-      resumable: false,
-    }),
-    jsFile.save(jsCode, {
-      contentType: "application/javascript",
-      resumable: false,
-      metadata: { cacheControl: "public, max-age=31536000" },
-    }),
-  ]);
+  const path = `modules/${bareModuleId}/${hash}`;
+  const file = moduleBucket.file(path);
+  
+  await file.save(content, {
+    contentType,
+    resumable: false,
+  });
 }
 
-export async function readModuleFile({
+/**
+ * Reads a file from the CAS bucket.
+ */
+export async function readFromCAS({
+  moduleId,
+  hash,
+}: {
+  moduleId: string;
+  hash: string;
+}) {
+  const { bareId: bareModuleId } = parseEntityId(moduleId);
+  const path = `modules/${bareModuleId}/${hash}`;
+  const file = moduleBucket.file(path);
+  
+  const [content] = await file.download();
+  return content.toString();
+}
+
+/**
+ * Publishes a set of CAS files to the public user content bucket under the version path.
+ */
+export async function publishFilesToUserContent({
   moduleId,
   versionId,
-  type,
+  files,
 }: {
   moduleId: string;
   versionId: string;
-  type: "tsx" | "js";
+  files: Record<string, string>; // filename -> hash
 }) {
-  const { bareId: bareVersionId } = parseEntityId(versionId);
   const { bareId: bareModuleId } = parseEntityId(moduleId);
+  const { bareId: bareVersionId } = parseEntityId(versionId);
 
-  const path = `modules/${bareModuleId}/${bareVersionId}.${type}`;
-  const bucket = type === "tsx" ? moduleBucket : userContentBucket;
+  await Promise.all(
+    Object.entries(files).map(async ([filename, hash]) => {
+      const sourcePath = `modules/${bareModuleId}/${hash}`;
+      const destPath = `module/${bareModuleId}/${bareVersionId}/${filename}`;
 
-  const file = bucket.file(path);
-  const [content] = await file.download();
+      const sourceFile = moduleBucket.file(sourcePath);
+      const destFile = userContentBucket.file(destPath);
+      
+      const contentType = getContentType(filename);
 
-  return content.toString();
+      await sourceFile.copy(destFile);
+      
+      // Update cache control for public bucket
+      await destFile.setMetadata({
+        contentType,
+        cacheControl: "public, max-age=31536000",
+      });
+    })
+  );
+}
+
+function getContentType(filename: string): string {
+  if (filename.endsWith('.js')) return 'application/javascript';
+  if (filename.endsWith('.map')) return 'application/json';
+  if (filename.endsWith('.d.ts')) return 'application/typescript';
+  if (filename.endsWith('.ts')) return 'application/typescript';
+  if (filename.endsWith('.tsx')) return 'application/typescript';
+  if (filename.endsWith('.json')) return 'application/json';
+  if (filename.endsWith('.css')) return 'text/css';
+  return 'text/plain';
 }

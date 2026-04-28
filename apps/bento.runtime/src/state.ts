@@ -17,6 +17,7 @@ export type InternalEngineStore = EngineStore & {
   workspace: WorkspaceData | null;
   setWorkspace: (workspace: WorkspaceData) => void;
   setHomeBoardId: (homeBoardId: string) => void;
+  updateWorkspace: (workspace: Partial<WorkspaceData>) => void;
   deleteBoard: (boardId: string) => void;
   setBoardContent: (boardId: string, content: string[]) => void;
   addElement: (
@@ -55,8 +56,8 @@ export function createEngineController({
 
       // interaction
       toggleMode: () => {
-        set((s) => {
-          s.mode = s.mode === "edit" ? "live" : "edit";
+        rpc.egress.updateContext({
+          mode: get().mode === "edit" ? "live" : "edit",
         });
       },
 
@@ -107,6 +108,13 @@ export function createEngineController({
         set((s) => {
           if (s.workspace) {
             s.workspace.homeBoardId = homeBoardId;
+          }
+        });
+      },
+      updateWorkspace: (workspace: Partial<WorkspaceData>) => {
+        set((s) => {
+          if (s.workspace) {
+            Object.assign(s.workspace, workspace);
           }
         });
       },

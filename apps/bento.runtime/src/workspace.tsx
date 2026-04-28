@@ -30,6 +30,9 @@ export function GuestWorkspace() {
       setHomeBoardId: async ({ homeBoardId }) => {
         controller.getState().setHomeBoardId(homeBoardId);
       },
+      updateWorkspace: async ({ workspace }) => {
+        controller.getState().updateWorkspace(workspace);
+      },
       deleteBoard: async ({ boardId }) => {
         controller.getState().deleteBoard(boardId);
       },

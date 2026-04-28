@@ -10,16 +10,20 @@ import { Router } from "express";
 import z from "zod";
 import {
   createModule,
-  createNewModuleVersion,
   deleteModule,
   getModule,
   getModuleBySlug,
+  getModuleFile,
+  getModuleFileHistory,
   getModuleVersion,
-  getModuleVersionCode,
+  getModuleVersionFile,
   getModuleVersions,
   listModules,
   ModuleScope,
+  publishModuleVersion,
+  restoreModuleFile,
   updateModule,
+  updateModuleFile,
 } from "../entities/module.js";
 
 const modulesRouter: Router = Router();
@@ -203,12 +207,12 @@ modulesRouter.get(
       },
     }),
     async (req, res) => {
-      const code = await getModuleVersionCode({
+      const code = await getModuleVersionFile({
         moduleId: req.params.module_id,
         versionId: req.params.version_id,
-        type: "tsx",
+        filename: "index.tsx", // Default source
       });
-      if (code === null) throw new NotFoundError("Version not found");
+      if (code === null) throw new NotFoundError("Source not found");
       res.json(dataResponse({ source: code }));
     },
   ),
@@ -240,27 +244,29 @@ modulesRouter.get(
       },
     }),
     async (req, res) => {
-      const code = await getModuleVersionCode({
+      const code = await getModuleVersionFile({
         moduleId: req.params.module_id,
         versionId: req.params.version_id,
-        type: "js",
+        filename: "index.js", // Default artifact
       });
-      if (code === null) throw new NotFoundError("Version not found");
+      if (code === null) throw new NotFoundError("Artifact not found");
       res.json(dataResponse({ artifact: code }));
     },
   ),
 );
 
-// Publish Module Version
-modulesRouter.post(
-  "/:module_id/versions",
+// Update Module File
+modulesRouter.put(
+  "/:module_id/files/:filename",
   chain(
     validate({
       params: z.object({
         module_id: z.string(),
+        filename: z.string(),
       }),
       body: z.object({
-        source: z.string(),
+        content: z.string(),
+        autoTranspile: z.boolean().optional(),
       }),
     }),
     enforce({
@@ -279,10 +285,84 @@ modulesRouter.post(
       },
     }),
     async (req, res) => {
-      const version = await createNewModuleVersion({
+      const fileUpdates = await updateModuleFile({
         moduleId: req.params.module_id,
-        source: req.body.source,
+        filename: req.params.filename,
+        content: req.body.content,
+        authorId: req.auth!.userId,
+        autoTranspile: req.body.autoTranspile,
       });
+      res.json(dataResponse(fileUpdates));
+    },
+  ),
+);
+
+// Restore Module File
+modulesRouter.post(
+  "/:module_id/files/:filename/restore",
+  chain(
+    validate({
+      params: z.object({
+        module_id: z.string(),
+        filename: z.string(),
+      }),
+      body: z.object({
+        hash: z.string(),
+      }),
+    }),
+    enforce({
+      permissions: [ubentoAuth.actions.module.update],
+      resource: async (req) => {
+        const module = await getModule(req.params.module_id as string);
+        if (!module) throw new NotFoundError("Module not found");
+
+        if (module.scope === ModuleScope.TEAM) {
+          return ubentoAuth.scopes.team({
+            team_id: module.team_id,
+          });
+        } else {
+          return ubentoAuth.scopes.root;
+        }
+      },
+    }),
+    async (req, res) => {
+      await restoreModuleFile(
+        req.params.module_id,
+        req.params.filename,
+        req.body.hash,
+        req.auth!.userId
+      );
+      res.json(dataResponse({ success: true }));
+    },
+  ),
+);
+
+// Publish Module Version
+modulesRouter.post(
+  "/:module_id/publish",
+  chain(
+    validate({
+      params: z.object({
+        module_id: z.string(),
+      }),
+    }),
+    enforce({
+      permissions: [ubentoAuth.actions.module.update],
+      resource: async (req) => {
+        const module = await getModule(req.params.module_id as string);
+        if (!module) throw new NotFoundError("Module not found");
+
+        if (module.scope === ModuleScope.TEAM) {
+          return ubentoAuth.scopes.team({
+            team_id: module.team_id,
+          });
+        } else {
+          return ubentoAuth.scopes.root;
+        }
+      },
+    }),
+    async (req, res) => {
+      const version = await publishModuleVersion(req.params.module_id);
       res.json(dataResponse(version));
     },
   ),
@@ -309,7 +389,10 @@ modulesRouter.post(
         }),
     }),
     async (req, res) => {
-      const module = await createModule(req.body);
+      const module = await createModule({
+        ...req.body,
+        author_id: req.auth!.userId,
+      });
       res.json(dataResponse(module));
     },
   ),

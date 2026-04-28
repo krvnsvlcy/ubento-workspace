@@ -205,11 +205,18 @@ export const spec: OpenAPIV3.Document = {
           },
         },
       },
-      post: {
-        summary: "Publish Module Version",
+    "/modules/{module_id}/files/{filename}": {
+      put: {
+        summary: "Update Module File",
         parameters: [
           {
             name: "module_id",
+            in: "path",
+            required: true,
+            schema: { type: "string" },
+          },
+          {
+            name: "filename",
             in: "path",
             required: true,
             schema: { type: "string" },
@@ -222,13 +229,86 @@ export const spec: OpenAPIV3.Document = {
               schema: {
                 type: "object",
                 properties: {
-                  source: { type: "string" },
+                  content: { type: "string" },
+                  autoTranspile: { type: "boolean" },
                 },
-                required: ["source"],
+                required: ["content"],
               },
             },
           },
         },
+        responses: {
+          "200": {
+            description: "File updated",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  additionalProperties: { type: "string" },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    "/modules/{module_id}/files/{filename}/restore": {
+      post: {
+        summary: "Restore Module File",
+        parameters: [
+          {
+            name: "module_id",
+            in: "path",
+            required: true,
+            schema: { type: "string" },
+          },
+          {
+            name: "filename",
+            in: "path",
+            required: true,
+            schema: { type: "string" },
+          },
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  hash: { type: "string" },
+                },
+                required: ["hash"],
+              },
+            },
+          },
+        },
+        responses: {
+          "200": {
+            description: "File restored",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: { success: { type: "boolean" } },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    "/modules/{module_id}/publish": {
+      post: {
+        summary: "Publish Module Version",
+        parameters: [
+          {
+            name: "module_id",
+            in: "path",
+            required: true,
+            schema: { type: "string" },
+          },
+        ],
         responses: {
           "201": {
             description: "Version published",

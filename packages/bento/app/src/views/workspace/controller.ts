@@ -56,6 +56,7 @@ export type WorkspaceStore = WorkspaceState & {
 
   // workspace mutators
   setHomeBoardId: (homeBoardId: string) => Promise<void>;
+  updateWorkspace: (workspace: Partial<WorkspaceData>) => Promise<void>;
 
   // board mutators
   createBoard: (init: { name?: string }) => Promise<BoardData>;
@@ -390,6 +391,14 @@ export function createWorkspaceController({
           }
         });
         await rpc?.egress.setHomeBoardId({ homeBoardId });
+      },
+      updateWorkspace: async (workspace: Partial<WorkspaceData>) => {
+        set((s) => {
+          if (s.workspace) {
+            Object.assign(s.workspace, workspace);
+          }
+        });
+        await rpc?.egress.updateWorkspace({ workspace });
       },
 
       // board mutators
