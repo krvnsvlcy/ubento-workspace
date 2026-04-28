@@ -4,6 +4,11 @@
 @import "./themes/forest.css";
 @import "./themes/carbon.css";
 
-* {
+*,
+::after,
+::before,
+::backdrop,
+::file-selector-button {
   scrollbar-width: none;
+  border-color: color-mix(in srgb, var(--foreground-500) 10%, transparent);
 }

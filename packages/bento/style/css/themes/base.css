@@ -72,7 +72,6 @@
   --light-400: rgb(248 248 248);
   --light-500: rgb(255 255 255);
 
-  --background-000: #ffffff;
   --background-100: var(--light-500);
   --background-200: var(--light-400);
   --background-300: var(--light-300);

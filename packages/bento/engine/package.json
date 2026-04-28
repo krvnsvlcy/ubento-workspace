@@ -23,6 +23,7 @@
     "@ubento/bento-primitives": "workspace:*",
     "@ubento/rpc-utils": "workspace:*",
     "immer": "^11.1.4",
+    "motion": "^12.38.0",
     "wouter": "^3.6.0",
     "zod": "^4.3.6",
     "zustand": "^5.0.12"

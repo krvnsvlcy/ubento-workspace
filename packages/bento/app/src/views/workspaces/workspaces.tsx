@@ -9,7 +9,9 @@ import { useState } from "react";
 export function Workspaces() {
   const host = useBentoHost();
   const session = useBentoSession();
-  const { data: workspacesData, isFetching } = useWorkspaces({ team_id: session.teamId });
+  const { data: workspacesData, isFetching } = useWorkspaces({
+    team_id: session.teamId,
+  });
   const [search, setSearch] = useState("");
 
   const workspaces = workspacesData || [];
@@ -26,15 +28,7 @@ export function Workspaces() {
   };
 
   return (
-    <div className="relative min-h-screen bg-background px-8 py-10 font-sans text-foreground overflow-x-hidden selection:bg-foreground-200">
-      {/* Background Gradient */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-        className="pointer-events-none absolute inset-x-0 top-0 h-[300px] bg-gradient-to-b from-primary-500/10 dark:from-primary-300/7 to-transparent"
-      />
-
+    <div className="relative min-h-screen px-8 py-10 font-sans text-foreground overflow-x-hidden selection:bg-foreground-200">
       <div className="relative mx-auto w-full max-w-5xl">
         <motion.header
           initial={{ opacity: 0, y: -10 }}

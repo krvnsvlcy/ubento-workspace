@@ -83,7 +83,7 @@ export function Home() {
             </h2>
 
             {/* Main Action Card */}
-            <div className="mb-6 flex cursor-pointer flex-row items-center rounded-2xl bg-background-300 p-6 transition-colors hover:bg-background-200">
+            <div className="mb-6 flex cursor-pointer flex-row items-center rounded-2xl bg-background-100 border border-foreground/10 p-6 transition-colors hover:border-foreground/20">
               <div className="flex items-center gap-4">
                 <div className="h-12 w-12 shrink-0 rounded-lg bg-background-500"></div>
                 <div className="flex flex-col justify-center">

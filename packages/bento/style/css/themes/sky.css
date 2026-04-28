@@ -79,8 +79,8 @@
   --light-100: rgb(199 214 232);
   --light-200: rgb(220 230 242);
   --light-300: rgb(236 242 249);
-  --light-400: rgb(245 249 253);
-  --light-500: rgb(250 253 255); /* Locked */
+  --light-400: rgba(245, 249, 253, 0.951);
+  --light-500: rgb(255, 255, 255); /* Locked */
 
   --primary-100: var(--blue-100);
   --primary-200: var(--blue-200);

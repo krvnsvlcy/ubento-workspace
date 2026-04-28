@@ -1,10 +1,11 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Bento, createBentoHost, type BentoHostStoreApi, type BentoLocation } from "@ubento/bento-app";
-import "@ubento/bento-style/css/themes.css";
+import { Bento, createBentoHost, type BentoLocation } from "@ubento/bento-app";
 import "@ubento/bento-style/dist/uno.css";
 import { UbentoSDK } from "@ubento/sdk";
-import { StrictMode, useEffect, useMemo, useState } from "react";
+import { StrictMode, useEffect, useMemo } from "react";
 import { createRoot } from "react-dom/client";
+
+import "@ubento/bento-style/css/themes.css";
 
 const queryClient = new QueryClient();
 const user = {

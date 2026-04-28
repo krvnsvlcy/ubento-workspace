@@ -50,7 +50,7 @@ function BentoContent() {
 
   return (
     <div
-      className="bg-background-100"
+      className="bg-background-200"
       style={{
         height: "100vh",
         width: "100vw",
@@ -60,17 +60,10 @@ function BentoContent() {
       <BentoSessionContext value={session}>
         <AnimatePresence mode="wait">
           <motion.div
-            key={
-              location.view === "workspace"
-                ? `workspace-${location.params.slug}`
-                : location.view === "builder"
-                  ? `builder-${location.params.moduleId}`
-                  : location.view
-            }
-            initial={{ opacity: 0, y: 5 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -5 }}
-            transition={{ duration: 0.15, ease: "easeOut" }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.1, ease: "easeOut" }}
             className="min-h-screen w-full"
           >
             {content}

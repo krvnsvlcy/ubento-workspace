@@ -13,7 +13,6 @@
     "deploy": "pnpm vercel:build && pnpm vercel:deploy"
   },
   "dependencies": {
-    "@ubento/agent": "workspace:*",
     "@ubento/bento-primitives": "workspace:*",
     "@ubento/bento-style": "workspace:*",
     "@ubento/engine": "workspace:*",

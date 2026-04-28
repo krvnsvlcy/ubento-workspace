@@ -18,12 +18,12 @@ export function WorkspaceContent({
     const boardData = activeBoardId ? state.boards[activeBoardId] : null;
     return boardData?.style?.background;
   });
-  const state = useStore(controller);
+  const error = useStore(controller, (state) => state.error);
   const host = useBentoHost();
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [inspectorWidth, setInspectorWidth] = useState(320);
 
-  if (state.error) {
+  if (error) {
     return (
       <ErrorView
         message={"Error Loading Workspace"}
@@ -78,11 +78,8 @@ export function WorkspaceContent({
       <SideSplitView
         side={{
           edge: "right",
-          content:
-            state.mode === "edit" ? (
-              <ControlPanel controller={controller} />
-            ) : null,
-          size: state.mode === "edit" ? inspectorWidth : 0,
+          content: isEditMode ? <ControlPanel controller={controller} /> : null,
+          size: isEditMode ? inspectorWidth : 0,
           onSizeChange: setInspectorWidth,
           minSize: 240,
           maxSize: 600,

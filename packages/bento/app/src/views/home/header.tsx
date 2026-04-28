@@ -1,3 +1,5 @@
+import { Logo } from "@/components/logo";
+import { ThemeSelector } from "@/components/ThemeSelector";
 import { useBentoSession } from "@/contexts/session";
 import { useUser } from "@/hooks/iam";
 import {
@@ -8,8 +10,6 @@ import {
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
-import { Logo } from "@/components/logo";
-import { ThemeSelector } from "@/components/ThemeSelector";
 
 interface HeaderProps {
   currentTheme: string;
@@ -50,7 +50,7 @@ export function Header({
         transition={{ duration: 0.3, ease: "easeOut" }}
         className="mb-20 flex w-full items-center justify-between"
       >
-        <div className="flex items-center text-primary-300">
+        <div className="flex items-center">
           <Logo />
         </div>
         <div className="flex items-center gap-4">
@@ -140,7 +140,7 @@ export function Header({
       <motion.h1
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, ease: "easeOut", delay: 0.1 }}
+        transition={{ duration: 0.1, ease: "easeOut" }}
         className="mb-16 text-2xl font-medium tracking-tight sm:text-3xl"
       >
         Good afternoon {user?.name || "Guest"}
