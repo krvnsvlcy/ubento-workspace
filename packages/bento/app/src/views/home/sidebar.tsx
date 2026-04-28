@@ -11,8 +11,8 @@ export function Sidebar({ onOpenModal }: SidebarProps) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: -10 }}
-      animate={{ opacity: 1, x: 0 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
       transition={{ duration: 0.3, ease: "easeOut", delay: 0.1 }}
       className="col-span-1 flex flex-col gap-10"
     >

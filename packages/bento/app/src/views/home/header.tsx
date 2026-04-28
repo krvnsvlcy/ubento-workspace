@@ -45,8 +45,8 @@ export function Header({
   return (
     <>
       <motion.nav
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
         className="mb-20 flex w-full items-center justify-between"
       >
@@ -85,9 +85,9 @@ export function Header({
               <AnimatePresence>
                 {isUserMenuOpen && (
                   <motion.div
-                    initial={{ opacity: 0, scale: 0.95, y: 10 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
                     transition={{ duration: 0.2, ease: "easeOut" }}
                     className="z-50 absolute right-0 top-full mt-2 w-56 origin-top-right overflow-hidden rounded-2xl border border-background-400/50 bg-background-200 p-1.5 shadow-2xl"
                   >
@@ -138,8 +138,8 @@ export function Header({
       </motion.nav>
 
       <motion.h1
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
         transition={{ duration: 0.1, ease: "easeOut" }}
         className="mb-16 text-2xl font-medium tracking-tight sm:text-3xl"
       >

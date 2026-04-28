@@ -37,6 +37,10 @@ export function Stack({ id, data }: { id: string; data: StackData }) {
   };
 
   const isEmpty = data.content.length === 0;
+  if (isEmpty && isEditMode) {
+    cssStyle.border = "1px dashed #ddd";
+    cssStyle.borderRadius = "10px";
+  }
 
   const onAddStack = (direction: "row" | "column") => {
     // Update current stack style
@@ -54,8 +58,6 @@ export function Stack({ id, data }: { id: string; data: StackData }) {
       style: {
         width: 4,
         height: 4,
-        background: "#3b82f6",
-        cornerRadius: 1,
       },
     });
 
@@ -65,8 +67,6 @@ export function Stack({ id, data }: { id: string; data: StackData }) {
       style: {
         width: 4,
         height: 4,
-        background: "#10b981",
-        cornerRadius: 1,
       },
     });
   };

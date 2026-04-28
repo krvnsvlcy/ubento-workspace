@@ -13,11 +13,6 @@ export function WorkspaceContent({
   controller: WorkspaceController;
 }) {
   const isEditMode = useStore(controller, (state) => state.mode === "edit");
-  const background = useStore(controller, (state) => {
-    const activeBoardId = state.location?.boardId;
-    const boardData = activeBoardId ? state.boards[activeBoardId] : null;
-    return boardData?.style?.background;
-  });
   const error = useStore(controller, (state) => state.error);
   const host = useBentoHost();
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -67,11 +62,7 @@ export function WorkspaceContent({
       style={
         {
           padding: isEditMode ? "6px" : "0px",
-          background: isEditMode
-            ? `color-mix(in srgb, #0f172a 40%, ${background})`
-            : background,
-          transition: "background 0.3s ease-in-out, padding 0.2s ease-in-out",
-          "--page-background": background,
+          transition: "padding 0.2s ease-in-out",
         } as any
       }
     >

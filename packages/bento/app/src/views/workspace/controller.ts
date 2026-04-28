@@ -185,8 +185,6 @@ export function createWorkspaceController({
                   style: {
                     width: 100,
                     height: 100,
-                    background: "#3939dcff",
-                    cornerRadius: 20,
                   },
                 },
               },
@@ -410,8 +408,6 @@ export function createWorkspaceController({
             style: {
               width: 100,
               height: 100,
-              background: "#3939dcff",
-              cornerRadius: 20,
             },
           },
         },

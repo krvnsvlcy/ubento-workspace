@@ -31,8 +31,8 @@ export function Workspaces() {
     <div className="relative min-h-screen px-8 py-10 font-sans text-foreground overflow-x-hidden selection:bg-foreground-200">
       <div className="relative mx-auto w-full max-w-5xl">
         <motion.header
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           transition={{ duration: 0.3, ease: "easeOut" }}
           className="mb-12 flex flex-col gap-8"
         >
@@ -68,8 +68,8 @@ export function Workspaces() {
         </motion.header>
 
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           transition={{ duration: 0.3, ease: "easeOut", delay: 0.1 }}
         >
           <WorkspaceGrid

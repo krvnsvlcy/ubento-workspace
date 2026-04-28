@@ -22,7 +22,6 @@ function getBoardStyle(style: BoardStyle = {}): React.CSSProperties {
     position: "relative",
     width: "100%",
     height: "100%",
-    backgroundColor: style.background,
     display: "flex",
     alignContent: "start",
     flexDirection: style.direction || "row",

@@ -30,9 +30,9 @@ export function Console({ controller }: { controller: WorkspaceController }) {
             zIndex: 200,
             padding: 16,
           }}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
           transition={{ duration: 0.2, ease: "easeOut" }}
         >
           <div className="bg-background mx-auto flex w-full max-w-2xl flex-col gap-2 rounded-2xl border border-white/10 bg-background-300/80 p-3 shadow-2xl backdrop-blur-xl transition-all focus-within:max-w-3xl focus-within:border-primary-500/50">

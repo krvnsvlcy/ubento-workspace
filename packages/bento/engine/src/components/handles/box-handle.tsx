@@ -219,10 +219,6 @@ export function BoxHandle({
         zIndex: 10,
         cursor: isSelected ? "default" : "pointer",
         boxShadow: isSelected ? "0 0 0 2px #3b82f6" : "none",
-        borderRadius: element.style?.cornerRadius
-          ? `${element.style.cornerRadius * spacingBaseUnit}px`
-          : undefined,
-
         pointerEvents: "auto",
       }}
     >
@@ -236,31 +232,6 @@ export function BoxHandle({
           <EdgeHandle position="s" onMouseDown={handleMouseDown} />
           <EdgeHandle position="e" onMouseDown={handleMouseDown} />
           <EdgeHandle position="w" onMouseDown={handleMouseDown} />
-
-          <RadiusHandle
-            onMouseDown={handleMouseDown}
-            radius={element.style?.cornerRadius ?? 0}
-            width={width}
-            height={height}
-          />
-
-          {/* Label
-          <div
-            style={{
-              position: "absolute",
-              top: -24,
-              left: -2,
-              backgroundColor: "#3b82f6",
-              color: "white",
-              fontSize: "10px",
-              padding: "2px 6px",
-              borderRadius: "4px",
-              whiteSpace: "nowrap",
-              pointerEvents: "none",
-            }}
-          >
-            {element.type}
-          </div> */}
         </>
       )}
     </div>

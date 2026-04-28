@@ -44,20 +44,10 @@ export function getBaseStyle(style: BaseStyle): React.CSSProperties {
     maxHeight: style.maxHeight
       ? `${style.maxHeight * baseLengthConstraintsUnit}px`
       : undefined,
-    backgroundColor: style.background,
-    borderRadius: style.cornerRadius
-      ? `${style.cornerRadius * spacingBaseUnit}px`
-      : undefined,
     flexGrow: style.flex,
-    borderWidth: style.borderWidth ? `${style.borderWidth}px` : undefined,
-    borderStyle: style.borderWidth ? "solid" : undefined,
-    borderColor: style.borderColor,
     padding: style.padding
       ? `${(style.padding.top || 0) * spacingBaseUnit}px ${(style.padding.right || 0) * spacingBaseUnit}px ${(style.padding.bottom || 0) * spacingBaseUnit}px ${(style.padding.left || 0) * spacingBaseUnit}px`
       : undefined,
-    // transitionDuration: "0.05s",
-    // transitionProperty:
-    //   "width, height, border-radius, border-width, border-color, background-color, padding",
   };
 }
 

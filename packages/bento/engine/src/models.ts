@@ -7,10 +7,6 @@ export const baseElementStyleSchema = z.object({
   maxWidth: z.number().optional(),
   minHeight: z.number().optional(),
   maxHeight: z.number().optional(),
-  background: z.string().optional(),
-  cornerRadius: z.number().optional(),
-  borderWidth: z.number().optional(),
-  borderColor: z.string().optional(),
   flex: z.number().optional(),
   padding: z
     .object({
@@ -61,7 +57,6 @@ export const elementDataSchema = z.discriminatedUnion("type", [
 export type ElementData = z.infer<typeof elementDataSchema>;
 
 export const boardStyleSchema = z.object({
-  background: z.string().optional(),
   padding: z
     .object({
       top: z.number().optional(),

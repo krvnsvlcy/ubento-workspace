@@ -35,9 +35,9 @@ export function ThemeSelector({
               onClick={() => setIsThemeOpen(false)}
             />
             <motion.div
-              initial={{ opacity: 0, y: 10, scale: 0.95, x: "-50%" }}
-              animate={{ opacity: 1, y: 0, scale: 1, x: "-50%" }}
-              exit={{ opacity: 0, y: 10, scale: 0.95, x: "-50%" }}
+              initial={{ opacity: 0, x: "-50%" }}
+              animate={{ opacity: 1, x: "-50%" }}
+              exit={{ opacity: 0, x: "-50%" }}
               transition={{ duration: 0.2, ease: "easeOut" }}
               className="absolute left-1/2 top-12 z-50 min-w-[160px] overflow-hidden rounded-2xl border border-background-300 bg-background-100 p-1.5 shadow-2xl backdrop-blur-xl"
             >

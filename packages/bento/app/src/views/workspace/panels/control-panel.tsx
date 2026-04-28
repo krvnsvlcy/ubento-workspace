@@ -116,8 +116,6 @@ export function ControlPanel({
           style: {
             width: 100,
             height: 100,
-            background: "#3939dc44",
-            cornerRadius: 12,
           },
         });
       };
@@ -147,12 +145,6 @@ export function ControlPanel({
               </PropertyRow>
             </Section>
             <Section title="Appearance" icon={Palette}>
-              <PropertyRow label="Background">
-                <ColorInput
-                  value={board.style?.background}
-                  onChange={(v) => updateBoardStyle({ background: v })}
-                />
-              </PropertyRow>
               <PaddingControl
                 value={board.style?.padding}
                 onChange={(v) => updateBoardStyle({ padding: v })}
@@ -195,8 +187,6 @@ export function ControlPanel({
         style: {
           width: 100,
           height: 100,
-          background: "#3939dc44",
-          cornerRadius: 12,
         },
       });
     };
@@ -266,32 +256,6 @@ export function ControlPanel({
           </Section>
 
           <Section title="Appearance" icon={Palette}>
-            <PropertyRow label="Background">
-              <ColorInput
-                value={element.style?.background}
-                onChange={(v) => updateStyle({ background: v })}
-              />
-            </PropertyRow>
-            <PropertyRow label="Corner Radius">
-              <NumberInput
-                value={element.style?.cornerRadius}
-                onChange={(v) => updateStyle({ cornerRadius: v })}
-                unit="px"
-              />
-            </PropertyRow>
-            <PropertyRow label="Border Width">
-              <NumberInput
-                value={element.style?.borderWidth}
-                onChange={(v) => updateStyle({ borderWidth: v })}
-                unit="px"
-              />
-            </PropertyRow>
-            <PropertyRow label="Border Color">
-              <ColorInput
-                value={element.style?.borderColor}
-                onChange={(v) => updateStyle({ borderColor: v })}
-              />
-            </PropertyRow>
             <PaddingControl
               value={element.style?.padding}
               onChange={(v) => updateStyle({ padding: v })}
@@ -710,9 +674,9 @@ function Section({
       <AnimatePresence initial={false}>
         {isOpen && (
           <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             transition={{ duration: 0.2, ease: "easeInOut" }}
             className="overflow-hidden"
           >
