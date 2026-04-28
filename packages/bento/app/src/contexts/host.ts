@@ -3,9 +3,9 @@ import { createStore, ExtractState, StoreApi } from "zustand";
 import { useStoreWithEqualityFn } from "zustand/traditional";
 import type { BentoHostState, BentoHostStore } from "../types";
 
-export type BentoHostStoreApi = StoreApi<BentoHostStore>;
+export type BentoHostApi = StoreApi<BentoHostStore>;
 
-export function createBentoHost(initialState: BentoHostState): BentoHostStoreApi {
+export function createBentoHost(initialState: BentoHostState): BentoHostApi {
   return createStore<BentoHostStore>()((set, get) => ({
     ...initialState,
     goToLocation: (location) => {
@@ -16,34 +16,34 @@ export function createBentoHost(initialState: BentoHostState): BentoHostStoreApi
   }));
 }
 
-export const BentoHostContext = createContext<BentoHostStoreApi | null>(null);
+export const BentoHostContext = createContext<BentoHostApi | null>(null);
 
-export function useBento(): ExtractState<BentoHostStoreApi>;
-export function useBento<U>(
-  selector: (state: ExtractState<BentoHostStoreApi>) => U,
-): U;
-export function useBento<U>(
-  selector: (state: ExtractState<BentoHostStoreApi>) => U,
-  equalityFn: (a: U, b: U) => boolean,
-): U;
-export function useBento<U>(
-  selector?: (state: ExtractState<BentoHostStoreApi>) => U,
-  equalityFn?: (a: U, b: U) => boolean,
-) {
+export function useBentoHostApi(): BentoHostApi {
   const host = useContext(BentoHostContext);
 
   if (!host) {
     throw new Error("useBento must be used within a BentoHostProvider");
   }
 
+  return host;
+}
+
+export function useBentoHost(): ExtractState<BentoHostApi>;
+export function useBentoHost<U>(
+  selector: (state: ExtractState<BentoHostApi>) => U,
+): U;
+export function useBentoHost<U>(
+  selector: (state: ExtractState<BentoHostApi>) => U,
+  equalityFn: (a: U, b: U) => boolean,
+): U;
+export function useBentoHost<U>(
+  selector?: (state: ExtractState<BentoHostApi>) => U,
+  equalityFn?: (a: U, b: U) => boolean,
+) {
+  const host = useBentoHostApi();
   if (selector) {
     return useStoreWithEqualityFn(host, selector, equalityFn);
   } else {
     return useStoreWithEqualityFn(host);
   }
-}
-
-// For backward compatibility while refactoring
-export function useBentoHost(): ExtractState<BentoHostStoreApi> {
-  return useBento();
 }

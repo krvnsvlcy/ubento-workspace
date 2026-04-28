@@ -16,10 +16,7 @@ export function useKeyboardShortcuts({
         if (now - lastShiftPress.current < 300) {
           controller.setState((s) => ({
             ...s,
-            context: {
-              ...s.context,
-              mode: s.context.mode === "edit" ? "live" : "edit",
-            },
+            mode: s.mode === "edit" ? "live" : "edit",
           }));
           lastShiftPress.current = 0;
         } else {
@@ -30,5 +27,5 @@ export function useKeyboardShortcuts({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [snap.context.mode, controller]);
+  }, [snap.mode, controller]);
 }

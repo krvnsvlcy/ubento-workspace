@@ -1,4 +1,4 @@
-import { useBentoHost } from "@/contexts/host";
+import { useBentoHostApi } from "@/contexts/host";
 import { useUbento } from "@/hooks/ubento";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
@@ -13,7 +13,7 @@ export function Workspace({
   slug: string;
   boardId?: string;
 }) {
-  const host = useBentoHost();
+  const host = useBentoHostApi();
   const queryClient = useQueryClient();
   const ubento = useUbento();
 

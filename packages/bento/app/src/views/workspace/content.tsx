@@ -12,12 +12,9 @@ export function WorkspaceContent({
 }: {
   controller: WorkspaceController;
 }) {
-  const isEditMode = useStore(
-    controller,
-    (state) => state.context.mode === "edit",
-  );
+  const isEditMode = useStore(controller, (state) => state.mode === "edit");
   const background = useStore(controller, (state) => {
-    const activeBoardId = state.context.location?.boardId;
+    const activeBoardId = state.location?.boardId;
     const boardData = activeBoardId ? state.boards[activeBoardId] : null;
     return boardData?.style?.background;
   });
@@ -82,10 +79,10 @@ export function WorkspaceContent({
         side={{
           edge: "right",
           content:
-            state.context.mode === "edit" ? (
+            state.mode === "edit" ? (
               <ControlPanel controller={controller} />
             ) : null,
-          size: state.context.mode === "edit" ? inspectorWidth : 0,
+          size: state.mode === "edit" ? inspectorWidth : 0,
           onSizeChange: setInspectorWidth,
           minSize: 240,
           maxSize: 600,

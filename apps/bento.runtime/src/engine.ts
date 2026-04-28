@@ -1,6 +1,7 @@
 import type {
   BaseStyle,
   ElementData,
+  EngineLocation,
   EngineMode,
   EngineState,
   EngineStore,
@@ -31,6 +32,9 @@ export function createEngine({
     },
     setSelection: (selection: string[]) => {
       set({ selection });
+    },
+    setLocation: (location: EngineLocation) => {
+      set({ location });
     },
 
     // interaction
@@ -450,9 +454,13 @@ export function createEngine({
     selectionChanged: ({ selection }) => {
       engine.getState().setSelection(selection);
     },
+    locationChanged: ({ location }) => {
+      engine.getState().setLocation(location);
+    },
 
     // mutations
     setHomeBoardId: async ({ homeBoardId }) => {
+      alert(homeBoardId);
       engine.getState().setHomeBoardId(homeBoardId);
     },
     updateWorkspace: async ({ workspace }) => {

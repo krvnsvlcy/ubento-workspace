@@ -27,7 +27,12 @@ export function WorkspaceNavigation({
               icon={<Home className="h-4 w-4" />}
             />
             <IconButton
-              onClick={() => host.goToLocation({ view: "home", params: {} })}
+              onClick={() =>
+                host.goToLocation({
+                  view: "workspace",
+                  params: { slug: snap.workspace?.slug! },
+                })
+              }
               icon={<LayoutDashboard className="h-4 w-4" />}
             />
           </div>

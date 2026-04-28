@@ -1,8 +1,8 @@
 import { ErrorView } from "@/components/error";
 import {
   BentoHostContext,
-  useBento,
-  type BentoHostStoreApi,
+  useBentoHost,
+  type BentoHostApi,
 } from "@/contexts/host";
 import { Builder } from "@/views/builder/builder";
 import { Home } from "@/views/home/home";
@@ -11,7 +11,7 @@ import { Workspaces } from "@/views/workspaces/workspaces";
 import { AnimatePresence, motion } from "motion/react";
 import { BentoSessionContext } from "./contexts/session";
 
-export function Bento({ host }: { host: BentoHostStoreApi }) {
+export function Bento({ host }: { host: BentoHostApi }) {
   return (
     <BentoHostContext value={host}>
       <BentoContent />
@@ -20,8 +20,8 @@ export function Bento({ host }: { host: BentoHostStoreApi }) {
 }
 
 function BentoContent() {
-  const location = useBento((s) => s.location);
-  const session = useBento((s) => s.session);
+  const location = useBentoHost((s) => s.location);
+  const session = useBentoHost((s) => s.session);
   let content = <></>;
 
   switch (location.view) {

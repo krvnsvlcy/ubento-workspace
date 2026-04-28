@@ -53,6 +53,7 @@ export type EngineStore = EngineState & {
   setMode: (mode: EngineMode) => void;
   setWorkspace: (workspace: WorkspaceData) => void;
   setSelection: (selection: string[]) => void;
+  setLocation: (location?: EngineLocation) => void;
 
   setHomeBoardId: (homeBoardId: string) => void;
   updateWorkspace: (workspace: Partial<WorkspaceData>) => void;

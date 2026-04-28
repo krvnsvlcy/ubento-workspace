@@ -37,9 +37,9 @@ export function ControlPanel({
   const [activeTab, setActiveTab] = useState<"context" | "workspace">(
     "context",
   );
-  const currentBoardId = state.context.location?.boardId;
+  const currentBoardId = state.location?.boardId;
   const board = currentBoardId ? state.boards[currentBoardId] : null;
-  const selectedId = state.context.selection?.[0];
+  const selectedId = state.selection?.[0];
   const element = selectedId && board ? board.elements[selectedId] : null;
 
   const renderTabs = () => (
