@@ -2,7 +2,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { ButtonHTMLAttributes, forwardRef, ReactNode } from "react";
 
 export const iconButtonVariants = cva(
-  "group flex items-center justify-center rounded-lg transition-colors cursor-pointer",
+  "group flex items-center justify-center transition-colors cursor-pointer",
   {
     variants: {
       variant: {
@@ -19,10 +19,16 @@ export const iconButtonVariants = cva(
         sm: "h-6 w-6",
         lg: "h-10 w-10",
       },
+      shape: {
+        rounded: "rounded-lg",
+        square: "rounded-sm",
+        circle: "rounded-full",
+      },
     },
     defaultVariants: {
       variant: "default",
       size: "default",
+      shape: "rounded",
     },
   },
 );
@@ -35,11 +41,11 @@ export interface IconButtonProps
 }
 
 export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
-  ({ className, variant, size, icon, children, ...props }, ref) => {
+  ({ className, variant, size, shape, icon, children, ...props }, ref) => {
     return (
       <button
         ref={ref}
-        className={iconButtonVariants({ variant, size, className })}
+        className={iconButtonVariants({ variant, size, shape, className })}
         {...props}
       >
         {icon || children}

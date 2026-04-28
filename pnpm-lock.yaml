@@ -444,6 +444,9 @@ importers:
       '@ubento/sdk':
         specifier: workspace:*
         version: link:../../core/sdk
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
       dequal:
         specifier: ^2.0.3
         version: 2.0.3
