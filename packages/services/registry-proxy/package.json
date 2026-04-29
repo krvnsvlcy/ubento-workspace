@@ -1,0 +1,22 @@
+{
+  "name": "@ubento/registry-proxy",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./build/index.js",
+      "types": "./build/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "scripts build",
+    "watch": "scripts watch"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.100.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}

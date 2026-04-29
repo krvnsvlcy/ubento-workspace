@@ -1,8 +1,8 @@
 import { lemonSqueezySetup } from "@lemonsqueezy/lemonsqueezy.js";
 import * as ls from "@lemonsqueezy/lemonsqueezy.js";
-import { createResourceProxy, UbentoResource } from "./proxy.js";
+import { createResourceProxy, UbentoResource } from "@ubento/registry-proxy";
 
-export * from "./proxy.js";
+export * from "@ubento/registry-proxy";
 
 export type LemonSqueezyService = {
   stores: UbentoResource<any>;

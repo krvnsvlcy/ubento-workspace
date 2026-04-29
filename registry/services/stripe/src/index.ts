@@ -2,9 +2,9 @@ import Stripe from "stripe";
 import { createStripeCoreService } from "./core.js";
 import { createStripePaymentsService } from "./payments.js";
 import { createStripeBillingService } from "./billing.js";
-import { createResourceProxy } from "./proxy.js";
+import { createResourceProxy } from "@ubento/registry-proxy";
 
-export * from "./proxy.js";
+export * from "@ubento/registry-proxy";
 export * from "./core.js";
 export * from "./payments.js";
 export * from "./billing.js";
@@ -26,11 +26,11 @@ export default function ({ ubento, apiKey, ...args }: any) {
 
     // Advanced topologies could be added here
     checkout: {
-      sessions: createResourceProxy<Stripe.Checkout.SessionsResource>(stripe.checkout, "sessions"),
+      sessions: createResourceProxy<Stripe.Checkout.SessionsResource>("stripe", stripe.checkout, "sessions"),
     },
     terminal: {
-      locations: createResourceProxy<Stripe.Terminal.LocationsResource>(stripe.terminal, "locations"),
-      readers: createResourceProxy<Stripe.Terminal.ReadersResource>(stripe.terminal, "readers"),
+      locations: createResourceProxy<Stripe.Terminal.LocationsResource>("stripe", stripe.terminal, "locations"),
+      readers: createResourceProxy<Stripe.Terminal.ReadersResource>("stripe", stripe.terminal, "readers"),
     },
     // Allows raw access to the underlying SDK if necessary
     client: stripe,

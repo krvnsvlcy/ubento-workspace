@@ -1,31 +1,29 @@
 import { useMutation, useQuery, useQueryClient, UseQueryResult, UseMutationResult } from "@tanstack/react-query";
-import Stripe from "stripe";
 
-const QUERY_METHODS = ["list", "retrieve", "search"];
+const QUERY_METHODS = ["list", "get", "retrieve", "search"];
 
-type QueryHook<Method> = Method extends (...args: infer Args) => Promise<infer Result>
+export type QueryHook<Method> = Method extends (...args: infer Args) => Promise<infer Result>
   ? (...args: Args) => UseQueryResult<Result, Error>
   : never;
 
-// Advanced type inference to handle different Stripe method signatures
-type MutationHook<Method> = Method extends (id: string, params: infer Params, ...rest: any[]) => Promise<infer Result>
-  ? () => UseMutationResult<Result, Error, { id: string; params: Params }>
+export type MutationHook<Method> = Method extends (id: string | number, params: infer Params, ...rest: any[]) => Promise<infer Result>
+  ? () => UseMutationResult<Result, Error, { id: string | number; params: Params }>
   : Method extends (params: infer Params, ...rest: any[]) => Promise<infer Result>
   ? () => UseMutationResult<Result, Error, Params>
   : Method extends (...args: infer Args) => Promise<infer Result>
   ? () => UseMutationResult<Result, Error, Args>
   : never;
 
-type ResourceHooks<T> = {
-  [K in keyof T as K extends string ? `use${Capitalize<K>}` : never]: K extends "list" | "retrieve" | "search"
+export type ResourceHooks<T> = {
+  [K in keyof T as K extends string ? `use${Capitalize<K>}` : never]: K extends "list" | "get" | "retrieve" | "search"
     ? QueryHook<T[K]>
     : MutationHook<T[K]>;
 };
 
-export type UbentoStripeResource<T> = T & ResourceHooks<T>;
+export type UbentoResource<T> = T & ResourceHooks<T>;
 
-export function createResourceProxy<T>(stripeParent: any, resourceName: string): UbentoStripeResource<T> {
-  const resource = stripeParent[resourceName];
+export function createResourceProxy<T>(serviceName: string, parent: any, resourceName: string): UbentoResource<T> {
+  const resource = parent[resourceName];
   if (!resource) return undefined as any;
 
   return new Proxy(resource, {
@@ -38,15 +36,14 @@ export function createResourceProxy<T>(stripeParent: any, resourceName: string):
           return undefined;
         }
 
-        // Return a hook function
         if (QUERY_METHODS.includes(methodName)) {
           return function (...args: any[]) {
             return useQuery({
-              queryKey: ["stripe", resourceName, methodName, ...args],
+              queryKey: [serviceName, resourceName, methodName, ...args],
               queryFn: () => originalMethod.apply(target, args),
-              enabled: args.length === 0 || args[0] !== undefined, // Basic enabled logic
+              enabled: args.length === 0 || args[0] !== undefined,
             });
-          };
+          } as any;
         } else {
           return function () {
             const queryClient = useQueryClient();
@@ -55,26 +52,24 @@ export function createResourceProxy<T>(stripeParent: any, resourceName: string):
                 if (Array.isArray(args)) {
                   return originalMethod.apply(target, args);
                 }
-                // Check if it's the { id, params } signature
                 if (args && typeof args === "object" && "id" in args && "params" in args && Object.keys(args).length === 2) {
                   return originalMethod.call(target, args.id, args.params);
                 }
                 return originalMethod.call(target, args);
               },
               onSuccess: () => {
-                queryClient.invalidateQueries({ queryKey: ["stripe", resourceName] });
+                queryClient.invalidateQueries({ queryKey: [serviceName, resourceName] });
               },
             });
-          };
+          } as any;
         }
       }
 
-      // Fallback to original method
       const value = target[prop];
       if (typeof value === "function") {
         return value.bind(target);
       }
       return value;
     }
-  }) as UbentoStripeResource<T>;
+  }) as UbentoResource<T>;
 }

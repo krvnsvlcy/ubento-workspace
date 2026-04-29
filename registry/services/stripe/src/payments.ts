@@ -1,16 +1,16 @@
 import Stripe from "stripe";
-import { createResourceProxy } from "./proxy.js";
+import { createResourceProxy } from "@ubento/registry-proxy";
 
 export function createStripePaymentsService(stripe: Stripe) {
   return {
-    paymentIntents: createResourceProxy<Stripe.PaymentIntentsResource>(stripe, "paymentIntents"),
-    paymentMethods: createResourceProxy<Stripe.PaymentMethodsResource>(stripe, "paymentMethods"),
-    paymentLinks: createResourceProxy<Stripe.PaymentLinksResource>(stripe, "paymentLinks"),
-    charges: createResourceProxy<Stripe.ChargesResource>(stripe, "charges"),
-    refunds: createResourceProxy<Stripe.RefundsResource>(stripe, "refunds"),
-    setupIntents: createResourceProxy<Stripe.SetupIntentsResource>(stripe, "setupIntents"),
-    setupAttempts: createResourceProxy<Stripe.SetupAttemptsResource>(stripe, "setupAttempts"),
-    disputes: createResourceProxy<Stripe.DisputesResource>(stripe, "disputes"),
-    payouts: createResourceProxy<Stripe.PayoutsResource>(stripe, "payouts"),
+    paymentIntents: createResourceProxy("stripe", stripe, "paymentIntents"),
+    paymentMethods: createResourceProxy("stripe", stripe, "paymentMethods"),
+    paymentLinks: createResourceProxy("stripe", stripe, "paymentLinks"),
+    charges: createResourceProxy("stripe", stripe, "charges"),
+    refunds: createResourceProxy("stripe", stripe, "refunds"),
+    setupIntents: createResourceProxy("stripe", stripe, "setupIntents"),
+    setupAttempts: createResourceProxy("stripe", stripe, "setupAttempts"),
+    disputes: createResourceProxy("stripe", stripe, "disputes"),
+    payouts: createResourceProxy("stripe", stripe, "payouts"),
   };
 }

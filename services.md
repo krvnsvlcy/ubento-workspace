@@ -1,3 +1,10 @@
+0. Personal Vitality & Environment (The Human Infra)
+   A founder's body and mind are the most critical infrastructure of the company. If the "Human Infra" is failing, the "Cloud Infra" doesn't matter.
+
+Tier 1 Tools: Oura, Spotify, Google Calendar (Personal), Plaid, Coinbase, Todoist, Philips Hue.
+
+Why here: Oura monitors biological readiness, Spotify manages flow state, Plaid/Coinbase track total personal runway, and Todoist captures the 3 AM ideas. This is the first thing a founder checks before starting work.
+
 1. Revenue & Financial Operations (The Oxygen)
    Founders will tolerate bugs in a marketing dashboard, but they will check their money ten times a day. If Ubento is going to be their command center, it must hold their financial truth.
 
@@ -17,7 +24,7 @@ Why here: This is the modern engineering trinity. Tying Vercel deployment status
 
 Tier 1 Tools: Supabase / PostgreSQL, Airtable.
 
-Why here: Supabase and raw Postgres are essential for pulling custom backend metrics (like "active workspaces"), while Airtable handles the operations that haven't been coded yet. (Notion and Google Sheets can follow in a later iteration).
+Why here: Supabase and raw Postgres are essential for pulling custom backend metrics (like "active workspaces"), while Airtable handles the operations that haven't been coded yet.
 
 4. Product Analytics & Telemetry (The Feedback Loop)
    Before focusing on support tickets or social media, a founder needs to know if the features they just shipped (via GitHub/Vercel) are actually being used.
@@ -26,23 +33,37 @@ Tier 1 Tools: PostHog, Plausible (or Google Analytics).
 
 Why here: PostHog gives deep, feature-level telemetry and funnel analysis, which is critical for iterating quickly.
 
-5. Core Cloud Infrastructure (The Foundation)
-   While Vercel handles the frontend, founders still need to monitor the underlying raw infrastructure to prevent surprise bills or DNS disasters.
+5. Cloud Infrastructure & System Health (The Peace of Mind)
+   Founders care about the "Is it down?" heartbeats and surprise costs more than deep CPU metrics. Monitoring the gatekeepers and the error logs is critical for stability.
 
-Tier 1 Tools: AWS (specifically S3, Route 53, and billing endpoints).
+Tier 1 Tools: AWS, Cloudflare, Sentry, Better Stack.
 
-Why here: It’s lower on the daily interaction list than Linear or Stripe, but pulling AWS billing alerts or S3 storage limits into Ubento prevents catastrophic blind spots.
+Why here: AWS handles the raw resources, Cloudflare manages the entry point, Sentry tracks critical failures, and Better Stack provides the "Is it down?" peace of mind.
 
-6. Community & Distribution Traction (The Top of Funnel)
-   Growth and feedback. Where are the users coming from, and what are they saying?
+6. Growth, Outbound & Marketing (The Engine)
+   Founders in the early stages are the primary sales engine. They need to see their distribution efforts and lead pipelines in real-time.
 
-Tier 1 Tools: Reddit, X.
+Tier 1 Tools: Resend, Apollo.io, Reddit, X.
 
-Why here: Tracking organic distribution and traction on high-signal platforms like Reddit provides immediate, unfiltered market feedback. (YouTube, Facebook, TikTok, and LinkedIn can wait for a later update).
+Why here: Resend handles the modern email stack, Apollo manages the outbound funnel, while Reddit and X track organic traction and community feedback.
 
-7. Customer Data & Support (The Scale)
+7. Global Scaling & Operations (The Expansion)
+   Once the team grows beyond the founder, hiring, payroll, and scaling infrastructure become the primary bottleneck.
+
+Tier 1 Tools: Deel, Railway, DigitalOcean.
+
+Why here: Deel handles global contractor/employee management, while Railway and DigitalOcean provide simpler, scalable alternatives to the complexity of AWS for growing teams.
+
+8. Customer Data & Support (The Scale)
    As the company grows, tracking individual tickets and sales pipelines becomes important, but for early-stage entrepreneurs, this is often secondary to product and revenue.
 
 Tier 1 Tools: Intercom, HubSpot.
 
-Why here: Zendesk and Salesforce are enterprise-heavy. Starting with Intercom (for user chat) and HubSpot (for basic CRM) fits the early-founder demographic much better.
+Why here: Intercom (for user chat) and HubSpot (for basic CRM) fit the early-founder demographic much better than enterprise-heavy alternatives.
+
+9. Knowledge & Design (The Context)
+   The final layer is pulling in the creative and strategic context that drives the work.
+
+Tier 1 Tools: Figma, Notion.
+
+Why here: Surfacing the latest design versions from Figma and critical strategy notes from Notion turns Ubento from a dashboard into a true "Command Center" for the whole company's context.
