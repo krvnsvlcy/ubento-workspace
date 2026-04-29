@@ -49,31 +49,29 @@ export interface CursorPageResponse<T> {
   data: T[];
   page: {
     type: "cursor";
-    cursor?: string;
     nextCursor?: string;
   };
 }
 
 export function makeCursorPageResponse<T>({
-  data,
-  currentCursor,
+  items,
   nextCursor,
 }: {
-  data: T[];
-  currentCursor: EncodedCursor;
-  nextCursor: EncodedCursor;
+  items: T[];
+  nextCursor?: EncodedCursor;
 }): CursorPageResponse<T> {
   return {
-    data,
+    data: items,
     page: {
       type: "cursor",
-      cursor: currentCursor,
       nextCursor,
     },
   };
 }
 
-export function makeCursorPageResponseSchema(dataSchema: Record<string, any>) {
+export function makeCursorPageResponseSchema(
+  dataSchema: Record<string, any>,
+): any {
   return {
     type: "object",
     properties: {
@@ -85,8 +83,6 @@ export function makeCursorPageResponseSchema(dataSchema: Record<string, any>) {
         type: "object",
         properties: {
           type: { type: "string", enum: ["cursor"] },
-          // OpenAPI 3.0 compatible nullable fields
-          cursor: { type: "string", nullable: true },
           nextCursor: { type: "string", nullable: true },
         },
         required: ["type"],

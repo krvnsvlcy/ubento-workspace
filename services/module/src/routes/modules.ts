@@ -3,6 +3,7 @@ import {
   chain,
   dataResponse,
   enforce,
+  makeCursorPageResponse,
   NotFoundError,
   validate,
 } from "@ubento/service-toolkit";
@@ -76,10 +77,12 @@ modulesRouter.get(
         }),
     }),
     async (req, res) => {
-      const modules = await listModules({
+      const result = await listModules({
         team_id: req.query.team_id as string | undefined,
+        limit: req.query.limit ? Number(req.query.limit) : undefined,
+        cursor: req.query.cursor as string | undefined,
       });
-      res.json(dataResponse(modules));
+      res.json(makeCursorPageResponse(result));
     },
   ),
 );
@@ -123,6 +126,10 @@ modulesRouter.get(
       params: z.object({
         module_id: z.string(),
       }),
+      query: z.object({
+        limit: z.coerce.number().optional(),
+        cursor: z.string().optional(),
+      }),
     }),
     enforce({
       permissions: [ubentoAuth.actions.module.read],
@@ -140,8 +147,12 @@ modulesRouter.get(
       },
     }),
     async (req, res) => {
-      const versions = await getModuleVersions(req.params.module_id);
-      res.json(dataResponse(versions));
+      const result = await getModuleVersions({
+        module_id: req.params.module_id,
+        limit: req.query.limit ? Number(req.query.limit) : undefined,
+        cursor: req.query.cursor as string | undefined,
+      });
+      res.json(makeCursorPageResponse(result));
     },
   ),
 );

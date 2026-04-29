@@ -1,8 +1,8 @@
 import {
   chain,
+  makeCursorPageResponse,
   parseCursorQuery,
   parseStringQuery,
-  setNextLink,
   toSerializable,
   validate,
 } from "@ubento/service-toolkit";
@@ -24,7 +24,7 @@ const router = Router();
 // List invoices
 router.get("/invoices", async (req, res, next) => {
   try {
-    const { items, nextCursor } = await listInvoices({
+    const result = await listInvoices({
       ...parseCursorQuery(req),
       organization_id: parseStringQuery(req, "organization_id"),
       status: parseStringQuery(req, "status") as InvoiceStatus | undefined,
@@ -35,8 +35,7 @@ router.get("/invoices", async (req, res, next) => {
         ? new Date(req.query.created_before as string)
         : undefined,
     });
-    setNextLink(req, res, nextCursor);
-    res.json(toSerializable(items));
+    res.json(toSerializable(makeCursorPageResponse(result)));
   } catch (e) {
     next(e);
   }
@@ -56,15 +55,14 @@ router.get("/invoices/:id", async (req, res) => {
 // List subscriptions for a organization
 router.get("/", async (req, res, next) => {
   try {
-    const { items, nextCursor } = await listSubscriptions({
+    const result = await listSubscriptions({
       ...parseCursorQuery(req),
       organization_id: parseStringQuery(req, "organization_id"),
       product_code: parseStringQuery(req, "product_code"),
       offer_code: parseStringQuery(req, "offer_code"),
       status: parseStringQuery(req, "status") as SubscriptionStatus | undefined,
     });
-    setNextLink(req, res, nextCursor);
-    res.json(toSerializable(items));
+    res.json(toSerializable(makeCursorPageResponse(result)));
   } catch (e) {
     next(e);
   }

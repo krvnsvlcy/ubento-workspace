@@ -1,4 +1,5 @@
 import { moduleSchemas } from "@ubento/database/module";
+import { makeCursorPageResponseSchema } from "@ubento/service-toolkit";
 import { OpenAPIV3 } from "openapi-types";
 
 export const spec: OpenAPIV3.Document = {
@@ -46,16 +47,9 @@ export const spec: OpenAPIV3.Document = {
             description: "A list of modules",
             content: {
               "application/json": {
-                schema: {
-                  type: "object",
-                  properties: {
-                    data: {
-                      type: "array",
-                      items: { $ref: "#/components/schemas/Module" },
-                    },
-                  },
-                  required: ["data"],
-                },
+                schema: makeCursorPageResponseSchema({
+                  $ref: "#/components/schemas/Module",
+                }),
               },
             },
           },
@@ -190,16 +184,9 @@ export const spec: OpenAPIV3.Document = {
             description: "A list of module versions",
             content: {
               "application/json": {
-                schema: {
-                  type: "object",
-                  properties: {
-                    data: {
-                      type: "array",
-                      items: { $ref: "#/components/schemas/ModuleVersion" },
-                    },
-                  },
-                  required: ["data"],
-                },
+                schema: makeCursorPageResponseSchema({
+                  $ref: "#/components/schemas/ModuleVersion",
+                }),
               },
             },
           },

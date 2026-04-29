@@ -64,6 +64,11 @@ export interface paths {
                     content: {
                         "application/json": {
                             data: components["schemas"]["Module"][];
+                            page: {
+                                /** @enum {string} */
+                                type: "cursor";
+                                nextCursor?: string | null;
+                            };
                         };
                     };
                 };
@@ -226,11 +231,127 @@ export interface paths {
                     content: {
                         "application/json": {
                             data: components["schemas"]["ModuleVersion"][];
+                            page: {
+                                /** @enum {string} */
+                                type: "cursor";
+                                nextCursor?: string | null;
+                            };
                         };
                     };
                 };
             };
         };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/modules/{module_id}/files/{filename}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Update Module File */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    module_id: string;
+                    filename: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        content: string;
+                        autoTranspile?: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description File updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            [key: string]: string;
+                        };
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/modules/{module_id}/files/{filename}/restore": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Restore Module File */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    module_id: string;
+                    filename: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        hash: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description File restored */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            success?: boolean;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/modules/{module_id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
         put?: never;
         /** Publish Module Version */
         post: {
@@ -242,13 +363,7 @@ export interface paths {
                 };
                 cookie?: never;
             };
-            requestBody: {
-                content: {
-                    "application/json": {
-                        source: string;
-                    };
-                };
-            };
+            requestBody?: never;
             responses: {
                 /** @description Version published */
                 201: {
@@ -402,9 +517,12 @@ export interface components {
             entity: string;
             team_id: string;
             name: string;
-            slug: string;
-            latest_version_id: string;
-            scope: string;
+            type: string;
+            summary: string;
+            latest_version_id?: string;
+            /** @enum {string} */
+            scope: "public" | "private";
+            files: Record<string, never>;
             /** @default 1 */
             version: number;
             /** Format: date-time */
@@ -419,6 +537,7 @@ export interface components {
             /** @default module_version */
             entity: string;
             module_id: string;
+            files: Record<string, never>;
             /** @default 1 */
             version: number;
             /** Format: date-time */

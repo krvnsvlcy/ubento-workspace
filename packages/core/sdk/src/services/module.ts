@@ -33,8 +33,7 @@ export class ModuleService {
         query: { team_id },
       },
     });
-    const data = extractResponseData(result) as any;
-    return data.data as Module[];
+    return extractResponseData(result, true);
   }
 
   async getModule(moduleId: string) {
@@ -43,7 +42,7 @@ export class ModuleService {
         path: { module_id: moduleId },
       },
     });
-    return extractResponseData(result) as Module;
+    return extractResponseData(result, true) as Module;
   }
 
   async getModuleBySlug(slug: string) {
@@ -52,7 +51,7 @@ export class ModuleService {
         path: { slug },
       },
     });
-    return extractResponseData(result) as Module;
+    return extractResponseData(result, true) as Module;
   }
 
   async createModule(data: {
@@ -98,8 +97,7 @@ export class ModuleService {
         },
       },
     );
-    const data = extractResponseData(result) as any;
-    return data.data as ModuleVersion[];
+    return extractResponseData(result, true);
   }
 
   async publishModuleVersion(moduleId: string, data: { source: string }) {
@@ -124,7 +122,7 @@ export class ModuleService {
         },
       },
     );
-    return extractResponseData(result) as ModuleVersion;
+    return extractResponseData(result, true) as ModuleVersion;
   }
 
   async getModuleVersionSource(moduleId: string, versionId: string) {
@@ -136,7 +134,7 @@ export class ModuleService {
         },
       },
     );
-    const data = extractResponseData(result) as any;
+    const data = extractResponseData(result, true) as any;
     return data.source as string;
   }
 
@@ -149,7 +147,7 @@ export class ModuleService {
         },
       },
     );
-    const data = extractResponseData(result) as any;
+    const data = extractResponseData(result, true) as any;
     return data.artifact as string;
   }
 }

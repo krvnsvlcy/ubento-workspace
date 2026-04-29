@@ -27,8 +27,12 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
-                            items: components["schemas"]["Workspace"][];
-                            next_cursor?: string | null;
+                            data: components["schemas"]["Workspace"][];
+                            page: {
+                                /** @enum {string} */
+                                type: "cursor";
+                                nextCursor?: string | null;
+                            };
                         };
                     };
                 };
@@ -234,8 +238,12 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
-                            items: components["schemas"]["Board"][];
-                            next_cursor?: string | null;
+                            data: components["schemas"]["Board"][];
+                            page: {
+                                /** @enum {string} */
+                                type: "cursor";
+                                nextCursor?: string | null;
+                            };
                         };
                     };
                 };
@@ -401,8 +409,12 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
-                            items: components["schemas"]["WorkspaceMembership"][];
-                            next_cursor?: string | null;
+                            data: components["schemas"]["WorkspaceMembership"][];
+                            page: {
+                                /** @enum {string} */
+                                type: "cursor";
+                                nextCursor?: string | null;
+                            };
                         };
                     };
                 };
@@ -515,8 +527,12 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
-                            items: components["schemas"]["WorkspaceInvite"][];
-                            next_cursor?: string | null;
+                            data: components["schemas"]["WorkspaceInvite"][];
+                            page: {
+                                /** @enum {string} */
+                                type: "cursor";
+                                nextCursor?: string | null;
+                            };
                         };
                     };
                 };

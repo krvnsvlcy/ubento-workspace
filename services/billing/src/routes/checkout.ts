@@ -1,8 +1,8 @@
 import {
   chain,
+  makeCursorPageResponse,
   parseCursorQuery,
   parseStringQuery,
-  setNextLink,
   toSerializable,
   validate,
 } from "@ubento/service-toolkit";
@@ -19,14 +19,13 @@ const router = Router();
 // List checkouts
 router.get("/", async (req, res, next) => {
   try {
-    const { items, nextCursor } = await listCheckouts({
+    const result = await listCheckouts({
       ...parseCursorQuery(req),
       organization_id: parseStringQuery(req, "organization_id"),
       product_code: parseStringQuery(req, "product_code"),
       offer_code: parseStringQuery(req, "offer_code"),
     });
-    setNextLink(req, res, nextCursor);
-    res.json(toSerializable(items));
+    res.json(toSerializable(makeCursorPageResponse(result)));
   } catch (e) {
     next(e);
   }

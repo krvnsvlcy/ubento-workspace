@@ -5,6 +5,7 @@ import {
   slugify,
   ubentoEntities,
 } from "@ubento/primitives";
+import { prismaListWithCursor } from "@ubento/service-toolkit";
 import crypto from "crypto";
 import { customAlphabet } from "nanoid";
 import { publishFilesToUserContent, readFromCAS, storeInCAS } from "../lib/gcs.js";
@@ -297,21 +298,36 @@ export async function deleteModule(id: string) {
   });
 }
 
-export async function listModules(filter: { team_id?: string }) {
-  return await prisma.module.findMany({
+export async function listModules(filters: {
+  team_id?: string;
+  limit?: number;
+  cursor?: string;
+}) {
+  return await prismaListWithCursor(prisma.module, {
+    limit: filters.limit,
+    cursor: filters.cursor,
     where: {
-      team_id: filter.team_id,
+      team_id: filters.team_id,
       deleted_at: {
         isSet: false,
       },
     },
+    orderBy: { created_at: "desc" },
+    resolveCursor: (i) => ({ id: i.id }),
   });
 }
 
-export async function getModuleVersions(moduleId: string) {
-  return await prisma.moduleVersion.findMany({
-    where: { module_id: moduleId },
+export async function getModuleVersions(filters: {
+  module_id: string;
+  limit?: number;
+  cursor?: string;
+}) {
+  return await prismaListWithCursor(prisma.moduleVersion, {
+    limit: filters.limit,
+    cursor: filters.cursor,
+    where: { module_id: filters.module_id },
     orderBy: { created_at: "desc" },
+    resolveCursor: (v) => ({ id: v.id }),
   });
 }
 
@@ -325,10 +341,18 @@ export async function getModuleFile(moduleId: string, hash: string) {
   return await readFromCAS({ moduleId, hash });
 }
 
-export async function getModuleFileHistory(moduleId: string, filename: string) {
-  return await prisma.moduleFileRevision.findMany({
-    where: { module_id: moduleId, filename },
+export async function getModuleFileHistory(filters: {
+  module_id: string;
+  filename: string;
+  limit?: number;
+  cursor?: string;
+}) {
+  return await prismaListWithCursor(prisma.moduleFileRevision, {
+    limit: filters.limit,
+    cursor: filters.cursor,
+    where: { module_id: filters.module_id, filename: filters.filename },
     orderBy: { created_at: "desc" },
+    resolveCursor: (r) => ({ id: r.id }),
   });
 }
 

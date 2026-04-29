@@ -3,6 +3,7 @@ import {
   makeEntityId,
   ubentoEntities,
 } from "@ubento/primitives";
+import { prismaListWithCursor } from "@ubento/service-toolkit";
 import prisma from "../lib/prisma.js";
 
 export async function getBoard(id: string) {
@@ -51,10 +52,21 @@ export async function deleteBoard(id: string) {
   });
 }
 
-export async function listBoards(workspace_id: string) {
-  return await prisma.board.findMany({
+export async function listBoards(filters: {
+  workspace_id: string;
+  limit?: number;
+  cursor?: string;
+}) {
+  return await prismaListWithCursor(prisma.board, {
     where: {
-      workspace_id,
+      workspace_id: filters.workspace_id,
+      deleted_at: {
+        isSet: false,
+      },
     },
+    limit: filters.limit,
+    cursor: filters.cursor,
+    orderBy: { created_at: "desc" },
+    resolveCursor: (i) => ({ id: i.id }),
   });
 }

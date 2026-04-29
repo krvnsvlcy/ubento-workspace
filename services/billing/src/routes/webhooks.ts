@@ -1,7 +1,7 @@
 import {
+    makeCursorPageResponse,
     parseCursorQuery,
     parseStringQuery,
-    setNextLink,
     toSerializable,
 } from "@ubento/service-toolkit";
 import { Provider } from "@ubento/database/billing";
@@ -16,15 +16,14 @@ const router = Router();
 // List webhook events
 router.get("/", async (req, res, next) => {
     try {
-        const { items, nextCursor } = await listWebhookEvents({
+        const result = await listWebhookEvents({
             ...parseCursorQuery(req),
             provider: parseStringQuery(req, "provider") as Provider | undefined,
             processed: req.query.processed === "true" ? true : req.query.processed === "false" ? false : undefined,
             created_after: req.query.created_after ? new Date(req.query.created_after as string) : undefined,
             created_before: req.query.created_before ? new Date(req.query.created_before as string) : undefined,
         });
-        setNextLink(req, res, nextCursor);
-        res.json(toSerializable(items));
+        res.json(toSerializable(makeCursorPageResponse(result)));
     } catch (e) {
         next(e);
     }

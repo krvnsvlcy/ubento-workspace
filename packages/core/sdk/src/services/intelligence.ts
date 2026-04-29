@@ -1,10 +1,11 @@
 import { createIntelligenceServiceClient } from "~/clients/intelligence/client.js";
 import { extractResponseData } from "~/lib/client.js";
-import { extractCursorPage } from "~/lib/pagination.js";
 import { TokenManager } from "~/lib/token_manager.js";
 
 export class IntelligenceService {
-  private intelligenceClient: ReturnType<typeof createIntelligenceServiceClient>;
+  private intelligenceClient: ReturnType<
+    typeof createIntelligenceServiceClient
+  >;
 
   constructor({
     baseUrl,
@@ -42,19 +43,19 @@ export class IntelligenceService {
         },
       },
     });
-    return extractCursorPage(result.response, {
-      items: (result.data as any) || [],
-      fetcher: this.intelligenceClient.fetch,
-    });
+    return extractResponseData(result, true);
   }
 
   async getThread(threadId: string) {
-    const result = await this.intelligenceClient.get("/intelligence/threads/{thread_id}", {
-      params: {
-        path: { thread_id: threadId },
+    const result = await this.intelligenceClient.get(
+      "/intelligence/threads/{thread_id}",
+      {
+        params: {
+          path: { thread_id: threadId },
+        },
       },
-    });
-    return extractResponseData(result);
+    );
+    return extractResponseData(result, true);
   }
 
   async createThread(data: { workspace_id: string; title?: string }) {
@@ -75,34 +76,43 @@ export class IntelligenceService {
     limit?: number;
     cursor?: string;
   }) {
-    const result = await this.intelligenceClient.get("/intelligence/threads/{thread_id}/messages", {
-      params: {
-        path: { thread_id },
-        query: {
-          limit,
-          cursor,
+    const result = await this.intelligenceClient.get(
+      "/intelligence/threads/{thread_id}/messages",
+      {
+        params: {
+          path: { thread_id },
+          query: {
+            limit,
+            cursor,
+          },
         },
       },
-    });
-    return extractCursorPage(result.response, {
-      items: (result.data as any) || [],
-      fetcher: this.intelligenceClient.fetch,
-    });
+    );
+    return extractResponseData(result, true);
   }
 
-  async createMessage(data: { thread_id: string; role: "user" | "agent"; content?: string; author?: string; messageData?: any }) {
-    const result = await this.intelligenceClient.post("/intelligence/threads/{thread_id}/messages", {
-      params: {
-        path: { thread_id: data.thread_id },
+  async createMessage(data: {
+    thread_id: string;
+    role: "user" | "agent";
+    content?: string;
+    author?: string;
+    messageData?: any;
+  }) {
+    const result = await this.intelligenceClient.post(
+      "/intelligence/threads/{thread_id}/messages",
+      {
+        params: {
+          path: { thread_id: data.thread_id },
+        },
+        body: {
+          message: {
+            role: data.role,
+            author: data.author,
+            data: data.messageData || { text: data.content },
+          },
+        },
       },
-      body: {
-        message: {
-          role: data.role,
-          author: data.author,
-          data: data.messageData || { text: data.content },
-        }
-      },
-    });
+    );
     return extractResponseData(result, true);
   }
 }

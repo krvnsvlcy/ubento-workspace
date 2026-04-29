@@ -1,8 +1,8 @@
 import {
   chain,
+  makeCursorPageResponse,
   parseCursorQuery,
   parseStringQuery,
-  setNextLink,
   toSerializable,
   validate,
 } from "@ubento/service-toolkit";
@@ -31,14 +31,13 @@ router.get("/counters", async (req, res, next) => {
       return;
     }
 
-    const { items, nextCursor } = await listUsageCounters({
+    const result = await listUsageCounters({
       ...parseCursorQuery(req),
       organization_id,
       code: parseStringQuery(req, "code"),
       group: parseStringQuery(req, "group"),
     });
-    setNextLink(req, res, nextCursor);
-    res.json(toSerializable(items));
+    res.json(toSerializable(makeCursorPageResponse(result)));
   } catch (e) {
     next(e);
   }
@@ -103,7 +102,7 @@ router.post(
 // List usage events
 router.get("/events", async (req, res, next) => {
   try {
-    const { items, nextCursor } = await listUsageEvents({
+    const result = await listUsageEvents({
       ...parseCursorQuery(req),
       organization_id: parseStringQuery(req, "organization_id"),
       counter_code: parseStringQuery(req, "counter_code"),
@@ -116,8 +115,7 @@ router.get("/events", async (req, res, next) => {
         ? new Date(req.query.created_before as string)
         : undefined,
     });
-    setNextLink(req, res, nextCursor);
-    res.json(toSerializable(items));
+    res.json(toSerializable(makeCursorPageResponse(result)));
   } catch (e) {
     next(e);
   }

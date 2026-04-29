@@ -3,7 +3,7 @@ import {
   chain,
   dataResponse,
   enforce,
-  setNextLink,
+  makeCursorPageResponse,
   validate,
 } from "@ubento/service-toolkit";
 import { Router } from "express";
@@ -48,8 +48,7 @@ workspaceInvitesRouter.get(
         limit: req.query.limit ? Number(req.query.limit) : undefined,
         cursor: req.query.cursor as string | undefined,
       });
-      setNextLink(req, res, result.nextCursor);
-      res.json(dataResponse(result.items));
+      res.json(makeCursorPageResponse(result));
     },
   ),
 );

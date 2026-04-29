@@ -1,12 +1,43 @@
-import { chain, toSerializable, validate } from "@ubento/service-toolkit";
+import {
+  chain,
+  makeCursorPageResponse,
+  toSerializable,
+  validate,
+} from "@ubento/service-toolkit";
 import { Router } from "express";
 import multer from "multer";
 import z from "zod";
-import { createFile, getFile, getFileUrl } from "../entities/files.js";
+import {
+  createFile,
+  getFile,
+  getFileUrl,
+  listFiles,
+} from "../entities/files.js";
 
 const upload = multer();
 
 const fileRouter: Router = Router();
+
+fileRouter.get(
+  "/",
+  chain(
+    validate({
+      query: z.object({
+        workspace_id: z.string(),
+        limit: z.coerce.number().optional(),
+        cursor: z.string().optional(),
+      }),
+    }),
+    async (req, res) => {
+      const result = await listFiles({
+        workspace_id: req.query.workspace_id as string,
+        limit: req.query.limit ? Number(req.query.limit) : undefined,
+        cursor: req.query.cursor as string | undefined,
+      });
+      res.json(toSerializable(makeCursorPageResponse(result)));
+    },
+  ),
+);
 
 fileRouter.post(
   "/",

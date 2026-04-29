@@ -4,16 +4,24 @@ import {
   makeEntityId,
 } from "@ubento/primitives";
 import { File } from "@ubento/database/intelligence";
+import { prismaListWithCursor } from "@ubento/service-toolkit";
 import sharp from "sharp";
 import { intelligenceBucket, storagePaths } from "../lib/storage.js";
 import prisma from "../prisma.js";
 
 const SIGNED_URL_EXPIRATION_MS = 1000 * 60 * 15; // 15 minutes
 
-export async function listFiles(workspace_id: string): Promise<File[]> {
-  return prisma.file.findMany({
-    where: { workspace_id },
+export async function listFiles(filters: {
+  workspace_id: string;
+  limit?: number;
+  cursor?: string;
+}) {
+  return await prismaListWithCursor(prisma.file, {
+    limit: filters.limit,
+    cursor: filters.cursor,
+    where: { workspace_id: filters.workspace_id },
     orderBy: { created_at: "asc" },
+    resolveCursor: (f) => ({ id: f.id }),
   });
 }
 

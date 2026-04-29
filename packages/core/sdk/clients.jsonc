@@ -11,27 +11,42 @@
       "output": "./src/clients/iam",
       "clientName": "createIamServiceClient",
       "clean": true,
+      "host": "http://localhost:48041",
     },
     {
       "service": "workspace-service",
       "output": "./src/clients/workspace",
       "clientName": "createWorkspaceServiceClient",
       "clean": true,
-      // "host": "http://localhost:13020",
+      "host": "http://localhost:39694",
     },
     {
       "service": "module-service",
       "output": "./src/clients/module",
       "clientName": "createModuleServiceClient",
       "clean": true,
-      "host": "http://localhost:28888"
+      "host": "http://localhost:28888",
     },
     {
       "service": "intelligence-service",
       "output": "./src/clients/intelligence",
       "clientName": "createIntelligenceServiceClient",
       "clean": true,
-      "host": "http://localhost:44513"
-    }
-  ]
+      "host": "http://localhost:44513",
+    },
+    {
+      "service": "integration-service",
+      "output": "./src/clients/integration",
+      "clientName": "createIntegrationServiceClient",
+      "clean": true,
+      "host": "http://localhost:44114",
+    },
+    {
+      "service": "billing-service",
+      "output": "./src/clients/billing",
+      "clientName": "createBillingServiceClient",
+      "clean": true,
+      "host": "http://localhost:6124",
+    },
+  ],
 }

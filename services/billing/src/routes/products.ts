@@ -1,6 +1,6 @@
 import {
+  makeCursorPageResponse,
   parseCursorQuery,
-  setNextLink,
   toSerializable,
 } from "@ubento/service-toolkit";
 import { Router } from "express";
@@ -15,11 +15,10 @@ const router = Router();
 // List products
 router.get("/", async (req, res, next) => {
   try {
-    const { items, nextCursor } = await listProducts({
+    const result = await listProducts({
       ...parseCursorQuery(req),
     });
-    setNextLink(req, res, nextCursor);
-    res.json(toSerializable(items));
+    res.json(toSerializable(makeCursorPageResponse(result)));
   } catch (e) {
     next(e);
   }

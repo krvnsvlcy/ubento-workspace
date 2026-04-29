@@ -1,9 +1,9 @@
 import {
   chain,
+  makeCursorPageResponse,
   NotFoundError,
   parseCursorQuery,
   parseStringQuery,
-  setNextLink,
   toSerializable,
   validate,
 } from "@ubento/service-toolkit";
@@ -48,12 +48,11 @@ router.get(
       }),
     }),
     async (req: Request, res: Response) => {
-      const { items: connections, nextCursor } = await listConnections({
+      const result = await listConnections({
         ...parseCursorQuery(req),
         organization_id: parseStringQuery(req, "organization_id"),
       });
-      setNextLink(req, res, nextCursor);
-      res.json(toSerializable(connections));
+      res.json(toSerializable(makeCursorPageResponse(result)));
     },
   ),
 );

@@ -29,7 +29,14 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["Team"][];
+                        "application/json": {
+                            data: components["schemas"]["Team"][];
+                            page: {
+                                /** @enum {string} */
+                                type: "cursor";
+                                nextCursor?: string | null;
+                            };
+                        };
                     };
                 };
             };
@@ -263,6 +270,56 @@ export interface paths {
         };
         trace?: never;
     };
+    "/teams/{team_id}/members": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List team members */
+        get: {
+            parameters: {
+                query?: {
+                    /** @example 20 */
+                    limit?: components["parameters"]["queryLimit"];
+                    cursor?: components["parameters"]["queryCursor"];
+                };
+                header?: never;
+                path: {
+                    team_id: components["parameters"]["pathTeamId"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description A list of team members */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: components["schemas"]["User"][];
+                            page: {
+                                /** @enum {string} */
+                                type: "cursor";
+                                nextCursor?: string | null;
+                            };
+                        };
+                    };
+                };
+                401: components["responses"]["Unauthorized"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/teams/{team_id}/invites": {
         parameters: {
             query?: never;
@@ -296,8 +353,12 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
-                            items: components["schemas"]["TeamInvite"][];
-                            next_cursor?: string | null;
+                            data: components["schemas"]["TeamInvite"][];
+                            page: {
+                                /** @enum {string} */
+                                type: "cursor";
+                                nextCursor?: string | null;
+                            };
                         };
                     };
                 };
@@ -603,7 +664,14 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["User"][];
+                        "application/json": {
+                            data: components["schemas"]["User"][];
+                            page: {
+                                /** @enum {string} */
+                                type: "cursor";
+                                nextCursor?: string | null;
+                            };
+                        };
                     };
                 };
             };
@@ -713,7 +781,14 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["Team"][];
+                        "application/json": {
+                            data: components["schemas"]["Team"][];
+                            page: {
+                                /** @enum {string} */
+                                type: "cursor";
+                                nextCursor?: string | null;
+                            };
+                        };
                     };
                 };
             };
@@ -755,8 +830,12 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
-                            items: components["schemas"]["Session"][];
-                            nextCursor?: string | null;
+                            data: components["schemas"]["Session"][];
+                            page: {
+                                /** @enum {string} */
+                                type: "cursor";
+                                nextCursor?: string | null;
+                            };
                         };
                     };
                 };
@@ -875,7 +954,14 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["Client"][];
+                        "application/json": {
+                            data: components["schemas"]["Client"][];
+                            page: {
+                                /** @enum {string} */
+                                type: "cursor";
+                                nextCursor?: string | null;
+                            };
+                        };
                     };
                 };
             };
@@ -1008,7 +1094,14 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ClientCredential"][];
+                        "application/json": {
+                            data: components["schemas"]["ClientCredential"][];
+                            page: {
+                                /** @enum {string} */
+                                type: "cursor";
+                                nextCursor?: string | null;
+                            };
+                        };
                     };
                 };
                 400: components["responses"]["ValidationError"];

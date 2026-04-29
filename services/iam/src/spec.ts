@@ -1,4 +1,5 @@
 import { iamSchemas } from "@ubento/database/iam";
+import { makeCursorPageResponseSchema } from "@ubento/service-toolkit";
 import { OpenAPIV3 } from "openapi-types";
 
 export const spec: OpenAPIV3.Document = {
@@ -46,12 +47,9 @@ export const spec: OpenAPIV3.Document = {
             description: "A list of teams",
             content: {
               "application/json": {
-                schema: {
-                  type: "array",
-                  items: {
-                    $ref: "#/components/schemas/Team",
-                  },
-                },
+                schema: makeCursorPageResponseSchema({
+                  $ref: "#/components/schemas/Team",
+                }),
               },
             },
           },
@@ -302,6 +300,30 @@ export const spec: OpenAPIV3.Document = {
         },
       },
     },
+    "/teams/{team_id}/members": {
+      get: {
+        summary: "List team members",
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          { $ref: "#/components/parameters/pathTeamId" },
+          { $ref: "#/components/parameters/queryLimit" },
+          { $ref: "#/components/parameters/queryCursor" },
+        ],
+        responses: {
+          "200": {
+            description: "A list of team members",
+            content: {
+              "application/json": {
+                schema: makeCursorPageResponseSchema({
+                  $ref: "#/components/schemas/User",
+                }),
+              },
+            },
+          },
+          "401": { $ref: "#/components/responses/Unauthorized" },
+        },
+      },
+    },
     "/teams/{team_id}/invites": {
       get: {
         summary: "List team invites",
@@ -333,19 +355,9 @@ export const spec: OpenAPIV3.Document = {
             description: "Invites page",
             content: {
               "application/json": {
-                schema: {
-                  type: "object",
-                  properties: {
-                    items: {
-                      type: "array",
-                      items: {
-                        $ref: "#/components/schemas/TeamInvite",
-                      },
-                    },
-                    next_cursor: { type: "string", nullable: true },
-                  },
-                  required: ["items"],
-                },
+                schema: makeCursorPageResponseSchema({
+                  $ref: "#/components/schemas/TeamInvite",
+                }),
               },
             },
           },
@@ -588,12 +600,9 @@ export const spec: OpenAPIV3.Document = {
             description: "A list of users",
             content: {
               "application/json": {
-                schema: {
-                  type: "array",
-                  items: {
-                    $ref: "#/components/schemas/User",
-                  },
-                },
+                schema: makeCursorPageResponseSchema({
+                  $ref: "#/components/schemas/User",
+                }),
               },
             },
           },
@@ -682,10 +691,9 @@ export const spec: OpenAPIV3.Document = {
             description: "User teams",
             content: {
               "application/json": {
-                schema: {
-                  type: "array",
-                  items: { $ref: "#/components/schemas/Team" },
-                },
+                schema: makeCursorPageResponseSchema({
+                  $ref: "#/components/schemas/Team",
+                }),
               },
             },
           },
@@ -711,17 +719,9 @@ export const spec: OpenAPIV3.Document = {
             description: "A list of sessions",
             content: {
               "application/json": {
-                schema: {
-                  type: "object",
-                  properties: {
-                    items: {
-                      type: "array",
-                      items: { $ref: "#/components/schemas/Session" },
-                    },
-                    nextCursor: { type: "string", nullable: true },
-                  },
-                  required: ["items"],
-                },
+                schema: makeCursorPageResponseSchema({
+                  $ref: "#/components/schemas/Session",
+                }),
               },
             },
           },
@@ -776,10 +776,9 @@ export const spec: OpenAPIV3.Document = {
             description: "A list of clients",
             content: {
               "application/json": {
-                schema: {
-                  type: "array",
-                  items: { $ref: "#/components/schemas/Client" },
-                },
+                schema: makeCursorPageResponseSchema({
+                  $ref: "#/components/schemas/Client",
+                }),
               },
             },
           },
@@ -869,10 +868,9 @@ export const spec: OpenAPIV3.Document = {
             description: "A list of credentials",
             content: {
               "application/json": {
-                schema: {
-                  type: "array",
-                  items: { $ref: "#/components/schemas/ClientCredential" },
-                },
+                schema: makeCursorPageResponseSchema({
+                  $ref: "#/components/schemas/ClientCredential",
+                }),
               },
             },
           },

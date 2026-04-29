@@ -1,6 +1,6 @@
 import {
   chain,
-  setNextLink,
+  makeCursorPageResponse,
   toSerializable,
   validate,
 } from "@ubento/service-toolkit";
@@ -34,15 +34,14 @@ threadRouter.get(
       }),
     }),
     async (req, res) => {
-      const { items: threads, nextCursor } = await listThreads({
+      const result = await listThreads({
         cursor: req.query.cursor,
         limit: req.query.limit,
         workspace_id: req.query.workspace_id,
         members: req.query.members ? req.query.members.split(",") : undefined,
         sort: req.query.sort as any,
       });
-      setNextLink(req as any, res, nextCursor);
-      res.json(toSerializable(threads));
+      res.json(toSerializable(makeCursorPageResponse(result)));
     }
   )
 );
@@ -161,14 +160,13 @@ threadRouter.get(
       }),
     }),
     async (req, res) => {
-      const { items: messages, nextCursor } = await listMessages({
+      const result = await listMessages({
         cursor: req.query.cursor,
         limit: req.query.limit,
         thread_id: req.params.thread_id,
         sort: req.query.sort as any,
       });
-      setNextLink(req as any, res, nextCursor);
-      res.json(toSerializable(messages));
+      res.json(toSerializable(makeCursorPageResponse(result)));
     }
   )
 );

@@ -3,10 +3,10 @@ import {
   chain,
   dataResponse,
   enforce,
+  makeCursorPageResponse,
   NotFoundError,
   parseStringListQuery,
   parseStringQuery,
-  setNextLink,
   validate,
 } from "@ubento/service-toolkit";
 import { Router } from "express";
@@ -23,6 +23,7 @@ import {
   listTeams,
   updateTeam,
 } from "../../entities/management/team/team.js";
+import { listTeamMembers } from "../../entities/management/team/memberships.js";
 
 const teamsRouter: Router = Router();
 
@@ -41,15 +42,14 @@ teamsRouter.get(
     }),
     enforce(ubentoAuth.actions.team.list),
     async (req, res) => {
-      const { items: teams, nextCursor } = await listTeams({
+      const result = await listTeams({
         limit: req.query.limit ? Number(req.query.limit) : undefined,
         cursor: req.query.cursor as string | undefined,
         ids: parseStringListQuery(req, "ids"),
         name: parseStringQuery(req, "name"),
         handle: parseStringQuery(req, "handle"),
       });
-      setNextLink(req, res, nextCursor);
-      res.json(dataResponse(teams));
+      res.json(makeCursorPageResponse(result));
     },
   ),
 );
@@ -165,6 +165,31 @@ teamsRouter.delete(
   ),
 );
 
+// List Team Members
+teamsRouter.get(
+  "/:team_id/members",
+  chain(
+    validate({
+      params: z.object({
+        team_id: z.string(),
+      }),
+      query: z.object({
+        limit: z.coerce.number().optional(),
+        cursor: z.string().optional(),
+      }),
+    }),
+    enforce(ubentoAuth.actions.team.read),
+    async (req, res) => {
+      const result = await listTeamMembers({
+        team_id: req.params.team_id,
+        limit: req.query.limit ? Number(req.query.limit) : undefined,
+        cursor: req.query.cursor as string | undefined,
+      });
+      res.json(makeCursorPageResponse(result));
+    },
+  ),
+);
+
 // List Team Invites
 teamsRouter.get(
   "/:team_id/invites",
@@ -182,15 +207,14 @@ teamsRouter.get(
     }),
     enforce(ubentoAuth.actions.teamInvite.list),
     async (req, res) => {
-      const { items: invites, nextCursor } = await listTeamInvites({
+      const result = await listTeamInvites({
         team_id: req.params.team_id as string,
         limit: req.query.limit ? Number(req.query.limit) : undefined,
         cursor: req.query.cursor as string | undefined,
         statuses: parseStringListQuery(req, "statuses") as any,
         email: parseStringQuery(req, "email"),
       });
-      setNextLink(req, res, nextCursor);
-      res.json(dataResponse(invites));
+      res.json(makeCursorPageResponse(result));
     },
   ),
 );

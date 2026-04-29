@@ -177,7 +177,14 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["Thread"][];
+                        "application/json": {
+                            data: components["schemas"]["Thread"][];
+                            page: {
+                                /** @enum {string} */
+                                type: "cursor";
+                                nextCursor?: string | null;
+                            };
+                        };
                     };
                 };
                 /** @description Bad request */
@@ -493,7 +500,14 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["Message"][];
+                        "application/json": {
+                            data: components["schemas"]["Message"][];
+                            page: {
+                                /** @enum {string} */
+                                type: "cursor";
+                                nextCursor?: string | null;
+                            };
+                        };
                     };
                 };
                 /** @description Bad request */
@@ -831,7 +845,53 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /**
+         * List files
+         * @description Retrieve a paginated list of files for a workspace
+         */
+        get: {
+            parameters: {
+                query: {
+                    /** @description The workspace ID to filter files */
+                    workspace_id: string;
+                    /** @description Pagination cursor for retrieving next page */
+                    cursor?: string;
+                    /** @description Maximum number of files to return */
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description List of files */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: components["schemas"]["File"][];
+                            page: {
+                                /** @enum {string} */
+                                type: "cursor";
+                                nextCursor?: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Bad request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
         put?: never;
         /**
          * Upload a file

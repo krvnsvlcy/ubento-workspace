@@ -1,6 +1,5 @@
 import { createIamServiceClient } from "~/clients/iam/client.js";
 import { extractResponseData } from "~/lib/client.js";
-import { extractCursorPage } from "~/lib/pagination.js";
 import { TokenManager } from "~/lib/token_manager.js";
 
 export class IamService {
@@ -48,10 +47,7 @@ export class IamService {
         },
       },
     });
-    return extractCursorPage(result.response, {
-      items: result.data,
-      fetcher: this.iamClient.fetch,
-    });
+    return extractResponseData(result, true);
   }
 
   async getTeam(teamId: string) {
@@ -116,10 +112,7 @@ export class IamService {
         },
       },
     });
-    return extractCursorPage(result.response, {
-      items: result.data,
-      fetcher: this.iamClient.fetch,
-    });
+    return extractResponseData(result, true);
   }
 
   async getUser(userId: string) {
@@ -175,10 +168,7 @@ export class IamService {
         },
       },
     });
-    return extractCursorPage(result.response, {
-      items: (result.data as any)?.items || [],
-      fetcher: this.iamClient.fetch,
-    });
+    return extractResponseData(result, true);
   }
 
   async createTeamInvite({
@@ -211,7 +201,7 @@ export class IamService {
         path: { invite_id: inviteId },
       },
     });
-    return extractResponseData(result);
+    return extractResponseData(result, true);
   }
 
   async revokeTeamInvite(inviteId: string) {
@@ -260,10 +250,7 @@ export class IamService {
         },
       },
     });
-    return extractCursorPage(result.response, {
-      items: (result.data as any)?.items || [],
-      fetcher: this.iamClient.fetch,
-    });
+    return extractResponseData(result, true);
   }
 
   async getSession(id: string) {
@@ -272,7 +259,7 @@ export class IamService {
         path: { id },
       },
     });
-    return extractResponseData(result);
+    return extractResponseData(result, true);
   }
 
   async revokeSession(id: string) {
@@ -301,10 +288,7 @@ export class IamService {
         },
       },
     });
-    return extractCursorPage(result.response, {
-      items: result.data,
-      fetcher: this.iamClient.fetch,
-    });
+    return extractResponseData(result, true);
   }
 
   async getClient(id: string) {
@@ -313,7 +297,7 @@ export class IamService {
         path: { id },
       },
     });
-    return extractResponseData(result);
+    return extractResponseData(result, true);
   }
 
   async createClient(data: { name: string; description?: string }) {
@@ -352,10 +336,7 @@ export class IamService {
         },
       },
     });
-    return extractCursorPage(result.response, {
-      items: result.data,
-      fetcher: this.iamClient.fetch,
-    });
+    return extractResponseData(result, true);
   }
 
   async createClientCredential(data: { client_id: string; label?: string }) {

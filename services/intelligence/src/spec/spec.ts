@@ -1,4 +1,7 @@
-import { standardizeJsonSchemaOutput } from "@ubento/service-toolkit";
+import {
+  makeCursorPageResponseSchema,
+  standardizeJsonSchemaOutput,
+} from "@ubento/service-toolkit";
 import { OpenAPIV3 } from "openapi-types";
 import rawPrismaSchemas from "./prisma/json-schema.json" with { type: "json" };
 const prismaSchemas = standardizeJsonSchemaOutput(rawPrismaSchemas);
@@ -246,10 +249,9 @@ export const spec: OpenAPIV3.Document = {
             description: "List of threads",
             content: {
               "application/json": {
-                schema: {
-                  type: "array",
-                  items: { $ref: "#/components/schemas/Thread" },
-                },
+                schema: makeCursorPageResponseSchema({
+                  $ref: "#/components/schemas/Thread",
+                }),
               },
             },
           },
@@ -539,10 +541,9 @@ export const spec: OpenAPIV3.Document = {
             description: "List of thread messages",
             content: {
               "application/json": {
-                schema: {
-                  type: "array",
-                  items: { $ref: "#/components/schemas/Message" },
-                },
+                schema: makeCursorPageResponseSchema({
+                  $ref: "#/components/schemas/Message",
+                }),
               },
             },
           },
@@ -860,6 +861,53 @@ export const spec: OpenAPIV3.Document = {
       },
     },
     "/intelligence/files": {
+      get: {
+        summary: "List files",
+        description: "Retrieve a paginated list of files for a workspace",
+        tags: ["Files"],
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          {
+            in: "query",
+            name: "workspace_id",
+            required: true,
+            schema: { type: "string" },
+            description: "The workspace ID to filter files",
+          },
+          {
+            in: "query",
+            name: "cursor",
+            schema: { type: "string" },
+            description: "Pagination cursor for retrieving next page",
+          },
+          {
+            in: "query",
+            name: "limit",
+            schema: { type: "integer", default: 20 },
+            description: "Maximum number of files to return",
+          },
+        ],
+        responses: {
+          "200": {
+            description: "List of files",
+            content: {
+              "application/json": {
+                schema: makeCursorPageResponseSchema({
+                  $ref: "#/components/schemas/File",
+                }),
+              },
+            },
+          },
+          "400": {
+            description: "Bad request",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Error" },
+              },
+            },
+          },
+        },
+      },
       post: {
         summary: "Upload a file",
         description: "Upload a new file attachment",

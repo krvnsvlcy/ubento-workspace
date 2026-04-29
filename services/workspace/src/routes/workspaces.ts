@@ -3,6 +3,7 @@ import {
   chain,
   dataResponse,
   enforce,
+  makeCursorPageResponse,
   NotFoundError,
   validate,
 } from "@ubento/service-toolkit";
@@ -57,6 +58,8 @@ workspacesRouter.get(
     validate({
       query: z.object({
         team_id: z.string().optional(),
+        limit: z.coerce.number().optional(),
+        cursor: z.string().optional(),
       }),
     }),
     enforce({
@@ -67,10 +70,12 @@ workspacesRouter.get(
         }),
     }),
     async (req, res) => {
-      const workspaces = await listWorkspaces({
+      const result = await listWorkspaces({
         team_id: req.query.team_id as string | undefined,
+        limit: req.query.limit ? Number(req.query.limit) : undefined,
+        cursor: req.query.cursor as string | undefined,
       });
-      res.json(dataResponse(workspaces));
+      res.json(makeCursorPageResponse(result));
     },
   ),
 );

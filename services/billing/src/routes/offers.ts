@@ -1,8 +1,8 @@
 import {
   chain,
+  makeCursorPageResponse,
   parseCursorQuery,
   parseStringQuery,
-  setNextLink,
   toSerializable,
   validate,
 } from "@ubento/service-toolkit";
@@ -23,7 +23,7 @@ const router = Router();
 // List offers
 router.get("/", async (req, res, next) => {
   try {
-    const { items, nextCursor } = await listOffers({
+    const result = await listOffers({
       ...parseCursorQuery(req),
       active:
         req.query.active === "true"
@@ -33,8 +33,7 @@ router.get("/", async (req, res, next) => {
             : undefined,
       code: parseStringQuery(req, "code"),
     });
-    setNextLink(req, res, nextCursor);
-    res.json(toSerializable(items));
+    res.json(toSerializable(makeCursorPageResponse(result)));
   } catch (e) {
     next(e);
   }

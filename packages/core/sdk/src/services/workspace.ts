@@ -4,7 +4,6 @@ import {
   createWorkspaceServiceClient,
 } from "~/clients/workspace/client.js";
 import { extractResponseData } from "~/lib/client.js";
-import { extractCursorPage } from "~/lib/pagination.js";
 import { TokenManager } from "~/lib/token_manager.js";
 
 export class WorkspaceService {
@@ -46,7 +45,7 @@ export class WorkspaceService {
         },
       },
     });
-    return extractResponseData(result) as unknown as Workspace[];
+    return extractResponseData(result, true) as unknown as Workspace[];
   }
 
   async getWorkspace(workspaceId: string) {
@@ -58,7 +57,7 @@ export class WorkspaceService {
         },
       },
     );
-    return extractResponseData(result);
+    return extractResponseData(result, true);
   }
 
   async getWorkspaceBySlug(slug: string) {
@@ -67,7 +66,7 @@ export class WorkspaceService {
         path: { slug },
       },
     });
-    return extractResponseData(result);
+    return extractResponseData(result, true);
   }
 
   async createWorkspace(data: {
@@ -134,7 +133,7 @@ export class WorkspaceService {
         },
       },
     });
-    return extractResponseData(result) as unknown as Board[];
+    return extractResponseData(result, true) as unknown as Board[];
   }
 
   async getBoard(boardId: string) {
@@ -143,7 +142,7 @@ export class WorkspaceService {
         path: { board_id: boardId },
       },
     });
-    return extractResponseData(result);
+    return extractResponseData(result, true);
   }
 
   async createBoard(data: { workspace_id: string; name: string; data: any }) {
@@ -198,10 +197,7 @@ export class WorkspaceService {
         },
       },
     });
-    return extractCursorPage(result.response, {
-      items: (result.data as any)?.items || [],
-      fetcher: this.workspaceClient.fetch,
-    });
+    return extractResponseData(result, true);
   }
 
   async createWorkspaceMembership(data: {
@@ -250,10 +246,7 @@ export class WorkspaceService {
         },
       },
     );
-    return extractCursorPage(result.response, {
-      items: (result.data as any)?.items || [],
-      fetcher: this.workspaceClient.fetch,
-    });
+    return extractResponseData(result, true);
   }
 
   async createWorkspaceInvite(

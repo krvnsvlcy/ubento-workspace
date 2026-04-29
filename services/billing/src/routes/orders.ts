@@ -1,7 +1,7 @@
 import {
+  makeCursorPageResponse,
   parseCursorQuery,
   parseStringQuery,
-  setNextLink,
   toSerializable,
 } from "@ubento/service-toolkit";
 import { OrderStatus } from "@ubento/database/billing";
@@ -13,7 +13,7 @@ const router = Router();
 // List orders for a organization
 router.get("/", async (req, res, next) => {
   try {
-    const { items, nextCursor } = await listOrders({
+    const result = await listOrders({
       ...parseCursorQuery(req),
       organization_id: parseStringQuery(req, "organization_id"),
       status: parseStringQuery(req, "status") as OrderStatus | undefined,
@@ -24,8 +24,7 @@ router.get("/", async (req, res, next) => {
         ? new Date(req.query.created_before as string)
         : undefined,
     });
-    setNextLink(req, res, nextCursor);
-    res.json(toSerializable(items));
+    res.json(toSerializable(makeCursorPageResponse(result)));
   } catch (e) {
     next(e);
   }

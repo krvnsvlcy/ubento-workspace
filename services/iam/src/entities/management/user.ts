@@ -32,7 +32,7 @@ export async function listUsers({
     limit,
     cursor,
     orderBy: [{ created_at: "desc" }, { id: "desc" }],
-    resolveCursor: (u) => u.id,
+    resolveCursor: (u) => ({ id: u.id }),
   });
 }
 
@@ -42,10 +42,10 @@ export async function deleteUser(id: string) {
     return;
   }
 
-  const teams = await listUserTeams(user.id);
+  const { items: teams } = await listUserTeams({ user_id: user.id });
   const canBeDeleted = await Promise.all(
     teams.map(async (team) => {
-      const members = await listTeamMembers(team.id);
+      const { items: members } = await listTeamMembers({ team_id: team.id });
       return members.length === 1 && members[0].id === user.id;
     }),
   );
@@ -118,7 +118,7 @@ export async function syncUserData(user: WorkOSUser) {
     });
   }
 
-  const teams = await listUserTeams(syncedUser.id);
+  const { items: teams } = await listUserTeams({ user_id: syncedUser.id });
   if (teams.length === 0) {
     let baseHandle = (syncedUser.name || syncedUser.email || syncedUser.id)
       .replace(/[^a-zA-Z0-9]+/g, "-")

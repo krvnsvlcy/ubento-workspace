@@ -1,4 +1,5 @@
 import { billingSchemas } from "@ubento/database/billing";
+import { makeCursorPageResponseSchema } from "@ubento/service-toolkit";
 import { OpenAPIV3 } from "openapi-types";
 
 export const spec: OpenAPIV3.Document = {
@@ -7,7 +8,7 @@ export const spec: OpenAPIV3.Document = {
     title: "Ubento Billing Service API",
     version: "1.0.0",
     description:
-      "Provider-agnostic Billing API. Fully descriptive path params, plain-array list responses. Pagination links via RFC5988 `Link` header.",
+      "Provider-agnostic Billing API. Fully descriptive path params, cursor-based pagination.",
   },
   servers: [{ url: "https://api.ubento.dev" }],
   tags: [
@@ -25,11 +26,6 @@ export const spec: OpenAPIV3.Document = {
       bearerAuth: { type: "http", scheme: "bearer", bearerFormat: "JWT" },
     },
     headers: {
-      Link: {
-        description:
-          'Pagination links per RFC 5988, e.g. `<https://…?cursor=abc>; rel="next"`',
-        schema: { type: "string" },
-      },
       "X-Request-Id": {
         description: "Echoed request id.",
         schema: { type: "string" },
@@ -96,16 +92,11 @@ export const spec: OpenAPIV3.Document = {
         responses: {
           "200": {
             description: "Array of Product",
-            headers: {
-              Link: { $ref: "#/components/headers/Link" },
-              "X-Request-Id": { $ref: "#/components/headers/X-Request-Id" },
-            },
             content: {
               "application/json": {
-                schema: {
-                  type: "array",
-                  items: { $ref: "#/components/schemas/Product" },
-                },
+                schema: makeCursorPageResponseSchema({
+                  $ref: "#/components/schemas/Product",
+                }),
               },
             },
           },
@@ -198,16 +189,11 @@ export const spec: OpenAPIV3.Document = {
         responses: {
           "200": {
             description: "Array of Offer",
-            headers: {
-              Link: { $ref: "#/components/headers/Link" },
-              "X-Request-Id": { $ref: "#/components/headers/X-Request-Id" },
-            },
             content: {
               "application/json": {
-                schema: {
-                  type: "array",
-                  items: { $ref: "#/components/schemas/Offer" },
-                },
+                schema: makeCursorPageResponseSchema({
+                  $ref: "#/components/schemas/Offer",
+                }),
               },
             },
           },
@@ -456,16 +442,11 @@ export const spec: OpenAPIV3.Document = {
         responses: {
           "200": {
             description: "Array of Subscription",
-            headers: {
-              Link: { $ref: "#/components/headers/Link" },
-              "X-Request-Id": { $ref: "#/components/headers/X-Request-Id" },
-            },
             content: {
               "application/json": {
-                schema: {
-                  type: "array",
-                  items: { $ref: "#/components/schemas/Subscription" },
-                },
+                schema: makeCursorPageResponseSchema({
+                  $ref: "#/components/schemas/Subscription",
+                }),
               },
             },
           },
@@ -638,16 +619,11 @@ export const spec: OpenAPIV3.Document = {
         responses: {
           "200": {
             description: "Array of Invoice",
-            headers: {
-              Link: { $ref: "#/components/headers/Link" },
-              "X-Request-Id": { $ref: "#/components/headers/X-Request-Id" },
-            },
             content: {
               "application/json": {
-                schema: {
-                  type: "array",
-                  items: { $ref: "#/components/schemas/SubscriptionInvoice" },
-                },
+                schema: makeCursorPageResponseSchema({
+                  $ref: "#/components/schemas/SubscriptionInvoice",
+                }),
               },
             },
           },
@@ -723,16 +699,11 @@ export const spec: OpenAPIV3.Document = {
         responses: {
           "200": {
             description: "Array of Order",
-            headers: {
-              Link: { $ref: "#/components/headers/Link" },
-              "X-Request-Id": { $ref: "#/components/headers/X-Request-Id" },
-            },
             content: {
               "application/json": {
-                schema: {
-                  type: "array",
-                  items: { $ref: "#/components/schemas/Order" },
-                },
+                schema: makeCursorPageResponseSchema({
+                  $ref: "#/components/schemas/Order",
+                }),
               },
             },
           },
@@ -792,16 +763,11 @@ export const spec: OpenAPIV3.Document = {
         responses: {
           "200": {
             description: "Array of UsageCounter",
-            headers: {
-              Link: { $ref: "#/components/headers/Link" },
-              "X-Request-Id": { $ref: "#/components/headers/X-Request-Id" },
-            },
             content: {
               "application/json": {
-                schema: {
-                  type: "array",
-                  items: { $ref: "#/components/schemas/UsageCounter" },
-                },
+                schema: makeCursorPageResponseSchema({
+                  $ref: "#/components/schemas/UsageCounter",
+                }),
               },
             },
           },
@@ -948,16 +914,11 @@ export const spec: OpenAPIV3.Document = {
         responses: {
           "200": {
             description: "Array of UsageEvent",
-            headers: {
-              Link: { $ref: "#/components/headers/Link" },
-              "X-Request-Id": { $ref: "#/components/headers/X-Request-Id" },
-            },
             content: {
               "application/json": {
-                schema: {
-                  type: "array",
-                  items: { $ref: "#/components/schemas/UsageEvent" },
-                },
+                schema: makeCursorPageResponseSchema({
+                  $ref: "#/components/schemas/UsageEvent",
+                }),
               },
             },
           },
@@ -1202,16 +1163,11 @@ export const spec: OpenAPIV3.Document = {
         responses: {
           "200": {
             description: "Array of Checkout",
-            headers: {
-              Link: { $ref: "#/components/headers/Link" },
-              "X-Request-Id": { $ref: "#/components/headers/X-Request-Id" },
-            },
             content: {
               "application/json": {
-                schema: {
-                  type: "array",
-                  items: { $ref: "#/components/schemas/Checkout" },
-                },
+                schema: makeCursorPageResponseSchema({
+                  $ref: "#/components/schemas/Checkout",
+                }),
               },
             },
           },
@@ -1325,16 +1281,11 @@ export const spec: OpenAPIV3.Document = {
         responses: {
           "200": {
             description: "Array of WebhookEvent",
-            headers: {
-              Link: { $ref: "#/components/headers/Link" },
-              "X-Request-Id": { $ref: "#/components/headers/X-Request-Id" },
-            },
             content: {
               "application/json": {
-                schema: {
-                  type: "array",
-                  items: { $ref: "#/components/schemas/WebhookEvent" },
-                },
+                schema: makeCursorPageResponseSchema({
+                  $ref: "#/components/schemas/WebhookEvent",
+                }),
               },
             },
           },
