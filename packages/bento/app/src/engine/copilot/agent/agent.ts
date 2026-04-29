@@ -1,5 +1,11 @@
 import { createStore } from "zustand/vanilla";
 import { AgentContext } from "./context.js";
+import { AgentEnvironment } from "./environment.js";
+import {
+  AgentInstructions,
+  buildAgentManagerInstructions,
+} from "./prompts/manager/instructions/instructions.js";
+import { buildAgentManagerPrompt } from "./prompts/manager/prompt/prompt.js";
 import { Tool } from "./tool.js";
 
 export type AgentState = {
@@ -10,6 +16,12 @@ export type AgentState = {
 export type Agent = {
   name: string;
   description: string;
+  environment: AgentEnvironment;
+  logger: {
+    warn: (message: string, data?: any) => void;
+    error: (message: string, data?: any) => void;
+    info: (message: string, data?: any) => void;
+  };
 
   getState: () => AgentState;
   subscribe: (callback: (state: AgentState) => void) => () => void;
@@ -23,11 +35,20 @@ export type Agent = {
   getInstructions: () => Promise<string>;
   getPrompt: (context: AgentContext) => Promise<any>;
   resolveTool: (toolRef: string) => Promise<Tool | undefined>;
+
+  // Thread actions
+  createThread: (params: { title: string }) => Promise<any>;
+  sendMessage: (
+    content: string,
+    params: { threadId?: string; attachments?: any[] },
+  ) => Promise<void>;
 };
 
 export interface AgentConfig {
   name: string;
   description: string;
+  toolkit: AgentEnvironment;
+  getAgentInstructions: () => AgentInstructions | Promise<AgentInstructions>;
 }
 
 export function createAgent(config: AgentConfig): Agent {
@@ -36,9 +57,15 @@ export function createAgent(config: AgentConfig): Agent {
     agents: {},
   }));
 
-  return {
+  const instance: Agent = {
     name: config.name,
     description: config.description,
+    environment: config.toolkit,
+    logger: {
+      warn: (m, d) => console.warn(`[${config.name}] ${m}`, d),
+      error: (m, d) => console.error(`[${config.name}] ${m}`, d),
+      info: (m, d) => console.info(`[${config.name}] ${m}`, d),
+    },
 
     getState: () => store.getState(),
     subscribe: (callback) => store.subscribe(callback),
@@ -63,15 +90,78 @@ export function createAgent(config: AgentConfig): Agent {
     },
 
     getInstructions: async () => {
-      return "";
+      const state = store.getState();
+      const agents = Object.values(state.agents);
+      const tools = Object.values(state.tools);
+      const toolSets = Object.values(config.toolkit.toolSets);
+
+      return buildAgentManagerInstructions({
+        tools,
+        agents: agents.map((a) => ({
+          name: a.name,
+          description: a.description,
+        })),
+        toolSets,
+        instructions: await config.getAgentInstructions(),
+      });
     },
 
-    getPrompt: async () => {
-      return "";
+    getPrompt: async (context) => {
+      const state = store.getState();
+      // We pass a shim that looks like the old Agent for compatibility with buildAgentManagerPrompt
+      const agentShim = {
+        ...state,
+        environment: config.toolkit,
+        name: config.name,
+        description: config.description,
+      };
+      return buildAgentManagerPrompt({
+        context,
+        agent: agentShim as any,
+      });
     },
 
-    resolveTool: async () => {
+    resolveTool: async (toolRef) => {
+      const state = store.getState();
+      const parts = toolRef.split(":");
+      if (parts.length === 1) {
+        return state.tools[parts[0]];
+      }
+      if (parts.length === 2) {
+        const toolSet = config.toolkit.toolSets[parts[0]];
+        return toolSet?.getTool(parts[1]);
+      }
       return undefined;
     },
+
+    createThread: async (params) => {
+      return config.toolkit.createThread({
+        title: params.title,
+        agent: instance,
+      });
+    },
+
+    sendMessage: async (content, params) => {
+      let thread;
+      if (params.threadId) {
+        // In a real impl, we'd fetch the thread from a registry or environment
+        throw new Error("Thread resolution by ID not implemented in shim");
+      } else {
+        thread = await config.toolkit.createThread({
+          title: content.slice(0, 50),
+          agent: instance,
+        });
+      }
+
+      await thread.run({
+        message: {
+          text: content,
+          attachments: params.attachments,
+        },
+        model: (instance as any).model || { modelId: "default" }, // Shim model
+      });
+    },
   };
+
+  return instance;
 }

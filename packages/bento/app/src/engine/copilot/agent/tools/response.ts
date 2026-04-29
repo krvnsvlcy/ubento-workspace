@@ -7,15 +7,16 @@ export const responseToolSchema = z.object({
     .describe("Final response content to display to the user in Markdown"),
 });
 
-export const responseTool: Tool<typeof responseToolSchema, {}> = {
+export const responseTool: Tool<typeof responseToolSchema, {}> & {
+  toolName: string;
+} = {
   name: "response",
-  description: "Send a message to the user. Use this to provide updates, ask for input, or respond to user queries.",
+  toolName: "response",
+  description: "Submit your final work and results to the user.",
   args: responseToolSchema,
   async run(args, action) {
-    const thread = action.message.execution.getState().thread;
-    const setResource = thread.getState ? (p: any) => thread.getState().setResource(p) : (p: any) => (thread as any).setResource(p);
-
-    await setResource({
+    const thread = action.message.execution.thread;
+    await thread.setResource({
       key: "response",
       type: "response",
       data: args.content,
@@ -25,4 +26,6 @@ export const responseTool: Tool<typeof responseToolSchema, {}> = {
     };
   },
 };
+
+export { responseTool as ResponseTool };
 

@@ -1,7 +1,9 @@
-import { normalizePath } from "@elllphnt/backend";
+export const fileDenyWriteList: RegExp[] = [/^\.\/ubento\//, /^\.\/ubento$/];
+export const fileDenyReadList: RegExp[] = [/^\.\/ubento\//, /^\.\/ubento$/];
 
-export const fileDenyWriteList: RegExp[] = [/^\.\/elll\//, /^\.\/elll$/];
-export const fileDenyReadList: RegExp[] = [/^\.\/elll\//, /^\.\/elll$/];
+export function normalizePath(path: string) {
+  return path.replace(/\\/g, "/");
+}
 
 export function isFileWriteAllowed(path: string) {
   return !fileDenyWriteList.some((regex) => regex.test(normalizePath(path)));

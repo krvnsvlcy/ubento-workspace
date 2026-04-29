@@ -1,25 +1,25 @@
 import { Send } from "lucide-react";
 import React, { useEffect } from "react";
 import { useCopilotStore, useCopilotThread, useSendCopilotMessage } from "./store.js";
-import { useBentoHost } from "../../contexts/host.js";
+import { useBentoHost } from "@/contexts/host";
 
 export function CopilotPanel() {
   const host = useBentoHost();
   const { threadId, input, setInput, setThreadId } = useCopilotStore();
-  const { data: messages, isLoading } = useCopilotThread(host.ubento, threadId);
-  const sendMessage = useSendCopilotMessage(host.ubento);
+  const { data: messages, isLoading } = useCopilotThread(host.ubentoApi, threadId);
+  const sendMessage = useSendCopilotMessage(host.ubentoApi);
 
   // Initialize a thread if one does not exist
   useEffect(() => {
     if (!threadId) {
-      host.ubento.intelligence.createThread({
-        workspace_id: (host.session as any).workspace?.id || "default",
+      host.ubentoApi.intelligence.createThread({
+        workspace_id: host.getState().session?.workspaceId || "default",
         title: "Copilot Chat"
       }).then((thread) => {
         setThreadId(thread.id);
       }).catch(console.error);
     }
-  }, [threadId, host.ubento, host.session, setThreadId]);
+  }, [threadId, host, setThreadId]);
 
   const handleSend = () => {
     if (!input.trim() || !threadId) return;

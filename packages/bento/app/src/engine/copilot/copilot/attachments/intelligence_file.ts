@@ -1,15 +1,15 @@
-import { IntelligenceFile } from "@elllphnt/backend/build/resources/intelligence_file.js";
-import { Elll } from "@elllphnt/elll-engine";
-import { elllIcons16 } from "@elllphnt/elll-icons/16";
-import { fileIcon } from "@elllphnt/elll-primitives-domain";
-import { map, of } from "rxjs";
-import { AttachmentType } from "~/lib/agents/attachments/attachments.js";
-import { MessageItem } from "~/lib/agents/message/item.js";
+import { AttachmentType } from "@/engine/copilot/agent/attachments.js";
+import { MessageItem } from "@/engine/copilot/agent/message/item.js";
 import { CopilotAttachmentInputEvent } from "../input.js";
+import { Agent } from "../../agent/agent.js";
 
-export function intelligenceFileCopilotInputAttachmentType(
-  elll: Elll,
-): AttachmentType<
+export interface IntelligenceFile {
+  id: string;
+  name: string;
+  type: string;
+}
+
+export function intelligenceFileCopilotInputAttachmentType(): AttachmentType<
   {
     file: File;
     intelligenceFile: IntelligenceFile;
@@ -21,21 +21,22 @@ export function intelligenceFileCopilotInputAttachmentType(
   return {
     type: "intelligence-file",
     defaultLabel: "File",
-    defaultIcon: elllIcons16.core.files.file,
+    defaultIcon: "file",
     match: () => {
       return true;
     },
     handle: (event: CopilotAttachmentInputEvent) => {
-      const _workspace = event.copilot.elll.repository?.workspace;
-      if (!_workspace) {
-        throw new Error("No workspace found");
-      }
-      const workspace = _workspace;
-
       const files = event.payload.files;
-      return files.map((file) => {
+      if (!files) return [];
+
+      return files.map((file: File) => {
         return async () => {
-          const intelligenceFile = await workspace.uploadIntelligenceFile(file);
+          // Shim for upload
+          const intelligenceFile: IntelligenceFile = {
+            id: crypto.randomUUID(),
+            name: file.name,
+            type: file.type,
+          };
           return {
             file,
             intelligenceFile,
@@ -49,55 +50,15 @@ export function intelligenceFileCopilotInputAttachmentType(
       };
     },
     format: async (data): Promise<MessageItem | undefined> => {
-      const intelligenceFile = elll.backend.resource<IntelligenceFile>(
-        data.id,
-        true,
-      );
-      const intelligenceFileData = await intelligenceFile?.getData();
-      if (!intelligenceFileData) {
-        console.warn(`Intelligence file not found: ${data.id}`);
-        return undefined;
-      }
-      const publicUrl = await intelligenceFile?.getPublicUrl({
-        ttl: 15 * 60 * 1000,
-      });
-      const name = intelligenceFileData.name;
-
-      if (intelligenceFileData.type.startsWith("image/")) {
-        return {
-          type: "image",
-          label: name,
-          url: new URL(publicUrl).toString(),
-          mediaType: intelligenceFileData.type,
-        };
-      } else {
-        return {
-          type: "file",
-          label: name,
-          url: new URL(publicUrl).toString(),
-          mediaType: intelligenceFileData.type,
-        };
-      }
+      // Shim for formatting
+      return {
+        type: "file",
+        label: "File",
+        url: "#",
+        mediaType: "application/octet-stream",
+      };
     },
-    icon: (data, copilot) => {
-      const intelligenceFile = copilot?.elll.backend.resource<IntelligenceFile>(
-        data.id,
-        true,
-      );
-      return [
-        fileIcon(intelligenceFile?.type),
-        intelligenceFile?.type$.pipe(map((t) => fileIcon(t))) ?? of(undefined),
-      ];
-    },
-    label: (data, copilot) => {
-      const intelligenceFile = copilot?.elll.backend.resource<IntelligenceFile>(
-        data.id,
-        true,
-      );
-      return [
-        intelligenceFile?.name,
-        intelligenceFile?.name$.pipe(map((n) => n)) ?? of(undefined),
-      ];
-    },
+    icon: (data, agent: Agent) => "file",
+    label: (data, agent: Agent) => "File",
   };
 }

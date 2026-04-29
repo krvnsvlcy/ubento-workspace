@@ -1,4 +1,4 @@
-import { BentoSessionContext } from "../contexts/session";
+import { BentoSessionContext } from "@/contexts/session";
 import { useUbentoEngine } from "../engine/engine";
 
 export function SessionProvider({ children }: { children: React.ReactNode }) {

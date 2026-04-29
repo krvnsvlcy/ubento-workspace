@@ -1,3 +1,4 @@
+import { useUbentoEngine } from "@/engine/engine";
 import { useState } from "react";
 import { useStore } from "zustand";
 import { WorkspaceController } from "../../../controller";
@@ -9,6 +10,10 @@ export function CopilotTab({
 }: {
   controller: WorkspaceController;
 }) {
+  const engine = useUbentoEngine();
+  const [activeThreadId, setActiveThreadId] = useState<string | undefined>(
+    undefined,
+  );
   const [messages, setMessages] = useState<
     { id: string; role: "user" | "assistant"; content: string }[]
   >([]);
@@ -17,26 +22,16 @@ export function CopilotTab({
   const state = useStore(controller);
   const selectedId = state.selection?.[0];
 
-  const handleSend = (content: string) => {
-    const userMessage = {
-      id: Math.random().toString(36).substring(7),
-      role: "user" as const,
-      content,
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
-
-    // Simple mock response
-    setIsThinking(true);
-    setTimeout(() => {
-      const assistantMessage = {
-        id: Math.random().toString(36).substring(7),
-        role: "assistant" as const,
-        content: `I'll help you with "${content}"${selectedId ? ` for element ${selectedId}` : ""}.`,
-      };
-      setMessages((prev) => [...prev, assistantMessage]);
-      setIsThinking(false);
-    }, 1000);
+  const handleSend = async (content: string) => {
+    let threadId = activeThreadId;
+    if (!threadId) {
+      const thread = await engine.copilot.createThread({ title: content });
+      threadId = thread.getState().id;
+      setActiveThreadId(threadId);
+    }
+    await engine.copilot.sendMessage(content, {
+      threadId: threadId,
+    });
   };
 
   return (

@@ -1,3 +1,5 @@
+import { AgentThread } from "./thread.js";
+import { Agent } from "./agent.js";
 import { AttachmentType } from "./attachments.js";
 import { ResourceType } from "./resource.js";
 import { ToolSet } from "./tool_set/tool_set.js";
@@ -19,5 +21,10 @@ export type AgentEnvironment = {
   removeResourceType: (type: string) => void;
   addAttachmentType: (attachmentType: AttachmentType<any, any>) => void;
   removeAttachmentType: (type: string) => void;
-};
 
+  // Threads
+  createThread: (params: {
+    title: string;
+    agent: Agent;
+  }) => Promise<AgentThread>;
+};

@@ -1,6 +1,6 @@
 import { FilePart, ImagePart, TextPart } from "ai";
-import { AgentError } from "~/lib/agents/message/error.js";
-import { MessageItem } from "~/lib/agents/message/item.js";
+import { AgentError } from "@/engine/copilot/agent/message/error.js";
+import { MessageItem } from "@/engine/copilot/agent/message/item.js";
 import { indent, renderYaml } from "../../../../utils/format.js";
 import { Agent } from "../../../agent.js";
 import { AgentContext, AgentHistoryEntry } from "../../../context.js";
@@ -25,7 +25,7 @@ export async function formatUserMessage(
 
   const attachments = await Promise.all(
     message.attachments?.map((attachment) => {
-      const attachmentType = agent.environment.attachmentType(attachment.type);
+      const attachmentType = agent.environment.attachmentTypes[attachment.type];
       if (!attachmentType) {
         agent.logger?.warn("Unknown attachment type", {
           event: "attachment.unknown-type",
@@ -254,7 +254,7 @@ export const buildAgentManagerPrompt = async ({
     parts.push({ type: "text", text: "\n\n# Context Resources\n" });
 
     for (const resource of context.resources) {
-      const resourceType = agent.environment.getResourceType(resource.type);
+      const resourceType = agent.environment.resourceTypes[resource.type];
       if (!resourceType) {
         agent.logger?.warn("Unknown resource type", {
           event: "resource.unknown-type",

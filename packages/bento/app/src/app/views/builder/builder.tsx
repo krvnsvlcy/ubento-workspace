@@ -15,10 +15,10 @@ export function Builder({ moduleId }: { moduleId: string }) {
   const controller = useMemo(
     () =>
       createBuilderController({
-        ubento: host.ubento,
+        ubento: host.ubentoApi,
         moduleId,
       }),
-    [host.ubento, moduleId],
+    [host.ubentoApi, moduleId],
   );
 
   const { loading, code } = useStore(controller);
@@ -104,7 +104,7 @@ export function Builder({ moduleId }: { moduleId: string }) {
               <div className="h-full w-full overflow-hidden rounded-2xl border border-background-300 bg-white shadow-2xl">
                 <iframe
                   ref={iframeRef}
-                  src={host.componentIframeUrl}
+                  src={host.componentRuntimeUrl}
                   className="h-full w-full border-none"
                   title="Component Preview"
                 />

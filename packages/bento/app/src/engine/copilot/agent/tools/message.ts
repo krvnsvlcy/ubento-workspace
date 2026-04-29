@@ -10,9 +10,13 @@ export const messageToolSchema = z.object({
     .describe("What to do after this message."),
 });
 
-export const messageTool: Tool<typeof messageToolSchema, {}> = {
+export const messageTool: Tool<typeof messageToolSchema, {}> & {
+  toolName: string;
+} = {
   name: "message",
-  description: "Send a message to the user. Use this to provide updates, ask for input, or respond to user queries.",
+  toolName: "message",
+  description:
+    "Send a message to the user. Use this to provide updates, ask for input, or respond to user queries.",
   args: messageToolSchema,
   async run(args) {
     return {
@@ -21,4 +25,6 @@ export const messageTool: Tool<typeof messageToolSchema, {}> = {
     };
   },
 };
+
+export { messageTool as MessageTool };
 

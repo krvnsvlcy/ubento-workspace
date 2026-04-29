@@ -1,4 +1,4 @@
-import { WorkspaceCard } from "@/views/home/workspace-card.js";
+import { WorkspaceCard } from "./workspace-card";
 
 interface WorkspaceGridProps {
   workspaces: any[];

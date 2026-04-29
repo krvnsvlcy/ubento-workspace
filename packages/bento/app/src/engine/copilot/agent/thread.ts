@@ -1,36 +1,38 @@
-import { createStore, StoreApi } from "zustand/vanilla";
+import { createStore } from "zustand/vanilla";
 import { LanguageModel } from "../utils/models.js";
 import { Agent } from "./agent.js";
 import { AgentMessageInstance } from "./message.js";
 import { IntelligenceMessageData, UserMessageData } from "./message/message.js";
 
-import { AgentContext, AgentContextStats } from "./context.js";
 import {
-  AgentExecutionInstance,
-  AgentExecutionStatus,
-  createAgentExecution,
-} from "./execution.js";
+  createZustandStateController,
+  StateController,
+} from "@ubento/bento-primitives";
+import { AgentContext, AgentContextStats } from "./context.js";
+import { AgentExecution, createAgentExecution } from "./execution.js";
 
 export interface AgentThreadState {
   id: string;
   agent: Agent;
-  activeExecution: AgentExecutionInstance | undefined;
+  activeExecution: AgentExecution | undefined;
   context: AgentContext;
 }
 
-export interface AgentThreadActions {
-  createExecution: (params: {
+export type AgentThread = StateController<AgentThreadState> & {
+  run: (params: {
+    message: UserMessageData;
     model: LanguageModel;
     abortController?: AbortController;
-  }) => AgentExecutionInstance;
+  }) => Promise<AgentExecution>;
+  pushUserMessage: (message: UserMessageData) => Promise<void>;
+
   getContext: () => Promise<AgentContext>;
   setContext: (context: AgentContext) => Promise<void>;
   getContextStats: (modelId: string) => Promise<AgentContextStats>;
   summarizeContext: (model: LanguageModel) => Promise<void>;
   save: () => Promise<void>;
-  pushUserMessage: (message: UserMessageData) => Promise<void>;
   startAgentMessage: (
-    execution: AgentExecutionInstance,
+    execution: AgentExecution,
   ) => Promise<AgentMessageInstance>;
   listMessages: () => Promise<IntelligenceMessageData[]>;
   generateTitle: () => Promise<void>;
@@ -43,13 +45,9 @@ export interface AgentThreadActions {
   }) => Promise<void>;
   getResource: <T = any>(url: string) => Promise<T | undefined>;
   deleteResource: (url: string) => Promise<void>;
-}
+};
 
-export type AgentThreadInstance = StoreApi<
-  AgentThreadState & AgentThreadActions
->;
-
-export interface AgentThreadConfig {
+export function createAgentThread(config: {
   id: string;
   agent: Agent;
   initialContext?: AgentContext;
@@ -62,81 +60,91 @@ export interface AgentThreadConfig {
   save: () => Promise<void>;
   pushUserMessage: (message: UserMessageData) => Promise<void>;
   startAgentMessage: (
-    execution: AgentExecutionInstance,
+    execution: AgentExecution,
   ) => Promise<AgentMessageInstance>;
   listMessages: () => Promise<IntelligenceMessageData[]>;
   generateTitle: () => Promise<void>;
-}
+}): AgentThread {
+  const store = createStore<AgentThreadState>()(() => ({
+    id: config.id,
+    agent: config.agent,
+    activeExecution: undefined,
+    context: config.initialContext || { resources: [] },
+  }));
 
-export function createAgentThread(
-  config: AgentThreadConfig,
-): AgentThreadInstance {
-  const store = createStore<AgentThreadState & AgentThreadActions>()(
-    (set, get) => ({
-      id: config.id,
-      agent: config.agent,
-      activeExecution: undefined,
-      context: config.initialContext || { resources: [] },
+  const controller = createZustandStateController(store);
 
-      createExecution: ({ model, abortController }) => {
-        const { activeExecution } = get();
+  const thread: AgentThread = {
+    ...controller,
+
+    run: async ({ message, model, abortController }) => {
+      const { activeExecution } = store.getState();
+      if (activeExecution) {
+        throw new Error("There is already a running execution on this thread.");
+      }
+
+      const execution = createAgentExecution({
+        model,
+        thread,
+        abortController,
+      });
+
+      controller.setState({ activeExecution: execution });
+
+      // Auto-clear active execution when it finishes
+      execution.subscribe((state) => {
         if (
-          activeExecution?.getState().status === AgentExecutionStatus.Running
+          state.status !== "running" &&
+          state.status !== "idle"
         ) {
-          throw new Error(
-            "There is already a running execution on this thread.",
-          );
+          controller.setState({ activeExecution: undefined });
         }
+      });
 
-        const execution = createAgentExecution({
-          model,
-          thread: store,
-          abortController,
-        });
+      // Start the execution
+      execution.run({ message }).catch(() => {});
 
-        set({ activeExecution: execution });
-        return execution;
-      },
+      return execution;
+    },
 
-      getContext: config.getContext,
-      setContext: async (context) => {
-        await config.setContext(context);
-        set({ context });
-      },
-      getContextStats: config.getContextStats,
-      summarizeContext: config.summarizeContext,
-      save: config.save,
-      pushUserMessage: config.pushUserMessage,
-      startAgentMessage: config.startAgentMessage,
-      listMessages: config.listMessages,
-      generateTitle: config.generateTitle,
+    getContext: config.getContext,
+    setContext: async (context) => {
+      await config.setContext(context);
+      controller.setState({ context });
+    },
+    getContextStats: config.getContextStats,
+    summarizeContext: config.summarizeContext,
+    save: config.save,
+    pushUserMessage: config.pushUserMessage,
+    startAgentMessage: config.startAgentMessage,
+    listMessages: config.listMessages,
+    generateTitle: config.generateTitle,
 
-      setResource: async ({ type, key, data }) => {
-        const context = await get().getContext();
-        const resourcesMap = new Map(context.resources?.map((r) => [r.key, r]));
-        resourcesMap.set(key, { type, key, data });
-        await get().setContext({
-          ...context,
-          resources: Array.from(resourcesMap.values()),
-        });
-      },
+    setResource: async ({ type, key, data }) => {
+      const context = await thread.getContext();
+      const resourcesMap = new Map(context.resources?.map((r) => [r.key, r]));
+      resourcesMap.set(key, { type, key, data });
+      await thread.setContext({
+        ...context,
+        resources: Array.from(resourcesMap.values()),
+      });
+    },
 
-      getResource: async (url) => {
-        const context = await get().getContext();
-        return context.resources?.find((r) => r.key === url) as any;
-      },
+    getResource: async (url) => {
+      const context = await thread.getContext();
+      return context.resources?.find((r) => r.key === url) as any;
+    },
 
-      deleteResource: async (url) => {
-        const context = await get().getContext();
-        const resourcesMap = new Map(context.resources?.map((r) => [r.key, r]));
-        resourcesMap.delete(url);
-        await get().setContext({
-          ...context,
-          resources: Array.from(resourcesMap.values()),
-        });
-      },
-    }),
-  );
+    deleteResource: async (url) => {
+      const context = await thread.getContext();
+      const resourcesMap = new Map(context.resources?.map((r) => [r.key, r]));
+      resourcesMap.delete(url);
+      await thread.setContext({
+        ...context,
+        resources: Array.from(resourcesMap.values()),
+      });
+    },
+  };
 
-  return store;
+  return thread;
 }

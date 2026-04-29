@@ -31,10 +31,10 @@ export function WorkspaceContent({
   }
 
   const iframeUrl = useMemo(() => {
-    const url = new URL(host.iframeUrl);
+    const url = new URL(host.workspaceRuntimeUrl);
     url.searchParams.set("editPaddingSize", "6px");
     return url.toString();
-  }, [host.iframeUrl]);
+  }, [host.workspaceRuntimeUrl]);
 
   const engine = (
     <iframe

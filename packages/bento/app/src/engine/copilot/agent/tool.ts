@@ -15,6 +15,7 @@ export interface Tool<
   O extends Record<string, unknown> = {},
 > {
   name: string;
+  toolName?: string;
   displayName?: string;
   description: string;
   args: I;

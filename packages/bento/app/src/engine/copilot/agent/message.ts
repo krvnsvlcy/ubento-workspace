@@ -1,5 +1,5 @@
 import z from "zod";
-import { AgentExecutionInstance, AgentExecutionErrorCode, AgentExecutionError } from "./execution.js";
+import { AgentExecution, AgentExecutionErrorCode, AgentExecutionError } from "./execution.js";
 import { AgentActionData, AgentActionStatus } from "./message/action.js";
 import { AgentError } from "./message/error.js";
 import { LLMContent } from "./message/llm.js";
@@ -16,7 +16,7 @@ export interface IntelligenceMessage {
 
 export interface AgentMessageInstance {
   id: string;
-  execution: AgentExecutionInstance;
+  execution: AgentExecution;
   message: IntelligenceMessage;
   startAction<T extends Tool>(params: {
     toolRef: string;
@@ -49,7 +49,7 @@ export interface AgentActionInstance<T extends Tool = Tool> {
 
 export function createAgentMessage(params: {
   message: IntelligenceMessage;
-  execution: AgentExecutionInstance;
+  execution: AgentExecution;
   getData: () => Promise<AgentMessageData>;
   setData: (data: AgentMessageData) => Promise<void>;
   save: () => Promise<void>;
@@ -184,4 +184,3 @@ export function createAgentAction<T extends Tool>(params: {
 
   return instance;
 }
-

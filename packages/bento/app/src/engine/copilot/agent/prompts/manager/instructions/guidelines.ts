@@ -1,4 +1,4 @@
-import { Tool } from "~/lib/agents/tool.js";
+import { Tool } from "@/engine/copilot/agent/tool.js";
 import { MessageTool } from "../../../tools/message.js";
 import { ResponseTool } from "../../../tools/response.js";
 

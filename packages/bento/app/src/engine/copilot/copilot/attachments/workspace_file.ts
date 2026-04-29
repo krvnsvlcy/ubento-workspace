@@ -1,14 +1,8 @@
-import { editorDataTransferTypes } from "@elllphnt/elll-editor-extension";
-import { Elll } from "@elllphnt/elll-engine";
-import { elllIcons16 } from "@elllphnt/elll-icons/16";
-import { fileIcon } from "@elllphnt/elll-primitives-domain";
-import { map, of, switchMap } from "rxjs";
 import { AttachmentType } from "../../agent/attachments.js";
 import { CopilotAttachmentInputEvent } from "../input.js";
+import { Agent } from "../../agent/agent.js";
 
-export function workspaceFileCopilotInputAttachmentType(
-  elll: Elll,
-): AttachmentType<
+export function workspaceFileCopilotInputAttachmentType(): AttachmentType<
   {
     path: string;
   },
@@ -19,17 +13,12 @@ export function workspaceFileCopilotInputAttachmentType(
   return {
     type: "workspace-file",
     defaultLabel: "File",
-    defaultIcon: elllIcons16.core.files.file,
+    defaultIcon: "file",
     match: (event) => {
-      return event.payload.has(editorDataTransferTypes.workspaceFilePaths);
+      return !!event.payload.files && event.payload.files.length > 0;
     },
     handle: (event: CopilotAttachmentInputEvent) => {
-      const filePaths = event.payload.getData(
-        editorDataTransferTypes.workspaceFilePaths,
-      );
-      if (!filePaths) {
-        throw new Error("No file paths found");
-      }
+      const filePaths = (event.payload as any).filePaths || [];
       return filePaths.map((filePath: string) => {
         return {
           path: filePath,
@@ -40,58 +29,14 @@ export function workspaceFileCopilotInputAttachmentType(
       return data;
     },
     format: async (data) => {
-      const workspace = elll.repository?.workspace;
-      if (!workspace) {
-        throw new Error("No workspace found");
-      }
-      const workspaceFile = await workspace.getFileAtPath(data.path);
-      if (!workspaceFile) {
-        console.warn(`Workspace file not found: ${data.path}`);
-        return undefined;
-      }
-      const fileData = await workspaceFile.getData();
-      if (!fileData) {
-        console.warn(`Workspace file not found: ${data.path}`);
-        return undefined;
-      }
-
       return {
-        type: "data",
-        label: fileData.path,
-        data: {
-          path: fileData.path,
-          type: fileData.type,
-        },
+        type: "file",
+        label: data.path,
+        url: "#",
+        mediaType: "application/octet-stream",
       };
     },
-    icon: (data) => {
-      const workspace = elll.repository?.workspace;
-      if (!workspace) {
-        throw new Error("No workspace found");
-      }
-      const query = workspace.fileAtPath(data.path, {
-        autoFetch: true,
-      });
-      return [
-        fileIcon(query.result?.type),
-        query.result$.pipe(
-          switchMap((r) => r?.type$ ?? of(undefined)),
-          map((t) => fileIcon(t)),
-        ),
-      ];
-    },
-    label: (data) => {
-      const workspace = elll.repository?.workspace;
-      if (!workspace) {
-        throw new Error("No workspace found");
-      }
-      const query = workspace.fileAtPath(data.path, {
-        autoFetch: true,
-      });
-      return [
-        query.result?.name,
-        query.result$.pipe(switchMap((r) => r?.name$ ?? of(undefined))),
-      ];
-    },
+    icon: (data, agent: Agent) => "file",
+    label: (data, agent: Agent) => data.path,
   };
 }

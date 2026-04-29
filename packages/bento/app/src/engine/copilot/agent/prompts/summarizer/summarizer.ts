@@ -2,8 +2,8 @@ import { generateText } from "ai";
 import {
   AgentMessageData,
   UserMessageData,
-} from "~/lib/agents/message/message.js";
-import { LanguageModel } from "~/lib/models.js";
+} from "@/engine/copilot/agent/message/message.js";
+import { LanguageModel } from "@/engine/copilot/utils/models.js";
 import { Agent } from "../../agent.js";
 import { AgentContext, AgentHistorySummaryEntry } from "../../context.js";
 import {

@@ -1,7 +1,7 @@
 import { generateText } from "ai";
-import { renderYaml } from "~/lib/format.js";
-import { LanguageModel } from "~/lib/models.js";
-import { safeYamlParse } from "~/lib/yaml.js";
+import { renderYaml } from "@/engine/copilot/utils/format.js";
+import { LanguageModel } from "@/engine/copilot/utils/models.js";
+import { safeYamlParse } from "@/engine/copilot/utils/yaml.js";
 import { ToolSummary } from "./tool_set.js";
 
 export async function searchTools({

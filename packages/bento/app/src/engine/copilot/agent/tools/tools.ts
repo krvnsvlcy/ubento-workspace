@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { renderYaml } from "~/lib/format.js";
+import { renderYaml } from "@/engine/copilot/utils/format.js";
 import { Tool, ToolCallResult } from "../tool.js";
 
 export const searchToolsSchema = z.object({
@@ -24,10 +24,10 @@ export const searchTools: Tool<typeof searchToolsSchema, SearchToolsOutput> = {
   description: "Search for tools in a specific set. Use this tool to find tools that can help you accomplish your task.",
   args: searchToolsSchema,
   async run(args, action) {
-    const executionState = action.message.execution.getState();
-    const agent = executionState.agent;
+    const execution = action.message.execution;
+    const agent = execution.thread.getState().agent;
     const agentState = agent.getState();
-    const toolSet = agentState.toolSets[args.set];
+    const toolSet = agent.environment.toolSets[args.set];
 
     if (!toolSet) {
       return {
@@ -63,15 +63,18 @@ export type ListToolsOutput = {
   }[];
 };
 
-export const listTools: Tool<typeof listToolsSchema, ListToolsOutput> = {
+export const listTools: Tool<typeof listToolsSchema, ListToolsOutput> & {
+  toolName: string;
+} = {
   name: "list_tools",
+  toolName: "list_tools",
   description: "List all tools available in a specific set.",
   args: listToolsSchema,
   async run(args, action) {
-    const executionState = action.message.execution.getState();
-    const agent = executionState.agent;
+    const execution = action.message.execution;
+    const agent = execution.thread.getState().agent;
     const agentState = agent.getState();
-    const toolSet = agentState.toolSets[args.set];
+    const toolSet = agent.environment.toolSets[args.set];
 
     if (!toolSet) {
       return {
@@ -80,9 +83,8 @@ export const listTools: Tool<typeof listToolsSchema, ListToolsOutput> = {
       };
     }
 
-    const thread = executionState.thread;
-    const threadState = thread.getState();
-    await threadState.setResource({
+    const thread = execution.thread;
+    await thread.setResource({
       type: "tool-set",
       key: args.set,
       data: { name: args.set },
@@ -109,15 +111,18 @@ export type DescribeToolOutput = {
   };
 };
 
-export const describeTool: Tool<typeof describeToolSchema, DescribeToolOutput> = {
+export const describeTool: Tool<typeof describeToolSchema, DescribeToolOutput> & {
+  toolName: string;
+} = {
   name: "describe_tool",
+  toolName: "describe_tool",
   description: "Describe a tool in detail.",
   args: describeToolSchema,
   async run(args, action) {
-    const executionState = action.message.execution.getState();
-    const agent = executionState.agent;
+    const execution = action.message.execution;
+    const agent = execution.thread.getState().agent;
     const agentState = agent.getState();
-    const toolSet = agentState.toolSets[args.set];
+    const toolSet = agent.environment.toolSets[args.set];
 
     if (!toolSet) {
       return {
@@ -134,9 +139,8 @@ export const describeTool: Tool<typeof describeToolSchema, DescribeToolOutput> =
       };
     }
 
-    const thread = executionState.thread;
-    const threadState = thread.getState();
-    await threadState.setResource({
+    const thread = execution.thread;
+    await thread.setResource({
       type: "tool",
       key: `${args.set}:${args.tool}`,
       data: { set: args.set, tool: args.tool },
@@ -148,3 +152,4 @@ export const describeTool: Tool<typeof describeToolSchema, DescribeToolOutput> =
   },
 };
 
+export { listTools as ListTools, describeTool as DescribeTool };

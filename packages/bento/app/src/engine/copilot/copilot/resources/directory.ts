@@ -1,24 +1,22 @@
-import { EditorWorkspaceManager } from "@elllphnt/elll-editor-extension";
-import { Elll } from "@elllphnt/elll-engine";
-import { ResourceType } from "~/lib/agents/resource.js";
+import { ResourceType } from "@/engine/copilot/agent/resource.js";
+import { UbentoSDK } from "@ubento/sdk";
+
+export interface DirectoryResourceData {
+  path: string;
+}
 
 export const directoryResource = {
   type: "directory",
-  data: (data: { path: string }) => data,
-  instance: (elll: Elll): ResourceType<{ path: string }> => {
+  data: (data: DirectoryResourceData) => data,
+  create: (ubentoApi: UbentoSDK): ResourceType<DirectoryResourceData> => {
     return {
-      type: directoryResource.type,
+      type: "directory",
       getMessageItem: async (data) => {
-        const workspace = EditorWorkspaceManager.instance(elll);
-        const worker = workspace.worker;
-        if (!worker) {
-          throw new Error("No worker available");
-        }
-        const entries = await worker.readDir(data.path);
+        // Shim for directory reading via SDK
         return {
           type: "data",
           label: `Directory: ${data.path}`,
-          data: entries,
+          data: [], // Should fetch from SDK
         };
       },
     };

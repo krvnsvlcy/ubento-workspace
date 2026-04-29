@@ -1,6 +1,6 @@
 import { generateText } from "ai";
 import z from "zod";
-import { createStore, StoreApi } from "zustand/vanilla";
+import { createStore } from "zustand/vanilla";
 import { LanguageModel } from "../utils/models.js";
 import { safeYamlParse } from "../utils/yaml.js";
 import { AgentMessageInstance } from "./message.js";
@@ -11,7 +11,11 @@ import {
   fixAgentManagerCommonOutputPitfalls,
 } from "./prompts/manager/schema.js";
 
-import { AgentThreadInstance } from "./thread.js";
+import {
+  createZustandStateController,
+  StateController,
+} from "@ubento/bento-primitives";
+import { AgentThread } from "./thread.js";
 
 export enum AgentExecutionStatus {
   Idle = "idle",
@@ -64,232 +68,232 @@ export interface AgentExecutionState {
   status: AgentExecutionStatus;
   error: AgentExecutionError | undefined;
   activeMessage: AgentMessageInstance | undefined;
-
-  thread: AgentThreadInstance;
-  model: LanguageModel;
-  agentModels: AgentModelMap;
-  abortController: AbortController;
 }
 
-export interface AgentExecutionActions {
+export type AgentExecution = StateController<AgentExecutionState> & {
+  thread: AgentThread;
+  model: LanguageModel;
+  abortController: AbortController;
+  agentModels: AgentModelMap;
+
   run: (params: {
     message: UserMessageData;
     maxIterations?: number;
   }) => Promise<void>;
   stop: () => void;
   setError: (error: AgentExecutionError) => void;
-}
+};
 
-export type AgentExecutionInstance = StoreApi<
-  AgentExecutionState & AgentExecutionActions
->;
-
-export interface AgentExecutionConfig {
+export function createAgentExecution({
+  model,
+  thread,
+  agentModels = {},
+  abortController: _abortController,
+}: {
   model: LanguageModel;
-  thread: AgentThreadInstance;
+  thread: AgentThread;
   agentModels?: AgentModelMap;
   abortController?: AbortController;
-}
+}): AgentExecution {
+  const store = createStore<AgentExecutionState>()(() => ({
+    status: AgentExecutionStatus.Idle,
+    error: undefined,
+    activeMessage: undefined,
+  }));
 
-export function createAgentExecution(
-  config: AgentExecutionConfig,
-): AgentExecutionInstance {
-  const store = createStore<AgentExecutionState & AgentExecutionActions>()(
-    (set, get) => ({
-      status: AgentExecutionStatus.Idle,
-      error: undefined,
-      activeMessage: undefined,
-      thread: config.thread,
-      model: config.model,
-      agentModels: config.agentModels || {},
-      abortController: config.abortController || new AbortController(),
+  const abortController = _abortController || new AbortController();
 
-      stop: () => {
-        const { abortController } = get();
-        abortController.abort();
-        set({ status: AgentExecutionStatus.Stopped });
-      },
+  const controller = createZustandStateController(store);
 
-      setError: (error) => set({ error }),
+  async function runTurn(
+    iteration: number,
+  ): Promise<{ shouldContinue: boolean }> {
+    const threadState = thread.getState();
+    const agent = threadState.agent;
 
-      run: async ({ message, maxIterations = 100 }) => {
-        const state = get();
-        const { thread, model, abortController } = state;
+    const stats = await thread.getContextStats(model.modelId);
+    if (stats.usage >= stats.budget) {
+      const summarizeModel = agentModels.summarize || model;
+      await thread.summarizeContext(summarizeModel);
+      return { shouldContinue: true };
+    }
 
-        try {
-          set({ error: undefined, status: AgentExecutionStatus.Running });
+    const context = await thread.getContext();
+    const instructions = await agent.getInstructions();
+    const prompt = await agent.getPrompt(context);
 
-          const threadState = thread.getState();
-          await threadState.pushUserMessage(message);
-
-          let currentStatus = AgentExecutionStatus.Running;
-
-          for (let i = 0; i < maxIterations; ++i) {
-            if (abortController.signal.aborted) {
-              currentStatus = AgentExecutionStatus.Stopped;
-              break;
-            }
-
-            const turnResult = await runTurn(get(), i);
-
-            if (!turnResult.shouldContinue) {
-              currentStatus = AgentExecutionStatus.Completed;
-              break;
-            }
-
-            if (i === maxIterations - 1) {
-              currentStatus = AgentExecutionStatus.MaxIterations;
-            }
-          }
-
-          set({ status: currentStatus });
-        } catch (e: any) {
-          const normalizedError = normalizeError(e, abortController);
-          set({
-            error: normalizedError,
-            status:
-              normalizedError.code === AgentExecutionErrorCode.ABORTED
-                ? AgentExecutionStatus.Stopped
-                : AgentExecutionStatus.Failed,
-          });
-        } finally {
-          const threadState = thread.getState();
-          const messages = await threadState.listMessages();
-          if (messages.length > 0) {
-            threadState.generateTitle().catch(() => {});
-          }
-        }
-      },
-    }),
-  );
-
-  return store;
-}
-
-async function runTurn(
-  state: AgentExecutionState,
-  iteration: number,
-): Promise<{ shouldContinue: boolean }> {
-  const { thread, model } = state;
-  const threadState = thread.getState();
-  const agent = threadState.agent;
-  const agentState = agent.getState();
-
-  const stats = await threadState.getContextStats(model.modelId);
-  if (stats.usage >= stats.budget) {
-    const summarizeModel = state.agentModels.summarize || model;
-    await threadState.summarizeContext(summarizeModel);
-    return { shouldContinue: true };
+    return runManager({ prompt, instructions, iteration });
   }
 
-  const context = await threadState.getContext();
-  const instructions = await agentState.getInstructions();
-  const prompt = await agentState.getPrompt(context);
-
-  return runManager(state, { prompt, instructions, iteration });
-}
-
-async function runManager(
-  state: AgentExecutionState,
-  {
+  async function runManager({
     prompt,
     instructions,
     iteration,
-  }: { prompt: MessagePart[]; instructions: string; iteration: number },
-): Promise<{ shouldContinue: boolean }> {
-  const { thread, model, abortController } = state;
-  const threadState = thread.getState();
-  const agent = threadState.agent;
-  const agentState = agent.getState();
+  }: {
+    prompt: MessagePart[];
+    instructions: string;
+    iteration: number;
+  }): Promise<{ shouldContinue: boolean }> {
+    const threadState = thread.getState();
+    const agent = threadState.agent;
 
-  const executionShim = { getState: () => state } as any;
-  const agentMessage = await threadState.startAgentMessage(executionShim);
+    // Use a shim for the execution instance since it's needed for message creation
+    const executionInstance = {
+      ...controller,
+      thread,
+      model,
+      abortController,
+      agentModels,
+    } as AgentExecution;
 
-  try {
-    const result = await generateText({
-      model: model as any,
-      system: instructions,
-      messages: [{ role: "user", content: prompt as any }],
-      abortSignal: abortController.signal,
-    }).catch((e: any) => {
-      throw normalizeError(e, abortController);
-    });
+    const agentMessage = await thread.startAgentMessage(executionInstance);
 
-    const outputData = safeYamlParse(result.text);
-    const [fixedOutputData] = fixAgentManagerCommonOutputPitfalls(outputData);
-
-    const parsed = agentManagerSchema.safeParse(fixedOutputData);
-    if (!parsed.success) {
-      await agentMessage.logError({
-        message: "Response schema mismatch",
-        data: {
-          error:
-            (z as any).treeifyError?.(parsed.error) || parsed.error.message,
-          input: result.text,
-        },
+    try {
+      const result = await generateText({
+        model: model as any,
+        system: instructions,
+        messages: [{ role: "user", content: prompt as any }],
+        abortSignal: abortController.signal,
+      }).catch((e: any) => {
+        throw normalizeError(e, abortController);
       });
-      return { shouldContinue: true };
-    }
 
-    const output = parsed.data;
-    if (!output.actions?.length) {
-      return { shouldContinue: true };
-    }
+      const outputData = safeYamlParse(result.text);
+      const [fixedOutputData] = fixAgentManagerCommonOutputPitfalls(outputData);
 
-    let toolFinished = false;
-    for (const act of output.actions) {
-      if (abortController.signal.aborted) break;
-      if (act.tool === "finish") {
-        toolFinished = true;
-        break;
-      }
-
-      const tool = await agentState.resolveTool(act.tool);
-      if (!tool) {
-        await agentMessage.logError({ message: `Unknown tool: ${act.tool}` });
-        continue;
-      }
-
-      const argParseResult = tool.args.safeParse(act.args);
-      if (!argParseResult.success) {
+      const parsed = agentManagerSchema.safeParse(fixedOutputData);
+      if (!parsed.success) {
         await agentMessage.logError({
-          message: `Invalid arguments for ${act.tool}`,
-          data: { received: act.args },
+          message: "Response schema mismatch",
+          data: {
+            error:
+              (z as any).treeifyError?.(parsed.error) || parsed.error.message,
+            input: result.text,
+          },
         });
-        continue;
+        return { shouldContinue: true };
       }
 
-      const action = await agentMessage.startAction({
-        toolRef: act.tool,
-        tool,
-      });
-      await action.setInput(argParseResult.data);
-      await action.run();
+      const output = parsed.data;
+      if (!output.actions?.length) {
+        return { shouldContinue: true };
+      }
+
+      let toolFinished = false;
+      for (const act of output.actions) {
+        if (abortController.signal.aborted) break;
+        if (act.tool === "finish") {
+          toolFinished = true;
+          break;
+        }
+
+        const tool = await agent.resolveTool(act.tool);
+        if (!tool) {
+          await agentMessage.logError({ message: `Unknown tool: ${act.tool}` });
+          continue;
+        }
+
+        const argParseResult = tool.args.safeParse(act.args);
+        if (!argParseResult.success) {
+          await agentMessage.logError({
+            message: `Invalid arguments for ${act.tool}`,
+            data: { received: act.args },
+          });
+          continue;
+        }
+
+        const action = await agentMessage.startAction({
+          toolRef: act.tool,
+          tool,
+        });
+        await action.setInput(argParseResult.data);
+        await action.run();
+      }
+
+      await agentMessage.complete();
+      return { shouldContinue: !toolFinished };
+    } catch (e) {
+      await agentMessage.complete();
+      throw e;
     }
-
-    await agentMessage.complete();
-    return { shouldContinue: !toolFinished };
-  } catch (e) {
-    await agentMessage.complete();
-    throw e;
   }
-}
 
-function normalizeError(
-  e: unknown,
-  abortController: AbortController,
-): AgentExecutionError {
-  if (e instanceof AgentExecutionError) return e;
-  if (abortController.signal.aborted) {
+  function normalizeError(
+    e: unknown,
+    abortController: AbortController,
+  ): AgentExecutionError {
+    if (e instanceof AgentExecutionError) return e;
+    if (abortController.signal.aborted) {
+      return new AgentExecutionError({
+        code: AgentExecutionErrorCode.ABORTED,
+        message: "Execution aborted",
+        cause: e,
+      });
+    }
     return new AgentExecutionError({
-      code: AgentExecutionErrorCode.ABORTED,
-      message: "Execution aborted",
+      code: AgentExecutionErrorCode.UNKNOWN,
+      message: e instanceof Error ? e.message : String(e),
       cause: e,
     });
   }
-  return new AgentExecutionError({
-    code: AgentExecutionErrorCode.UNKNOWN,
-    message: e instanceof Error ? e.message : String(e),
-    cause: e,
-  });
+
+  return {
+    ...controller,
+    thread,
+    model,
+    abortController,
+    agentModels,
+
+    stop: () => {
+      abortController.abort();
+      controller.setState({ status: AgentExecutionStatus.Stopped });
+    },
+    setError: (error) => controller.setState({ error }),
+    run: async ({ message, maxIterations = 100 }) => {
+      try {
+        controller.setState({
+          error: undefined,
+          status: AgentExecutionStatus.Running,
+        });
+
+        await thread.pushUserMessage(message);
+        let currentStatus = AgentExecutionStatus.Running;
+
+        for (let i = 0; i < maxIterations; ++i) {
+          if (abortController.signal.aborted) {
+            currentStatus = AgentExecutionStatus.Stopped;
+            break;
+          }
+
+          const turnResult = await runTurn(i);
+
+          if (!turnResult.shouldContinue) {
+            currentStatus = AgentExecutionStatus.Completed;
+            break;
+          }
+
+          if (i === maxIterations - 1) {
+            currentStatus = AgentExecutionStatus.MaxIterations;
+          }
+        }
+
+        controller.setState({ status: currentStatus });
+      } catch (e: any) {
+        const normalizedError = normalizeError(e, abortController);
+        controller.setState({
+          error: normalizedError,
+          status:
+            normalizedError.code === AgentExecutionErrorCode.ABORTED
+              ? AgentExecutionStatus.Stopped
+              : AgentExecutionStatus.Failed,
+        });
+      } finally {
+        const threadState = thread.getState();
+        const messages = await thread.listMessages();
+        if (messages.length > 0) {
+          thread.generateTitle().catch(() => {});
+        }
+      }
+    },
+  };
 }

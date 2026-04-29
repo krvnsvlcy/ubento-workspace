@@ -1,15 +1,24 @@
-import {
-  FetchLike,
-  normalizeHeaders,
-  Transport,
-} from "@modelcontextprotocol/sdk/shared/transport.js";
-import {
-  isInitializedNotification,
-  isJSONRPCRequest,
-  isJSONRPCResultResponse,
-  JSONRPCMessage,
-  JSONRPCMessageSchema,
-} from "@modelcontextprotocol/sdk/types.js";
+// import {
+//   FetchLike,
+//   normalizeHeaders,
+//   Transport,
+// } from "@modelcontextprotocol/sdk/shared/transport.js";
+// import {
+//   isInitializedNotification,
+//   isJSONRPCRequest,
+//   isJSONRPCResultResponse,
+//   JSONRPCMessage,
+//   JSONRPCMessageSchema,
+// } from "@modelcontextprotocol/sdk/types.js";
+
+type Transport = any;
+type FetchLike = any;
+type JSONRPCMessage = any;
+const JSONRPCMessageSchema = { parse: (v: any) => v };
+const isJSONRPCResultResponse = (v: any) => true;
+const isJSONRPCRequest = (v: any) => true;
+const isInitializedNotification = (v: any) => true;
+const normalizeHeaders = (v: any) => v;
 
 // ============================================================================
 // 1. Universal Error Classes

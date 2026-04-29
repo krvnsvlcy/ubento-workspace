@@ -1,5 +1,3 @@
-import { getModelData } from "../../lib/models.js";
-import { charsToTokens } from "../../lib/tokens.js";
 import { Agent } from "../agent/agent.js";
 import { AgentContext } from "../agent/context.js";
 import { IntelligenceMessage } from "../agent/message.js";
@@ -8,9 +6,14 @@ import {
   IntelligenceMessageData,
 } from "../agent/message/message.js";
 import { summarize } from "../agent/prompts/summarizer/summarizer.js";
-import { AgentThreadInstance, createAgentThread } from "../agent/thread.js";
+import { AgentThread, createAgentThread } from "../agent/thread.js";
+import { getModelData } from "../utils/models.js";
+import { charsToTokens } from "../utils/tokens.js";
 import { createAgentMessageController } from "./agent_message_controller.js";
 
+/**
+ * IntelligenceThread represents the underlying storage/API for a thread.
+ */
 export interface IntelligenceThread {
   id: string;
   getData(): Promise<any>;
@@ -26,7 +29,7 @@ export interface IntelligenceThread {
   addDisposer(disposer: () => void): void;
 }
 
-const instances = new Map<string, AgentThreadInstance>();
+const instances = new Map<string, AgentThread>();
 
 export function getThreadController({
   thread,
@@ -34,7 +37,7 @@ export function getThreadController({
 }: {
   thread: IntelligenceThread;
   agent: Agent;
-}): AgentThreadInstance {
+}): AgentThread {
   const key = thread.id;
   if (instances.has(key)) return instances.get(key)!;
 
@@ -43,7 +46,7 @@ export function getThreadController({
     agent,
     getContext: async () => {
       const data = await thread.getData();
-      return (data?.context as AgentContext) || { history: [] };
+      return (data?.context as AgentContext) || { resources: [] };
     },
     setContext: async (context) => {
       await thread.autoFetch();
@@ -52,11 +55,10 @@ export function getThreadController({
     getContextStats: async (modelId) => {
       const modelData = await getModelData(modelId);
       const data = await thread.getData();
-      const context = (data?.context as AgentContext) || { history: [] };
+      const context = (data?.context as AgentContext) || { resources: [] };
 
-      const agentState = agent.getState();
-      const instructions = await agentState.getInstructions();
-      const prompt = await agentState.getPrompt(context);
+      const instructions = await agent.getInstructions();
+      const prompt = await agent.getPrompt(context);
 
       const window = modelData.context_window;
       const budget = Math.floor(window * 0.8);
@@ -77,7 +79,7 @@ export function getThreadController({
     },
     summarizeContext: async (model) => {
       const data = await thread.getData();
-      const context = (data?.context as AgentContext) || { history: [] };
+      const context = (data?.context as AgentContext) || { resources: [] };
       const newContext = await summarize({ context, agent, model });
       await thread.setContext(newContext);
     },
@@ -86,30 +88,16 @@ export function getThreadController({
       const message = await thread.createMessage({ role: "user", data });
       const currentData = await thread.getData();
       const prevContext = (currentData?.context as AgentContext) || {
-        history: [],
+        resources: [],
       };
       await thread.setContext({
         ...prevContext,
-        history: [
-          ...(prevContext.history || []),
-          { type: "message", role: "user", messageId: message.id, data },
-        ],
+        resources: prevContext.resources || [],
       });
     },
     startAgentMessage: async (execution) => {
       const data: AgentMessageData = {};
       const message = await thread.createMessage({ role: "agent", data });
-      const currentData = await thread.getData();
-      const prevContext = (currentData?.context as AgentContext) || {
-        history: [],
-      };
-      await thread.setContext({
-        ...prevContext,
-        history: [
-          ...(prevContext.history || []),
-          { type: "message", role: "agent", messageId: message.id, data },
-        ],
-      });
       return createAgentMessageController({ message, execution });
     },
     listMessages: async () => {

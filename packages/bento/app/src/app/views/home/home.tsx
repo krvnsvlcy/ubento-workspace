@@ -1,14 +1,18 @@
 import { useBentoHost } from "@/contexts/host";
 import { useBentoSession } from "@/contexts/session";
-import { useCreateWorkspace, useWorkspaces } from "@/libs/api/workspace";
-import { AIModal } from "@/modals/AIModal";
-import { CreateWorkspaceModal } from "@/modals/CreateWorkspaceModal";
-import { SettingsModal } from "@/modals/SettingsModal";
-import { UserSettingsModal } from "@/modals/UserSettingsModal";
+import { useCreateWorkspace, useWorkspaces } from "@/services/ubento/workspace";
 import React, { useEffect, useState } from "react";
 import { Header } from "./header";
 import { Sidebar } from "./sidebar";
 import { WorkspaceGrid } from "./workspace-grid";
+// import { AIModal } from "@/modals/AIModal";
+// import { CreateWorkspaceModal } from "@/modals/CreateWorkspaceModal";
+// import { SettingsModal } from "@/modals/SettingsModal";
+// import { UserSettingsModal } from "@/modals/UserSettingsModal";
+const AIModal = (props: any) => null;
+const CreateWorkspaceModal = (props: any) => null;
+const SettingsModal = (props: any) => null;
+const UserSettingsModal = (props: any) => null;
 
 export function Home() {
   const host = useBentoHost();

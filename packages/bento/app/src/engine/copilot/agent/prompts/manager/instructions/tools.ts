@@ -1,16 +1,16 @@
 import z from "zod";
-import { Tool } from "~/lib/agents/tool.js";
-import { IToolSet } from "~/lib/agents/tool_set/tool_set.js";
-import { DescribeTool, ListTools } from "~/lib/agents/tools/tools.js";
-import { renderYaml } from "~/lib/format.js";
-import { cleanJsonSchema } from "~/lib/zod.js";
+import { Tool } from "@/engine/copilot/agent/tool.js";
+import { ToolSet } from "@/engine/copilot/agent/tool_set/tool_set.js";
+import { DescribeTool, ListTools } from "@/engine/copilot/agent/tools/tools.js";
+import { renderYaml } from "@/engine/copilot/utils/format.js";
+import { cleanJsonSchema } from "@/engine/copilot/utils/zod.js";
 
 export function toolsSection({
   tools,
   toolSets,
 }: {
   tools: Tool[];
-  toolSets: IToolSet[];
+  toolSets: ToolSet[];
 }) {
   type ToolData = {
     name: string;

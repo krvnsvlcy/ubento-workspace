@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Bento, createBentoHost, type BentoLocation } from "@ubento/bento-app";
+import { Ubento, createUbentoEngine, type UbentoLocation } from "@ubento/bento-app";
 import "@ubento/bento-style/dist/uno.css";
 import { UbentoSDK } from "@ubento/sdk";
 import { StrictMode, useEffect, useMemo } from "react";
@@ -55,7 +55,7 @@ async function getToken() {
   return data.access_token;
 }
 
-function parseLocation(path: string): BentoLocation {
+function parseLocation(path: string): UbentoLocation {
   const parts = path.split("/").filter(Boolean);
   if (parts[0] === "w" && parts[1]) {
     return {
@@ -69,7 +69,7 @@ function parseLocation(path: string): BentoLocation {
   return { view: "home", params: {} };
 }
 
-function buildUrl(location: BentoLocation): string {
+function buildUrl(location: UbentoLocation): string {
   if (location.view === "workspace") {
     return `/w/${location.params.slug}${location.params.boardId ? `/${location.params.boardId}` : ""}`;
   }
@@ -80,8 +80,8 @@ function buildUrl(location: BentoLocation): string {
 }
 
 function BentoShell() {
-  const host = useMemo(() => {
-    const h = createBentoHost({
+  const engine = useMemo(() => {
+    const e = createUbentoEngine({
       session: {
         userId: user.id,
         teamId: team.id,
@@ -90,7 +90,7 @@ function BentoShell() {
         picture: user.picture,
       },
       location: parseLocation(window.location.pathname),
-      ubento: new UbentoSDK({
+      ubentoApi: new UbentoSDK({
         baseUrl: "https://api.ubento.pro",
         tokenManager: {
           getToken,
@@ -99,40 +99,38 @@ function BentoShell() {
           module: "http://localhost:28888",
         },
       }),
-      iframeUrl: import.meta.env.VITE_RUNTIME_URL || "http://localhost:4020",
+      workspaceRuntimeUrl: import.meta.env.VITE_RUNTIME_URL || "http://localhost:4020",
       moduleUrlTemplate:
         import.meta.env.VITE_MODULE_URL_TEMPLATE ||
         "https://modules.ubento.pro/{moduleId}/{versionId}/index.js",
-      componentIframeUrl:
+      componentRuntimeUrl:
         import.meta.env.VITE_COMPONENT_RUNTIME_URL || "http://localhost:4030",
     });
 
-    const originalGoToLocation = h.getState().goToLocation;
-    h.setState({
-      goToLocation: (loc) => {
-        const url = buildUrl(loc);
-        if (window.location.pathname !== url) {
-          window.history.pushState(null, "", url);
-        }
-        originalGoToLocation(loc);
-      },
-    });
+    const originalGoToLocation = e.goToLocation;
+    e.goToLocation = (loc) => {
+      const url = buildUrl(loc);
+      if (window.location.pathname !== url) {
+        window.history.pushState(null, "", url);
+      }
+      originalGoToLocation(loc);
+    };
 
-    return h;
+    return e;
   }, []);
 
   useEffect(() => {
     const handlePopState = () => {
-      host.getState().goToLocation(parseLocation(window.location.pathname));
+      engine.goToLocation(parseLocation(window.location.pathname));
     };
 
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
-  }, [host]);
+  }, [engine]);
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Bento host={host} />
+      <Ubento engine={engine} />
     </QueryClientProvider>
   );
 }

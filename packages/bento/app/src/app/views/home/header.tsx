@@ -1,7 +1,7 @@
 import { Logo } from "@/app/components/logo";
 import { ThemeSelector } from "@/app/components/ThemeSelector";
 import { useBentoSession } from "@/contexts/session";
-import { useUser } from "@/libs/api/iam";
+import { useUser } from "@/services/ubento/iam";
 import {
   ChevronDown,
   LogOut,

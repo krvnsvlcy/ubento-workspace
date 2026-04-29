@@ -1,6 +1,6 @@
-import { BentoHostApi } from "@/contexts/host";
-import { queryKeys } from "@/libs/api/keys";
-import { getBoard } from "@/libs/api/workspace";
+import { UbentoEngine } from "@/engine/engine";
+import { queryKeys } from "@/services/ubento/keys";
+import { getBoard } from "@/services/ubento/workspace";
 import { QueryClient } from "@tanstack/react-query";
 import {
   BlockData,
@@ -95,7 +95,7 @@ export function createWorkspaceController({
 }: {
   ubento: UbentoSDK;
   queryClient: QueryClient;
-  host: BentoHostApi;
+  host: UbentoEngine;
   slug: string;
 }): WorkspaceController {
   let rpc: DuplexRpc<HostRpcInterface, GuestRpcInterface> | null = null;
@@ -121,7 +121,7 @@ export function createWorkspaceController({
             if (current.workspace) {
               rpc!.egress.init({
                 workspace: current.workspace,
-                moduleUrlTemplate: host.getState().moduleUrlTemplate,
+                moduleUrlTemplate: host.moduleUrlTemplate,
               });
             }
           },
@@ -269,7 +269,7 @@ export function createWorkspaceController({
           },
           setLocation: ({ location }) => {
             if (location) {
-              host.getState().goToLocation({
+              host.goToLocation({
                 view: "workspace",
                 params: {
                   slug,
@@ -277,9 +277,7 @@ export function createWorkspaceController({
                 },
               });
             } else {
-              host
-                .getState()
-                .goToLocation({ view: "workspace", params: { slug } });
+              host.goToLocation({ view: "workspace", params: { slug } });
             }
           },
           setSelectionScope: ({ selectionScope }) => {
@@ -352,7 +350,7 @@ export function createWorkspaceController({
         if (rpc && current.connected) {
           rpc.egress.init({
             workspace: data,
-            moduleUrlTemplate: host.getState().moduleUrlTemplate,
+            moduleUrlTemplate: host.moduleUrlTemplate,
           });
         }
       } catch (err) {
@@ -375,7 +373,7 @@ export function createWorkspaceController({
     },
     goTo: (boardId: string, params?: Record<string, string>) => {
       set({ location: { boardId, params: params || {} } });
-      host.getState().goToLocation({
+      host.goToLocation({
         view: "workspace",
         params: { slug, boardId, ...params },
       });

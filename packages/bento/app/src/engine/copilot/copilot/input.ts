@@ -1,6 +1,5 @@
-import { BehaviorSubject } from "rxjs";
-import { DataTransferPayload } from "../../../../../../tools/data-transfer/build/data_transfer.js";
-import { Copilot } from "./copilot.js";
+import { createStore, StoreApi } from "zustand/vanilla";
+import { Agent } from "../agent/agent.js";
 
 export type CopilotInputAttachment<T extends string = string, D = unknown> = {
   id: string;
@@ -11,143 +10,97 @@ export type CopilotInputAttachment<T extends string = string, D = unknown> = {
 };
 
 export type CopilotAttachmentInputEvent = {
-  payload: DataTransferPayload;
-  copilot: Copilot;
+  payload: {
+    files?: File[];
+    getData?: (type: string) => any;
+    has?: (type: string) => boolean;
+  };
+  agent: Agent;
 };
 
-export class CopilotInput {
-  private copilot: Copilot;
+export interface CopilotInputState {
+  text: string;
+  isLoading: boolean;
+  error: string | undefined;
+  attachments: CopilotInputAttachment[];
+  model: string | undefined;
+}
 
-  private _text = new BehaviorSubject<string>("");
-  private _isLoading = new BehaviorSubject<boolean>(false);
-  private _error = new BehaviorSubject<string | undefined>(undefined);
-  private _attachments = new BehaviorSubject<CopilotInputAttachment[]>([]);
-  private _model = new BehaviorSubject<string | undefined>(undefined);
+export interface CopilotInputActions {
+  setText: (text: string) => void;
+  setLoading: (isLoading: boolean) => void;
+  setError: (error: string | undefined) => void;
+  addAttachment: (attachment: CopilotInputAttachment) => void;
+  removeAttachment: (id: string) => void;
+  clearAttachments: () => void;
+  updateAttachment: (id: string, update: Partial<CopilotInputAttachment>) => void;
+  inputAttachment: (event: CopilotAttachmentInputEvent) => void;
+  setModel: (model: string | undefined) => void;
+}
 
-  get text$() {
-    return this._text.asObservable();
-  }
-  get text() {
-    return this._text.value;
-  }
+export type CopilotInputInstance = StoreApi<CopilotInputState & CopilotInputActions>;
 
-  get isLoading$() {
-    return this._isLoading.asObservable();
-  }
-  get isLoading() {
-    return this._isLoading.value;
-  }
+export function createCopilotInput({ agent }: { agent: Agent }): CopilotInputInstance {
+  return createStore<CopilotInputState & CopilotInputActions>()((set, get) => ({
+    text: "",
+    isLoading: false,
+    error: undefined,
+    attachments: [],
+    model: undefined,
 
-  get error$() {
-    return this._error.asObservable();
-  }
-  get error() {
-    return this._error.value;
-  }
+    setText: (text) => set({ text }),
+    setLoading: (isLoading) => set({ isLoading }),
+    setError: (error) => set({ error }),
+    addAttachment: (attachment) =>
+      set((state) => ({ attachments: [...state.attachments, attachment] })),
+    removeAttachment: (id) =>
+      set((state) => ({
+        attachments: state.attachments.filter((a) => a.id !== id),
+      })),
+    clearAttachments: () => set({ attachments: [] }),
+    updateAttachment: (id, update) =>
+      set((state) => ({
+        attachments: state.attachments.map((a) =>
+          a.id === id ? { ...a, ...update } : a,
+        ),
+      })),
+    setModel: (model) => set({ model }),
 
-  get attachments$() {
-    return this._attachments.asObservable();
-  }
-  get attachments() {
-    return this._attachments.value;
-  }
-
-  get model$() {
-    return this._model.asObservable();
-  }
-  get model() {
-    return this._model.value;
-  }
-
-  constructor({ copilot }: { copilot: Copilot }) {
-    this.copilot = copilot;
-  }
-
-  setText(text: string) {
-    this._text.next(text);
-  }
-
-  setLoading(isLoading: boolean) {
-    this._isLoading.next(isLoading);
-  }
-
-  setError(error: string | undefined) {
-    this._error.next(error);
-  }
-
-  addAttachment(attachment: CopilotInputAttachment) {
-    this._attachments.next([...this._attachments.value, attachment]);
-  }
-  removeAttachment(id: string) {
-    this._attachments.next(
-      this._attachments.value.filter((attachment) => attachment.id !== id),
-    );
-  }
-  clearAttachments() {
-    this._attachments.next([]);
-  }
-  updateAttachment(id: string, update: Partial<CopilotInputAttachment>) {
-    this._attachments.next(
-      this._attachments.value.map((attachment) =>
-        attachment.id === id ? { ...attachment, ...update } : attachment,
-      ),
-    );
-  }
-
-  acceptAttachmentInput(event: CopilotAttachmentInputEvent) {
-    for (const tp of this.copilot.environment.attachmentTypes) {
-      const matched = tp.match(event);
-      if (matched) return true;
-    }
-    return false;
-  }
-  inputAttachment(event: CopilotAttachmentInputEvent) {
-    for (const tp of this.copilot.environment.attachmentTypes) {
-      if (!tp.match(event)) continue;
-      const data = tp.handle(event);
-      if (data.length) {
-        for (const d of data) {
-          const id = crypto.randomUUID();
-          if (typeof d === "function") {
-            const attachment: CopilotInputAttachment<typeof tp.type, typeof d> =
-              {
+    inputAttachment: (event) => {
+      const attachmentTypes = agent.environment.attachmentTypes;
+      for (const typeKey in attachmentTypes) {
+        const tp = attachmentTypes[typeKey];
+        if (!tp.match(event)) continue;
+        const data = tp.handle(event);
+        if (data.length) {
+          for (const d of data) {
+            const id = crypto.randomUUID();
+            if (typeof d === "function") {
+              get().addAttachment({
                 id,
                 type: tp.type,
                 status: "pending",
-                getData: d,
-              };
-            this.addAttachment(attachment);
-            d()
-              .then((data: any) => {
-                this.updateAttachment(id, { data, status: "ready" });
-              })
-              .catch(() => {
-                this.updateAttachment(id, { status: "errored" });
+                getData: d as any,
               });
-          } else {
-            this.addAttachment({
-              id,
-              type: tp.type,
-              status: "ready",
-              data: d,
-            });
+              (d as any)()
+                .then((data: any) => {
+                  get().updateAttachment(id, { data, status: "ready" });
+                })
+                .catch(() => {
+                  get().updateAttachment(id, { status: "errored" });
+                });
+            } else {
+              get().addAttachment({
+                id,
+                type: tp.type,
+                status: "ready",
+                data: d,
+              });
+            }
           }
+          break;
         }
-
-        break;
       }
-    }
-  }
-
-  setModel(model: string | undefined) {
-    this._model.next(model);
-  }
-
-  dispose() {
-    this._text.complete();
-    this._isLoading.complete();
-    this._error.complete();
-    this._attachments.complete();
-    this._model.complete();
-  }
+    },
+  }));
 }

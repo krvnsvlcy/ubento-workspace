@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { UbentoSDK } from "@ubento/sdk";
 import { queryKeys } from "./keys";
 import { useUbento } from "./ubento";
 
@@ -196,4 +197,56 @@ export function useDeleteModule() {
       queryClient.invalidateQueries({ queryKey: ["modules"] });
     },
   });
+}
+
+export function createUbentoIamService({
+  ubentoSdk,
+}: {
+  ubentoSdk: UbentoSDK;
+}) {
+  return {
+    useDeleteModule: () => {
+      const queryClient = useQueryClient();
+
+      return useMutation({
+        mutationFn: async (moduleId: string) => {
+          return await ubentoSdk.module.deleteModule(moduleId);
+        },
+        onMutate: async (deletedModuleId: string) => {
+          await queryClient.cancelQueries({ queryKey: ["modules"] });
+          const previousModules = queryClient.getQueryData(["modules"]);
+          queryClient.setQueryData(["modules"], (old: any) => {
+            if (!old) return old;
+            // Assumes your modules list is a flat array.
+            // If it's paginated (e.g., { pages: [...] }), this logic shifts slightly.
+            return old.filter((mod: any) => mod.id !== deletedModuleId);
+          });
+
+          // Return the snapshot context so onError can use it
+          return { previousModules };
+        },
+
+        // 3. The Fallback (If the server throws an error)
+        onError: (err, deletedModuleId, context) => {
+          // Revert the cache back to the exact state it was in before the optimistic update
+          if (context?.previousModules) {
+            queryClient.setQueryData(["modules"], context.previousModules);
+          }
+          // Tip: You can also trigger a toast notification here (e.g., "Failed to delete module")
+        },
+
+        // 4. The Source of Truth (Fires after success OR error)
+        onSettled: (data, error, deletedModuleId) => {
+          // Ensure the local cache is perfectly synced with the server state
+          queryClient.invalidateQueries({ queryKey: ["modules"] });
+
+          // Granular cleanup: also clear the cache for this specific module ID
+          // just in case it's being cached individually in a detail view
+          queryClient.invalidateQueries({
+            queryKey: ["modules", deletedModuleId],
+          });
+        },
+      });
+    },
+  };
 }

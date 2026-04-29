@@ -31,9 +31,12 @@ export function createTaskTool({
   agent,
 }: {
   agent: Agent;
-}): Tool<typeof taskToolSchema, TaskToolOutput> {
-  return {
+}): Tool<typeof taskToolSchema, TaskToolOutput> & { toolName: string } {
+  const tool: Tool<typeof taskToolSchema, TaskToolOutput> & {
+    toolName: string;
+  } = {
     name: "task",
+    toolName: "task",
     description:
       "Delegate a task to a specialized agent. The agent will execute using its own tools and return a response.",
     args: taskToolSchema,
@@ -48,31 +51,18 @@ export function createTaskTool({
         };
       }
 
-      const executionState = action.message.execution.getState();
-      const thread = await subAgent
-        .getState()
-        .createThread({ title: args.title });
-      const threadState = thread.getState();
+      const execution = action.message.execution;
+      const thread = await subAgent.createThread({ title: args.title });
 
-      const subExecution = threadState.createExecution({
-        model: executionState.model,
-        abortController: executionState.abortController,
+      const subExecution = await thread.run({
+        message: { text: args.message },
+        model: execution.model,
+        abortController: execution.abortController,
       });
 
       const subExecutionState = subExecution.getState();
-      await subExecutionState.run({
-        message: { text: args.message },
-      });
 
-      const finalSubExecutionState = subExecution.getState();
-
-      switch (finalSubExecutionState.status) {
-        case AgentExecutionStatus.Idle:
-        case AgentExecutionStatus.Running: {
-          throw new Error(
-            `Unexpected agent execution status after run: ${finalSubExecutionState.status}`,
-          );
-        }
+      switch (subExecutionState.status) {
         case AgentExecutionStatus.Failed: {
           return {
             isError: true,
@@ -80,21 +70,21 @@ export function createTaskTool({
               {
                 type: "text",
                 text:
-                  finalSubExecutionState.error?.message || "Execution failed",
+                  subExecutionState.error?.message || "Execution failed",
               },
             ],
             structuredContent: {
-              threadId: threadState.id,
+              threadId: thread.getState().id,
               status: "error",
               error:
-                finalSubExecutionState.error?.message || "Execution failed",
+                subExecutionState.error?.message || "Execution failed",
             },
           };
         }
         case AgentExecutionStatus.Stopped:
         case AgentExecutionStatus.MaxIterations: {
           const status =
-            finalSubExecutionState.status === AgentExecutionStatus.Stopped
+            subExecutionState.status === AgentExecutionStatus.Stopped
               ? "stopped"
               : "max_iterations";
           return {
@@ -103,23 +93,23 @@ export function createTaskTool({
               {
                 type: "text",
                 text:
-                  finalSubExecutionState.error?.message ||
+                  subExecutionState.error?.message ||
                   `Execution ${status}`,
               },
             ],
             structuredContent: {
-              threadId: threadState.id,
+              threadId: thread.getState().id,
               status: "stopped",
               error:
-                finalSubExecutionState.error?.message || `Execution ${status}`,
+                subExecutionState.error?.message || `Execution ${status}`,
             },
           };
         }
       }
 
-      const response = await threadState.getResource("response");
+      const response = await thread.getResource("response");
       const output: TaskToolOutput = {
-        threadId: threadState.id,
+        threadId: thread.getState().id,
         response: response?.data || "No response",
         status: "success",
       };
@@ -135,4 +125,9 @@ export function createTaskTool({
       };
     },
   };
+  return tool;
 }
+
+export const TaskTool = {
+  toolName: "task",
+};

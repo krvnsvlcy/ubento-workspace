@@ -22,6 +22,7 @@ export type UbentoEngine = StateController<UbentoEngineState> & {
   // configs
   workspaceRuntimeUrl: string;
   componentRuntimeUrl: string;
+  moduleUrlTemplate: string;
 
   // commands
   goToLocation: (location: UbentoLocation) => void;
@@ -30,14 +31,21 @@ export type UbentoEngine = StateController<UbentoEngineState> & {
 export function createUbentoEngine({
   workspaceRuntimeUrl,
   componentRuntimeUrl,
+  moduleUrlTemplate,
   ubentoApi,
+  session,
+  location,
 }: {
   workspaceRuntimeUrl: string;
   componentRuntimeUrl: string;
+  moduleUrlTemplate: string;
   ubentoApi: UbentoSDK;
+  session?: UbentoSession;
+  location?: UbentoLocation;
 }): UbentoEngine {
   const store = createStore<UbentoEngineState>()(() => ({
-    location: {
+    session,
+    location: location || {
       view: "home",
       params: {},
     },
@@ -49,8 +57,9 @@ export function createUbentoEngine({
 
     workspaceRuntimeUrl,
     componentRuntimeUrl,
+    moduleUrlTemplate,
     ubentoApi,
-    copilot: createUbentoCopilot(),
+    copilot: createUbentoCopilot({ ubentoApi }),
     goToLocation(location: UbentoLocation) {
       stateController.setState((state) => ({
         ...state,

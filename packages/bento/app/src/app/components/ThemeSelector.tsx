@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "motion/react";
-import { themes } from "../../libs/constants";
+import { themes } from "../../services/constants";
 
 interface ThemeSelectorProps {
   currentTheme: string;

@@ -2,11 +2,11 @@ import z from "zod";
 import {
   agentManagerSchema,
   AgentManagerSchema,
-} from "~/lib/agents/prompts/manager/schema.js";
-import { Tool } from "~/lib/agents/tool.js";
-import { TaskTool } from "~/lib/agents/tools/task.js";
-import { renderYaml } from "~/lib/format.js";
-import { cleanJsonSchema } from "~/lib/zod.js";
+} from "@/engine/copilot/agent/prompts/manager/schema.js";
+import { Tool } from "@/engine/copilot/agent/tool.js";
+import { TaskTool } from "@/engine/copilot/agent/tools/task.js";
+import { renderYaml } from "@/engine/copilot/utils/format.js";
+import { cleanJsonSchema } from "@/engine/copilot/utils/zod.js";
 import { MessageTool } from "../../../tools/message.js";
 import { ResponseTool } from "../../../tools/response.js";
 

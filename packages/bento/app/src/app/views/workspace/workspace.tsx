@@ -1,5 +1,5 @@
 import { useBentoHostApi } from "@/contexts/host";
-import { useUbento } from "@/libs/api/ubento";
+import { useUbento } from "@/services/ubento/ubento";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 import { WorkspaceContent } from "./content";

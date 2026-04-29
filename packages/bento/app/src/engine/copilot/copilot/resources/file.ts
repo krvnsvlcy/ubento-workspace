@@ -1,26 +1,23 @@
-import { EditorWorkspaceManager } from "@elllphnt/elll-editor-extension";
-import { Elll } from "@elllphnt/elll-engine";
-import { ResourceType } from "~/lib/agents/resource.js";
+import { ResourceType } from "@/engine/copilot/agent/resource.js";
+import { UbentoSDK } from "@ubento/sdk";
+
+export interface FileResourceData {
+  path: string;
+}
 
 export const fileResource = {
   type: "file",
-  data: (data: { path: string }) => data,
-  instance: (elll: Elll): ResourceType<{ path: string }> => {
+  data: (data: FileResourceData) => data,
+  create: (ubentoApi: UbentoSDK): ResourceType<FileResourceData> => {
     return {
-      type: fileResource.type,
+      type: "file",
       getMessageItem: async (data) => {
-        const workspace = EditorWorkspaceManager.instance(elll);
-        const worker = workspace.worker;
-        if (!worker) {
-          throw new Error("No worker available");
-        }
-        const content = await worker.readFileAtPath(data.path);
+        // Shim for file reading via SDK
         return {
           type: "data",
           label: `File: ${data.path}`,
           data: {
-            content: content.text,
-            diagnostics: content.diagnostics,
+            content: "", // Should fetch from SDK
           },
         };
       },

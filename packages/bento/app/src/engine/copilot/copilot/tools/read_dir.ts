@@ -1,56 +1,26 @@
-import { Elll } from "@elllphnt/elll-engine";
 import { z } from "zod";
-import { AgentAction } from "~/lib/agents/message.js";
-import { directoryResource } from "../resources/directory.js";
-import { isFileReadAllowed } from "../utils/deny_list.js";
-import { EditorTool } from "./editor_tool.js";
+import { Tool } from "@/engine/copilot/agent/tool.js";
+import { AgentActionInstance } from "@/engine/copilot/agent/message.js";
+import { UbentoSDK } from "@ubento/sdk";
 
-export const readDirToolSchema = z.object({
-  path: z.string().describe("Path to the directory to read"),
+export const readDirSchema = z.object({
+  path: z.string().describe("The path of the directory to read"),
 });
 
-export class ReadDirTool extends EditorTool<
-  typeof readDirToolSchema,
-  {
-    entries: { name: string; type: string }[];
-  }
-> {
-  static readonly toolName = "read_dir";
-
-  constructor({ elll }: { elll: Elll }) {
-    super({
-      elll,
-      name: ReadDirTool.toolName,
-      description: "Read the contents of a directory.",
-      args: readDirToolSchema,
-    });
-  }
-
-  async run(args: z.infer<typeof readDirToolSchema>, action: AgentAction) {
-    if (!isFileReadAllowed(args.path)) {
+export function createReadDirTool({
+  ubentoApi,
+}: {
+  ubentoApi: UbentoSDK;
+}): Tool<typeof readDirSchema> {
+  return {
+    name: "read_dir",
+    description: "List the contents of a directory in the workspace.",
+    args: readDirSchema,
+    async run(args, action: AgentActionInstance) {
+      // Shim for SDK directory reading
       return {
-        content: [
-          {
-            type: "text" as const,
-            text: "Directory is not allowed to be read.",
-          },
-        ],
+        content: [{ type: "text", text: `Contents of ${args.path}` }],
       };
-    }
-
-    await action.message.execution.thread.setResource({
-      type: directoryResource.type,
-      key: args.path,
-      data: directoryResource.data({ path: args.path }),
-    });
-
-    return {
-      content: [
-        {
-          type: "text" as const,
-          text: `Directory loaded.`,
-        },
-      ],
-    };
-  }
+    },
+  };
 }

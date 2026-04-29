@@ -1,4 +1,4 @@
-import { AgentExecutionInstance } from "../agent/execution.js";
+import { AgentExecution } from "../agent/execution.js";
 import {
   AgentMessageInstance,
   createAgentMessage,
@@ -11,7 +11,7 @@ export function createAgentMessageController({
   execution,
 }: {
   message: IntelligenceMessage;
-  execution: AgentExecutionInstance;
+  execution: AgentExecution;
 }): AgentMessageInstance {
   return createAgentMessage({
     message,
@@ -23,25 +23,16 @@ export function createAgentMessageController({
     setData: async (data) => {
       await message.update({ data: JSON.parse(JSON.stringify(data)) });
 
-      const executionState = execution.getState();
-      const thread = executionState.thread;
+      const thread = execution.thread;
 
-      // Handle both store-based thread and class-based thread shim
-      const getContext = thread.getState
-        ? () => thread.getState().getContext()
-        : () => (thread as any).getContext();
-      const setContext = thread.getState
-        ? (c: any) => thread.getState().setContext(c)
-        : (c: any) => (thread as any).setContext(c);
-
-      const context = await getContext();
+      const context = await thread.getContext();
       const history = (context.history || []).map((entry: any) => {
         if (entry.type === "message" && entry.messageId === message.id) {
           return { ...entry, data };
         }
         return entry;
       });
-      await setContext({ ...context, history });
+      await thread.setContext({ ...context, history });
     },
     save: () => message.save(),
   });

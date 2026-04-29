@@ -1,17 +1,21 @@
-import {
-  editorKeys,
-  EditorWorkspaceManager,
-} from "@elllphnt/elll-editor-extension";
-import { Elll } from "@elllphnt/elll-engine";
+import { UbentoSDK } from "@ubento/sdk";
 import { createStore } from "zustand/vanilla";
-import { pairwiseOrEmpty } from "../../../../../_to_sort/utils/build/index.js";
-import { AgentEnvironment } from "../agent/environment.js";
-import { McpToolSet } from "../agent/tool_set/mcp/mcp.js";
-import { ToolSet } from "../agent/tool_set/tool_set.js";
-import { ResourceType } from "../agent/resource.js";
 import { AttachmentType } from "../agent/attachments.js";
+import { AgentContext, AgentContextStats } from "../agent/context.js";
+import { AgentEnvironment } from "../agent/environment.js";
+import { IntelligenceMessageData } from "../agent/message/message.js";
+import { ResourceType } from "../agent/resource.js";
+import { createAgentThread } from "../agent/thread.js";
+import { ToolSet } from "../agent/tool_set/tool_set.js";
+import { LanguageModel } from "../utils/models.js";
 
-export function createElllAgentEnvironment({ elll }: { elll: Elll }): AgentEnvironment {
+export function createUbentoAgentEnvironment({
+  ubentoApi,
+  workspaceId,
+}: {
+  ubentoApi: UbentoSDK;
+  workspaceId: string;
+}): AgentEnvironment {
   const store = createStore<{
     toolSets: Record<string, ToolSet>;
     resourceTypes: Record<string, ResourceType>;
@@ -24,19 +28,24 @@ export function createElllAgentEnvironment({ elll }: { elll: Elll }): AgentEnvir
 
   const env: AgentEnvironment = {
     readWebpage: async (url, options) => {
-      const response = await elll.backend.elllSdk.intelligence.readWebPage(
-        url,
-        options,
-      );
-      return response.content;
+      // Shim for now
+      return "";
     },
 
-    get toolSets() { return store.getState().toolSets; },
-    get resourceTypes() { return store.getState().resourceTypes; },
-    get attachmentTypes() { return store.getState().attachmentTypes; },
+    get toolSets() {
+      return store.getState().toolSets;
+    },
+    get resourceTypes() {
+      return store.getState().resourceTypes;
+    },
+    get attachmentTypes() {
+      return store.getState().attachmentTypes;
+    },
 
     addToolSet: (toolSet) => {
-      store.setState((s) => ({ toolSets: { ...s.toolSets, [toolSet.name]: toolSet } }));
+      store.setState((s) => ({
+        toolSets: { ...s.toolSets, [toolSet.name]: toolSet },
+      }));
     },
     removeToolSet: (name) => {
       store.setState((s) => {
@@ -45,7 +54,12 @@ export function createElllAgentEnvironment({ elll }: { elll: Elll }): AgentEnvir
       });
     },
     addResourceType: (resourceType) => {
-      store.setState((s) => ({ resourceTypes: { ...s.resourceTypes, [resourceType.type]: resourceType } }));
+      store.setState((s) => ({
+        resourceTypes: {
+          ...s.resourceTypes,
+          [resourceType.type]: resourceType,
+        },
+      }));
     },
     removeResourceType: (type) => {
       store.setState((s) => {
@@ -54,7 +68,12 @@ export function createElllAgentEnvironment({ elll }: { elll: Elll }): AgentEnvir
       });
     },
     addAttachmentType: (attachmentType) => {
-      store.setState((s) => ({ attachmentTypes: { ...s.attachmentTypes, [attachmentType.type]: attachmentType } }));
+      store.setState((s) => ({
+        attachmentTypes: {
+          ...s.attachmentTypes,
+          [attachmentType.type]: attachmentType,
+        },
+      }));
     },
     removeAttachmentType: (type) => {
       store.setState((s) => {
@@ -62,52 +81,46 @@ export function createElllAgentEnvironment({ elll }: { elll: Elll }): AgentEnvir
         return { attachmentTypes: rest };
       });
     },
+    createThread: async ({ title, agent }) => {
+      let messages: IntelligenceMessageData[] = [];
+      let context: AgentContext = { resources: [] };
+
+      const threadA = await ubentoApi.intelligence.createThread({
+        workspace_id: workspaceId,
+        title,
+      });
+
+      return createAgentThread({
+        id: crypto.randomUUID(),
+        agent,
+        getContext: async () => context,
+        setContext: async (newContext) => {
+          context = newContext;
+        },
+        getContextStats: async (
+          modelId: string,
+        ): Promise<AgentContextStats> => {
+          return {
+            usage: 0,
+            budget: 100000,
+            window: 128000,
+            breakdown: { instructions: 0, prompt: 0 },
+          };
+        },
+        summarizeContext: async (model: LanguageModel) => {},
+        save: async () => {},
+        pushUserMessage: async (message) => {
+          messages.push(message);
+        },
+        startAgentMessage: async (execution) => {
+          // This would normally return a controller for an assistant message
+          return {} as any;
+        },
+        listMessages: async () => messages,
+        generateTitle: async () => {},
+      });
+    },
   };
-
-  const mcpServersSubscription = elll
-    .module<EditorWorkspaceManager>(editorKeys.modules.workspaceManager)
-    .extensionManager.allMpcServers$.pipe(pairwiseOrEmpty())
-    .subscribe(([prev, curr]) => {
-      const organization = elll.organization;
-      if (!organization) return;
-
-      const toRemove = new Set(prev?.map((s) => s.name));
-
-      for (const server of curr) {
-        toRemove.delete(server.name);
-        if (!env.toolSets[server.name]) {
-          if (server.connectionProviderId) {
-            const pUrl = elll.backend.elllSdk.integration.getProxyUrl({
-              providerId: server.connectionProviderId,
-              organizationId: organization.id,
-              targetUrl: server.url,
-            });
-            env.addToolSet(
-              new McpToolSet({
-                elll: elll,
-                name: server.name,
-                url: pUrl.proxyUrl,
-                headers: {
-                  "x-target-url": pUrl.xTargetUrl,
-                },
-              }),
-            );
-          } else {
-            env.addToolSet(
-              new McpToolSet({
-                elll: elll,
-                name: server.name,
-                url: server.url,
-              }),
-            );
-          }
-        }
-      }
-
-      for (const name of toRemove) {
-        env.removeToolSet(name);
-      }
-    });
 
   return env;
 }

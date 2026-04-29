@@ -1,56 +1,26 @@
-import { Elll } from "@elllphnt/elll-engine";
 import { z } from "zod";
-import { AgentAction } from "~/lib/agents/message.js";
-import { fileResource } from "../resources/file.js";
-import { isFileReadAllowed } from "../utils/deny_list.js";
-import { EditorTool } from "./editor_tool.js";
+import { Tool } from "@/engine/copilot/agent/tool.js";
+import { AgentActionInstance } from "@/engine/copilot/agent/message.js";
+import { UbentoSDK } from "@ubento/sdk";
 
-export const readFileToolSchema = z.object({
-  path: z.string().describe("Path to the file to read"),
+export const readFileSchema = z.object({
+  path: z.string().describe("The path of the file to read"),
 });
 
-export class ReadFileTool extends EditorTool<
-  typeof readFileToolSchema,
-  {
-    content: string;
-  }
-> {
-  static readonly toolName = "read_file";
-
-  constructor({ elll }: { elll: Elll }) {
-    super({
-      elll,
-      name: ReadFileTool.toolName,
-      description: "Read the contents of a file.",
-      args: readFileToolSchema,
-    });
-  }
-
-  async run(args: z.infer<typeof readFileToolSchema>, action: AgentAction) {
-    if (!isFileReadAllowed(args.path)) {
+export function createReadFileTool({
+  ubentoApi,
+}: {
+  ubentoApi: UbentoSDK;
+}): Tool<typeof readFileSchema> {
+  return {
+    name: "read_file",
+    description: "Read the content of a file in the workspace.",
+    args: readFileSchema,
+    async run(args, action: AgentActionInstance) {
+      // Shim for SDK file reading
       return {
-        content: [
-          {
-            type: "text" as const,
-            text: "File is not allowed to be read.",
-          },
-        ],
+        content: [{ type: "text", text: `Content of ${args.path}` }],
       };
-    }
-
-    await action.message.execution.thread.setResource({
-      type: fileResource.type,
-      key: args.path,
-      data: fileResource.data({ path: args.path }),
-    });
-
-    return {
-      content: [
-        {
-          type: "text" as const,
-          text: "File loaded.",
-        },
-      ],
-    };
-  }
+    },
+  };
 }

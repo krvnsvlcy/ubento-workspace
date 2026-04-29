@@ -1,7 +1,7 @@
+import { WorkspaceGrid } from "@/app/views/home/workspace-grid";
 import { useBentoHost } from "@/contexts/host";
 import { useBentoSession } from "@/contexts/session";
-import { useWorkspaces } from "@/libs/api/workspace";
-import { WorkspaceGrid } from "@/views/home/workspace-grid";
+import { useWorkspaces } from "@/services/ubento/workspace";
 import { ArrowLeft, Search } from "lucide-react";
 import { motion } from "motion/react";
 import { useState } from "react";

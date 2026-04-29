@@ -1,4 +1,4 @@
-import { Copilot } from "../copilot/copilot.js";
+import { Agent } from "./agent.js";
 import { CopilotAttachmentInputEvent } from "../copilot/input.js";
 import { MessageItem } from "./message/item.js";
 
@@ -10,8 +10,8 @@ export type AttachmentType<InputData, MessageData> = {
   handle: (
     event: CopilotAttachmentInputEvent,
   ) => NonNullable<InputData | (() => Promise<InputData>)>[];
-  toMessageAttachment: (data: InputData, copilot: Copilot) => MessageData;
+  toMessageAttachment: (data: InputData, agent: Agent) => MessageData;
   format: (data: MessageData) => Promise<MessageItem | undefined>;
-  icon: string;
-  label: string;
+  icon: (data: MessageData, agent: Agent) => string;
+  label: (data: MessageData, agent: Agent) => string;
 };

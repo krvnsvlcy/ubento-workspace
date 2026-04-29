@@ -1,8 +1,8 @@
 import { ErrorView } from "@/app/components/error";
-import { Builder } from "@/views/builder/builder";
-import { Home } from "@/views/home/home";
-import { Workspace } from "@/views/workspace/workspace";
-import { Workspaces } from "@/views/workspaces/workspaces";
+import { Builder } from "@/app/views/builder/builder";
+import { Home } from "@/app/views/home/home";
+import { Workspace } from "@/app/views/workspace/workspace";
+import { Workspaces } from "@/app/views/workspaces/workspaces";
 import { AnimatePresence, motion } from "motion/react";
 import { useUbentoEngine } from "../engine/engine";
 
