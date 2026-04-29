@@ -8,9 +8,6 @@ importers:
 
   .:
     dependencies:
-      immer:
-        specifier: ^11.1.4
-        version: 11.1.4
       zustand:
         specifier: ^5.0.12
         version: 5.0.12(@types/react@19.2.14)(immer@11.1.4)(react@19.2.5)(use-sync-external-store@1.6.0(react@19.2.5))
@@ -136,6 +133,9 @@ importers:
 
   apps/bento.runtime:
     dependencies:
+      '@tanstack/react-query':
+        specifier: ^5.100.1
+        version: 5.100.1(react@19.2.5)
       '@ubento/bento-primitives':
         specifier: workspace:*
         version: link:../../packages/bento/primitives
@@ -148,9 +148,6 @@ importers:
       '@ubento/rpc-utils':
         specifier: workspace:*
         version: link:../../packages/core/rpc
-      immer:
-        specifier: ^11.1.4
-        version: 11.1.4
       wouter:
         specifier: ^3.6.0
         version: 3.9.0(react@19.2.5)
@@ -221,9 +218,6 @@ importers:
       '@ubento/rpc-utils':
         specifier: workspace:*
         version: link:../../packages/core/rpc
-      immer:
-        specifier: ^11.1.4
-        version: 11.1.4
       react:
         specifier: ^19.0.0
         version: 19.2.5
@@ -414,16 +408,6 @@ importers:
         specifier: ^5
         version: 5.9.3
 
-  packages/bento/agent:
-    dependencies:
-      '@ubento/engine':
-        specifier: workspace:*
-        version: link:../engine
-    devDependencies:
-      typescript:
-        specifier: ^5.0.0
-        version: 5.9.3
-
   packages/bento/app:
     dependencies:
       '@ai-sdk/open-responses':
@@ -508,9 +492,6 @@ importers:
       '@ubento/rpc-utils':
         specifier: workspace:*
         version: link:../../core/rpc
-      immer:
-        specifier: ^11.1.4
-        version: 11.1.4
       motion:
         specifier: ^12.38.0
         version: 12.38.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
@@ -568,12 +549,6 @@ importers:
         specifier: ^1.8.0
         version: 1.8.0
 
-  packages/core/primitives/dist:
-    dependencies:
-      '@noble/hashes':
-        specifier: ^1.8.0
-        version: 1.8.0
-
   packages/core/rpc: {}
 
   packages/core/sdk:
@@ -601,18 +576,6 @@ importers:
         specifier: ^5.0.0
         version: 5.9.3
 
-  packages/core/sdk/dist:
-    dependencies:
-      axios:
-        specifier: ^1.11.0
-        version: 1.15.2
-      jszip:
-        specifier: ^3.10.1
-        version: 3.10.1
-      openapi-fetch:
-        specifier: ^0.9.7
-        version: 0.9.8
-
   packages/services/database:
     dependencies:
       '@prisma/client':
@@ -625,16 +588,6 @@ importers:
       prisma:
         specifier: 5.22.0
         version: 5.22.0
-
-  packages/services/database/prisma/generated/iam: {}
-
-  packages/services/database/prisma/generated/integration: {}
-
-  packages/services/database/prisma/generated/intelligence: {}
-
-  packages/services/database/prisma/generated/module: {}
-
-  packages/services/database/prisma/generated/workspace: {}
 
   packages/services/service-toolkit:
     dependencies:
@@ -703,62 +656,21 @@ importers:
         specifier: ^5.0.0
         version: 5.9.3
 
-  packages/services/service-toolkit/dist:
+  registry/services/stripe:
     dependencies:
-      '@elllphnt/primitives':
-        specifier: ^0.2.3
-        version: 0.2.4
-      '@google-cloud/logging-winston':
-        specifier: ^6.0.0
-        version: 6.0.1(winston@3.19.0)
-      '@google-cloud/pubsub':
-        specifier: ^4.5.0
-        version: 4.11.0
-      '@workos-inc/node':
-        specifier: ^7.77.0
-        version: 7.82.0(express@5.2.1)(next@16.2.4(@opentelemetry/api@1.9.1)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))
-      axios:
-        specifier: ^1.11.0
-        version: 1.15.2
-      casbin:
-        specifier: ^5.48.0
-        version: 5.49.0
-      casbin-mongoose-adapter:
-        specifier: ^5.6.1
-        version: 5.6.1(casbin@5.49.0)(socks@2.8.7)
-      cors:
-        specifier: ^2.8.5
-        version: 2.8.6
-      express:
-        specifier: ^5.1.0
-        version: 5.2.1
-      express-jwt:
-        specifier: ^8.4.1
-        version: 8.5.1
-      express-validator:
-        specifier: ^7.1.0
-        version: 7.3.2
-      google-auth-library:
-        specifier: ^10.5.0
-        version: 10.6.2
-      jose:
-        specifier: ^6.1.3
-        version: 6.2.2
-      jwks-rsa:
-        specifier: ^3.1.0
-        version: 3.2.2
-      mongoose:
-        specifier: ^9.1.5
-        version: 9.5.0(socks@2.8.7)
-      uuid:
-        specifier: ^11.1.0
-        version: 11.1.0
-      winston:
-        specifier: ^3.17.0
-        version: 3.19.0
+      '@tanstack/react-query':
+        specifier: ^5.100.1
+        version: 5.100.1(react@19.2.5)
+      stripe:
+        specifier: ^17.4.0
+        version: 17.7.0
       zod:
-        specifier: ^4.1.13
-        version: 4.3.6
+        specifier: ^3.23.8
+        version: 3.24.4
+    devDependencies:
+      '@types/node':
+        specifier: ^22.9.0
+        version: 22.19.17
 
   scripts:
     dependencies:
@@ -1289,9 +1201,6 @@ packages:
   '@edge-runtime/vm@3.2.0':
     resolution: {integrity: sha512-0dEVyRLM/lG4gp1R/Ik5bfPl/1wX00xFwd5KcNH602tzBa09oF7pbTKETEhR1GjZ75K6OJnYFu8II2dyMhONMw==}
     engines: {node: '>=16'}
-
-  '@elllphnt/primitives@0.2.4':
-    resolution: {integrity: sha512-0U+oGkRobhd7QrJ4PRKdCmH9AnXDL2K5AsF02AXwYOOd26MP1kG3X8mXWJNr1O/xQT1VeRr3xqrvdQpCz9iTWg==, tarball: https://npm.pkg.github.com/download/@elllphnt/primitives/0.2.4/6e6876679b476291c0f609191e2b84aebf45348d}
 
   '@emnapi/core@1.10.0':
     resolution: {integrity: sha512-yq6OkJ4p82CAfPl0u9mQebQHKPJkY7WrIuk205cTYnYe+k2Z8YBh11FrbRG/H6ihirqcacOgl2BIO8oyMQLeXw==}
@@ -3320,6 +3229,9 @@ packages:
 
   '@types/node@20.19.39':
     resolution: {integrity: sha512-orrrD74MBUyK8jOAD/r0+lfa1I2MO6I+vAkmAWzMYbCcgrN4lCrmK52gRFQq/JRxfYPfonkr4b0jcY7Olqdqbw==}
+
+  '@types/node@22.19.17':
+    resolution: {integrity: sha512-wGdMcf+vPYM6jikpS/qhg6WiqSV/OhG+jeeHT/KlVqxYfD40iYJf9/AE1uQxVWFvU7MipKRkRv8NSHiCGgPr8Q==}
 
   '@types/node@24.12.2':
     resolution: {integrity: sha512-A1sre26ke7HDIuY/M23nd9gfB+nrmhtYyMINbjI1zHJxYteKR6qSMX56FsmjMcDb3SMcjJg5BiRRgOCC/yBD0g==}
@@ -7183,6 +7095,10 @@ packages:
     resolution: {integrity: sha512-6fPc+R4ihwqP6N/aIv2f1gMH8lOVtWQHoqC4yK6oSDVVocumAsfCqjkXnqiYMhmMwS/mEHLp7Vehlt3ql6lEig==}
     engines: {node: '>=8'}
 
+  stripe@17.7.0:
+    resolution: {integrity: sha512-aT2BU9KkizY9SATf14WhhYVv2uOapBWX0OFWF4xvcj1mPaNotlSc2CsxpS4DS46ZueSppmCF5BX1sNYBtwBvfw==}
+    engines: {node: '>=12.*'}
+
   strnum@2.2.3:
     resolution: {integrity: sha512-oKx6RUCuHfT3oyVjtnrmn19H1SiCqgJSg+54XqURKp5aCMbrXrhLjRN9TjuwMjiYstZ0MzDrHqkGZ5dFTKd+zg==}
 
@@ -8026,10 +7942,6 @@ snapshots:
   '@edge-runtime/vm@3.2.0':
     dependencies:
       '@edge-runtime/primitives': 4.1.0
-
-  '@elllphnt/primitives@0.2.4':
-    dependencies:
-      '@noble/hashes': 1.8.0
 
   '@emnapi/core@1.10.0':
     dependencies:
@@ -9663,6 +9575,10 @@ snapshots:
       undici-types: 5.26.5
 
   '@types/node@20.19.39':
+    dependencies:
+      undici-types: 6.21.0
+
+  '@types/node@22.19.17':
     dependencies:
       undici-types: 6.21.0
 
@@ -12478,7 +12394,8 @@ snapshots:
 
   immediate@3.0.6: {}
 
-  immer@11.1.4: {}
+  immer@11.1.4:
+    optional: true
 
   import-fresh@3.3.1:
     dependencies:
@@ -14510,6 +14427,11 @@ snapshots:
   strip-json-comments@2.0.1: {}
 
   strip-json-comments@3.1.1: {}
+
+  stripe@17.7.0:
+    dependencies:
+      '@types/node': 22.19.17
+      qs: 6.15.1
 
   strnum@2.2.3: {}
 

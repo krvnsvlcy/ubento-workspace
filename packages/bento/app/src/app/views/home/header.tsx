@@ -1,7 +1,7 @@
 import { Logo } from "@/app/components/logo";
 import { ThemeSelector } from "@/app/components/ThemeSelector";
 import { useBentoSession } from "@/contexts/session";
-import { useUser } from "@/services/ubento/iam";
+import { useUbento } from "@/services/ubento/ubento";
 import {
   ChevronDown,
   LogOut,
@@ -26,8 +26,9 @@ export function Header({
   onChangeTheme,
   onOpenUserSettings,
 }: HeaderProps) {
+  const ubento = useUbento();
   const session = useBentoSession();
-  const { data: user } = useUser(session?.userId);
+  const { data: user } = ubento.iam.useUser(session?.userId || "");
 
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);

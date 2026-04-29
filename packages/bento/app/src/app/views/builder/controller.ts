@@ -8,7 +8,6 @@ import {
   DuplexRpc,
 } from "@ubento/rpc-utils";
 import { UbentoSDK } from "@ubento/sdk";
-import { immer } from "zustand/middleware/immer";
 import { createStore, StoreApi } from "zustand/vanilla";
 
 export type BuilderState = {
@@ -44,90 +43,78 @@ export function createBuilderController({
     ComponentGuestRpcInterface
   > | null = null;
 
-  return createStore<BuilderStore>()(
-    immer((set, get) => ({
-      loading: false,
-      error: false,
-      connected: false,
-      ready: false,
-      moduleId,
-      code: "",
-      props: {},
+  return createStore<BuilderStore>()((set, get) => ({
+    loading: false,
+    error: false,
+    connected: false,
+    ready: false,
+    moduleId,
+    code: "",
+    props: {},
 
-      connect: (target: Window) => {
-        rpc = createDuplexRpc<
-          ComponentHostRpcInterface,
-          ComponentGuestRpcInterface
-        >({
-          port: createWindowPort(window, target),
-          handlers: {
-            connect: () => {
-              set((s) => {
-                s.connected = true;
-              });
-              const current = get();
-              rpc?.egress.init({
-                code: current.code,
-                props: current.props,
-              });
-            },
-            ready: () => {
-              set((s) => {
-                s.ready = true;
-              });
-            },
+    connect: (target: Window) => {
+      rpc = createDuplexRpc<
+        ComponentHostRpcInterface,
+        ComponentGuestRpcInterface
+      >({
+        port: createWindowPort(window, target),
+        handlers: {
+          connect: () => {
+            set({ connected: true });
+            const current = get();
+            rpc?.egress.init({
+              code: current.code,
+              props: current.props,
+            });
           },
-        });
-        rpc.run();
-      },
+          ready: () => {
+            set({ ready: true });
+          },
+        },
+      });
+      rpc.run();
+    },
 
-      dispose: () => {
-        rpc?.dispose();
-      },
+    dispose: () => {
+      rpc?.dispose();
+    },
 
-      load: async () => {
-        set((s) => {
-          s.loading = true;
+    load: async () => {
+      set({ loading: true });
+      try {
+        const module = await ubento.module.getModule(moduleId);
+        const source = await ubento.module.getModuleVersionSource(
+          moduleId,
+          module.latest_version_id,
+        );
+        set({
+          code: source,
+          loading: false,
         });
-        try {
-          const module = await ubento.module.getModule(moduleId);
-          const source = await ubento.module.getModuleVersionSource(
-            moduleId,
-            module.latest_version_id,
-          );
-          set((s) => {
-            s.code = source;
-            s.loading = false;
-          });
-          rpc?.egress.init({ code: source, props: get().props });
-        } catch (err) {
-          set((s) => {
-            s.error = true;
-            s.loading = false;
-          });
-        }
-      },
+        rpc?.egress.init({ code: source, props: get().props });
+      } catch (err) {
+        set({
+          error: true,
+          loading: false,
+        });
+      }
+    },
 
-      updateCode: (code: string) => {
-        set((s) => {
-          s.code = code;
-        });
-        rpc?.egress.updateCode({ code });
-      },
+    updateCode: (code: string) => {
+      set({ code });
+      rpc?.egress.updateCode({ code });
+    },
 
-      updateProps: (props: any) => {
-        set((s) => {
-          s.props = props;
-        });
-        rpc?.egress.updateProps({ props });
-      },
+    updateProps: (props: any) => {
+      set({ props });
+      rpc?.egress.updateProps({ props });
+    },
 
-      save: async () => {
-        const current = get();
-        await ubento.module.publishModuleVersion(moduleId, {
-          source: current.code,
-        });
-      },
-    })),
-  );
+    save: async () => {
+      const current = get();
+      await ubento.module.publishModuleVersion(moduleId, {
+        source: current.code,
+      });
+    },
+  }));
 }

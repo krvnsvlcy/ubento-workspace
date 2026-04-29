@@ -1,10 +1,12 @@
-import type {
+import {
   BaseStyle,
+  createRuntimeService,
   ElementData,
   EngineLocation,
   EngineMode,
   EngineState,
   EngineStore,
+  RuntimeService,
   WorkspaceData,
 } from "@ubento/engine";
 import { createStore } from "zustand/vanilla";
@@ -26,6 +28,7 @@ export function createEngine({
     boards: {},
     modules: {},
     workspace: null,
+    runtimeServices: {},
     ...initialState,
     setMode: (mode: EngineMode) => {
       set({ mode });
@@ -35,6 +38,11 @@ export function createEngine({
     },
     setLocation: (location: EngineLocation) => {
       set({ location });
+    },
+    setRuntimeService: (name: string, service: any) => {
+      set((s) => ({
+        runtimeServices: { ...s.runtimeServices, [name]: service },
+      }));
     },
 
     // interaction
@@ -438,6 +446,46 @@ export function createEngine({
             board: curr.boards[boardId],
           });
         }, 500);
+      }
+    }
+  });
+
+  // Sync workspace services
+  engine.subscribe((curr, prev) => {
+    if (curr.workspace?.services !== prev.workspace?.services) {
+      const nextServices = curr.workspace?.services || {};
+      const currentRuntimeServices = curr.runtimeServices;
+      const nextRuntimeServices = { ...currentRuntimeServices };
+      let changed = false;
+
+      // 1. Remove or update existing services
+      for (const [name, runtimeService] of Object.entries(
+        currentRuntimeServices,
+      )) {
+        if (!nextServices[name]) {
+          // Remove service
+          delete nextRuntimeServices[name];
+          changed = true;
+        } else {
+          // Update service
+          runtimeService.update(nextServices[name]);
+        }
+      }
+
+      // 2. Add new services
+      for (const [name, serviceData] of Object.entries(nextServices)) {
+        if (!currentRuntimeServices[name]) {
+          nextRuntimeServices[name] = createRuntimeService(
+            name,
+            serviceData,
+            engine,
+          );
+          changed = true;
+        }
+      }
+
+      if (changed) {
+        engine.setState({ runtimeServices: nextRuntimeServices });
       }
     }
   });

@@ -1,6 +1,6 @@
 import { useBentoHost } from "@/contexts/host";
 import { useBentoSession } from "@/contexts/session";
-import { useCreateWorkspace, useWorkspaces } from "@/services/ubento/workspace";
+import { useUbento } from "@/services/ubento/ubento";
 import React, { useEffect, useState } from "react";
 import { Header } from "./header";
 import { Sidebar } from "./sidebar";
@@ -16,14 +16,15 @@ const UserSettingsModal = (props: any) => null;
 
 export function Home() {
   const host = useBentoHost();
+  const ubento = useUbento();
   const session = useBentoSession();
 
-  const { data: workspacesData, isFetching } = useWorkspaces({
+  const { data: workspacesData, isFetching } = ubento.workspace.useWorkspaces({
     team_id: session.teamId,
   });
   const workspaces = workspacesData || [];
 
-  const { mutateAsync: createWorkspace } = useCreateWorkspace();
+  const { mutateAsync: createWorkspace } = ubento.workspace.useCreateWorkspace();
 
   const [activeModal, setActiveModal] = useState<
     "create" | "ai" | "settings" | "user-settings" | null

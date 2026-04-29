@@ -1,4 +1,3 @@
-import { immer } from "zustand/middleware/immer";
 import { createStore } from "zustand/vanilla";
 
 export type ComponentState = {
@@ -11,21 +10,15 @@ export type ComponentStore = ComponentState & {
   updateProps: (props: any) => void;
 };
 
-export const useComponentStore = createStore<ComponentStore>()(
-  immer((set) => ({
-    code: "",
-    props: {},
+export const useComponentStore = createStore<ComponentStore>()((set) => ({
+  code: "",
+  props: {},
 
-    updateCode: (code: string) => {
-      set((s) => {
-        s.code = code;
-      });
-    },
+  updateCode: (code: string) => {
+    set({ code });
+  },
 
-    updateProps: (props: any) => {
-      set((s) => {
-        s.props = props;
-      });
-    },
-  })),
-);
+  updateProps: (props: any) => {
+    set({ props });
+  },
+}));

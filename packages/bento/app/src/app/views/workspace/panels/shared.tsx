@@ -1,5 +1,5 @@
 import { useBentoHost } from "@/contexts/host";
-import { useModule } from "@/services/ubento/module";
+import { useUbento } from "@/services/ubento/ubento";
 import { BaseStyle, BlockData, BoardData, ElementData } from "@ubento/engine";
 import {
   Box,
@@ -368,7 +368,10 @@ export function ModuleSection({
   controller: WorkspaceController;
 }) {
   const host = useBentoHost();
-  const { data: moduleMetadata, isLoading } = useModule(element.moduleId);
+  const ubento = useUbento();
+  const { data: moduleMetadata, isLoading } = ubento.module.useModule(
+    element.moduleId,
+  );
 
   return (
     <Section title="Module" icon={Box}>

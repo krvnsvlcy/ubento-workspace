@@ -15,6 +15,7 @@
     "dev": "scripts dev"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.100.1",
     "stripe": "^17.4.0",
     "zod": "^3.23.8"
   },

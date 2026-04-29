@@ -8,6 +8,7 @@ import {
   ModuleData,
   WorkspaceData,
 } from "./models.js";
+import { RuntimeService } from "./runtime_service.js";
 
 export type EngineMode = "live" | "edit";
 
@@ -26,6 +27,8 @@ export type EngineState = {
   workspace: WorkspaceData | null;
   boards: Record<string, BoardData>;
   modules: Record<string, ModuleData>;
+
+  runtimeServices: Record<string, RuntimeService>;
 };
 
 export type EngineStore = EngineState & {
@@ -54,6 +57,7 @@ export type EngineStore = EngineState & {
   setWorkspace: (workspace: WorkspaceData) => void;
   setSelection: (selection: string[]) => void;
   setLocation: (location?: EngineLocation) => void;
+  setRuntimeService: (name: string, service: any) => void;
 
   setHomeBoardId: (homeBoardId: string) => void;
   updateWorkspace: (workspace: Partial<WorkspaceData>) => void;

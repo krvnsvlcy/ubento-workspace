@@ -1,6 +1,7 @@
 import React from "react";
 import { useStore } from "zustand";
 import { EngineContext, EngineStoreApi } from "../engine.js";
+import { ServicesProvider } from "../services.js";
 import { Board } from "./board/board.js";
 import { NoBoard } from "./board/no-board.js";
 
@@ -18,5 +19,9 @@ export function Workspace({
     content = <NoBoard />;
   }
 
-  return <EngineContext value={engine}>{content}</EngineContext>;
+  return (
+    <EngineContext value={engine}>
+      <ServicesProvider>{content}</ServicesProvider>
+    </EngineContext>
+  );
 }

@@ -1,6 +1,6 @@
 import { UbentoEngine } from "@/engine/engine";
 import { queryKeys } from "@/services/ubento/keys";
-import { getBoard } from "@/services/ubento/workspace";
+import { createUbentoWorkspaceService } from "@/services/ubento/workspace";
 import { QueryClient } from "@tanstack/react-query";
 import {
   BlockData,
@@ -99,6 +99,7 @@ export function createWorkspaceController({
   slug: string;
 }): WorkspaceController {
   let rpc: DuplexRpc<HostRpcInterface, GuestRpcInterface> | null = null;
+  const workspaceService = createUbentoWorkspaceService({ ubentoSdk: ubento });
 
   const store = createStore<WorkspaceStore>()((set, get) => ({
     loading: false,
@@ -129,7 +130,10 @@ export function createWorkspaceController({
             set({ ready: true });
           },
           getBoard: async ({ boardId }) => {
-            const res = await getBoard({ ubento, queryClient, boardId });
+            const res = await workspaceService.fetchBoard({
+              queryClient,
+              boardId,
+            });
             if (!res) throw new Error("Board not found");
             const board = boardDataSchema.parse({
               id: res.id,

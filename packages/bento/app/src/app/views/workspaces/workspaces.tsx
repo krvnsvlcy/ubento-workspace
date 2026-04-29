@@ -1,15 +1,16 @@
 import { WorkspaceGrid } from "@/app/views/home/workspace-grid";
 import { useBentoHost } from "@/contexts/host";
 import { useBentoSession } from "@/contexts/session";
-import { useWorkspaces } from "@/services/ubento/workspace";
+import { useUbento } from "@/services/ubento/ubento";
 import { ArrowLeft, Search } from "lucide-react";
 import { motion } from "motion/react";
 import { useState } from "react";
 
 export function Workspaces() {
   const host = useBentoHost();
+  const ubento = useUbento();
   const session = useBentoSession();
-  const { data: workspacesData, isFetching } = useWorkspaces({
+  const { data: workspacesData, isFetching } = ubento.workspace.useWorkspaces({
     team_id: session.teamId,
   });
   const [search, setSearch] = useState("");
