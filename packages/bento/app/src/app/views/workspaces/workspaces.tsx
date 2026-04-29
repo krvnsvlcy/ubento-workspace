@@ -1,3 +1,4 @@
+import { Header } from "@/app/components/header";
 import { WorkspaceGrid } from "@/app/views/home/workspace-grid";
 import { useBentoHost } from "@/contexts/host";
 import { useBentoSession } from "@/contexts/session";
@@ -31,11 +32,12 @@ export function Workspaces() {
   return (
     <div className="relative min-h-screen px-8 py-10 font-sans text-foreground overflow-x-hidden selection:bg-foreground-200">
       <div className="relative mx-auto w-full max-w-5xl">
+        <Header />
         <motion.header
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3, ease: "easeOut" }}
-          className="mb-12 flex flex-col gap-8"
+          className="mb-12 mt-8 flex flex-col gap-8"
         >
           <button
             onClick={onBack}

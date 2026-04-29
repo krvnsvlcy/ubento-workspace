@@ -1,13 +1,12 @@
 import {
-  BaseStyle,
+  type BaseStyle,
   createRuntimeService,
-  ElementData,
-  EngineLocation,
-  EngineMode,
-  EngineState,
-  EngineStore,
-  RuntimeService,
-  WorkspaceData,
+  type ElementData,
+  type EngineLocation,
+  type EngineMode,
+  type EngineState,
+  type EngineStore,
+  type WorkspaceData,
 } from "@ubento/engine";
 import { createStore } from "zustand/vanilla";
 import { rpc } from "./rpc";
@@ -165,7 +164,7 @@ export function createEngine({
     ) => {
       const id = generateId();
       set((s) => {
-        const targetBoardId = boardId || s.workspace?.homeBoardId;
+        const targetBoardId = boardId || s.location?.boardId || s.workspace?.homeBoardId;
         if (!targetBoardId || !s.boards[targetBoardId]) return s;
 
         const board = s.boards[targetBoardId];
@@ -194,7 +193,7 @@ export function createEngine({
 
     deleteElement: (elementId: string, boardId?: string) => {
       set((s) => {
-        const targetBoardId = boardId || s.workspace?.homeBoardId;
+        const targetBoardId = boardId || s.location?.boardId || s.workspace?.homeBoardId;
         if (!targetBoardId || !s.boards[targetBoardId]) return s;
 
         const board = s.boards[targetBoardId];
@@ -269,8 +268,28 @@ export function createEngine({
     setElementStyle: (id: string, style: Partial<BaseStyle>) => {
       set((s) => {
         const nextBoards = { ...s.boards };
-        let found = false;
+        const currentBoardId = s.location?.boardId;
+        
+        // Prioritize current board
+        if (currentBoardId && nextBoards[currentBoardId]?.elements[id]) {
+          const board = nextBoards[currentBoardId];
+          nextBoards[currentBoardId] = {
+            ...board,
+            elements: {
+              ...board.elements,
+              [id]: {
+                ...board.elements[id],
+                style: {
+                  ...board.elements[id].style,
+                  ...style,
+                } as any,
+              },
+            },
+          };
+          return { boards: nextBoards };
+        }
 
+        let found = false;
         for (const [boardId, board] of Object.entries(nextBoards)) {
           if (board.elements[id]) {
             nextBoards[boardId] = {
@@ -298,8 +317,31 @@ export function createEngine({
     setElementProps: (id: string, props: any) => {
       set((s) => {
         const nextBoards = { ...s.boards };
-        let found = false;
+        const currentBoardId = s.location?.boardId;
 
+        // Prioritize current board
+        if (currentBoardId && nextBoards[currentBoardId]?.elements[id]) {
+          const board = nextBoards[currentBoardId];
+          const el = board.elements[id];
+          if (el.type === "block") {
+            nextBoards[currentBoardId] = {
+              ...board,
+              elements: {
+                ...board.elements,
+                [id]: {
+                  ...el,
+                  props: {
+                    ...el.props,
+                    ...props,
+                  },
+                },
+              },
+            };
+            return { boards: nextBoards };
+          }
+        }
+
+        let found = false;
         for (const [boardId, board] of Object.entries(nextBoards)) {
           const el = board.elements[id];
           if (el && el.type === "block") {
@@ -328,8 +370,28 @@ export function createEngine({
     setStackContent: (id: string, content: string[]) => {
       set((s) => {
         const nextBoards = { ...s.boards };
-        let found = false;
+        const currentBoardId = s.location?.boardId;
 
+        // Prioritize current board
+        if (currentBoardId && nextBoards[currentBoardId]?.elements[id]) {
+          const board = nextBoards[currentBoardId];
+          const el = board.elements[id];
+          if (el.type === "stack") {
+            nextBoards[currentBoardId] = {
+              ...board,
+              elements: {
+                ...board.elements,
+                [id]: {
+                  ...el,
+                  content,
+                },
+              },
+            };
+            return { boards: nextBoards };
+          }
+        }
+
+        let found = false;
         for (const [boardId, board] of Object.entries(nextBoards)) {
           const el = board.elements[id];
           if (el && el.type === "stack") {
@@ -355,8 +417,29 @@ export function createEngine({
     setBlockModule: (id: string, moduleId: string, moduleVersionId: string) => {
       set((s) => {
         const nextBoards = { ...s.boards };
-        let found = false;
+        const currentBoardId = s.location?.boardId;
 
+        // Prioritize current board
+        if (currentBoardId && nextBoards[currentBoardId]?.elements[id]) {
+          const board = nextBoards[currentBoardId];
+          const el = board.elements[id];
+          if (el.type === "block") {
+            nextBoards[currentBoardId] = {
+              ...board,
+              elements: {
+                ...board.elements,
+                [id]: {
+                  ...el,
+                  moduleId,
+                  moduleVersionId,
+                },
+              },
+            };
+            return { boards: nextBoards };
+          }
+        }
+
+        let found = false;
         for (const [boardId, board] of Object.entries(nextBoards)) {
           const el = board.elements[id];
           if (el && el.type === "block") {

@@ -1,6 +1,9 @@
-import { useBentoHost } from "@/contexts/host";
+import { ThemeSelector } from "@/app/components/ThemeSelector.js";
+import { UserButton } from "@/app/components/user-button.js";
+import { useTheme } from "@/contexts/theme.js";
+import { useBentoHost } from "@/contexts/host.js";
 import { IconButton } from "@ubento/bento-primitives";
-import { Home, LayoutDashboard } from "lucide-react";
+import { Eye, Home, LayoutDashboard, Pencil } from "lucide-react";
 import { useStore } from "zustand";
 import { WorkspaceController } from "../controller.js";
 
@@ -11,6 +14,7 @@ export function WorkspaceNavigation({
 }) {
   const host = useBentoHost();
   const snap = useStore(controller);
+  const theme = useTheme();
 
   return (
     <div className="relative z-[200] w-full p-1.5">
@@ -40,7 +44,35 @@ export function WorkspaceNavigation({
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="h-8 w-8 rounded-full bg-foreground/10" />
+          <button
+            onClick={() =>
+              snap.setMode(snap.mode === "edit" ? "live" : "edit")
+            }
+            className={`flex h-9 items-center gap-2 rounded-full px-4 text-[13px] font-medium transition-all ${
+              snap.mode === "edit"
+                ? "bg-primary-500 text-white shadow-lg shadow-primary-500/20"
+                : "bg-background-300 text-foreground-200 hover:bg-background-400"
+            }`}
+          >
+            {snap.mode === "edit" ? (
+              <>
+                <Pencil className="h-3.5 w-3.5" />
+                <span>Editing</span>
+              </>
+            ) : (
+              <>
+                <Eye className="h-3.5 w-3.5" />
+                <span>Live</span>
+              </>
+            )}
+          </button>
+          <ThemeSelector
+            currentTheme={theme.currentTheme}
+            isThemeOpen={theme.isThemeOpen}
+            setIsThemeOpen={theme.setIsThemeOpen}
+            onChangeTheme={theme.changeTheme}
+          />
+          <UserButton />
         </div>
       </div>
     </div>

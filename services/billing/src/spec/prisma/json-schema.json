@@ -1,0 +1,1034 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "Product": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "entity": {
+          "type": "string",
+          "default": "billing_product"
+        },
+        "code": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "default_offer_code": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "version": {
+          "type": "integer",
+          "default": 1
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "code",
+        "name",
+        "updated_at"
+      ]
+    },
+    "Offer": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "entity": {
+          "type": "string",
+          "default": "billing_offer"
+        },
+        "code": {
+          "type": "string"
+        },
+        "product_code": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "price": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "currency": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "USD"
+          ]
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "active": {
+          "type": "boolean",
+          "default": true
+        },
+        "entitlements": {
+          "type": "array",
+          "items": {
+            "type": [
+              "number",
+              "string",
+              "boolean",
+              "object",
+              "array",
+              "null"
+            ]
+          }
+        },
+        "metadata": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "version": {
+          "type": "integer",
+          "default": 1
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "code",
+        "product_code",
+        "name",
+        "entitlements",
+        "updated_at"
+      ]
+    },
+    "ProviderLink": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "entity": {
+          "type": "string",
+          "default": "billing_provider_link"
+        },
+        "provider": {
+          "type": "string",
+          "enum": [
+            "LEMON_SQUEEZY"
+          ]
+        },
+        "provider_entity": {
+          "type": "string",
+          "enum": [
+            "ORDER",
+            "SUBSCRIPTION",
+            "SUBSCRIPTION_INVOICE",
+            "PRODUCT",
+            "PRODUCT_VARIANT"
+          ]
+        },
+        "provider_id": {
+          "type": "string"
+        },
+        "resource_type": {
+          "type": "string",
+          "enum": [
+            "PRODUCT",
+            "OFFER"
+          ]
+        },
+        "resource_code": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "default": "ACTIVE",
+          "enum": [
+            "ACTIVE",
+            "INACTIVE"
+          ]
+        },
+        "priority": {
+          "type": "integer",
+          "default": 0
+        },
+        "version": {
+          "type": "integer",
+          "default": 1
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "provider",
+        "provider_entity",
+        "provider_id",
+        "resource_type",
+        "resource_code",
+        "updated_at"
+      ]
+    },
+    "UsageCounter": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "entity": {
+          "type": "string",
+          "default": "billing_usage_counter"
+        },
+        "organization_id": {
+          "type": "string"
+        },
+        "feature_code": {
+          "type": "string"
+        },
+        "group": {
+          "type": "string"
+        },
+        "value": {
+          "type": "integer",
+          "default": 0
+        },
+        "reserved": {
+          "type": "integer",
+          "default": 0
+        },
+        "version": {
+          "type": "integer",
+          "default": 1
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "organization_id",
+        "feature_code",
+        "group",
+        "updated_at"
+      ]
+    },
+    "UsageHold": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "entity": {
+          "type": "string",
+          "default": "billing_usage_hold"
+        },
+        "organization_id": {
+          "type": "string"
+        },
+        "counter_id": {
+          "type": "string"
+        },
+        "ref": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "integer"
+        },
+        "note": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "default": "HELD",
+          "enum": [
+            "HELD",
+            "COMMITTED",
+            "RELEASED",
+            "EXPIRED"
+          ]
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "data": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "committed_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "released_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "version": {
+          "type": "integer",
+          "default": 1
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "organization_id",
+        "counter_id",
+        "ref",
+        "amount",
+        "note",
+        "expires_at",
+        "updated_at"
+      ]
+    },
+    "UsageEvent": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "entity": {
+          "type": "string",
+          "default": "billing_usage_event"
+        },
+        "organization_id": {
+          "type": "string"
+        },
+        "counter_id": {
+          "type": "string"
+        },
+        "value": {
+          "type": "integer"
+        },
+        "ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "note": {
+          "type": "string"
+        },
+        "data": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "version": {
+          "type": "integer",
+          "default": 1
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "organization_id",
+        "counter_id",
+        "value",
+        "note",
+        "updated_at"
+      ]
+    },
+    "Subscription": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "entity": {
+          "type": "string",
+          "default": "billing_subscription"
+        },
+        "organization_id": {
+          "type": "string"
+        },
+        "product_code": {
+          "type": "string"
+        },
+        "offer_code": {
+          "type": "string"
+        },
+        "quantity": {
+          "type": "integer"
+        },
+        "provider": {
+          "type": "string",
+          "enum": [
+            "LEMON_SQUEEZY"
+          ]
+        },
+        "provider_id": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "ACTIVE",
+            "ON_TRIAL",
+            "PAUSED",
+            "PAST_DUE",
+            "UNPAID",
+            "CANCELLED",
+            "EXPIRED"
+          ]
+        },
+        "data": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "version": {
+          "type": "integer",
+          "default": 1
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ends_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "link_updated_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "organization_id",
+        "product_code",
+        "offer_code",
+        "quantity",
+        "provider",
+        "provider_id",
+        "status",
+        "updated_at"
+      ]
+    },
+    "SubscriptionInvoice": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "entity": {
+          "type": "string",
+          "default": "billing_subscription_invoice"
+        },
+        "organization_id": {
+          "type": "string"
+        },
+        "provider": {
+          "type": "string",
+          "enum": [
+            "LEMON_SQUEEZY"
+          ]
+        },
+        "provider_id": {
+          "type": "string"
+        },
+        "subscription_id": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "DRAFT",
+            "OPEN",
+            "PAID",
+            "VOID",
+            "UNCOLLECTIBLE"
+          ]
+        },
+        "subtotal": {
+          "type": "integer",
+          "default": 0
+        },
+        "tax": {
+          "type": "integer",
+          "default": 0
+        },
+        "total": {
+          "type": "integer",
+          "default": 0
+        },
+        "currency": {
+          "type": "string"
+        },
+        "issued_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "due_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "hosted_url": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "data": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "version": {
+          "type": "integer",
+          "default": 1
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "organization_id",
+        "provider",
+        "provider_id",
+        "subscription_id",
+        "status",
+        "currency",
+        "updated_at"
+      ]
+    },
+    "Order": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "entity": {
+          "type": "string",
+          "default": "billing_order"
+        },
+        "organization_id": {
+          "type": "string"
+        },
+        "product_code": {
+          "type": "string"
+        },
+        "offer_code": {
+          "type": "string"
+        },
+        "quantity": {
+          "type": "integer"
+        },
+        "provider": {
+          "type": "string",
+          "enum": [
+            "LEMON_SQUEEZY"
+          ]
+        },
+        "provider_id": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "PENDING",
+            "FAILED",
+            "PAID",
+            "REFUNDED",
+            "PARTIAL_REFUND",
+            "FRAUDULENT"
+          ]
+        },
+        "currency": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "amount_total": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "line_items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/OrderLineItem"
+          }
+        },
+        "data": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "link_updated_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "version": {
+          "type": "integer",
+          "default": 1
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "organization_id",
+        "product_code",
+        "offer_code",
+        "quantity",
+        "provider",
+        "provider_id",
+        "status",
+        "updated_at"
+      ]
+    },
+    "Checkout": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "entity": {
+          "type": "string",
+          "default": "billing_checkout"
+        },
+        "organization_id": {
+          "type": "string"
+        },
+        "product_code": {
+          "type": "string"
+        },
+        "offer_code": {
+          "type": "string"
+        },
+        "quantity": {
+          "type": "integer"
+        },
+        "url": {
+          "type": "string"
+        },
+        "provider": {
+          "type": "string",
+          "enum": [
+            "LEMON_SQUEEZY"
+          ]
+        },
+        "provider_id": {
+          "type": "string"
+        },
+        "data": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "version": {
+          "type": "integer",
+          "default": 1
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "organization_id",
+        "product_code",
+        "offer_code",
+        "quantity",
+        "url",
+        "provider",
+        "provider_id",
+        "updated_at"
+      ]
+    },
+    "WebhookEvent": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "entity": {
+          "type": "string",
+          "default": "billing_webhook_event"
+        },
+        "provider": {
+          "type": "string",
+          "enum": [
+            "LEMON_SQUEEZY"
+          ]
+        },
+        "provider_id": {
+          "type": "string"
+        },
+        "payload": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "event": {
+          "type": "string"
+        },
+        "attempts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/WebhookEventAttempt"
+          }
+        },
+        "status": {
+          "type": "string",
+          "default": "RECEIVED",
+          "enum": [
+            "RECEIVED",
+            "PROCESSING",
+            "PROCESSED",
+            "ERRORED"
+          ]
+        },
+        "error": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "lock_expires_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "version": {
+          "type": "integer",
+          "default": 1
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "provider",
+        "provider_id",
+        "payload",
+        "event",
+        "updated_at"
+      ]
+    },
+    "EntitlementGrant": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "entity": {
+          "type": "string",
+          "default": "billing_entitlement_grant"
+        },
+        "organization_id": {
+          "type": "string"
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "data": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "version": {
+          "type": "integer",
+          "default": 1
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "organization_id",
+        "expires_at",
+        "data",
+        "updated_at"
+      ]
+    },
+    "OrderLineItem": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "quantity": {
+          "type": "integer"
+        },
+        "unit": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "unit_price": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "amount": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "currency": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "metadata": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "code",
+        "quantity"
+      ]
+    },
+    "WebhookEventAttempt": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string",
+          "default": "STARTED",
+          "enum": [
+            "STARTED",
+            "SUCCEEDED",
+            "FAILED"
+          ]
+        },
+        "error": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "at"
+      ]
+    }
+  },
+  "type": "object",
+  "properties": {
+    "product": {
+      "$ref": "#/definitions/Product"
+    },
+    "offer": {
+      "$ref": "#/definitions/Offer"
+    },
+    "providerLink": {
+      "$ref": "#/definitions/ProviderLink"
+    },
+    "usageCounter": {
+      "$ref": "#/definitions/UsageCounter"
+    },
+    "usageHold": {
+      "$ref": "#/definitions/UsageHold"
+    },
+    "usageEvent": {
+      "$ref": "#/definitions/UsageEvent"
+    },
+    "subscription": {
+      "$ref": "#/definitions/Subscription"
+    },
+    "subscriptionInvoice": {
+      "$ref": "#/definitions/SubscriptionInvoice"
+    },
+    "order": {
+      "$ref": "#/definitions/Order"
+    },
+    "checkout": {
+      "$ref": "#/definitions/Checkout"
+    },
+    "webhookEvent": {
+      "$ref": "#/definitions/WebhookEvent"
+    },
+    "entitlementGrant": {
+      "$ref": "#/definitions/EntitlementGrant"
+    }
+  }
+}

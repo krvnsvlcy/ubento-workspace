@@ -1,18 +1,17 @@
+import { Header } from "@/app/components/header";
 import { useBentoHost } from "@/contexts/host";
 import { useBentoSession } from "@/contexts/session";
 import { useUbento } from "@/services/ubento/ubento";
-import React, { useEffect, useState } from "react";
-import { Header } from "./header";
+import { motion } from "motion/react";
+import React from "react";
 import { Sidebar } from "./sidebar";
 import { WorkspaceGrid } from "./workspace-grid";
-// import { AIModal } from "@/modals/AIModal";
-// import { CreateWorkspaceModal } from "@/modals/CreateWorkspaceModal";
-// import { SettingsModal } from "@/modals/SettingsModal";
-// import { UserSettingsModal } from "@/modals/UserSettingsModal";
-const AIModal = (props: any) => null;
-const CreateWorkspaceModal = (props: any) => null;
-const SettingsModal = (props: any) => null;
-const UserSettingsModal = (props: any) => null;
+
+
+
+
+
+
 
 export function Home() {
   const host = useBentoHost();
@@ -24,63 +23,26 @@ export function Home() {
   });
   const workspaces = workspacesData || [];
 
-  const { mutateAsync: createWorkspace } = ubento.workspace.useCreateWorkspace();
-
-  const [activeModal, setActiveModal] = useState<
-    "create" | "ai" | "settings" | "user-settings" | null
-  >(null);
-  const [currentTheme, setCurrentTheme] = useState("sky");
-  const [isThemeOpen, setIsThemeOpen] = useState(false);
-  const [isCreating, setIsCreating] = useState(false);
-
-  useEffect(() => {
-    const savedTheme = localStorage.getItem("ubento-theme") || "sky";
-    setCurrentTheme(savedTheme);
-    document.documentElement.setAttribute("data-theme", savedTheme);
-  }, []);
-
-  const changeTheme = (themeId: string) => {
-    setCurrentTheme(themeId);
-    localStorage.setItem("ubento-theme", themeId);
-    document.documentElement.setAttribute("data-theme", themeId);
-  };
-
-  const handleCreateWorkspace = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsCreating(true);
-    const formData = new FormData(e.currentTarget);
-    const name = formData.get("name") as string;
-    const team_id = session.teamId;
-
-    try {
-      await createWorkspace({ name, team_id, data: {} });
-      setActiveModal(null);
-    } catch (err) {
-      console.error("Error creating workspace:", err);
-    } finally {
-      setIsCreating(false);
-    }
-  };
-
   const onOpenWorkspace = (workspace: any) => {
     host.goToLocation({ view: "workspace", params: { slug: workspace.slug } });
   };
 
-  const closeModal = () => setActiveModal(null);
-
   return (
     <div className="relative flex min-h-screen justify-center px-8 py-10 font-sans text-foreground selection:bg-foreground-200 overflow-x-hidden">
       <div className="relative flex w-full max-w-5xl flex-col">
-        <Header
-          currentTheme={currentTheme}
-          isThemeOpen={isThemeOpen}
-          setIsThemeOpen={setIsThemeOpen}
-          onChangeTheme={changeTheme}
-          onOpenUserSettings={() => setActiveModal("user-settings")}
-        />
+        <Header />
+
+        <motion.h1
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.1, ease: "easeOut" }}
+          className="mb-16 mt-8 text-2xl font-medium tracking-tight sm:text-3xl"
+        >
+          Good afternoon {session?.userName || "Guest"}
+        </motion.h1>
 
         <div className="flex flex-col gap-x-12 gap-y-12 md:grid md:grid-cols-4">
-          <Sidebar onOpenModal={setActiveModal} />
+          <Sidebar />
 
           <div className="col-span-3 flex flex-col px-0">
             <h2 className="mb-4 text-lg font-medium tracking-tight text-foreground-400">
@@ -110,23 +72,6 @@ export function Home() {
           </div>
         </div>
       </div>
-
-      <CreateWorkspaceModal
-        isOpen={activeModal === "create"}
-        onClose={closeModal}
-        onSubmit={handleCreateWorkspace}
-        isCreating={isCreating}
-      />
-
-      <AIModal isOpen={activeModal === "ai"} onClose={closeModal} />
-
-      <SettingsModal isOpen={activeModal === "settings"} onClose={closeModal} />
-
-      <UserSettingsModal
-        isOpen={activeModal === "user-settings"}
-        onClose={closeModal}
-        user={session}
-      />
     </div>
   );
 }

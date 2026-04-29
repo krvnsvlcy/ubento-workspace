@@ -4,6 +4,7 @@ import { spacingBaseUnit } from "../../constants.js";
 import { useEngine } from "../../engine.js";
 import { BoardStyle } from "../../models.js";
 import { Element, ElementRegistryProvider } from "../elements/element.js";
+import { Initializer } from "../elements/initializer.js";
 
 function paddingStyle(padding: BoardStyle["padding"]) {
   const sidePadding = (value?: number) =>
@@ -36,11 +37,58 @@ function getBoardStyle(style: BoardStyle = {}): React.CSSProperties {
 
 function BoardContent({ boardId }: { boardId: string }): React.JSX.Element {
   const select = useEngine((s) => s.select);
+  const addElement = useEngine((s) => s.addElement);
+  const setBoardContent = useEngine((s) => s.setBoardContent);
+  const getModule = useEngine((s) => s.getModule);
+  const isEditMode = useEngine((s) => s.mode === "edit");
   const board = useEngine((s) => s.boards[boardId]);
 
   if (!board) return <></>;
 
-  const content = board.content.map((id) => <Element key={id} id={id} />);
+  const onAddRootStack = (direction: "row" | "column") => {
+    const id = addElement("root", {
+      type: "stack",
+      content: [],
+      style: {
+        direction,
+        gap: 1,
+        padding: { top: 1, bottom: 1, left: 1, right: 1 },
+        width: 100,
+        height: 100,
+      } as any,
+    });
+    setBoardContent(boardId, [id]);
+  };
+
+  const onAddRootComponent = (moduleId: string) => {
+    getModule(moduleId).then((m) => {
+      const id = addElement("root", {
+        type: "block",
+        moduleId,
+        moduleVersionId: m.latestVersionId,
+        style: {
+          width: 100,
+          height: 100,
+        } as any,
+        props: {},
+      });
+      setBoardContent(boardId, [id]);
+    });
+  };
+
+  const isEmpty = board.content.length === 0;
+  const content = isEmpty ? (
+    isEditMode ? (
+      <Initializer
+        onAddStack={onAddRootStack}
+        onAddComponent={onAddRootComponent}
+      />
+    ) : (
+      <></>
+    )
+  ) : (
+    board.content.map((id) => <Element key={id} id={id} />)
+  );
 
   return (
     <ElementRegistryProvider registry={board.elements as any}>

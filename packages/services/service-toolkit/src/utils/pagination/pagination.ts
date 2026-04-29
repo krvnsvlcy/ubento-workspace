@@ -1,9 +1,11 @@
-import type { Request, Response } from "express";
+import type { Request } from "express";
 
 export type EncodedCursor = string | undefined;
 
+// --- CURSOR ENCODING ---
+
 export function encodeCursor<T extends object>(
-  v: T | undefined
+  v: T | undefined,
 ): EncodedCursor {
   if (!v) return undefined;
   const json = JSON.stringify(v);
@@ -12,7 +14,7 @@ export function encodeCursor<T extends object>(
 }
 
 export function decodeCursor<T extends object>(
-  c: EncodedCursor
+  c: EncodedCursor,
 ): T | undefined {
   if (!c) return undefined;
   const b64 = c.replace(/-/g, "+").replace(/_/g, "/");
@@ -22,46 +24,74 @@ export function decodeCursor<T extends object>(
   return JSON.parse(json) as T;
 }
 
+// --- REQUEST PARSING ---
+
 /** Parse ?limit= / ?cursor= from query with sane caps */
 export function parseCursorQuery(
   req: Request,
   {
     defaultLimit = 20,
     maxLimit = 100,
-  }: { defaultLimit?: number; maxLimit?: number } = {}
+  }: { defaultLimit?: number; maxLimit?: number } = {},
 ) {
   const limitRaw = req.query.limit as string | undefined;
   const limit = Math.min(
     Math.max(parseInt(limitRaw ?? "", 10) || defaultLimit, 1),
-    maxLimit
+    maxLimit,
   );
   const cursor = (req.query.cursor as string | undefined) ?? undefined;
   return { limit, cursor };
 }
 
-/** Set Link: <path?…&cursor=…&limit=…>; rel="next" (or clear if none) */
-export function setNextLink(
-  req: Request,
-  res: Response,
-  nextCursor?: EncodedCursor,
-  limit?: number
-) {
-  if (!nextCursor) {
-    // no next page → ensure Link is not set
-    res.removeHeader("Link");
-    return;
-  }
-  const params = new URLSearchParams();
-  // preserve existing query params but override cursor/limit
-  for (const [k, v] of Object.entries(req.query)) {
-    if (v == null) continue;
-    // flatten array-style values into first value; adjust if you support multi
-    params.set(k, Array.isArray(v) ? String(v[0]) : String(v));
-  }
-  params.set("cursor", nextCursor);
-  if (limit) params.set("limit", String(limit));
+// --- STANDARDIZED RESPONSE ENVELOPE ---
 
-  const path = new URL(req.originalUrl, "http://domain.com").pathname;
-  const url = `${path}?${params.toString()}`;
-  res.setHeader("Link", `<${url}>; rel="next"`);
+export interface CursorPageResponse<T> {
+  data: T[];
+  page: {
+    type: "cursor";
+    cursor?: string;
+    nextCursor?: string;
+  };
+}
+
+export function makeCursorPageResponse<T>({
+  data,
+  currentCursor,
+  nextCursor,
+}: {
+  data: T[];
+  currentCursor: EncodedCursor;
+  nextCursor: EncodedCursor;
+}): CursorPageResponse<T> {
+  return {
+    data,
+    page: {
+      type: "cursor",
+      cursor: currentCursor,
+      nextCursor,
+    },
+  };
+}
+
+export function makeCursorPageResponseSchema(dataSchema: Record<string, any>) {
+  return {
+    type: "object",
+    properties: {
+      data: {
+        type: "array",
+        items: dataSchema,
+      },
+      page: {
+        type: "object",
+        properties: {
+          type: { type: "string", enum: ["cursor"] },
+          // OpenAPI 3.0 compatible nullable fields
+          cursor: { type: "string", nullable: true },
+          nextCursor: { type: "string", nullable: true },
+        },
+        required: ["type"],
+      },
+    },
+    required: ["data", "page"],
+  };
 }

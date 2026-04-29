@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 import { WorkspaceContent } from "./content";
 import { createWorkspaceController } from "./controller";
+import { useKeyboardShortcuts } from "./keyboard";
 export function Workspace({
   slug,
   boardId,

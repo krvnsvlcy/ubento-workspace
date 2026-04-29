@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { UbentoSDK } from "@ubento/sdk";
-import { queryKeys } from "./keys";
+import { queryKeys } from "./libs/keys";
 
 export function createUbentoModuleService({
   ubentoSdk,
@@ -60,7 +60,7 @@ export function createUbentoModuleService({
           return await ubentoSdk.module.updateModule(moduleId, data);
         },
         onSuccess: (_, { moduleId }) => {
-          queryClient.invalidateQueries({ queryKey: ["modules"] });
+          queryClient.invalidateQueries({ queryKey: queryKeys.modules() });
           queryClient.invalidateQueries({
             queryKey: queryKeys.module({ moduleId }),
           });
@@ -76,9 +76,9 @@ export function createUbentoModuleService({
           return await ubentoSdk.module.deleteModule(moduleId);
         },
         onMutate: async (deletedModuleId: string) => {
-          await queryClient.cancelQueries({ queryKey: ["modules"] });
-          const previousModules = queryClient.getQueryData(["modules"]);
-          queryClient.setQueryData(["modules"], (old: any) => {
+          await queryClient.cancelQueries({ queryKey: queryKeys.modules() });
+          const previousModules = queryClient.getQueryData(queryKeys.modules());
+          queryClient.setQueryData(queryKeys.modules(), (old: any) => {
             if (!old) return old;
             return old.filter((mod: any) => mod.id !== deletedModuleId);
           });
@@ -87,13 +87,16 @@ export function createUbentoModuleService({
         },
         onError: (err, deletedModuleId, context) => {
           if (context?.previousModules) {
-            queryClient.setQueryData(["modules"], context.previousModules);
+            queryClient.setQueryData(
+              queryKeys.modules(),
+              context.previousModules,
+            );
           }
         },
         onSettled: (data, error, deletedModuleId) => {
-          queryClient.invalidateQueries({ queryKey: ["modules"] });
+          queryClient.invalidateQueries({ queryKey: queryKeys.modules() });
           queryClient.invalidateQueries({
-            queryKey: ["modules", deletedModuleId],
+            queryKey: queryKeys.module({ moduleId: deletedModuleId }),
           });
         },
       });

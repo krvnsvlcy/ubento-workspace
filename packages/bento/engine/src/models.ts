@@ -103,7 +103,13 @@ export function createBoard(
   return {
     name: "Untitled Board",
     content: ["root"],
-    elements: {},
+    elements: {
+      root: {
+        type: "stack",
+        content: [],
+        style: {},
+      },
+    },
     ...data,
   };
 }

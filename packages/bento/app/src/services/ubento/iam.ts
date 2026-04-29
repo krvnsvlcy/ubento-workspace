@@ -1,118 +1,73 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { UbentoSDK } from "@ubento/sdk";
+import { createStore, useStoreEntity, UseStoreOptions } from "@ubento/fabric";
+import { ubentoEntities } from "@ubento/primitives";
+import { iamClient, UbentoSDK } from "@ubento/sdk";
 
 export function createUbentoIamService({
   ubentoSdk,
 }: {
   ubentoSdk: UbentoSDK;
 }) {
+  const userStore = createStore<iamClient.User>({
+    namespace: ubentoEntities.user.name,
+    getKey: (user) => user.id,
+    fetchOne: async (key) => {
+      return await ubentoSdk.iam.getUser(key);
+    },
+    fetchMany: async ({ page }) => {
+      return await ubentoSdk.iam.listUsers({ page });
+    },
+  });
+  const teamStore = createStore<iamClient.Team>({
+    namespace: ubentoEntities.team.name,
+    getKey: (team) => team.id,
+    fetchOne: async (key) => {
+      return await ubentoSdk.iam.getTeam(key);
+    },
+    fetchMany: async ({ page }) => {
+      return await ubentoSdk.iam.listTeams({ page });
+    },
+  });
+
+  const hooks = {
+    useUser: (userId: string, options?: UseStoreOptions) => {
+      return useStoreEntity(userStore, userId, options);
+    },
+    useTeam: (teamId: string, options?: UseStoreOptions) => {
+      return useStoreEntity(teamStore, teamId, options);
+    },
+    useUpdateTeam: (teamId: string, options?: UseStoreOptions) => {},
+  };
+  const imperatives = {
+    getUser: async (userId: string) => {
+      const userData = await ubentoSdk.iam.getUser(userId);
+      userStore.push(userData);
+      return userData;
+    },
+    getTeams: async () => {
+      const teamData = await ubentoSdk.iam.listTeams({});
+      teamStore.pushMany(teamData.data);
+      return teamData;
+    },
+    getTeam: async (teamId: string) => {
+      const teamData = await ubentoSdk.iam.getTeam(teamId);
+      teamStore.push(teamData);
+      return teamData;
+    },
+    updateTeam: async ({
+      teamId,
+      update,
+    }: {
+      teamId: string;
+      update: { name?: string; handle?: string };
+    }) => {
+      const teamData = await ubentoSdk.iam.updateTeam(teamId, update);
+      teamStore.push(teamData);
+      return teamData;
+    },
+  };
+
   return {
-    // ===== Users =====
-
-    useUser: (userId: string) => {
-      return useQuery({
-        queryKey: ["user", userId],
-        queryFn: async () => {
-          return await ubentoSdk.iam.getUser(userId);
-        },
-        enabled: !!userId,
-      });
-    },
-
-    useUserTeams: (userId: string) => {
-      return useQuery({
-        queryKey: ["user-teams", userId],
-        queryFn: async () => {
-          return await ubentoSdk.iam.getUserTeams(userId);
-        },
-        enabled: !!userId,
-      });
-    },
-
-    // ===== Teams =====
-
-    useTeams: (
-      filters: { ids?: string[]; name?: string; handle?: string } = {},
-    ) => {
-      return useQuery({
-        queryKey: ["teams", filters],
-        queryFn: async () => {
-          return await ubentoSdk.iam.listTeams(filters);
-        },
-      });
-    },
-
-    useTeam: (teamId: string) => {
-      return useQuery({
-        queryKey: ["team", teamId],
-        queryFn: async () => {
-          return await ubentoSdk.iam.getTeam(teamId);
-        },
-        enabled: !!teamId,
-      });
-    },
-
-    useCreateTeam: () => {
-      const queryClient = useQueryClient();
-      return useMutation({
-        mutationFn: async (data: {
-          name: string;
-          handle: string;
-          owner: string;
-        }) => {
-          return await ubentoSdk.iam.createTeam(data);
-        },
-        onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ["teams"] });
-        },
-      });
-    },
-
-    useUpdateTeam: () => {
-      const queryClient = useQueryClient();
-      return useMutation({
-        mutationFn: async ({
-          teamId,
-          data,
-        }: {
-          teamId: string;
-          data: { name?: string; handle?: string };
-        }) => {
-          return await ubentoSdk.iam.updateTeam(teamId, data);
-        },
-        onSuccess: (_, { teamId }) => {
-          queryClient.invalidateQueries({ queryKey: ["teams"] });
-          queryClient.invalidateQueries({ queryKey: ["team", teamId] });
-        },
-      });
-    },
-
-    // ===== Invites =====
-
-    useTeamInvites: (teamId: string) => {
-      return useQuery({
-        queryKey: ["team-invites", teamId],
-        queryFn: async () => {
-          return await ubentoSdk.iam.listTeamInvites({ teamId });
-        },
-        enabled: !!teamId,
-      });
-    },
-
-    useCreateTeamInvite: () => {
-      const queryClient = useQueryClient();
-      return useMutation({
-        mutationFn: async (data: {
-          teamId: string;
-          email: string;
-          role: string;
-        }) => {
-          return await ubentoSdk.iam.createTeamInvite(data);
-        },
-        onSuccess: (_, { teamId }) => {
-          queryClient.invalidateQueries({ queryKey: ["team-invites", teamId] });
-        },
-      });
-    },
+    ...hooks,
+    ...imperatives,
   };
 }

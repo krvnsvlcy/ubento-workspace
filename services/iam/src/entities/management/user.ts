@@ -5,7 +5,7 @@ import {
   ubentoAuth,
   ubentoEntities,
 } from "@ubento/primitives";
-import { ValidationError } from "@ubento/service-toolkit";
+import { prismaListWithCursor, ValidationError } from "@ubento/service-toolkit";
 import { User as WorkOSUser } from "@workos-inc/node";
 import prisma from "../../lib/prisma.js";
 import { workos } from "../../lib/workos.js";
@@ -24,22 +24,15 @@ export async function getUser(id: string) {
 export async function listUsers({
   limit,
   cursor,
-  email,
 }: {
   limit?: number;
   cursor?: string;
-  email?: string;
 }) {
-  return await prisma.user.findMany({
-    take: limit || 50,
-    skip: cursor ? 1 : 0,
-    cursor: cursor ? { id: cursor } : undefined,
-    where: {
-      email: email ? { contains: email, mode: "insensitive" } : undefined,
-    },
-    orderBy: {
-      created_at: "desc",
-    },
+  return await prismaListWithCursor(prisma.user, {
+    limit,
+    cursor,
+    orderBy: [{ created_at: "desc" }, { id: "desc" }],
+    resolveCursor: (u) => u.id,
   });
 }
 

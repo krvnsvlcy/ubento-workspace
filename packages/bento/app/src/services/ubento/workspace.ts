@@ -5,7 +5,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { UbentoSDK } from "@ubento/sdk";
-import { queryKeys } from "./keys";
+import { queryKeys } from "./libs/keys";
 
 export function createUbentoWorkspaceService({
   ubentoSdk,
@@ -17,7 +17,7 @@ export function createUbentoWorkspaceService({
 
     useWorkspaces: (filters: { team_id?: string } = {}) => {
       return useQuery({
-        queryKey: ["workspaces", filters],
+        queryKey: queryKeys.workspaces(filters),
         queryFn: async () => {
           return await ubentoSdk.workspace.listWorkspaces(filters);
         },
@@ -26,7 +26,7 @@ export function createUbentoWorkspaceService({
 
     useWorkspace: (workspaceId: string) => {
       return useQuery({
-        queryKey: ["workspace", workspaceId],
+        queryKey: queryKeys.workspace({ workspaceId }),
         queryFn: async () => {
           return await ubentoSdk.workspace.getWorkspace(workspaceId);
         },
@@ -36,7 +36,7 @@ export function createUbentoWorkspaceService({
 
     useWorkspaceBySlug: ({ slug }: { slug: string }) => {
       return useQuery({
-        queryKey: ["workspace", "slug", slug],
+        queryKey: queryKeys.workspaceBySlug({ slug }),
         queryFn: async () => {
           return await ubentoSdk.workspace.getWorkspaceBySlug(slug);
         },
@@ -56,7 +56,7 @@ export function createUbentoWorkspaceService({
           return await ubentoSdk.workspace.createWorkspace(data);
         },
         onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ["workspaces"] });
+          queryClient.invalidateQueries({ queryKey: queryKeys.workspaces() });
         },
       });
     },
@@ -78,9 +78,9 @@ export function createUbentoWorkspaceService({
           return await ubentoSdk.workspace.updateWorkspace(workspaceId, data);
         },
         onSuccess: (_, { workspaceId }) => {
-          queryClient.invalidateQueries({ queryKey: ["workspaces"] });
+          queryClient.invalidateQueries({ queryKey: queryKeys.workspaces() });
           queryClient.invalidateQueries({
-            queryKey: ["workspace", workspaceId],
+            queryKey: queryKeys.workspace({ workspaceId }),
           });
         },
       });
@@ -93,7 +93,7 @@ export function createUbentoWorkspaceService({
           return await ubentoSdk.workspace.deleteWorkspace(workspaceId);
         },
         onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ["workspaces"] });
+          queryClient.invalidateQueries({ queryKey: queryKeys.workspaces() });
         },
       });
     },
@@ -102,7 +102,7 @@ export function createUbentoWorkspaceService({
 
     useBoards: ({ workspace_id }: { workspace_id: string }) => {
       return useQuery({
-        queryKey: ["boards", { workspace_id }],
+        queryKey: queryKeys.boards({ workspace_id }),
         queryFn: async () => {
           return await ubentoSdk.workspace.listBoards({ workspace_id });
         },
@@ -147,7 +147,7 @@ export function createUbentoWorkspaceService({
         },
         onSuccess: (_, { workspace_id }) => {
           queryClient.invalidateQueries({
-            queryKey: ["boards", { workspace_id }],
+            queryKey: queryKeys.boards({ workspace_id }),
           });
         },
       });
@@ -166,8 +166,10 @@ export function createUbentoWorkspaceService({
           return await ubentoSdk.workspace.updateBoard(boardId, data);
         },
         onSuccess: (_, { boardId }) => {
-          queryClient.invalidateQueries({ queryKey: ["boards"] });
-          queryClient.invalidateQueries({ queryKey: ["board", boardId] });
+          queryClient.invalidateQueries({ queryKey: queryKeys.boards() });
+          queryClient.invalidateQueries({
+            queryKey: queryKeys.board({ boardId }),
+          });
         },
       });
     },
@@ -179,7 +181,7 @@ export function createUbentoWorkspaceService({
           return await ubentoSdk.workspace.deleteBoard(boardId);
         },
         onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ["boards"] });
+          queryClient.invalidateQueries({ queryKey: queryKeys.boards() });
         },
       });
     },
@@ -190,7 +192,7 @@ export function createUbentoWorkspaceService({
       filters: { workspace_id?: string; user_id?: string } = {},
     ) => {
       return useQuery({
-        queryKey: ["workspace-memberships", filters],
+        queryKey: queryKeys.workspaceMemberships(filters),
         queryFn: async () => {
           return await ubentoSdk.workspace.listWorkspaceMemberships(filters);
         },
@@ -209,7 +211,7 @@ export function createUbentoWorkspaceService({
         },
         onSuccess: (_, { workspace_id }) => {
           queryClient.invalidateQueries({
-            queryKey: ["workspace-memberships", { workspace_id }],
+            queryKey: queryKeys.workspaceMemberships({ workspace_id }),
           });
         },
       });
@@ -224,7 +226,9 @@ export function createUbentoWorkspaceService({
           );
         },
         onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ["workspace-memberships"] });
+          queryClient.invalidateQueries({
+            queryKey: queryKeys.workspaceMemberships(),
+          });
         },
       });
     },
@@ -233,7 +237,7 @@ export function createUbentoWorkspaceService({
 
     useWorkspaceInvites: ({ workspace_id }: { workspace_id: string }) => {
       return useQuery({
-        queryKey: ["workspace-invites", { workspace_id }],
+        queryKey: queryKeys.workspaceInvites({ workspace_id }),
         queryFn: async () => {
           return await ubentoSdk.workspace.listWorkspaceInvites({
             workspace_id,
@@ -260,7 +264,7 @@ export function createUbentoWorkspaceService({
         },
         onSuccess: (_, { workspace_id }) => {
           queryClient.invalidateQueries({
-            queryKey: ["workspace-invites", { workspace_id }],
+            queryKey: queryKeys.workspaceInvites({ workspace_id }),
           });
         },
       });
@@ -273,7 +277,9 @@ export function createUbentoWorkspaceService({
           return await ubentoSdk.workspace.acceptWorkspaceInvite(id, token);
         },
         onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ["workspace-memberships"] });
+          queryClient.invalidateQueries({
+            queryKey: queryKeys.workspaceMemberships(),
+          });
         },
       });
     },

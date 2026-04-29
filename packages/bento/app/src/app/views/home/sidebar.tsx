@@ -1,13 +1,11 @@
+import { useGlobalModals } from "@/contexts/modals";
 import { useBentoHost } from "@/contexts/host";
 import { LayoutGrid, Plus, Settings, Sparkles } from "lucide-react";
 import { motion } from "motion/react";
 
-interface SidebarProps {
-  onOpenModal: (type: "create" | "ai" | "settings") => void;
-}
-
-export function Sidebar({ onOpenModal }: SidebarProps) {
+export function Sidebar() {
   const host = useBentoHost();
+  const { openModal } = useGlobalModals();
 
   return (
     <motion.div
@@ -23,7 +21,7 @@ export function Sidebar({ onOpenModal }: SidebarProps) {
         </h2>
         <div className="flex flex-col gap-1">
           <button
-            onClick={() => onOpenModal("create")}
+            onClick={() => openModal("create")}
             className="flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-2 py-1.5 transition-colors hover:bg-background-300"
           >
             <div className="group flex h-6 w-6 items-center justify-center rounded-md bg-background-300 hover:bg-background-400">
@@ -33,19 +31,9 @@ export function Sidebar({ onOpenModal }: SidebarProps) {
               New Workspace
             </span>
           </button>
-          <button
-            onClick={() => onOpenModal("ai")}
-            className="flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-2 py-1.5 transition-colors hover:bg-background-300"
-          >
-            <div className="flex h-6 w-6 items-center justify-center rounded-md bg-background-300">
-              <Sparkles className="h-3.5 w-3.5 text-foreground-200" />
-            </div>
-            <span className="text-[13px] font-medium text-foreground-100">
-              Start with AI
-            </span>
-          </button>
         </div>
       </div>
+
 
       {/* Quick Links Section */}
       <div>
@@ -54,7 +42,7 @@ export function Sidebar({ onOpenModal }: SidebarProps) {
         </h2>
         <div className="flex flex-col gap-1">
           <button
-            onClick={() => onOpenModal("settings")}
+            onClick={() => openModal("team")}
             className="flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-2 py-1.5 transition-colors hover:bg-background-300"
           >
             <div className="flex h-6 w-6 items-center justify-center rounded-md bg-background-300">
@@ -64,10 +52,12 @@ export function Sidebar({ onOpenModal }: SidebarProps) {
               Team Settings
             </span>
           </button>
+
           <button
             onClick={() =>
               host.goToLocation({ view: "workspaces", params: {} })
             }
+
             className="flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-2 py-1.5 transition-colors hover:bg-background-300"
           >
             <div className="flex h-6 w-6 items-center justify-center rounded-md bg-background-300">

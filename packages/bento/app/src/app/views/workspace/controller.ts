@@ -1,5 +1,5 @@
 import { UbentoEngine } from "@/engine/engine";
-import { queryKeys } from "@/services/ubento/keys";
+import { queryKeys } from "@/services/ubento/libs/keys";
 import { createUbentoWorkspaceService } from "@/services/ubento/workspace";
 import { QueryClient } from "@tanstack/react-query";
 import {

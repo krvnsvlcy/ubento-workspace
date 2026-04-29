@@ -60,7 +60,7 @@ export class IamService {
         path: { team_id: teamId },
       },
     });
-    return extractResponseData(result);
+    return extractResponseData(result, true);
   }
 
   async createTeam(data: { name: string; handle: string; owner: string }) {
@@ -128,7 +128,7 @@ export class IamService {
         path: { user_id: userId },
       },
     });
-    return extractResponseData(result);
+    return extractResponseData(result, true);
   }
 
   async deleteUser(userId: string) {
