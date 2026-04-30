@@ -1,5 +1,5 @@
 import React from "react";
-import { Modal } from "../app/components/modal";
+import { Modal } from "../../app/components/modal";
 
 interface CreateWorkspaceModalProps {
   isOpen: boolean;

@@ -2,7 +2,6 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as ReactDOMClient from "react-dom/client";
 import * as ReactJsxRuntime from "react/jsx-runtime";
-import * as ReactQuery from "@tanstack/react-query";
 
 /**
  * Creates a proxy module that re-exports everything from a window object
@@ -50,7 +49,6 @@ function createReactProxyModules(): Record<string, string> {
     "ReactDOMClient",
     true,
   );
-  const reactQueryScript = createModuleProxy(ReactQuery, "ReactQuery", true);
 
   const reactModuleUrl = URL.createObjectURL(
     new Blob([reactScript], { type: "application/javascript" }),
@@ -64,16 +62,12 @@ function createReactProxyModules(): Record<string, string> {
   const reactDOMClientScriptUrl = URL.createObjectURL(
     new Blob([reactDOMClientScript], { type: "application/javascript" }),
   );
-  const reactQueryModuleUrl = URL.createObjectURL(
-    new Blob([reactQueryScript], { type: "application/javascript" }),
-  );
 
   return {
     react: reactModuleUrl,
     "react-dom": reactDOMModuleUrl,
     "react/jsx-runtime": reactJsxRuntimeScriptUrl,
     "react-dom/client": reactDOMClientScriptUrl,
-    "@tanstack/react-query": reactQueryModuleUrl,
   };
 }
 

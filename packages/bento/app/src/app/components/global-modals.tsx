@@ -1,8 +1,8 @@
-import { AccountModal } from "@/modals/AccountModal";
-import { CreateWorkspaceModal } from "@/modals/CreateWorkspaceModal";
-import { TeamModal } from "@/modals/TeamModal";
 import { useGlobalModals } from "@/contexts/modals";
 import { useBentoSession } from "@/contexts/session";
+import { AccountModal } from "@/modals/account/account";
+import { CreateWorkspaceModal } from "@/modals/create_workspace/create_workspace";
+import { TeamModal } from "@/modals/team/team_modal";
 import { useUbento } from "@/services/ubento/ubento";
 import { useState } from "react";
 
@@ -10,7 +10,8 @@ export function GlobalModals() {
   const { activeModal, closeModal } = useGlobalModals();
   const session = useBentoSession();
   const ubento = useUbento();
-  const { mutateAsync: createWorkspace } = ubento.workspace.useCreateWorkspace();
+  const { mutateAsync: createWorkspace } =
+    ubento.workspace.useCreateWorkspace();
   const [isCreating, setIsCreating] = useState(false);
 
   const handleCreateWorkspace = async (e: React.FormEvent<HTMLFormElement>) => {

@@ -80,7 +80,7 @@ export function registerUsersCommands(program: Command) {
     .description("List teams for a user")
     .argument("<user_id>", "User ID")
     .action(async (userId) => {
-      const teams = await listUserTeams(userId);
+      const { items: teams } = await listUserTeams({ user_id: userId });
       console.log(JSON.stringify(teams, null, 2));
     });
 }

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from "react";
 import { useStoreWithEqualityFn } from "zustand/traditional";
-import { getEntitiesQueryKey, Store } from "./store.js";
+import { getEntityProjectionQueryKey, Store } from "../store.js";
 
 export type UseStoreOptions = {
   enabled?: boolean;
@@ -10,28 +10,25 @@ export type UseStoreOptions = {
  * Subscribes to a single entity.
  * Exposes a TanStack Query-compatible API.
  */
-export function useStoreEntity<D>(
-  store: Store<D>,
-  key: string,
-  options: UseStoreOptions = {},
-) {
+export function useStoreEntity<
+  D,
+  J extends Record<string, unknown> = {},
+  P extends Record<string, unknown> = {},
+>(store: Store<D, J, P>, key: string, options: UseStoreOptions = {}) {
   const { enabled = true } = options;
   const cacheKey = `item:${key}`;
 
-  // 1. Garbage Collection Lifecycle
   useEffect(() => {
     store.retain(cacheKey);
     return () => store.release(cacheKey);
   }, [store, cacheKey]);
 
-  // 2. Auto-Fetch Lifecycle (Stale-While-Revalidate)
   useEffect(() => {
     if (enabled) {
       store.fetch(key);
     }
   }, [store, key, enabled]);
 
-  // 3. Strict Subscription
   const entity = useStoreWithEqualityFn(
     store.store,
     (state) => store.selectEntity(key, state),
@@ -44,7 +41,6 @@ export function useStoreEntity<D>(
     },
   );
 
-  // 4. TanStack Query Adapter
   const { data, query } = entity;
   const { status, fetchStatus, error } = query;
 
@@ -63,52 +59,62 @@ export function useStoreEntity<D>(
 }
 
 /**
- * Subscribes to a filtered list of entities.
+ * Subscribes to a projected list of entities.
  * Exposes a TanStack Query-compatible API.
  */
-export function useStoreEntities<D, F extends Record<string, unknown>>(
-  store: Store<D, F>,
-  filterObj?: F,
-  options: UseStoreOptions = {},
-) {
+export function useStoreEntities<
+  D,
+  J extends Record<string, unknown> = {},
+  P extends Record<string, unknown> = {},
+>(store: Store<D, J, P>, params?: J, options: UseStoreOptions = {}) {
   const { enabled = true } = options;
-  const queryKey = useMemo(() => getEntitiesQueryKey(filterObj), [filterObj]);
+  const queryKey = useMemo(() => getEntityProjectionQueryKey(params), [params]);
 
-  const filterRef = useRef(filterObj);
+  const paramsRef = useRef(params);
   useEffect(() => {
-    filterRef.current = filterObj;
-  }, [filterObj]);
+    paramsRef.current = params;
+  }, [params]);
 
-  // 1. Garbage Collection Lifecycle
   useEffect(() => {
     store.retain(queryKey);
     return () => store.release(queryKey);
   }, [store, queryKey]);
 
-  // 2. Auto-Fetch Lifecycle (Stale-While-Revalidate)
   useEffect(() => {
     if (enabled) {
-      store.fetchMany(filterRef.current);
+      store.fetchMany(paramsRef.current);
     }
   }, [store, queryKey, enabled]);
 
-  // 3. Query Metadata & Projection Subscription
   const result = useStoreWithEqualityFn(
     store.store,
-    (state) => store.selectManyEntities(state, filterObj),
-    (oldQ, newQ) =>
-      oldQ.query.status === newQ.query.status &&
-      oldQ.query.fetchStatus === newQ.query.fetchStatus &&
-      oldQ.query.page === newQ.query.page,
+    (state) => store.selectManyEntities(state, params),
+    (oldVal, newVal) => {
+      // 1. Check Query Metadata Equality
+      if (
+        oldVal.query.status !== newVal.query.status ||
+        oldVal.query.fetchStatus !== newVal.query.fetchStatus ||
+        oldVal.query.nextPage !== newVal.query.nextPage ||
+        oldVal.query.previousPage !== newVal.query.previousPage
+      ) {
+        return false;
+      }
+
+      // 2. Check Projected Data Array Equality
+      const oldData = oldVal.data;
+      const newData = newVal.data;
+      if (oldData.length !== newData.length) return false;
+      return oldData.every((item, index) => item === newData[index]);
+    },
   );
 
-  // 4. TanStack Query Adapter
   const { data, query } = result;
-  const { status, fetchStatus, error, page } = query;
+  const { status, fetchStatus, error, nextPage, previousPage } = query;
 
   return {
     data,
-    page, // Preserve your custom pagination metadata
+    nextPage,
+    previousPage,
     status,
     fetchStatus,
     error,
@@ -117,6 +123,12 @@ export function useStoreEntities<D, F extends Record<string, unknown>>(
     isError: status === "error",
     isFetching: fetchStatus === "fetching",
     isLoading: status === "pending" && fetchStatus === "fetching",
-    refetch: () => store.fetchMany(filterRef.current),
+    refetch: () => store.fetchMany(paramsRef.current),
+    // Helper to fetch the next page seamlessly
+    fetchNextPage: () => {
+      if (nextPage) {
+        store.fetchMany(paramsRef.current, nextPage as P);
+      }
+    },
   };
 }

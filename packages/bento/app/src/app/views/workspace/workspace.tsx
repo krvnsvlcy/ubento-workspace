@@ -1,5 +1,4 @@
 import { useBentoHostApi } from "@/contexts/host";
-import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 import { WorkspaceContent } from "./content";
 import { createWorkspaceController } from "./controller";
@@ -12,12 +11,10 @@ export function Workspace({
   boardId?: string;
 }) {
   const host = useBentoHostApi();
-  const queryClient = useQueryClient();
 
   const workspaceController = useRef(
     createWorkspaceController({
       ubento: host.ubentoApi,
-      queryClient,
       host,
       slug,
     }),

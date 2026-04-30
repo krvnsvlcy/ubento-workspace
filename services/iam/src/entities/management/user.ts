@@ -24,11 +24,14 @@ export async function getUser(id: string) {
 export async function listUsers({
   limit,
   cursor,
+  email,
 }: {
   limit?: number;
   cursor?: string;
+  email?: string;
 }) {
   return await prismaListWithCursor(prisma.user, {
+    where: email ? { email: { contains: email, mode: "insensitive" } } : undefined,
     limit,
     cursor,
     orderBy: [{ created_at: "desc" }, { id: "desc" }],

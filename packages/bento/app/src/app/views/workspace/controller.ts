@@ -1,7 +1,6 @@
 import { UbentoEngine } from "@/engine/engine";
-import { queryKeys } from "@/services/ubento/libs/keys";
-import { createUbentoWorkspaceService } from "@/services/ubento/workspace";
-import { QueryClient } from "@tanstack/react-query";
+import { createUbentoWorkspaceService } from "@/services/ubento/services/workspace";
+import { createUbentoModuleService } from "@/services/ubento/services/module";
 import {
   BlockData,
   BoardData,
@@ -89,17 +88,16 @@ export type WorkspaceController = StoreApi<WorkspaceStore>;
 
 export function createWorkspaceController({
   ubento,
-  queryClient,
   host,
   slug,
 }: {
   ubento: UbentoSDK;
-  queryClient: QueryClient;
   host: UbentoEngine;
   slug: string;
 }): WorkspaceController {
   let rpc: DuplexRpc<HostRpcInterface, GuestRpcInterface> | null = null;
   const workspaceService = createUbentoWorkspaceService({ ubentoSdk: ubento });
+  const moduleService = createUbentoModuleService({ ubentoSdk: ubento });
 
   const store = createStore<WorkspaceStore>()((set, get) => ({
     loading: false,
@@ -130,10 +128,7 @@ export function createWorkspaceController({
             set({ ready: true });
           },
           getBoard: async ({ boardId }) => {
-            const res = await workspaceService.fetchBoard({
-              queryClient,
-              boardId,
-            });
+            const res = await workspaceService.getBoard(boardId);
             if (!res) throw new Error("Board not found");
             const board = boardDataSchema.parse({
               id: res.id,
@@ -148,16 +143,10 @@ export function createWorkspaceController({
           listBoards: async () => {
             const current = get();
             if (!current.workspace) return [];
-            const boards = await queryClient.fetchQuery({
-              queryKey: queryKeys.boards({
-                workspace_id: current.workspace.id,
-              }),
-              queryFn: () =>
-                ubento.workspace.listBoards({
-                  workspace_id: current.workspace!.id,
-                }),
+            const response = await workspaceService.getBoards({
+              workspace_id: current.workspace.id,
             });
-            const boardDatas = boards
+            const boardDatas = response.data
               .map((p) => {
                 const { data: boardData, success } = boardDataSchema.safeParse({
                   id: p.id,
@@ -193,15 +182,10 @@ export function createWorkspaceController({
                 },
               },
             };
-            const res = await ubento.workspace.createBoard({
+            const res = await workspaceService.createBoard({
               workspace_id: current.workspace.id,
               name: name || "New Board",
               data,
-            });
-            queryClient.invalidateQueries({
-              queryKey: queryKeys.boards({
-                workspace_id: current.workspace.id,
-              }),
             });
             const board = boardDataSchema.parse({
               id: res.id,
@@ -214,12 +198,7 @@ export function createWorkspaceController({
             return board;
           },
           getModule: async ({ moduleId }) => {
-            const res = await queryClient.fetchQuery({
-              queryKey: queryKeys.module({ moduleId }),
-              queryFn: async () => {
-                return await ubento.module.getModule(moduleId);
-              },
-            });
+            const res = await moduleService.getModule(moduleId);
             const module = {
               latestVersionId: res.latest_version_id,
             };
@@ -243,10 +222,10 @@ export function createWorkspaceController({
           searchModules: async ({ query }) => {
             const current = get();
             if (!current.workspace) return [];
-            const modules = await ubento.module.listModules({
+            const response = await moduleService.getModules({
               team_id: current.workspace.teamId,
             });
-            return modules
+            return response.data
               .filter(
                 (m) =>
                   m.name.toLowerCase().includes(query.toLowerCase()) ||
@@ -257,7 +236,7 @@ export function createWorkspaceController({
           createModule: async ({ name }) => {
             const current = get();
             if (!current.workspace) throw new Error("No workspace loaded");
-            const res = await ubento.module.createModule({
+            const res = await moduleService.createModule({
               name,
               team_id: current.workspace.teamId,
               source: `export default function Component() { return <div>${name}</div> }`,
@@ -296,8 +275,7 @@ export function createWorkspaceController({
             set((s) => ({
               boards: { ...s.boards, [boardId]: board },
             }));
-            ubento.workspace.updateBoard(boardId, { data: board });
-            queryClient.setQueryData(queryKeys.board({ boardId }), board);
+            workspaceService.updateBoard(boardId, { data: board });
           },
           workspaceChanged: ({ workspace }) => {
             set({ workspace });
@@ -319,10 +297,7 @@ export function createWorkspaceController({
     load: async () => {
       set({ loading: true });
       try {
-        const workspaceData = await queryClient.fetchQuery({
-          queryKey: ["workspace", "slug", slug],
-          queryFn: () => ubento.workspace.getWorkspaceBySlug(slug),
-        });
+        const workspaceData = await workspaceService.getWorkspaceBySlug(slug);
         if (!workspaceData) {
           throw new Error("Workspace not found");
         }
@@ -414,13 +389,10 @@ export function createWorkspaceController({
           },
         },
       };
-      const res = await ubento.workspace.createBoard({
+      const res = await workspaceService.createBoard({
         workspace_id: current.workspace.id,
         name: init.name || "New Board",
         data,
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.boards({ workspace_id: current.workspace.id }),
       });
       const board = boardDataSchema.parse({
         id: res.id,

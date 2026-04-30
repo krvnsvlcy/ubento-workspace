@@ -1,5 +1,6 @@
 import { create } from "zustand";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { useMutation } from "@ubento/fabric";
 import { UbentoSDK } from "@ubento/sdk";
 
 export interface CopilotMessage {
@@ -22,25 +23,40 @@ export const useCopilotStore = create<CopilotState>((set) => ({
   setInput: (input) => set({ input }),
 }));
 
-// React Query Hooks
+// Hooks
 
 export function useCopilotThread(ubento: UbentoSDK, threadId: string | null) {
-  return useQuery({
-    queryKey: ["copilot", "thread", threadId],
-    queryFn: async () => {
-      const res = await ubento.intelligence.listMessages({ thread_id: threadId! });
-      return res[0].map((msg: any) => ({
-        id: msg.id,
-        role: msg.role,
-        content: msg.data?.text || msg.data?.content || JSON.stringify(msg.data),
-      })) as CopilotMessage[];
-    },
-    enabled: !!threadId,
-  });
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState<CopilotMessage[]>([]);
+
+  useEffect(() => {
+    if (!threadId) {
+      setData([]);
+      return;
+    }
+
+    const load = async () => {
+      setLoading(true);
+      try {
+        const res = await ubento.intelligence.listMessages({ thread_id: threadId });
+        const messages = res.data.map((msg: any) => ({
+          id: msg.id,
+          role: msg.role,
+          content: msg.data?.text || msg.data?.content || JSON.stringify(msg.data),
+        })) as CopilotMessage[];
+        setData(messages);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    load();
+  }, [threadId]);
+
+  return { data, loading, setData };
 }
 
-export function useSendCopilotMessage(ubento: UbentoSDK) {
-  const queryClient = useQueryClient();
+export function useSendCopilotMessage(ubento: UbentoSDK, onMessage?: (msg: CopilotMessage) => void) {
   const setInput = useCopilotStore((state) => state.setInput);
 
   return useMutation({
@@ -50,53 +66,19 @@ export function useSendCopilotMessage(ubento: UbentoSDK) {
         role: "user",
         content,
       });
-      return {
-        id: res.id,
-        role: res.role,
-        content: (res.data as any)?.text || (res.data as any)?.content || content,
-      } as CopilotMessage;
-    },
-    onMutate: async ({ threadId, content }) => {
-      await queryClient.cancelQueries({ queryKey: ["copilot", "thread", threadId] });
-
-      const previousMessages = queryClient.getQueryData<CopilotMessage[]>([
-        "copilot",
-        "thread",
-        threadId,
-      ]);
-
-      // Optimistically add the user message
-      const userMessage: CopilotMessage = {
-        id: `temp-${Date.now()}`,
-        role: "user",
-        content,
-      };
-
-      queryClient.setQueryData<CopilotMessage[]>(
-        ["copilot", "thread", threadId],
-        (old) => (old ? [...old, userMessage] : [userMessage])
-      );
 
       // Clear input on send
       setInput("");
 
-      return { previousMessages };
-    },
-    onSuccess: (data, variables) => {
-      // Add the assistant's response
-      queryClient.setQueryData<CopilotMessage[]>(
-        ["copilot", "thread", variables.threadId],
-        (old) => (old ? [...old, data] : [data])
-      );
-    },
-    onError: (err, variables, context) => {
-      // Revert optimistic update
-      if (context?.previousMessages) {
-        queryClient.setQueryData(
-          ["copilot", "thread", variables.threadId],
-          context.previousMessages
-        );
-      }
+      const msg = {
+        id: res.id,
+        role: res.role,
+        content: (res.data as any)?.text || (res.data as any)?.content || content,
+      } as CopilotMessage;
+
+      onMessage?.(msg);
+      return msg;
     },
   });
 }
+

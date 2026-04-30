@@ -1,8 +1,11 @@
 import { useBentoHost } from "@/contexts/host";
 import { UbentoSDK } from "@ubento/sdk";
-import { createUbentoIamService } from "./iam";
-import { createUbentoModuleService } from "./module";
-import { createUbentoWorkspaceService } from "./workspace";
+import { createUbentoBillingService } from "./services/billing";
+import { createUbentoIamService } from "./services/iam";
+import { createUbentoIntegrationService } from "./services/integration";
+import { createUbentoIntelligenceService } from "./services/intelligence";
+import { createUbentoModuleService } from "./services/module";
+import { createUbentoWorkspaceService } from "./services/workspace";
 
 export function useUbento() {
   const host = useBentoHost();
@@ -14,5 +17,9 @@ export function createUbentoService({ ubentoSdk }: { ubentoSdk: UbentoSDK }) {
     iam: createUbentoIamService({ ubentoSdk }),
     module: createUbentoModuleService({ ubentoSdk }),
     workspace: createUbentoWorkspaceService({ ubentoSdk }),
+    intelligence: createUbentoIntelligenceService({ ubentoSdk }),
+    billing: createUbentoBillingService({ ubentoSdk }),
+    integration: createUbentoIntegrationService({ ubentoSdk }),
   };
 }
+

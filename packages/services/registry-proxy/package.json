@@ -13,9 +13,6 @@
     "build": "scripts build",
     "watch": "scripts watch"
   },
-  "dependencies": {
-    "@tanstack/react-query": "^5.100.1"
-  },
   "devDependencies": {
     "typescript": "^5.3.3"
   }

@@ -82,7 +82,10 @@ export class IntegrationService {
     const result = await this.integrationClient.post(
       "/integration/connections",
       {
-        body: data,
+        body: {
+          ...data,
+          auth: data.auth as any,
+        },
       },
     );
     return extractResponseData(result, true);

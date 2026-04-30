@@ -181,7 +181,7 @@ teamsRouter.get(
     enforce(ubentoAuth.actions.team.read),
     async (req, res) => {
       const result = await listTeamMembers({
-        team_id: req.params.team_id,
+        team_id: req.params.team_id as string,
         limit: req.query.limit ? Number(req.query.limit) : undefined,
         cursor: req.query.cursor as string | undefined,
       });

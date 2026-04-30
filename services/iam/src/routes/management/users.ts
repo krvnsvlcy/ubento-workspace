@@ -92,7 +92,7 @@ usersRouter.get(
     enforce(ubentoAuth.actions.user.read),
     async (req, res) => {
       const teams = await listUserTeams({
-        user_id: req.params.user_id,
+        user_id: req.params.user_id as string,
         limit: req.query.limit ? Number(req.query.limit) : undefined,
         cursor: req.query.cursor as string | undefined,
       });

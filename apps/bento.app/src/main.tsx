@@ -1,4 +1,3 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Ubento, createUbentoEngine, type UbentoLocation } from "@ubento/bento-app";
 import "@ubento/bento-style/dist/uno.css";
 import { UbentoSDK } from "@ubento/sdk";
@@ -7,7 +6,6 @@ import { createRoot } from "react-dom/client";
 
 import "@ubento/bento-style/css/themes.css";
 
-const queryClient = new QueryClient();
 const user = {
   id: "usr_9pgl4ey9quh9875nay09u0gu",
   email: "agent.003@ubento.pro",
@@ -128,11 +126,7 @@ function BentoShell() {
     return () => window.removeEventListener("popstate", handlePopState);
   }, [engine]);
 
-  return (
-    <QueryClientProvider client={queryClient}>
-      <Ubento engine={engine} />
-    </QueryClientProvider>
-  );
+  return <Ubento engine={engine} />;
 }
 
 createRoot(document.getElementById("root")!).render(

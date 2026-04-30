@@ -163,11 +163,14 @@ export class BillingService {
     code: string;
     value: number;
     group?: string;
-    timestamp?: string;
-    metadata?: Record<string, any>;
   }) {
-    const result = await this.billingClient.post("/billing/usage/events", {
-      body: data,
+    const result = await this.billingClient.post("/billing/usage/increment", {
+      body: {
+        organization_id: data.organization_id,
+        code: data.code,
+        amount: data.value,
+        group: data.group,
+      },
     });
     return extractResponseData(result, true);
   }
@@ -185,14 +188,23 @@ export class BillingService {
 
   async createCheckout(data: {
     organization_id: string;
+    product_code: string;
     offer_code: string;
-    success_url?: string;
-    cancel_url?: string;
-    customer_email?: string;
+    quantity?: number;
+    redirect_url: string;
+    duration?: number;
     metadata?: Record<string, any>;
   }): Promise<Checkout> {
-    const result = await this.billingClient.post("/billing/checkouts", {
-      body: data,
+    const result = await this.billingClient.post("/billing/checkout", {
+      body: {
+        organization_id: data.organization_id,
+        product_code: data.product_code,
+        offer_code: data.offer_code,
+        quantity: data.quantity ?? 1,
+        redirect_url: data.redirect_url,
+        duration: data.duration,
+        data: data.metadata as any,
+      },
     });
     return extractResponseData(result, true);
   }

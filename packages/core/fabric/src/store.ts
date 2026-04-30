@@ -1,33 +1,5 @@
 import { createStore as createZustandStore } from "zustand/vanilla";
 
-// --- PAGINATION TYPES ---
-
-export type CursorPageRequest = {
-  type: "cursor";
-  cursor: string;
-  limit?: number;
-};
-export type OffsetPageRequest = {
-  type: "offset";
-  offset: number;
-  limit?: number;
-};
-export type FetchPageRequest = CursorPageRequest | OffsetPageRequest;
-
-export type CursorPageResponse = {
-  type: "cursor";
-  cursor: string;
-  hasMore: boolean;
-  nextCursor?: string;
-};
-export type OffsetPageResponse = {
-  type: "offset";
-  offset: number;
-  hasMore: boolean;
-  total?: number;
-};
-export type FetchPageResponse = CursorPageResponse | OffsetPageResponse;
-
 // --- STATE TYPES ---
 
 export type AsyncDataStatus = "pending" | "error" | "success";
@@ -38,17 +10,18 @@ export type Usage = {
   lastUsed: number;
 };
 
-export type QueryState = {
+export type QueryState<P = unknown> = {
   status: AsyncDataStatus;
   fetchStatus: AsyncDataFetchStatus;
   error: any | undefined;
-  page?: FetchPageResponse;
+  previousPage?: P;
+  nextPage?: P;
 };
 
 // Notice: usage is strictly removed from the reactive tree
-export interface StoreState<D> {
+export interface StoreState<D, P = unknown> {
   data: Record<string, D>;
-  queries: Record<string, QueryState>;
+  queries: Record<string, QueryState<P>>;
 }
 
 export type Entity<D> = {
@@ -56,22 +29,22 @@ export type Entity<D> = {
   query: QueryState;
 };
 
-export type EntityList<D> = {
+export type EntityList<D, P = unknown> = {
   data: D[];
-  query: QueryState;
+  query: QueryState<P>;
 };
 
-// --- CORE FACTORY ---
+// --- INTERNAL UTILITIES ---
 
-export function getEntitiesQueryKey<F extends Record<string, unknown>>(
-  filterObj?: F,
+export function getEntityProjectionQueryKey<J extends Record<string, unknown>>(
+  params?: J,
 ) {
-  if (!filterObj) return "list:all";
-  const sortedKeys = Object.keys(filterObj).sort();
+  if (!params) return "list:all";
+  const sortedKeys = Object.keys(params).sort();
   const normalizedObj = sortedKeys.reduce((acc, key) => {
-    (acc as any)[key] = (filterObj as any)[key];
+    (acc as any)[key] = (params as any)[key];
     return acc;
-  }, {} as Partial<F>);
+  }, {} as Partial<J>);
   return `list:${JSON.stringify(normalizedObj)}`;
 }
 
@@ -79,26 +52,34 @@ export function getEntityQueryKey(key: string) {
   return `item:${key}`;
 }
 
-export function createStore<D, F extends Record<string, unknown> = {}>({
+// --- CORE FACTORY ---
+
+export function createStore<
+  D,
+  J extends Record<string, unknown> = {},
+  P extends Record<string, unknown> = {},
+>({
   namespace,
   getKey,
   fetchOne,
   fetchMany,
-  filter,
+  project,
   gcTime = 1000 * 60 * 5, // Default GC time: 5 minutes
 }: {
   namespace: string;
   getKey: (entity: D) => string;
   fetchOne: (key: string) => Promise<D>;
-  fetchMany: (options: { filter?: F; page?: FetchPageRequest }) => Promise<{
+  fetchMany: (options: { params?: J; page?: P }) => Promise<{
     data: D[];
-    page: FetchPageResponse;
+    previousPage?: P;
+    nextPage?: P;
   }>;
-  filter?: (entities: D[], filterObj: F) => D[];
+  // project runs even if params are undefined to establish default sorting
+  project?: (entities: D[], params?: J) => D[];
   gcTime?: number;
 }) {
   // 1. The Reactive State (Triggers React renders)
-  const store = createZustandStore<StoreState<D>>(() => ({
+  const store = createZustandStore<StoreState<D, P>>(() => ({
     data: {},
     queries: {},
   }));
@@ -110,11 +91,9 @@ export function createStore<D, F extends Record<string, unknown> = {}>({
   const usageTracker = new Map<string, Usage>();
   const gcTimers = new Map<string, NodeJS.Timeout>();
 
-  // --- INTERNAL UTILITIES ---
-
   return {
     namespace,
-    store, // Expose raw vanilla store for React hooks (useStore)
+    store, // Expose raw vanilla store for React hooks
 
     // --- GARBAGE COLLECTION API ---
     retain: (cacheKey: string) => {
@@ -290,8 +269,8 @@ export function createStore<D, F extends Record<string, unknown> = {}>({
       }
     },
 
-    fetchMany: async (filterObj?: F, pageReq?: FetchPageRequest) => {
-      const queryKey = getEntitiesQueryKey(filterObj);
+    fetchMany: async (params?: J, page?: P) => {
+      const queryKey = getEntityProjectionQueryKey(params);
 
       set((state) => {
         const existingQuery = state.queries[queryKey] || {};
@@ -302,16 +281,17 @@ export function createStore<D, F extends Record<string, unknown> = {}>({
               status: existingQuery.status || "pending",
               fetchStatus: "fetching",
               error: undefined,
-              page: existingQuery.page,
+              nextPage: existingQuery.nextPage,
+              previousPage: existingQuery.previousPage,
             },
           },
         };
       });
 
       try {
-        const { data, page: responsePage } = await fetchMany({
-          filter: filterObj,
-          page: pageReq,
+        const { data, nextPage, previousPage } = await fetchMany({
+          params,
+          page,
         });
 
         set((state) => {
@@ -328,7 +308,8 @@ export function createStore<D, F extends Record<string, unknown> = {}>({
                 status: "success",
                 fetchStatus: "idle",
                 error: undefined,
-                page: responsePage,
+                nextPage,
+                previousPage,
               },
             },
           };
@@ -344,7 +325,8 @@ export function createStore<D, F extends Record<string, unknown> = {}>({
                   existingQuery.status === "success" ? "success" : "error",
                 fetchStatus: "idle",
                 error,
-                page: existingQuery.page,
+                nextPage: existingQuery.nextPage,
+                previousPage: existingQuery.previousPage,
               },
             },
           };
@@ -353,7 +335,7 @@ export function createStore<D, F extends Record<string, unknown> = {}>({
     },
 
     // --- SELECTORS ---
-    selectEntity: (key: string, state: StoreState<D>): Entity<D> => {
+    selectEntity: (key: string, state: StoreState<D, P>): Entity<D> => {
       const queryKey = getEntityQueryKey(key);
       const defaultQuery: QueryState = {
         status: "pending",
@@ -368,11 +350,11 @@ export function createStore<D, F extends Record<string, unknown> = {}>({
     },
 
     selectManyEntities: (
-      state: StoreState<D>,
-      filterObj?: F,
-    ): EntityList<D> => {
-      const queryKey = getEntitiesQueryKey(filterObj);
-      const defaultQuery: QueryState = {
+      state: StoreState<D, P>,
+      params?: J,
+    ): EntityList<D, P> => {
+      const queryKey = getEntityProjectionQueryKey(params);
+      const defaultQuery: QueryState<P> = {
         status: "pending",
         fetchStatus: "idle",
         error: undefined,
@@ -380,17 +362,22 @@ export function createStore<D, F extends Record<string, unknown> = {}>({
 
       const allEntities: D[] = Object.values(state.data);
 
-      const filteredData =
-        filterObj && filter ? filter(allEntities, filterObj) : allEntities;
+      // Execute projection even if params are missing to ensure default sorting
+      const projectedData = project
+        ? project(allEntities, params)
+        : allEntities;
 
       return {
-        data: filteredData,
+        data: projectedData,
         query: state.queries[queryKey] || defaultQuery,
       };
     },
   };
 }
 
-export type Store<D, F extends Record<string, unknown> = {}> = ReturnType<
-  typeof createStore<D, F>
->;
+// Extract the inferred type to avoid manual interface maintenance
+export type Store<
+  D,
+  J extends Record<string, unknown> = {},
+  P extends Record<string, unknown> = {},
+> = ReturnType<typeof createStore<D, J, P>>;

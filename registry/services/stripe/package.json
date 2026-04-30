@@ -15,7 +15,6 @@
     "dev": "scripts dev"
   },
   "dependencies": {
-    "@tanstack/react-query": "^5.100.1",
     "@ubento/registry-proxy": "workspace:*",
     "stripe": "^17.4.0",
     "zod": "^3.23.8"

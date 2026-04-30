@@ -45,7 +45,7 @@ export class WorkspaceService {
         },
       },
     });
-    return extractResponseData(result, true) as unknown as Workspace[];
+    return extractResponseData(result, true);
   }
 
   async getWorkspace(workspaceId: string) {
@@ -133,7 +133,7 @@ export class WorkspaceService {
         },
       },
     });
-    return extractResponseData(result, true) as unknown as Board[];
+    return extractResponseData(result, true);
   }
 
   async getBoard(boardId: string) {

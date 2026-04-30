@@ -100,14 +100,13 @@ export class ModuleService {
     return extractResponseData(result, true);
   }
 
-  async publishModuleVersion(moduleId: string, data: { source: string }) {
+  async publishModuleVersion(moduleId: string) {
     const result = await this.moduleClient.post(
-      "/modules/{module_id}/versions",
+      "/modules/{module_id}/publish",
       {
         params: {
           path: { module_id: moduleId },
         },
-        body: data,
       },
     );
     return extractResponseData(result, true) as ModuleVersion;

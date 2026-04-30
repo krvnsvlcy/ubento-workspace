@@ -47,7 +47,7 @@ export function parseCursorQuery(
 
 export interface CursorPageResponse<T> {
   data: T[];
-  page: {
+  nextPage: {
     type: "cursor";
     nextCursor?: string;
   };
@@ -62,7 +62,7 @@ export function makeCursorPageResponse<T>({
 }): CursorPageResponse<T> {
   return {
     data: items,
-    page: {
+    nextPage: {
       type: "cursor",
       nextCursor,
     },
@@ -79,7 +79,7 @@ export function makeCursorPageResponseSchema(
         type: "array",
         items: dataSchema,
       },
-      page: {
+      nextPage: {
         type: "object",
         properties: {
           type: { type: "string", enum: ["cursor"] },

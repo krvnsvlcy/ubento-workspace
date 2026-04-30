@@ -1,6 +1,6 @@
-import { User, Mail, Shield, Bell } from "lucide-react";
-import React, { useState } from "react";
-import { Modal } from "../app/components/modal";
+import { Bell, Shield, User } from "lucide-react";
+import { useState } from "react";
+import { Modal } from "../../app/components/modal";
 
 interface AccountModalProps {
   isOpen: boolean;
@@ -108,7 +108,8 @@ export function AccountModal({ isOpen, onClose, user }: AccountModalProps) {
               </div>
               <h3 className="text-lg font-bold mb-2">Coming Soon</h3>
               <p className="text-sm text-foreground-300 max-w-xs">
-                We're currently working on this section to provide you with more control over your account.
+                We're currently working on this section to provide you with more
+                control over your account.
               </p>
             </div>
           )}
