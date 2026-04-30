@@ -14,15 +14,6 @@ export const baseElementStyleSchema = z.object({
   minHeight: z.number().optional(),
   maxHeight: z.number().optional(),
   flex: z.number().optional(),
-  padding: z
-    .object({
-      top: z.number().optional(),
-      bottom: z.number().optional(),
-      left: z.number().optional(),
-      right: z.number().optional(),
-    })
-    .optional(),
-  cornerRadius: z.number().optional(),
 });
 export type BaseStyle = z.infer<typeof baseElementStyleSchema>;
 

@@ -43,6 +43,7 @@ export type BentoEngine = StateController<BentoEngineState> & {
 
   // selection
   select: (elementIds: string[], toggle?: boolean) => void;
+  setSelectionScope: (id?: string) => void;
   hover: (elementId: string) => void;
   unHover: (elementId: string) => void;
 
@@ -79,6 +80,9 @@ export type BentoEngine = StateController<BentoEngineState> & {
   ) => string;
   deleteElement: (id: string, boardId?: string) => void;
   replaceElement: (id: string, element: ElementData) => void;
+  pruneBoard: (boardId: string) => void;
+  wrapSelection: (ids: string[]) => void;
+  unwrapSelection: (ids: string[]) => void;
 
   // dom tracking
   setHtmlElement: (id: string, element?: HTMLElement) => void;
@@ -126,17 +130,28 @@ export function createBentoEngine({
     select: (elementIds: string[], toggle?: boolean) => {
       const current = store.getState();
       const currentSelection = current.selection || [];
-      const nextSelection = [
-        ...new Set(
-          toggle
-            ? currentSelection.filter((id) => !elementIds.includes(id))
-            : elementIds,
-        ),
-      ];
+
+      let nextSelection: string[];
+      if (toggle) {
+        // Toggle each id: if in selection, remove it; if not, add it.
+        nextSelection = [...currentSelection];
+        for (const id of elementIds) {
+          if (nextSelection.includes(id)) {
+            nextSelection = nextSelection.filter((sid) => sid !== id);
+          } else {
+            nextSelection.push(id);
+          }
+        }
+      } else {
+        nextSelection = elementIds;
+      }
 
       rpc.egress.setSelection({
-        selection: nextSelection,
+        selection: [...new Set(nextSelection)],
       });
+    },
+    setSelectionScope: (id?: string) => {
+      store.setState({ selectionScope: id });
     },
     hover: (elementId: string) => {
       rpc.egress.setHover({ elementId });
@@ -239,9 +254,11 @@ export function createBentoEngine({
     },
 
     deleteElement: (elementId: string, boardId?: string) => {
+      const state = store.getState();
+      const targetBoardId =
+        boardId || state.location?.boardId || state.workspace?.homeBoardId;
+
       store.setState((s) => {
-        const targetBoardId =
-          boardId || s.location?.boardId || s.workspace?.homeBoardId;
         if (!targetBoardId || !s.boards[targetBoardId]) return s;
 
         const board = s.boards[targetBoardId];
@@ -272,6 +289,10 @@ export function createBentoEngine({
           },
         };
       });
+
+      if (targetBoardId) {
+        engine.pruneBoard(targetBoardId);
+      }
     },
 
     replaceElement: (id: string, element: ElementData) => {
@@ -294,6 +315,215 @@ export function createBentoEngine({
         }
 
         return found ? { boards: nextBoards } : s;
+      });
+    },
+
+    pruneBoard: (boardId: string) => {
+      store.setState((s) => {
+        const board = s.boards[boardId];
+        if (!board) return s;
+
+        const nextElements = { ...board.elements };
+        let nextContent = [...board.content];
+        let changed = true;
+
+        while (changed) {
+          changed = false;
+
+          for (const [id, el] of Object.entries(nextElements) as [
+            string,
+            any,
+          ][]) {
+            if (id === "root") continue;
+
+            if (el.type === "stack" && el.content.length === 1) {
+              const childId = el.content[0];
+
+              // Check board content
+              if (nextContent.includes(id)) {
+                nextContent = nextContent.map((cid) =>
+                  cid === id ? childId : cid,
+                );
+                delete nextElements[id];
+                changed = true;
+                break;
+              }
+
+              // Check other stacks
+              for (const [parentId, parentEl] of Object.entries(
+                nextElements,
+              ) as [string, any][]) {
+                if (parentEl.type === "stack" && parentEl.content.includes(id)) {
+                  nextElements[parentId] = {
+                    ...parentEl,
+                    content: parentEl.content.map((cid) =>
+                      cid === id ? childId : cid,
+                    ),
+                  };
+                  delete nextElements[id];
+                  changed = true;
+                  break;
+                }
+              }
+              if (changed) break;
+            }
+          }
+        }
+
+        return {
+          boards: {
+            ...s.boards,
+            [boardId]: {
+              ...board,
+              elements: nextElements,
+              content: nextContent,
+            },
+          },
+        };
+      });
+    },
+
+    wrapSelection: (ids: string[]) => {
+      if (ids.length === 0) return;
+
+      store.setState((s) => {
+        const board = engine.selectActiveBoard(s);
+        if (!board) return s;
+
+        const nextElements = { ...board.elements };
+        let nextBoardContent = [...board.content];
+
+        // Find parent of the first element
+        let parentId: string | null = null;
+        if (nextBoardContent.includes(ids[0])) {
+          parentId = "root_content";
+        } else {
+          for (const [pid, pel] of Object.entries(nextElements) as [
+            string,
+            any,
+          ][]) {
+            if (pel.type === "stack" && pel.content.includes(ids[0])) {
+              parentId = pid;
+              break;
+            }
+          }
+        }
+
+        if (!parentId) return s;
+
+        const stackId = crypto.randomUUID();
+        const newStack: ElementData = {
+          type: "stack",
+          content: ids,
+          style: {
+            width: { value: 1, unit: "fr" },
+            height: { value: 1, unit: "fr" },
+            direction: "column",
+          } as any,
+        };
+
+        nextElements[stackId] = newStack;
+
+        // Update parent content
+        if (parentId === "root_content") {
+          const firstIdx = nextBoardContent.indexOf(ids[0]);
+          nextBoardContent = nextBoardContent.filter(
+            (id) => !ids.includes(id),
+          );
+          nextBoardContent.splice(firstIdx, 0, stackId);
+        } else {
+          const parent = nextElements[parentId] as any;
+          const firstIdx = parent.content.indexOf(ids[0]);
+          const nextParentContent = parent.content.filter(
+            (id: string) => !ids.includes(id),
+          );
+          nextParentContent.splice(firstIdx, 0, stackId);
+          nextElements[parentId] = { ...parent, content: nextParentContent };
+        }
+
+        return {
+          boards: {
+            ...s.boards,
+            [board.id]: {
+              ...board,
+              elements: nextElements,
+              content: nextBoardContent,
+            },
+          },
+          selection: [stackId],
+        };
+      });
+    },
+
+    unwrapSelection: (ids: string[]) => {
+      if (ids.length === 0) return;
+
+      store.setState((s) => {
+        const board = engine.selectActiveBoard(s);
+        if (!board) return s;
+
+        const nextElements = { ...board.elements };
+        let nextBoardContent = [...board.content];
+        let nextSelection = [...s.selection];
+        let changed = false;
+
+        for (const id of ids) {
+          const el = nextElements[id];
+          if (el?.type !== "stack") continue;
+
+          const children = el.content;
+
+          // Find parent
+          let parentId: string | null = null;
+          if (nextBoardContent.includes(id)) {
+            parentId = "root_content";
+          } else {
+            for (const [pid, pel] of Object.entries(nextElements) as [
+              string,
+              any,
+            ][]) {
+              if (pel.type === "stack" && pel.content.includes(id)) {
+                parentId = pid;
+                break;
+              }
+            }
+          }
+
+          if (!parentId) continue;
+
+          // Replace stack with its children
+          if (parentId === "root_content") {
+            const idx = nextBoardContent.indexOf(id);
+            nextBoardContent.splice(idx, 1, ...children);
+          } else {
+            const parent = nextElements[parentId] as any;
+            const idx = parent.content.indexOf(id);
+            const nextParentContent = [...parent.content];
+            nextParentContent.splice(idx, 1, ...children);
+            nextElements[parentId] = { ...parent, content: nextParentContent };
+          }
+
+          delete nextElements[id];
+          nextSelection = nextSelection.filter((sid) => sid !== id);
+          if (children.length > 0) {
+            nextSelection.push(...children);
+          }
+          changed = true;
+        }
+
+        if (!changed) return s;
+
+        return {
+          boards: {
+            ...s.boards,
+            [board.id]: {
+              ...board,
+              elements: nextElements,
+              content: nextBoardContent,
+            },
+          },
+          selection: nextSelection,
+        };
       });
     },
 

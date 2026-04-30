@@ -1,22 +1,20 @@
-import { createContext, CSSProperties, useContext } from "react";
+import { CSSProperties, useContext, useState } from "react";
 import { spacingBaseUnit } from "../../../constants";
 import { useBentoEngine } from "../../../engine";
 import { StackData } from "../../../models";
 import { BaseElement, getBaseStyle } from "../base_element";
 
+import { ParentContext, StackContext } from "../../core/context";
 import { BoxHandle } from "../../handles/box-handle";
 import { Initializer } from "../../handles/initializer";
-import { StackInterstices } from "../../handles/stack-interstices";
 import { Element } from "../element";
-
-export const StackContext = createContext<{ flex: "row" | "column" }>({
-  flex: "row",
-});
+import { ComponentSelector } from "./component_selector";
 
 export function Stack({ id, data }: { id: string; data: StackData }) {
   const stackContext = useContext(StackContext);
   const engine = useBentoEngine();
   const isEditMode = engine.useState((s) => s.mode === "edit");
+  const [showSelector, setShowSelector] = useState(false);
 
   const style = data.style;
 
@@ -36,36 +34,86 @@ export function Stack({ id, data }: { id: string; data: StackData }) {
   const isEmpty = data.content.length === 0;
 
   return (
-    <BaseElement id={id} data={data} style={cssStyle} data-element-id={id}>
+    <BaseElement
+      id={id}
+      data={data}
+      style={cssStyle}
+      data-element-id={id}
+      onDoubleClick={(e) => {
+        if (!isEditMode) return;
+        e.stopPropagation();
+        engine.setSelectionScope(id);
+      }}
+    >
       {isEditMode ? (
         <BoxHandle id={id} element={data} isEmpty={isEmpty}>
-          {isEmpty ? (
-            <Initializer targetId={id} targetType="stack" />
-          ) : (
-            <StackInterstices id={id} direction={style.direction || "row"} />
-          )}
+          {isEmpty && <Initializer targetId={id} targetType="stack" />}{" "}
         </BoxHandle>
       ) : (
-        isEmpty && (
-          <div
-            onClick={() => engine.toggleMode()}
-            className="absolute inset-1 flex items-center justify-center rounded-xl cursor-pointer transition-all duration-300 bg-background group"
-          >
-            <span className="text-[10px] font-semibold text-neutral-content-muted opacity-0 group-hover:opacity-100 transition-opacity uppercase tracking-wider">
-              click to add content
-            </span>
-          </div>
-        )
+        <></>
       )}
-      <StackContext
-        value={{
-          flex: style.direction || "row",
-        }}
-      >
-        {data.content.map((childId) => (
-          <Element key={childId} id={childId} />
-        ))}
-      </StackContext>
+
+      {isEmpty ? (
+        <div
+          onClick={
+            !isEditMode
+              ? (e) => {
+                  e.stopPropagation();
+                  setShowSelector(true);
+                }
+              : undefined
+          }
+          className={`h-full w-full flex items-center justify-center rounded-xl transition-all duration-300 bg-neutral-surface group relative ${
+            !isEditMode ? "cursor-pointer" : ""
+          }`}
+        >
+          {isEditMode ? (
+            <></>
+          ) : (
+            <>
+              {showSelector && (
+                <>
+                  <div
+                    className="fixed inset-0 z-[999] cursor-default"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowSelector(false);
+                    }}
+                  />
+                  <div className="pointer-events-auto relative z-[1000]">
+                    <ComponentSelector
+                      onSelect={async (moduleId) => {
+                        const m = await engine.getModule(moduleId);
+                        engine.replaceElement(id, {
+                          type: "block",
+                          moduleId,
+                          moduleVersionId: m.latestVersionId,
+                          style: data.style as any,
+                          props: {},
+                        });
+                        setShowSelector(false);
+                      }}
+                      onClose={() => setShowSelector(false)}
+                    />
+                  </div>
+                </>
+              )}
+            </>
+          )}
+        </div>
+      ) : (
+        <StackContext
+          value={{
+            flex: style.direction || "row",
+          }}
+        >
+          <ParentContext value={id}>
+            {data.content.map((childId) => (
+              <Element key={childId} id={childId} />
+            ))}
+          </ParentContext>
+        </StackContext>
+      )}
     </BaseElement>
   );
 }

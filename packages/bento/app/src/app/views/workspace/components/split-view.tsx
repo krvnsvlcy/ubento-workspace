@@ -1,40 +1,77 @@
 import React, { PropsWithChildren, useEffect, useState } from "react";
 
+export type PanelDef = {
+  size: number;
+  onSizeChange?: (size: number) => void;
+  content?: React.ReactNode;
+  minSize?: number;
+  maxSize?: number;
+};
+
 export function SideSplitView({
-  side,
+  left,
+  right,
   padding,
   gap,
   children,
 }: PropsWithChildren<{
-  side: {
-    edge: "left" | "right";
-    size: number;
-    onSizeChange?: (size: number) => void;
-    content?: React.ReactNode;
-    minSize?: number;
-    maxSize?: number;
-  };
+  left?: PanelDef;
+  right?: PanelDef;
   padding?: number;
   gap?: number;
 }>) {
+  return (
+    <div
+      style={{
+        display: "flex",
+        width: "100%",
+        height: "100%",
+        overflow: "hidden",
+        flexDirection: "row",
+        padding,
+        gap,
+      }}
+    >
+      {left && <Panel side="left" {...left} />}
+
+      <div
+        style={{
+          flex: 1,
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
+        {children}
+      </div>
+
+      {right && <Panel side="right" {...right} />}
+    </div>
+  );
+}
+
+function Panel({
+  side,
+  size,
+  onSizeChange,
+  content,
+  minSize = 240,
+  maxSize = 600,
+}: PanelDef & { side: "left" | "right" }) {
   const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
     if (!isDragging) return;
 
     const onMouseMove = (e: MouseEvent) => {
-      let newSize = side.size;
-      if (side.edge === "right") {
+      let newSize = size;
+      if (side === "right") {
         newSize = window.innerWidth - e.clientX;
       } else {
         newSize = e.clientX;
       }
 
-      const clampedSize = Math.max(
-        side.minSize ?? 240,
-        Math.min(side.maxSize ?? 600, newSize),
-      );
-      side.onSizeChange?.(clampedSize);
+      const clampedSize = Math.max(minSize, Math.min(maxSize, newSize));
+      onSizeChange?.(clampedSize);
     };
 
     const onMouseUp = () => {
@@ -48,17 +85,10 @@ export function SideSplitView({
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("mouseup", onMouseUp);
     };
-  }, [
-    isDragging,
-    side.minSize,
-    side.maxSize,
-    side.edge,
-    side.onSizeChange,
-    side.size,
-  ]);
+  }, [isDragging, minSize, maxSize, side, onSizeChange, size]);
 
   const sidebarStyle: React.CSSProperties = {
-    flex: `0 0 ${side.size}px`,
+    flex: `0 0 ${size}px`,
     position: "relative",
     pointerEvents: isDragging ? "none" : "auto",
     overflow: "hidden",
@@ -67,16 +97,9 @@ export function SideSplitView({
       : "flex-basis 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
   };
 
-  const mainStyle: React.CSSProperties = {
-    flex: 1,
-    position: "relative",
-    pointerEvents: isDragging ? "none" : "auto",
-    overflow: "hidden",
-  };
-
   const handleStyle: React.CSSProperties = {
     position: "absolute",
-    [side.edge === "right" ? "left" : "right"]: 0,
+    [side === "right" ? "left" : "right"]: 0,
     top: 0,
     bottom: 0,
     width: 4,
@@ -87,49 +110,17 @@ export function SideSplitView({
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        width: "100%",
-        height: "100%",
-        overflow: "hidden",
-        flexDirection: "row",
-        padding,
-        gap,
-      }}
-    >
-      {side.edge === "left" && (
-        <div style={sidebarStyle}>
-          <div style={{ width: side.size, height: "100%" }}>{side.content}</div>
-          {side.size > 0 && (
-            <div
-              onMouseDown={(e) => {
-                e.preventDefault();
-                setIsDragging(true);
-                document.body.style.cursor = "ew-resize";
-              }}
-              style={handleStyle}
-            />
-          )}
-        </div>
-      )}
-
-      <div style={mainStyle}>{children}</div>
-
-      {side.edge === "right" && (
-        <div style={sidebarStyle}>
-          {side.size > 0 && (
-            <div
-              onMouseDown={(e) => {
-                e.preventDefault();
-                setIsDragging(true);
-                document.body.style.cursor = "ew-resize";
-              }}
-              style={handleStyle}
-            />
-          )}
-          <div style={{ width: side.size, height: "100%" }}>{side.content}</div>
-        </div>
+    <div style={sidebarStyle}>
+      <div style={{ width: size, height: "100%" }}>{content}</div>
+      {size > 0 && (
+        <div
+          onMouseDown={(e) => {
+            e.preventDefault();
+            setIsDragging(true);
+            document.body.style.cursor = "ew-resize";
+          }}
+          style={handleStyle}
+        />
       )}
     </div>
   );

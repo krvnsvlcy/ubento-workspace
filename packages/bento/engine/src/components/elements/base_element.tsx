@@ -1,9 +1,5 @@
 import React, { createContext, JSX } from "react";
-import {
-  baseLengthConstraintsUnit,
-  baseLengthUnit,
-  spacingBaseUnit,
-} from "../../constants";
+import { baseLengthConstraintsUnit, baseLengthUnit } from "../../constants";
 import { useBentoEngine } from "../../engine";
 import { BaseStyle, ElementData, Length } from "../../models";
 
@@ -95,10 +91,6 @@ export function getBaseStyle(
       : baseLengthUnit,
     maxHeight: style.maxHeight
       ? `${style.maxHeight * baseLengthConstraintsUnit}px`
-      : undefined,
-
-    padding: style.padding
-      ? `${(style.padding.top || 0) * spacingBaseUnit}px ${(style.padding.right || 0) * spacingBaseUnit}px ${(style.padding.bottom || 0) * spacingBaseUnit}px ${(style.padding.left || 0) * spacingBaseUnit}px`
       : undefined,
   };
 }

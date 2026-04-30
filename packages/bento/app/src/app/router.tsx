@@ -38,7 +38,7 @@ export function Router() {
 
   return (
     <div
-      className="bg-neutral-surface"
+      className="bg-background"
       style={{
         height: "100vh",
         width: "100vw",

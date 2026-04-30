@@ -1,5 +1,6 @@
 import React, {
   PropsWithChildren,
+  useContext,
   useEffect,
   useLayoutEffect,
   useRef,
@@ -8,6 +9,7 @@ import React, {
 import { baseLengthUnit, spacingBaseUnit } from "../../constants";
 import { useBentoEngine } from "../../engine";
 import { ElementData, Length } from "../../models";
+import { ParentContext } from "../core/context";
 
 type ResizeDirection =
   | "n"
@@ -337,9 +339,22 @@ export function BoxHandle({
   isEmpty?: boolean;
 }>) {
   const engine = useBentoEngine();
-  const { setElementStyle, select } = engine;
-  const isSelected = engine.useState((e) => e.selection?.includes(id));
-  const isHovered = engine.useState((e) => e.hover === id);
+  const { select, setElementStyle } = engine;
+  const isSelected = engine.useState((s) => s.selection.includes(id));
+  const isHovered = engine.useState((s) => s.hover === id);
+  const selectionScope = engine.useState((s) => s.selectionScope);
+  const parentId = useContext(ParentContext);
+
+  const isWithinScope = parentId === selectionScope;
+
+  const isAncestorOfScope = React.useMemo(() => {
+    if (!selectionScope || selectionScope === id) return false;
+    const scopeEl = engine.getHtmlElement(selectionScope);
+    const myEl = engine.getHtmlElement(id);
+    return myEl && scopeEl && myEl.contains(scopeEl);
+  }, [selectionScope, id, engine]);
+
+  const isInteractive = isWithinScope || isAncestorOfScope;
 
   const [dragType, setDragType] = useState<ResizeDirection | null>(null);
   const [dragStart, setDragStart] = useState<{
@@ -491,7 +506,14 @@ export function BoxHandle({
   return (
     <div
       onClick={(e) => {
+        if (!isInteractive) return;
         e.stopPropagation();
+
+        if (isAncestorOfScope) {
+          engine.setSelectionScope(id);
+          return;
+        }
+
         select([id], e.shiftKey);
       }}
       style={{
@@ -499,25 +521,39 @@ export function BoxHandle({
         inset: 0,
         zIndex: 10,
         containerType: "size",
-        cursor: isSelected ? "default" : "pointer",
-        border: isSelected
-          ? "2px solid var(--color-accent-content)"
-          : isHovered
-            ? "2px dashed var(--color-accent-content)"
-            : isEmpty
-              ? "1px dashed var(--color-neutral-content-muted)"
-              : "none",
-        pointerEvents: "auto",
-        borderRadius: isEmpty ? "12px" : "0",
+        cursor: isInteractive
+          ? isSelected
+            ? "default"
+            : "pointer"
+          : "default",
+        border: isWithinScope
+          ? isSelected
+            ? "2px solid var(--color-accent-content)"
+            : isHovered
+              ? isEmpty
+                ? "2px dashed var(--color-accent-content)"
+                : "2px solid var(--color-accent-content)"
+              : isEmpty
+                ? "1px dashed var(--color-neutral-content-muted)"
+                : "none"
+          : isEmpty
+            ? isAncestorOfScope
+              ? "1px solid var(--color-accent-content-muted)"
+              : "1px dashed color-mix(in srgb, var(--color-neutral-content-muted) 50%, transparent)"
+            : "",
+        pointerEvents: isInteractive ? "auto" : "none",
+        borderRadius: "6px",
       }}
       onMouseEnter={() => {
+        if (!isInteractive) return;
         engine.hover(id);
       }}
       onMouseLeave={() => {
+        if (!isInteractive) return;
         engine.unHover(id);
       }}
     >
-      {isSelected && (
+      {isWithinScope && isSelected && (
         <>
           <CornerHandle position="nw" onMouseDown={handleMouseDown} />
           <CornerHandle position="ne" onMouseDown={handleMouseDown} />
@@ -530,8 +566,7 @@ export function BoxHandle({
           <SizeControl id={id} width={width} height={height} />
         </>
       )}
-
-      {
+      {isWithinScope && (
         <div
           style={{
             height: "100%",
@@ -542,7 +577,7 @@ export function BoxHandle({
         >
           {children}
         </div>
-      }
+      )}
     </div>
   );
 }

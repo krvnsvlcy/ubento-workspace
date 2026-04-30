@@ -63,21 +63,24 @@ export function ControlPanel({ controller }: { controller: WorkspaceEngine }) {
   }
 
   return (
-    <div className="h-full" style={{ padding: 6 }}>
-      <div className="h-full flex flex-col bg-background-100 rounded-xl border">
-        <div className="flex gap-2 p-4">
-          {tabs.map((t) => (
-            <Tab
-              key={t.id}
-              isActive={activeTab === t.id}
-              onClick={() => setActiveTab(t.id)}
-              icon={t.icon}
-            />
-          ))}
-        </div>
-        <hr />
-        <div className="grow overflow-hidden">{content}</div>
+    <div
+      className="h-full flex flex-col bg-background-100 rounded-xl border"
+      onClick={(e) => {
+        e.stopPropagation();
+      }}
+    >
+      <div className="flex gap-2 p-4">
+        {tabs.map((t) => (
+          <Tab
+            key={t.id}
+            isActive={activeTab === t.id}
+            onClick={() => setActiveTab(t.id)}
+            icon={t.icon}
+          />
+        ))}
       </div>
+      <hr />
+      <div className="grow overflow-hidden">{content}</div>
     </div>
   );
 }

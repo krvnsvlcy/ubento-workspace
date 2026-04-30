@@ -3,7 +3,8 @@ import React, { useContext, useEffect, useState } from "react";
 import { useBentoEngine } from "../../engine";
 import { BlockData } from "../../models";
 import { BaseElement, getBaseStyle } from "./base_element";
-import { StackContext } from "./stack/stack";
+import { ParentContext, StackContext } from "../core/context";
+import { BoxHandle } from "../handles/box-handle";
 
 export function Block({
   id,
@@ -13,8 +14,11 @@ export function Block({
   data: BlockData;
 }): React.JSX.Element {
   const stackContext = useContext(StackContext);
+  const parentId = useContext(ParentContext);
   const engine = useBentoEngine();
   const { getModule, resolveModuleValue } = engine;
+  const isEditMode = engine.useState((s) => s.mode === "edit");
+
   const latestVersionId = engine.useState(
     (s) => s.modules[data.moduleId]?.latestVersionId,
   );
@@ -66,6 +70,9 @@ export function Block({
         flex: stackContext.flex,
       })}
     >
+      {isEditMode && (
+        <BoxHandle id={id} element={data} isEmpty={false} />
+      )}
       <Component {...data.props} />
     </BaseElement>
   );

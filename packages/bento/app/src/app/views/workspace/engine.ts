@@ -44,6 +44,9 @@ export type WorkspaceState = {
   workspace: WorkspaceData | null;
   boards: Record<string, BoardData>;
   modules: Record<string, ModuleData>;
+
+  // UI
+  leftPanelOpen: boolean;
 };
 
 export type WorkspaceEngine = StateController<WorkspaceState> & {
@@ -55,6 +58,8 @@ export type WorkspaceEngine = StateController<WorkspaceState> & {
   setMode: (mode: BentoMode) => void;
   select: (blockIds: string[]) => void;
   setSelectionScope: (selectionScope?: string) => void;
+  setLeftPanelOpen: (open: boolean) => void;
+  toggleLeftPanel: () => void;
   goTo: (boardId: string, params?: Record<string, string>) => void;
 
   // workspace mutators
@@ -107,6 +112,7 @@ export function createWorkspaceEngine({
     workspace: null,
     boards: {},
     modules: {},
+    leftPanelOpen: false,
   }));
 
   const controller = createZustandStateController(store);
@@ -399,6 +405,12 @@ export function createWorkspaceEngine({
     },
     setSelectionScope: (selectionScope?: string) => {
       store.setState({ selectionScope });
+    },
+    setLeftPanelOpen: (leftPanelOpen: boolean) => {
+      store.setState({ leftPanelOpen });
+    },
+    toggleLeftPanel: () => {
+      store.setState((s) => ({ leftPanelOpen: !s.leftPanelOpen }));
     },
     goTo: (boardId: string, params?: Record<string, string>) => {
       store.setState({ location: { boardId, params: params || {} } });

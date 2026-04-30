@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { spacingBaseUnit } from "../../constants.js";
 import { useBentoEngine } from "../../engine.js";
 import { BoardStyle } from "../../models.js";
-import { StackContext } from "../core/core.js";
+import { StackContext } from "../core/context.js";
 import { Element, ElementRegistryProvider } from "../elements/element.js";
 import { Initializer } from "../handles/initializer.js";
 
@@ -41,6 +41,44 @@ function BoardContent({ boardId }: { boardId: string }): React.JSX.Element {
   const isEditMode = engine.useState((s) => s.mode === "edit");
   const board = engine.useState((s) => s.boards[boardId]);
 
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Backspace" || e.key === "Delete") {
+        if (
+          e.target instanceof HTMLInputElement ||
+          e.target instanceof HTMLTextAreaElement ||
+          (e.target as HTMLElement).isContentEditable
+        ) {
+          return;
+        }
+
+        const state = engine.getState();
+        if (state.mode === "edit" && state.selection.length > 0) {
+          e.preventDefault();
+          for (const id of state.selection) {
+            engine.deleteElement(id);
+          }
+          engine.select([]);
+        }
+      }
+
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "g") {
+        const state = engine.getState();
+        if (state.mode === "edit" && state.selection.length > 0) {
+          e.preventDefault();
+          if (e.shiftKey) {
+            engine.unwrapSelection(state.selection);
+          } else {
+            engine.wrapSelection(state.selection);
+          }
+        }
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [engine]);
+
   if (!board) {
     return <ErrorView message="Board not found" />;
   }
@@ -62,6 +100,7 @@ function BoardContent({ boardId }: { boardId: string }): React.JSX.Element {
         <div
           onClick={() => {
             select([]);
+            engine.setSelectionScope(undefined);
           }}
           style={getBoardStyle(board.style)}
         >
