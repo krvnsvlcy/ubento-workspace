@@ -377,7 +377,14 @@ export function createUbentoWorkspaceService({
       workspaceStore.push(ws);
       return ws;
     },
-    updateWorkspace: async (workspaceId: string, data: any) => {
+    updateWorkspace: async (
+      workspaceId: string,
+      data: {
+        name?: string;
+        description?: string;
+        data?: Record<string, unknown>;
+      },
+    ) => {
       const ws = await ubentoSdk.workspace.updateWorkspace(workspaceId, data);
       workspaceStore.push(ws);
       return ws;
@@ -408,7 +415,10 @@ export function createUbentoWorkspaceService({
       boardStore.push(board);
       return board;
     },
-    updateBoard: async (boardId: string, data: any) => {
+    updateBoard: async (
+      boardId: string,
+      data: { name?: string; path?: string; data?: any },
+    ) => {
       const board = await ubentoSdk.workspace.updateBoard(boardId, data);
       boardStore.push(board);
       return board;

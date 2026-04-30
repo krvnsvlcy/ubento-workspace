@@ -1,5 +1,5 @@
-import { useUbentoEngine } from "@/engine/engine";
 import { useGlobalModals } from "@/contexts/modals";
+import { useUbentoEngine } from "@/engine/engine";
 import { LayoutGrid, Plus, Settings } from "lucide-react";
 import { motion } from "motion/react";
 
@@ -48,7 +48,7 @@ export function Sidebar() {
               <Settings className="h-3.5 w-3.5 text-neutral-content-subtle" />
             </div>
             <span className="text-[13px] font-medium text-neutral-content">
-              Team Settings
+              Settings
             </span>
           </button>
 

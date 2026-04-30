@@ -1,15 +1,10 @@
 import { useUbentoEngine } from "@/engine/engine";
 import { useState } from "react";
-import { useStore } from "zustand";
-import { WorkspaceController } from "../../../controller";
+import { WorkspaceEngine } from "../../../engine";
 import { CopilotInput } from "./input";
 import { CopilotThread } from "./thread";
 
-export function CopilotTab({
-  controller,
-}: {
-  controller: WorkspaceController;
-}) {
+export function CopilotTab({ controller }: { controller: WorkspaceEngine }) {
   const engine = useUbentoEngine();
   const [activeThreadId, setActiveThreadId] = useState<string | undefined>(
     undefined,
@@ -19,7 +14,7 @@ export function CopilotTab({
   >([]);
   const [isThinking, setIsThinking] = useState(false);
 
-  const state = useStore(controller);
+  const state = controller.useState();
   const selectedId = state.selection?.[0];
 
   const handleSend = async (content: string) => {

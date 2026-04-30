@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useEngine } from "../../engine";
+import { useBentoEngine } from "../../engine";
 
 export function ComponentSelector({
   onSelect,
@@ -7,8 +7,8 @@ export function ComponentSelector({
   onSelect: (moduleId: string) => void;
   onClose: () => void;
 }) {
-  const searchModules = useEngine((s) => s.searchModules);
-  const createModule = useEngine((s) => s.createModule);
+  const engine = useBentoEngine();
+  const { searchModules, createModule } = engine;
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<{ id: string; name: string }[]>([]);
   const [loading, setLoading] = useState(false);

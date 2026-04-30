@@ -1,5 +1,5 @@
 import { useGlobalModals } from "@/contexts/modals";
-import { useBentoSession } from "@/contexts/session";
+import { useSession } from "@/contexts/session";
 import { useUbento } from "@/engine/engine";
 import { AccountModal } from "@/modals/account/account";
 import { CreateWorkspaceModal } from "@/modals/create_workspace/create_workspace";
@@ -8,7 +8,7 @@ import { useState } from "react";
 
 export function GlobalModals() {
   const { activeModal, closeModal } = useGlobalModals();
-  const session = useBentoSession();
+  const session = useSession();
   const ubento = useUbento();
   const { mutateAsync: createWorkspace } =
     ubento.workspace.useCreateWorkspace();
@@ -31,6 +31,10 @@ export function GlobalModals() {
     }
   };
 
+  const { data: team } = ubento.iam.useTeam(session?.teamId || "", {
+    enabled: !!session?.teamId,
+  });
+
   return (
     <>
       <CreateWorkspaceModal
@@ -43,7 +47,7 @@ export function GlobalModals() {
       <TeamModal
         isOpen={activeModal === "team"}
         onClose={closeModal}
-        team={{ name: "Acme Corp", handle: "acme" }}
+        team={team}
       />
 
       <AccountModal

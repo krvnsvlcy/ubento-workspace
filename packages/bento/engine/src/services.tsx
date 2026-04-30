@@ -1,7 +1,6 @@
 import { ErrorView, PendingView } from "@ubento/bento-primitives";
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { useEngine } from "./engine.js";
-import { RuntimeService } from "./runtime_service.js";
+import { useBentoEngine } from "./engine.js";
 
 export const ServicesContext = createContext<Record<string, any>>({});
 
@@ -9,18 +8,18 @@ export function useServices() {
   return useContext(ServicesContext);
 }
 
-export function ServicesProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const runtimeServices = useEngine((s) => s.runtimeServices);
-  const [resolvedServices, setResolvedServices] = useState<Record<string, any> | null>(null);
+export function ServicesProvider({ children }: { children: React.ReactNode }) {
+  const engine = useBentoEngine();
+  const runtimeServices = engine.useState((s) => s.runtimeServices);
+  const [resolvedServices, setResolvedServices] = useState<Record<
+    string,
+    any
+  > | null>(null);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     const services = Object.entries(runtimeServices);
-    
+
     if (services.length === 0) {
       setResolvedServices({});
       return;
@@ -57,12 +56,12 @@ export function ServicesProvider({
     checkServices();
 
     // Subscribe to all services to re-check when they change
-    const unsubscribes = services.map(([_, service]) => 
-      service.subscribe(() => checkServices())
+    const unsubscribes = services.map(([_, service]) =>
+      service.subscribe(() => checkServices()),
     );
 
     return () => {
-      unsubscribes.forEach(un => un());
+      unsubscribes.forEach((un) => un());
     };
   }, [runtimeServices]);
 

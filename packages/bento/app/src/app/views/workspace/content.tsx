@@ -1,19 +1,18 @@
 import { ErrorView } from "@/app/components/error.js";
 import { useUbentoEngine } from "@/engine/engine";
 import { useMemo, useRef, useState } from "react";
-import { useStore } from "zustand";
 import { SideSplitView } from "./components/split-view.js";
-import { WorkspaceController } from "./controller.js";
+import { WorkspaceEngine } from "./engine.js";
 import { WorkspaceNavigation } from "./interactor/navigation.js";
 import { ControlPanel } from "./panels/control-panel";
 
 export function WorkspaceContent({
   controller,
 }: {
-  controller: WorkspaceController;
+  controller: WorkspaceEngine;
 }) {
-  const isEditMode = useStore(controller, (state) => state.mode === "edit");
-  const error = useStore(controller, (state) => state.error);
+  const isEditMode = controller.useState((state) => state.mode === "edit");
+  const error = controller.useState((state) => state.error);
   const host = useUbentoEngine();
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [inspectorWidth, setInspectorWidth] = useState(320);
@@ -43,7 +42,7 @@ export function WorkspaceContent({
       src={iframeUrl}
       onLoad={() => {
         if (iframeRef.current?.contentWindow) {
-          controller.getState().connect(iframeRef.current.contentWindow);
+          controller.connect(iframeRef.current.contentWindow);
         }
       }}
       className="rounded-2xl"

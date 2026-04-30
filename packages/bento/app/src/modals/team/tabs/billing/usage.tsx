@@ -1,21 +1,22 @@
 import { FC } from "react";
+import { useUbento } from "@/engine/engine";
+import { useSession } from "@/contexts/session";
 
 export const UsageTab: FC = () => {
-  const usageItems = [
-    {
-      label: "AI Credits",
-      used: 850,
-      total: 1000,
-      unit: "credits",
-    },
-    {
-      label: "Build Runs",
-      used: 142,
-      total: 500,
-      unit: "runs",
-    },
-    { label: "Storage", used: 4.2, total: 10, unit: "GB" },
-  ];
+  const ubento = useUbento();
+  const session = useSession();
+  const teamId = session.teamId;
+
+  const { data: usageResponse, loading } = ubento.billing.useUsageCounters({
+    organization_id: teamId,
+  });
+
+  const usageItems = (usageResponse?.data || []).map((counter: any) => ({
+    label: counter.name || counter.code,
+    used: counter.current_value,
+    total: counter.limit,
+    unit: counter.unit || "",
+  }));
 
   return (
     <div className="space-y-4 animate-in fade-in duration-300">

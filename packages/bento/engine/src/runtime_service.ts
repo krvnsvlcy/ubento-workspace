@@ -1,6 +1,6 @@
 import { createStore } from "zustand/vanilla";
 import { createZustandStateController, StateController } from "@ubento/bento-primitives";
-import { EngineStoreApi } from "./engine.js";
+import { BentoEngine } from "./engine.js";
 import { ServiceData } from "./models.js";
 
 export type RuntimeServiceStatus = "loading" | "ready" | "error";
@@ -25,7 +25,7 @@ export type UbentoRuntimeApi = {
 export function createRuntimeService(
   name: string,
   data: ServiceData,
-  engine: EngineStoreApi,
+  engine: BentoEngine,
 ): RuntimeService {
   const store = createStore<RuntimeServiceState>(() => ({
     status: "loading",
@@ -41,14 +41,13 @@ export function createRuntimeService(
 
     try {
       const { moduleId, moduleVersionId, args } = controller.getState().data;
-      const engineState = engine.getState();
 
       const versionId =
         moduleVersionId && moduleVersionId !== "latest"
           ? moduleVersionId
-          : (await engineState.getModule(moduleId)).latestVersionId;
+          : (await engine.getModule(moduleId)).latestVersionId;
 
-      const moduleValue = await engineState.resolveModuleValue(
+      const moduleValue = await engine.resolveModuleValue(
         moduleId,
         versionId,
       );

@@ -1,17 +1,16 @@
 import { PendingView } from "@ubento/bento-primitives";
-import { Workspace } from "@ubento/engine";
-import { useStore } from "zustand";
-import { createEngine } from "./engine.js";
-import { useKeyboardController } from "./keyboard.js";
+import { createBentoEngine, Workspace } from "@ubento/engine";
+import { useKeyboardController } from "./keyboard";
+import { rpc } from "./rpc";
 
-const engine = createEngine();
+const engine = createBentoEngine({ rpc });
 const searchParams = new URLSearchParams(window.location.search);
 const editPaddingSize = searchParams.get("editPaddingSize");
 
 export function GuestWorkspace() {
-  const workspace = useStore(engine, (state) => state.workspace);
-  const isEditMode = useStore(engine, (state) => state.mode === "edit");
-  useKeyboardController(engine);
+  const workspace = engine.useState((s) => s.workspace);
+  const isEditMode = engine.useState((s) => s.mode === "edit");
+  useKeyboardController({ engine });
 
   let content: React.ReactNode;
 

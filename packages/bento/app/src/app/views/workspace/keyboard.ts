@@ -1,13 +1,12 @@
 import { useEffect, useRef } from "react";
-import { useStore } from "zustand";
-import { WorkspaceController } from "./controller.js";
+import { WorkspaceEngine } from "./engine.js";
 
 export function useKeyboardShortcuts({
   controller,
 }: {
-  controller: WorkspaceController;
+  controller: WorkspaceEngine;
 }) {
-  const snap = useStore(controller);
+  const snap = controller.useState();
   const lastShiftPress = useRef<number>(0);
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

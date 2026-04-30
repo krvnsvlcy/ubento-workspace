@@ -1,7 +1,7 @@
 import { useUbentoEngine } from "@/engine/engine";
 import { useEffect, useRef } from "react";
 import { WorkspaceContent } from "./content";
-import { createWorkspaceController } from "./controller";
+import { createWorkspaceEngine } from "./engine";
 import { useKeyboardShortcuts } from "./keyboard";
 
 export function Workspace({
@@ -14,22 +14,22 @@ export function Workspace({
   const engine = useUbentoEngine();
 
   const workspaceController = useRef(
-    createWorkspaceController({
+    createWorkspaceEngine({
       engine,
       slug,
     }),
   );
 
   useEffect(() => {
-    workspaceController.current.getState().load();
-    return () => workspaceController.current.getState().dispose();
+    workspaceController.current.load();
+    return () => workspaceController.current.dispose();
   }, []);
 
   useKeyboardShortcuts({ controller: workspaceController.current });
 
   useEffect(() => {
     if (boardId) {
-      workspaceController.current.getState().goTo(boardId);
+      workspaceController.current.goTo(boardId);
     }
   }, [boardId, workspaceController]);
 

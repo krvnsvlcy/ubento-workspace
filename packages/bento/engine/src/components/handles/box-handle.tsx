@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { baseLengthUnit, spacingBaseUnit } from "../../constants";
-import { useEngine } from "../../engine";
+import { useBentoEngine } from "../../engine";
 import { ElementData } from "../../models";
 
 type ResizeDirection =
@@ -113,10 +113,10 @@ export function BoxHandle({
   id: string;
   element: ElementData;
 }) {
-  const setElementStyle = useEngine((e) => e.setElementStyle);
-  const select = useEngine((e) => e.select);
-  const isSelected = useEngine((e) => e.selection?.includes(id));
-  const isEditMode = useEngine((e) => e.mode === "edit");
+  const engine = useBentoEngine();
+  const { setElementStyle, select } = engine;
+  const isSelected = engine.useState((e) => e.selection?.includes(id));
+  const isEditMode = engine.useState((e) => e.mode === "edit");
 
   const [dragType, setDragType] = useState<ResizeDirection | null>(null);
   const [dragStart, setDragStart] = useState<{

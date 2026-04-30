@@ -8,7 +8,7 @@ import { GeneralTab } from "./tabs/general";
 interface TeamModalProps {
   isOpen: boolean;
   onClose: () => void;
-  team: any;
+  team?: any;
 }
 
 export function TeamModal({ isOpen, onClose, team }: TeamModalProps) {
@@ -21,13 +21,10 @@ export function TeamModal({ isOpen, onClose, team }: TeamModalProps) {
   ];
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Team Settings">
+    <Modal isOpen={isOpen} onClose={onClose} title="Settings">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8 py-4 h-full">
         {/* Sidebar */}
         <div className="col-span-1 flex flex-col gap-1">
-          <p className="px-4 mb-2 text-[11px] font-bold uppercase tracking-wider text-neutral-content-muted">
-            Organization
-          </p>
           {tabs.map((tab) => (
             <button
               key={tab.key}
@@ -35,7 +32,7 @@ export function TeamModal({ isOpen, onClose, team }: TeamModalProps) {
               className={`flex w-full items-center gap-3 px-4 py-2.5 rounded-xl text-[13px] font-medium transition-all ${
                 activeTab === tab.key
                   ? "bg-neutral-content text-neutral-contrast shadow-lg shadow-neutral-content/10"
-                : "text-neutral-content-subtle hover:bg-neutral-surface hover:text-neutral-content"
+                  : "text-neutral-content-subtle hover:bg-neutral-surface hover:text-neutral-content"
               }`}
             >
               <tab.icon className="h-4 w-4" />
@@ -47,8 +44,8 @@ export function TeamModal({ isOpen, onClose, team }: TeamModalProps) {
         {/* Content */}
         <div className="col-span-3 overflow-y-auto px-4">
           {activeTab === "general" && <GeneralTab team={team} />}
-          {activeTab === "billing" && <BillingTab />}
-          {activeTab === "connections" && <ConnectionsTab />}
+          {activeTab === "billing" && <BillingTab team={team} />}
+          {activeTab === "connections" && <ConnectionsTab team={team} />}
         </div>
       </div>
     </Modal>

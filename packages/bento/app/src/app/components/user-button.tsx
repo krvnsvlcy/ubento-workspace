@@ -1,5 +1,5 @@
 import { useGlobalModals } from "@/contexts/modals";
-import { useBentoSession } from "@/contexts/session";
+import { useSession } from "@/contexts/session";
 import { useUbento } from "@/engine/engine";
 import { LogOut, Settings as SettingsIcon, User } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
@@ -8,7 +8,7 @@ import { useEffect, useRef, useState } from "react";
 export function UserButton() {
   const { openModal } = useGlobalModals();
   const ubento = useUbento();
-  const session = useBentoSession();
+  const session = useSession();
   const { data: user } = ubento.iam.useUser(session?.userId || "");
 
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);

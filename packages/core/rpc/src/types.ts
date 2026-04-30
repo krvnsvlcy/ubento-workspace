@@ -1,4 +1,4 @@
-export type RpcInterfaceDefinition = Record<
+export type RpcInterfaceDefinition = BentoLocation<
   string,
   { request: any; response: any } | ((arg: any) => any)
 >;

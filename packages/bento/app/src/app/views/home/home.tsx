@@ -1,5 +1,5 @@
 import { Header } from "@/app/components/header";
-import { useBentoSession } from "@/contexts/session";
+import { useSession } from "@/contexts/session";
 import { useUbento, useUbentoEngine } from "@/engine/engine";
 import { motion } from "motion/react";
 import { Sidebar } from "./sidebar";
@@ -8,7 +8,7 @@ import { WorkspaceGrid } from "./workspace-grid";
 export function Home() {
   const host = useUbentoEngine();
   const ubento = useUbento();
-  const session = useBentoSession();
+  const session = useSession();
 
   const { data: workspaces, isFetching } = ubento.workspace.useWorkspaces({
     team_id: session.teamId,

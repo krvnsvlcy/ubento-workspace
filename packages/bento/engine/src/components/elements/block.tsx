@@ -1,7 +1,7 @@
 import { ErrorView, PendingView } from "@ubento/bento-primitives";
 import React, { useEffect, useState } from "react";
-import { useEngine } from "../../engine";
-import { BlockData, ModuleData } from "../../models";
+import { useBentoEngine } from "../../engine";
+import { BlockData } from "../../models";
 import { BaseElement, getBaseStyle } from "./base_element";
 
 export function Block({
@@ -11,9 +11,9 @@ export function Block({
   id: string;
   data: BlockData;
 }): React.JSX.Element {
-  const getModule = useEngine((s) => s.getModule);
-  const resolveModuleValue = useEngine((s) => s.resolveModuleValue);
-  const latestVersionId = useEngine(
+  const engine = useBentoEngine();
+  const { getModule, resolveModuleValue } = engine;
+  const latestVersionId = engine.useState(
     (s) => s.modules[data.moduleId]?.latestVersionId,
   );
 

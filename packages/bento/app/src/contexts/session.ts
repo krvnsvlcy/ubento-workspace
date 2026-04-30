@@ -5,11 +5,11 @@ export const BentoSessionContext = createContext<UbentoSession | undefined>(
   undefined,
 );
 
-export function useBentoSession() {
+export function useSession() {
   const session = useContext(BentoSessionContext);
   if (!session) {
     throw new Error(
-      "useBentoSession must be used within BentoSessionProvider",
+      "useSession must be used within BentoSessionProvider",
     );
   }
   return session;

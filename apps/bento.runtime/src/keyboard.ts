@@ -1,16 +1,14 @@
-import { type EngineStoreApi } from "@ubento/engine";
+import type { BentoEngine } from "@ubento/engine";
 import { useEffect } from "react";
 
-export function useKeyboardController(controller?: EngineStoreApi) {
+export function useKeyboardController({ engine }: { engine: BentoEngine }) {
   useEffect(() => {
-    if (!controller) return;
-
     let lastShiftPress = 0;
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Shift") {
         const now = Date.now();
         if (now - lastShiftPress < 300) {
-          controller.getState().toggleMode();
+          engine.toggleMode();
           lastShiftPress = 0;
         } else {
           lastShiftPress = now;
@@ -23,5 +21,5 @@ export function useKeyboardController(controller?: EngineStoreApi) {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [controller]);
+  }, [engine]);
 }

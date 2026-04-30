@@ -1,7 +1,7 @@
 import cx from "clsx";
 import { AppWindow, LayoutDashboard, Sparkles } from "lucide-react";
 import { useState } from "react";
-import { WorkspaceController } from "../controller";
+import { WorkspaceEngine } from "../engine";
 import { BoardTab } from "./tabs/board";
 import { CopilotTab } from "./tabs/copilot/copilot";
 import { WorkspaceTab } from "./tabs/workspace";
@@ -45,11 +45,7 @@ function Tab({
   );
 }
 
-export function ControlPanel({
-  controller,
-}: {
-  controller: WorkspaceController;
-}) {
+export function ControlPanel({ controller }: { controller: WorkspaceEngine }) {
   const [activeTab, setActiveTab] = useState<string>("context");
 
   let content = <></>;

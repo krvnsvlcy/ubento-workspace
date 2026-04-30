@@ -5,20 +5,17 @@ import {
 } from "@dnd-kit/sortable";
 import { CSSProperties, useState } from "react";
 import { spacingBaseUnit } from "../../constants";
-import { useEngine } from "../../engine";
+import { useBentoEngine } from "../../engine";
 import { StackData, StackStyle } from "../../models";
 import { BaseElement, getBaseStyle } from "./base_element";
 
-import { ComponentSelector } from "./component_selector";
 import { Element } from "./element";
 import { Initializer } from "./initializer";
 
 export function Stack({ id, data }: { id: string; data: StackData }) {
-  const isEditMode = useEngine((s) => s.mode === "edit");
-  const setElementStyle = useEngine((s) => s.setElementStyle);
-  const addElement = useEngine((s) => s.addElement);
-  const getModule = useEngine((s) => s.getModule);
-  const replaceElement = useEngine((s) => s.replaceElement);
+  const engine = useBentoEngine();
+  const isEditMode = engine.useState((s) => s.mode === "edit");
+  const { setElementStyle, addElement, getModule, replaceElement } = engine;
 
   const [showMenu, setShowMenu] = useState(false);
 

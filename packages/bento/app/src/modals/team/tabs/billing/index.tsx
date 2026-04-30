@@ -4,7 +4,11 @@ import { UsageTab } from "./usage";
 import { AddonsTab } from "./addons";
 import { HistoryTab } from "./history";
 
-export const BillingTab: FC = () => {
+interface BillingTabProps {
+  team?: any;
+}
+
+export const BillingTab: FC<BillingTabProps> = ({ team }) => {
   const [activeBillingTab, setActiveBillingTab] = useState("plan");
 
   const billingTabs = [

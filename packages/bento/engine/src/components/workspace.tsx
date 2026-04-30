@@ -1,6 +1,6 @@
 import React from "react";
 import { useStore } from "zustand";
-import { EngineContext, EngineStoreApi } from "../engine.js";
+import { BentoEngine, EngineContext } from "../engine.js";
 import { ServicesProvider } from "../services.js";
 import { Board } from "./board/board.js";
 import { NoBoard } from "./board/no-board.js";
@@ -8,9 +8,9 @@ import { NoBoard } from "./board/no-board.js";
 export function Workspace({
   engine,
 }: {
-  engine: EngineStoreApi;
+  engine: BentoEngine;
 }): React.JSX.Element {
-  const location = useStore(engine, (s) => s.location);
+  const location = engine.useState((s) => s.location);
   let content = <></>;
 
   if (location?.boardId) {

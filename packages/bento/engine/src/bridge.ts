@@ -1,4 +1,4 @@
-import { EngineLocation, EngineMode } from "./engine.js";
+import { BentoLocation, BentoMode } from "./engine.js";
 import { BoardData, ElementData, ModuleData, WorkspaceData } from "./models.js";
 
 export type HostRpcInterface = {
@@ -7,8 +7,8 @@ export type HostRpcInterface = {
   ready: (payload: {}) => void; // sent when engine is ready
 
   // interactions
-  setMode: (payload: { mode: EngineMode }) => void;
-  setLocation: (payload: { location?: EngineLocation }) => void;
+  setMode: (payload: { mode: BentoMode }) => void;
+  setLocation: (payload: { location?: BentoLocation }) => void;
   setSelectionScope: (payload: { selectionScope?: string }) => void;
   setSelection: (payload: { selection: string[] }) => void;
 
@@ -32,17 +32,21 @@ export type HostRpcInterface = {
   boardChanged: (payload: { boardId: string; board: BoardData }) => void;
   workspaceChanged: (payload: { workspace: WorkspaceData }) => void;
 };
-
 export type GuestRpcInterface = {
   // connection
   init: (payload: {
     workspace: WorkspaceData;
-    moduleUrlTemplate: string;
+    state?: {
+      mode: BentoMode;
+      selection: string[];
+      location?: BentoLocation;
+      selectionScope?: string;
+    };
   }) => void; // sent to initialize the guest app
 
   // state synchronization (events from host)
-  modeChanged: (payload: { mode: EngineMode }) => void;
-  locationChanged: (payload: { location?: EngineLocation }) => void;
+  modeChanged: (payload: { mode: BentoMode }) => void;
+  locationChanged: (payload: { location?: BentoLocation }) => void;
   selectionScopeChanged: (payload: { selectionScope?: string }) => void;
   selectionChanged: (payload: { selection: string[] }) => void;
 

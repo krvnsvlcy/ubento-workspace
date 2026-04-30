@@ -1,20 +1,16 @@
+import { ServiceData } from "@ubento/engine";
 import { Globe, Plus, Puzzle, Settings2, Trash2 } from "lucide-react";
-import { useStore } from "zustand";
-import { WorkspaceController } from "../../controller";
+import { WorkspaceEngine } from "../../engine";
 import { PropertyRow, Section, Select, TextInput } from "../shared";
 
-export function WorkspaceTab({
-  controller,
-}: {
-  controller: WorkspaceController;
-}) {
-  const state = useStore(controller);
+export function WorkspaceTab({ controller }: { controller: WorkspaceEngine }) {
+  const state = controller.useState();
   const workspace = state.workspace;
 
   if (!workspace) return null;
 
   const updateWorkspace = (data: Partial<typeof workspace>) => {
-    controller.getState().updateWorkspace(data);
+    controller.updateWorkspace(data);
   };
 
   const handleAddService = () => {
@@ -63,7 +59,9 @@ export function WorkspaceTab({
 
       <Section title="Services" icon={Puzzle}>
         <div className="px-4 py-2">
-          {Object.entries(workspace.services || {}).map(([name, data]) => (
+          {(
+            Object.entries(workspace.services || {}) as [string, ServiceData][]
+          ).map(([name, data]) => (
             <div key={name} className="mb-2 flex flex-col rounded-md p-2">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-bold text-neutral-content">

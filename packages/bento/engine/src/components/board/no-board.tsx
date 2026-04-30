@@ -1,13 +1,12 @@
 import { EmptyView, PendingView } from "@ubento/bento-primitives";
 import { motion } from "motion/react";
 import React, { useEffect, useState } from "react";
-import { useEngine } from "../../engine.js";
+import { useBentoEngine } from "../../engine.js";
 import { BoardData } from "../../models.js";
 
 export function NoBoard(): React.JSX.Element {
-  const listBoards = useEngine((s) => s.listBoards);
-  const createBoard = useEngine((s) => s.createBoard);
-  const goTo = useEngine((s) => s.goTo);
+  const engine = useBentoEngine();
+  const { listBoards, createBoard, goTo } = engine;
 
   const [boards, setBoards] = useState<BoardData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -30,7 +29,7 @@ export function NoBoard(): React.JSX.Element {
     try {
       const name = `Board ${boards.length + 1}`;
       const newBoard = await createBoard(name);
-      goTo(newBoard.id);
+      goTo({ boardId: newBoard.id, params: {} });
     } catch (err) {
       console.error("Failed to create board", err);
     } finally {
@@ -115,7 +114,7 @@ export function NoBoard(): React.JSX.Element {
                 <button
                   key={board.id}
                   onClick={() => {
-                    goTo(board.id);
+                    goTo({ boardId: board.id, params: {} });
                   }}
                   className="bg-neutral-surface group relative flex flex-col items-start p-6 border hover:border-neutral-border-hover rounded-2xl text-left"
                 >

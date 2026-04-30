@@ -1,19 +1,18 @@
 import { ThemeSelector } from "@/app/components/ThemeSelector.js";
 import { UserButton } from "@/app/components/user-button.js";
-import { useUbentoEngine } from "@/engine/engine";
 import { useTheme } from "@/contexts/theme.js";
+import { useUbentoEngine } from "@/engine/engine";
 import { IconButton } from "@ubento/bento-primitives";
 import { Eye, Home, LayoutDashboard, Pencil } from "lucide-react";
-import { useStore } from "zustand";
-import { WorkspaceController } from "../controller.js";
+import { WorkspaceEngine } from "../engine.js";
 
 export function WorkspaceNavigation({
   controller,
 }: {
-  controller: WorkspaceController;
+  controller: WorkspaceEngine;
 }) {
   const host = useUbentoEngine();
-  const snap = useStore(controller);
+  const snap = controller.useState();
   const theme = useTheme();
 
   return (
@@ -45,7 +44,9 @@ export function WorkspaceNavigation({
 
         <div className="flex items-center gap-3">
           <button
-            onClick={() => snap.setMode(snap.mode === "edit" ? "live" : "edit")}
+            onClick={() =>
+              controller.setMode(snap.mode === "edit" ? "live" : "edit")
+            }
             className={`flex h-9 items-center gap-2 rounded-full px-4 text-[13px] font-medium transition-all ${
               snap.mode === "edit"
                 ? "bg-accent text-accent-contrast shadow-lg shadow-accent/20"

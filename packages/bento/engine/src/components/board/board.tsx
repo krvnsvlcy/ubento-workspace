@@ -1,7 +1,7 @@
 import { ErrorView, PendingView } from "@ubento/bento-primitives";
 import React, { useEffect, useState } from "react";
 import { spacingBaseUnit } from "../../constants.js";
-import { useEngine } from "../../engine.js";
+import { useBentoEngine } from "../../engine.js";
 import { BoardStyle } from "../../models.js";
 import { Element, ElementRegistryProvider } from "../elements/element.js";
 import { Initializer } from "../elements/initializer.js";
@@ -36,12 +36,10 @@ function getBoardStyle(style: BoardStyle = {}): React.CSSProperties {
 }
 
 function BoardContent({ boardId }: { boardId: string }): React.JSX.Element {
-  const select = useEngine((s) => s.select);
-  const addElement = useEngine((s) => s.addElement);
-  const setBoardContent = useEngine((s) => s.setBoardContent);
-  const getModule = useEngine((s) => s.getModule);
-  const isEditMode = useEngine((s) => s.mode === "edit");
-  const board = useEngine((s) => s.boards[boardId]);
+  const engine = useBentoEngine();
+  const { select, addElement, setBoardContent, getModule } = engine;
+  const isEditMode = engine.useState((s) => s.mode === "edit");
+  const board = engine.useState((s) => s.boards[boardId]);
 
   if (!board) return <></>;
 
@@ -110,7 +108,8 @@ export function Board({
   id: string;
   params?: Record<string, any>;
 }): React.JSX.Element {
-  const getBoard = useEngine((s) => s.getBoard);
+  const engine = useBentoEngine();
+  const getBoard = engine.getBoard;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 

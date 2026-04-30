@@ -1,5 +1,4 @@
-import { useUbentoEngine } from "@/engine/engine";
-import { useUbento } from "@/engine/engine";
+import { useUbento, useUbentoEngine } from "@/engine/engine";
 import { BaseStyle, BlockData, BoardData, ElementData } from "@ubento/engine";
 import {
   Box,
@@ -12,7 +11,7 @@ import {
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import React, { useEffect, useState } from "react";
-import { WorkspaceController } from "../controller";
+import { WorkspaceEngine } from "../engine";
 
 export function Section({
   title,
@@ -367,7 +366,7 @@ export function ModuleSection({
 }: {
   element: BlockData;
   selectedId: string;
-  controller: WorkspaceController;
+  controller: WorkspaceEngine;
 }) {
   const host = useUbentoEngine();
   const ubento = useUbento();
@@ -381,9 +380,11 @@ export function ModuleSection({
         <TextInput
           value={element.moduleId}
           onChange={(v) => {
-            controller
-              .getState()
-              .setBlockModule(selectedId, v, element.moduleVersionId || "");
+            controller.setBlockModule(
+              selectedId,
+              v,
+              element.moduleVersionId || "",
+            );
           }}
         />
       </PropertyRow>
@@ -392,9 +393,7 @@ export function ModuleSection({
           <TextInput
             value={element.moduleVersionId}
             onChange={(v) => {
-              controller
-                .getState()
-                .setBlockModule(selectedId, element.moduleId, v);
+              controller.setBlockModule(selectedId, element.moduleId, v);
             }}
           />
           {!isLoading &&
@@ -402,13 +401,11 @@ export function ModuleSection({
             element.moduleVersionId !== moduleMetadata.latest_version_id && (
               <button
                 onClick={() => {
-                  controller
-                    .getState()
-                    .setBlockModule(
-                      selectedId,
-                      element.moduleId,
-                      moduleMetadata.latest_version_id || "",
-                    );
+                  controller.setBlockModule(
+                    selectedId,
+                    element.moduleId,
+                    moduleMetadata.latest_version_id || "",
+                  );
                 }}
                 className="shrink-0 rounded-md bg-accent px-2 py-1 text-[8px] font-bold uppercase tracking-tight text-accent-contrast"
                 title={`Update to latest: ${moduleMetadata.latest_version_id}`}

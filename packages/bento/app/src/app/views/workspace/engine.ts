@@ -1,11 +1,15 @@
 import { UbentoEngine, UbentoEngineState } from "@/engine/engine";
 import {
+  createZustandStateController,
+  StateController,
+} from "@ubento/bento-primitives";
+import {
+  BentoLocation,
+  BentoMode,
   BlockData,
   BoardData,
   boardDataSchema,
   ElementData,
-  EngineLocation,
-  EngineMode,
   GuestRpcInterface,
   HostRpcInterface,
   ModuleData,
@@ -18,7 +22,7 @@ import {
   DuplexRpc,
 } from "@ubento/rpc-utils";
 import { dequal } from "dequal/lite";
-import { createStore, StoreApi } from "zustand/vanilla";
+import { createStore as createZustandStore } from "zustand/vanilla";
 
 export type WorkspaceState = {
   // status
@@ -26,8 +30,8 @@ export type WorkspaceState = {
   error: string;
 
   // context
-  mode: EngineMode;
-  location?: EngineLocation;
+  mode: BentoMode;
+  location?: BentoLocation;
   selectionScope?: string;
   selection: string[];
 
@@ -41,13 +45,13 @@ export type WorkspaceState = {
   modules: Record<string, ModuleData>;
 };
 
-export type WorkspaceStore = WorkspaceState & {
+export type WorkspaceEngine = StateController<WorkspaceState> & {
   connect: (target: Window) => void;
   dispose: () => void;
   load: () => Promise<void>;
 
   // actions
-  setMode: (mode: EngineMode) => void;
+  setMode: (mode: BentoMode) => void;
   select: (blockIds: string[]) => void;
   setSelectionScope: (selectionScope?: string) => void;
   goTo: (boardId: string, params?: Record<string, string>) => void;
@@ -81,20 +85,18 @@ export type WorkspaceStore = WorkspaceState & {
   setBlockProps: (id: string, props: BlockData["props"]) => void;
 };
 
-export type WorkspaceController = StoreApi<WorkspaceStore>;
-
-export function createWorkspaceController({
+export function createWorkspaceEngine({
   engine,
   slug,
 }: {
   engine: UbentoEngine;
   slug: string;
-}): WorkspaceController {
+}): WorkspaceEngine {
   let rpc: DuplexRpc<HostRpcInterface, GuestRpcInterface> | null = null;
   const workspaceService = engine.ubento.workspace;
   const moduleService = engine.ubento.module;
 
-  const store = createStore<WorkspaceStore>()((set, get) => ({
+  const store = createZustandStore<WorkspaceState>()(() => ({
     loading: false,
     error: "",
     mode: "live",
@@ -104,23 +106,28 @@ export function createWorkspaceController({
     workspace: null,
     boards: {},
     modules: {},
+  }));
+
+  const controller = createZustandStateController(store);
+
+  const workspaceEngine: WorkspaceEngine = {
+    ...controller,
 
     connect: (target: Window) => {
       rpc = createDuplexRpc<HostRpcInterface, GuestRpcInterface>({
         port: createWindowPort(window, target),
         handlers: {
           connect: () => {
-            set({ connected: true });
-            const current = get();
+            store.setState({ connected: true });
+            const current = store.getState();
             if (current.workspace) {
               rpc!.egress.init({
                 workspace: current.workspace,
-                moduleUrlTemplate: engine.moduleUrlTemplate,
               });
             }
           },
           ready: () => {
-            set({ ready: true });
+            store.setState({ ready: true });
           },
           getBoard: async ({ boardId }) => {
             const res = await workspaceService.getBoard(boardId);
@@ -130,13 +137,13 @@ export function createWorkspaceController({
               name: res.name,
               ...(res.data as any),
             });
-            set((s) => ({
+            store.setState((s) => ({
               boards: { ...s.boards, [boardId]: board },
             }));
             return board;
           },
           listBoards: async () => {
-            const current = get();
+            const current = store.getState();
             if (!current.workspace) return [];
             const response = await workspaceService.getBoards({
               workspace_id: current.workspace.id,
@@ -152,7 +159,7 @@ export function createWorkspaceController({
               })
               .filter(Boolean) as BoardData[];
 
-            set((s) => {
+            store.setState((s) => {
               const nextBoards = { ...s.boards };
               for (const board of boardDatas) {
                 nextBoards[board.id] = board;
@@ -162,7 +169,7 @@ export function createWorkspaceController({
             return boardDatas;
           },
           createBoard: async ({ name }) => {
-            const current = get();
+            const current = store.getState();
             if (!current.workspace) throw new Error("No workspace loaded");
             const data: Omit<BoardData, "id" | "name"> = {
               content: ["root"],
@@ -187,7 +194,7 @@ export function createWorkspaceController({
               name: res.name,
               ...(res.data as any),
             });
-            set((s) => ({
+            store.setState((s) => ({
               boards: { ...s.boards, [board.id]: board },
             }));
             return board;
@@ -197,7 +204,7 @@ export function createWorkspaceController({
             const module = {
               latestVersionId: res.latest_version_id || "",
             };
-            set((s) => ({
+            store.setState((s) => ({
               modules: { ...s.modules, [moduleId]: module },
             }));
             return module;
@@ -215,7 +222,7 @@ export function createWorkspaceController({
             );
           },
           searchModules: async ({ query }) => {
-            const current = get();
+            const current = store.getState();
             if (!current.workspace) return [];
             const response = await moduleService.getModules({
               team_id: current.workspace.teamId,
@@ -229,7 +236,7 @@ export function createWorkspaceController({
               .map((m) => ({ id: m.id, name: m.name }));
           },
           createModule: async ({ name }) => {
-            const current = get();
+            const current = store.getState();
             if (!current.workspace) throw new Error("No workspace loaded");
             const res = await moduleService.createModule({
               name,
@@ -243,7 +250,7 @@ export function createWorkspaceController({
             };
           },
           setMode: ({ mode }) => {
-            set({ mode });
+            store.setState({ mode });
           },
           setLocation: ({ location }) => {
             if (location) {
@@ -259,21 +266,20 @@ export function createWorkspaceController({
             }
           },
           setSelectionScope: ({ selectionScope }) => {
-            set({ selectionScope });
+            store.setState({ selectionScope });
           },
           setSelection: ({ selection }) => {
-            set({ selection });
+            store.setState({ selection });
           },
 
           // sync
           boardChanged: ({ boardId, board }) => {
-            set((s) => ({
+            store.setState((s) => ({
               boards: { ...s.boards, [boardId]: board },
             }));
-            workspaceService.updateBoard(boardId, { data: board });
           },
           workspaceChanged: ({ workspace }) => {
-            set({ workspace });
+            store.setState({ workspace });
           },
         },
       });
@@ -290,7 +296,7 @@ export function createWorkspaceController({
     },
 
     load: async () => {
-      set({ loading: true });
+      store.setState({ loading: true });
       try {
         const workspaceData = await workspaceService.getWorkspaceBySlug(slug);
         if (!workspaceData) {
@@ -315,20 +321,23 @@ export function createWorkspaceController({
           });
         }
 
-        set({
+        store.setState({
           workspace: data,
           loading: false,
         });
 
-        const current = get();
+        if (data.homeBoardId) {
+          workspaceEngine.goTo(data.homeBoardId);
+        }
+
+        const current = store.getState();
         if (rpc && current.connected) {
           rpc.egress.init({
             workspace: data,
-            moduleUrlTemplate: engine.moduleUrlTemplate,
           });
         }
       } catch (err) {
-        set({
+        store.setState({
           error: String(err),
           loading: false,
         });
@@ -336,17 +345,17 @@ export function createWorkspaceController({
     },
 
     // actions
-    setMode: (mode: EngineMode) => {
-      set({ mode });
+    setMode: (mode: BentoMode) => {
+      store.setState({ mode });
     },
     select: (elementIds: string[]) => {
-      set({ selection: elementIds });
+      store.setState({ selection: elementIds });
     },
     setSelectionScope: (selectionScope?: string) => {
-      set({ selectionScope });
+      store.setState({ selectionScope });
     },
     goTo: (boardId: string, params?: Record<string, string>) => {
-      set({ location: { boardId, params: params || {} } });
+      store.setState({ location: { boardId, params: params || {} } });
       engine.goToLocation({
         view: "workspace",
         params: { slug, boardId, ...params },
@@ -355,13 +364,13 @@ export function createWorkspaceController({
 
     // workspace mutators
     setHomeBoardId: async (homeBoardId: string) => {
-      set((s) => ({
+      store.setState((s) => ({
         workspace: s.workspace ? { ...s.workspace, homeBoardId } : null,
       }));
       await rpc?.egress.setHomeBoardId({ homeBoardId });
     },
     updateWorkspace: async (workspace: Partial<WorkspaceData>) => {
-      set((s) => ({
+      store.setState((s) => ({
         workspace: s.workspace ? { ...s.workspace, ...workspace } : null,
       }));
       await rpc?.egress.updateWorkspace({ workspace });
@@ -369,7 +378,7 @@ export function createWorkspaceController({
 
     // board mutators
     createBoard: async (init: { name?: string }) => {
-      const current = get();
+      const current = store.getState();
       if (!current.workspace) throw new Error("No workspace loaded");
       const data: Omit<BoardData, "id" | "name"> = {
         content: ["root"],
@@ -394,13 +403,13 @@ export function createWorkspaceController({
         name: res.name,
         ...(res.data as any),
       });
-      set((s) => ({
+      store.setState((s) => ({
         boards: { ...s.boards, [board.id]: board },
       }));
       return board;
     },
     deleteBoard: async (boardId: string) => {
-      set((s) => {
+      store.setState((s) => {
         const nextBoards = { ...s.boards };
         delete nextBoards[boardId];
         return { boards: nextBoards };
@@ -408,7 +417,7 @@ export function createWorkspaceController({
       await rpc?.egress.deleteBoard({ boardId });
     },
     setBoardContent: async (boardId: string, content: string[]) => {
-      set((s) => {
+      store.setState((s) => {
         if (!s.boards[boardId]) return s;
         return {
           boards: {
@@ -447,7 +456,7 @@ export function createWorkspaceController({
     setBlockProps: (id, props) => {
       rpc?.egress.setElementProps({ id, props });
     },
-  }));
+  };
 
   // sync host location
 
@@ -469,6 +478,7 @@ export function createWorkspaceController({
   });
 
   store.subscribe((curr, prev) => {
+    // sync workspace state to bento runtime
     if (curr.mode !== prev.mode) {
       rpc?.egress.modeChanged({ mode: curr.mode });
     }
@@ -483,7 +493,19 @@ export function createWorkspaceController({
     if (!dequal(curr.selection, prev.selection)) {
       rpc?.egress.selectionChanged({ selection: curr.selection });
     }
+
+    // persist workspace and board changes
+    if (curr.workspace && !dequal(curr.workspace, prev.workspace)) {
+      workspaceService.updateWorkspace(curr.workspace.id, {
+        data: curr.workspace,
+      });
+    }
+    for (const [boardId, board] of Object.entries(curr.boards)) {
+      if (!dequal(board, prev.boards[boardId])) {
+        workspaceService.updateBoard(boardId, { data: board });
+      }
+    }
   });
 
-  return store;
+  return workspaceEngine;
 }

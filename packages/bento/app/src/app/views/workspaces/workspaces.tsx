@@ -1,7 +1,7 @@
 import { Header } from "@/app/components/header";
 import { WorkspaceGrid } from "@/app/views/home/workspace-grid";
 import { useUbentoEngine } from "@/engine/engine";
-import { useBentoSession } from "@/contexts/session";
+import { useSession } from "@/contexts/session";
 import { useUbento } from "@/engine/engine";
 import { ArrowLeft, Search } from "lucide-react";
 import { motion } from "motion/react";
@@ -10,7 +10,7 @@ import { useState } from "react";
 export function Workspaces() {
   const host = useUbentoEngine();
   const ubento = useUbento();
-  const session = useBentoSession();
+  const session = useSession();
   const { data: workspacesData, isFetching } = ubento.workspace.useWorkspaces({
     team_id: session.teamId,
   });

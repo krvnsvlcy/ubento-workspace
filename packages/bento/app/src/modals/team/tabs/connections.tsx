@@ -1,28 +1,25 @@
 import { FC } from "react";
-import { Globe, Plus, Settings, Zap } from "lucide-react";
+import { Globe, Plus, Settings, Zap, Trash2 } from "lucide-react";
+import { useUbento } from "@/engine/engine";
+import { useSession } from "@/contexts/session";
 
-export const ConnectionsTab: FC = () => {
-  const connections = [
-    {
-      name: "GitHub",
-      status: "Connected",
-      icon: Globe,
-      user: "acme-inc",
-    },
-    {
-      name: "Slack",
-      status: "Connected",
-      icon: Globe,
-      user: "#alerts",
-    },
-    {
-      name: "AWS",
-      status: "Needs Re-auth",
-      icon: Globe,
-      user: "prod-iam",
-      error: true,
-    },
-  ];
+interface ConnectionsTabProps {
+  team?: any;
+}
+
+export const ConnectionsTab: FC<ConnectionsTabProps> = ({ team: initialTeam }) => {
+  const ubento = useUbento();
+  const session = useSession();
+  const teamId = initialTeam?.id || session.teamId;
+
+  const { data: connections = [], isFetching } = ubento.integration.useConnections({
+    organization_id: teamId,
+  });
+  const { data: providers = [] } = ubento.integration.useConnectionProviders();
+  const { mutate: deleteConnection } = ubento.integration.useDeleteConnection();
+
+  const getProvider = (providerId: string) =>
+    providers.find((p) => p.id === providerId);
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
@@ -41,36 +38,55 @@ export const ConnectionsTab: FC = () => {
         </div>
 
         <div className="space-y-3">
-          {connections.map((conn) => (
-            <div
-              key={conn.name}
-              className="flex items-center justify-between p-4 rounded-2xl bg-neutral-surface border border-neutral-border group hover:border-neutral-border-hover transition-all"
-            >
-              <div className="flex items-center gap-4">
-                <div
-                  className={`h-10 w-10 rounded-xl flex items-center justify-center ${conn.error ? "bg-destructive-surface text-destructive-content" : "bg-neutral-surface-hover text-neutral-content-muted"}`}
-                >
-                  <conn.icon className="h-5 w-5" />
-                </div>
-                <div>
-                  <p className="text-sm font-bold">{conn.name}</p>
-                  <p className="text-[10px] text-neutral-content-muted font-bold uppercase">
-                    {conn.user}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <span
-                  className={`text-[10px] font-black uppercase tracking-widest ${conn.error ? "text-destructive" : "text-accent"}`}
-                >
-                  {conn.status}
-                </span>
-                <button className="p-2 rounded-lg bg-neutral-surface-hover opacity-0 group-hover:opacity-100 transition-all">
-                  <Settings className="h-3.5 w-3.5" />
-                </button>
-              </div>
+          {isFetching && (
+            <div className="py-12 text-center text-neutral-content-muted">
+              <p className="text-[13px]">Loading connections...</p>
             </div>
-          ))}
+          )}
+          {!isFetching && connections.length === 0 && (
+            <div className="py-12 text-center text-neutral-content-muted">
+              <p className="text-[13px]">No connections yet.</p>
+            </div>
+          )}
+          {connections.map((conn) => {
+            const provider = getProvider(conn.provider_id);
+            return (
+              <div
+                key={conn.id}
+                className="flex items-center justify-between p-4 rounded-2xl bg-neutral-surface border border-neutral-border group hover:border-neutral-border-hover transition-all"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="h-10 w-10 rounded-xl flex items-center justify-center bg-neutral-surface-hover text-neutral-content-muted">
+                    <Globe className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold">
+                      {provider?.name || conn.provider_id}
+                    </p>
+                    <p className="text-[10px] text-neutral-content-muted font-bold uppercase">
+                      {conn.account_id || "Active"}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-accent">
+                    Connected
+                  </span>
+                  <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                    <button
+                      onClick={() => deleteConnection(conn.id)}
+                      className="p-2 rounded-lg bg-neutral-surface-hover hover:text-destructive transition-all"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                    <button className="p-2 rounded-lg bg-neutral-surface-hover">
+                      <Settings className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </section>
 

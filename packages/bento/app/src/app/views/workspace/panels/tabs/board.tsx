@@ -1,7 +1,6 @@
 import { BaseStyle, BlockData, BoardStyle, StackStyle } from "@ubento/engine";
 import { Eye, Layout, Palette, Settings2 } from "lucide-react";
-import { useStore } from "zustand";
-import { WorkspaceController } from "../../controller";
+import { WorkspaceEngine } from "../../engine";
 import {
   BoardHeader,
   ModuleSection,
@@ -14,8 +13,8 @@ import {
   TextInput,
 } from "../shared";
 
-export function BoardTab({ controller }: { controller: WorkspaceController }) {
-  const state = useStore(controller);
+export function BoardTab({ controller }: { controller: WorkspaceEngine }) {
+  const state = controller.useState();
   const currentBoardId = state.location?.boardId;
   const board = currentBoardId ? state.boards[currentBoardId] : null;
   const selectedId = state.selection?.[0];
@@ -29,7 +28,9 @@ export function BoardTab({ controller }: { controller: WorkspaceController }) {
             <Eye size={24} />
           </div>
           <div>
-            <h3 className="text-sm font-bold text-neutral-content">No selection</h3>
+            <h3 className="text-sm font-bold text-neutral-content">
+              No selection
+            </h3>
             <p className="mt-1 text-xs">
               Select an element on the board to edit its properties.
             </p>
@@ -40,7 +41,7 @@ export function BoardTab({ controller }: { controller: WorkspaceController }) {
 
     const updateBoardStyle = (style: Partial<BoardStyle>) => {
       if (!currentBoardId) return;
-      controller.getState().setBoardStyle(currentBoardId, {
+      controller.setBoardStyle(currentBoardId, {
         ...board.style,
         ...style,
       });
@@ -48,7 +49,7 @@ export function BoardTab({ controller }: { controller: WorkspaceController }) {
 
     const handleAddElement = (containerId: string) => {
       if (!currentBoardId) return;
-      controller.getState().addElement(currentBoardId, containerId, {
+      controller.addElement(currentBoardId, containerId, {
         type: "stack",
         content: [],
         style: {
@@ -110,7 +111,7 @@ export function BoardTab({ controller }: { controller: WorkspaceController }) {
 
   const updateStyle = (style: Partial<BaseStyle | StackStyle>) => {
     if (!selectedId || !element) return;
-    controller.getState().setElementStyle(selectedId, {
+    controller.setElementStyle(selectedId, {
       ...element.style,
       ...style,
     });
@@ -118,7 +119,7 @@ export function BoardTab({ controller }: { controller: WorkspaceController }) {
 
   const handleAddElement = (containerId: string) => {
     if (!currentBoardId) return;
-    controller.getState().addElement(currentBoardId, containerId, {
+    controller.addElement(currentBoardId, containerId, {
       type: "stack",
       content: [],
       style: {
@@ -222,7 +223,7 @@ export function BoardTab({ controller }: { controller: WorkspaceController }) {
               onClick={() =>
                 currentBoardId &&
                 selectedId &&
-                controller.getState().deleteElement(currentBoardId, selectedId)
+                controller.deleteElement(currentBoardId, selectedId)
               }
               className="w-full rounded-md py-2 text-[10px] font-bold uppercase tracking-wider text-destructive transition-colors hover:bg-destructive-surface"
             >
