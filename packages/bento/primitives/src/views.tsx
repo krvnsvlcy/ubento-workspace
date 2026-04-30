@@ -19,7 +19,7 @@ export const PendingView: React.FC<ViewProps> = ({
     >
       <BentoLoader size={24} opacity={0.5} />
       {message && (
-        <p className="text-muted-foreground text-sm font-medium tracking-wide animate-pulse">
+        <p className="text-neutral-content-muted text-sm font-medium tracking-wide animate-pulse">
           {message}
         </p>
       )}
@@ -35,9 +35,9 @@ export const EmptyView: React.FC<ViewProps> = ({
   return (
     <div
       id="empty-view"
-      className={`flex flex-col items-center justify-center min-h-[300px] w-full p-8 text-center border-2 border-dashed border-muted/50 rounded-2xl bg-muted/5 animate-in zoom-in-95 duration-500 ${className}`}
+      className={`flex flex-col items-center justify-center min-h-[300px] w-full p-8 text-center border-2 border-dashed border-neutral-border rounded-2xl bg-neutral-surface animate-in zoom-in-95 duration-500 ${className}`}
     >
-      <div className="w-16 h-16 rounded-full bg-muted/20 flex items-center justify-center mb-4">
+      <div className="w-16 h-16 rounded-full bg-neutral-surface-hover flex items-center justify-center mb-4">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="24"
@@ -48,13 +48,13 @@ export const EmptyView: React.FC<ViewProps> = ({
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="text-muted-foreground/60"
+          className="text-neutral-content-muted/60"
         >
           <circle cx="12" cy="12" r="10" />
           <line x1="8" y1="12" x2="16" y2="12" />
         </svg>
       </div>
-      <h3 className="text-lg font-semibold text-foreground/80 mb-2">
+      <h3 className="text-lg font-semibold text-neutral-content mb-2">
         {message}
       </h3>
       {children && <div className="mt-4">{children}</div>}
@@ -71,9 +71,9 @@ export const ErrorView: React.FC<ViewProps & { error?: Error | string }> = ({
   return (
     <div
       id="error-view"
-      className={`flex flex-col items-center justify-center min-h-[300px] w-full p-8 text-center border border-destructive/20 rounded-2xl bg-destructive/5 animate-in slide-in-from-bottom-4 duration-500 ${className}`}
+      className={`flex flex-col items-center justify-center min-h-[300px] w-full p-8 text-center border border-destructive-border rounded-2xl bg-destructive-surface animate-in slide-in-from-bottom-4 duration-500 ${className}`}
     >
-      <div className="w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center mb-4">
+      <div className="w-16 h-16 rounded-full bg-destructive-surface-hover flex items-center justify-center mb-4">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="24"
@@ -91,11 +91,11 @@ export const ErrorView: React.FC<ViewProps & { error?: Error | string }> = ({
           <line x1="12" y1="16" x2="12.01" y2="16" />
         </svg>
       </div>
-      <h3 className="text-lg font-semibold text-destructive/90 mb-2">
+      <h3 className="text-lg font-semibold text-destructive-content mb-2">
         {message}
       </h3>
       {error && (
-        <p className="text-sm text-destructive/60 font-mono mb-4 max-w-md break-all">
+        <p className="text-sm text-destructive-content/60 font-mono mb-4 max-w-md break-all">
           {typeof error === "string" ? error : error.message}
         </p>
       )}

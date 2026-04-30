@@ -13,7 +13,7 @@ export function WorkspaceGrid({ workspaces, isFetching, onOpenWorkspace }: Works
         [1, 2, 3].map((i) => (
           <div
             key={i}
-            className="h-28 animate-pulse rounded-2xl bg-background-300"
+            className="h-28 animate-pulse rounded-2xl bg-neutral-surface-hover"
           />
         ))
       ) : workspaces.length > 0 ? (
@@ -21,7 +21,7 @@ export function WorkspaceGrid({ workspaces, isFetching, onOpenWorkspace }: Works
           <WorkspaceCard key={workspace.id} workspace={workspace} onClick={onOpenWorkspace} />
         ))
       ) : (
-        <div className="col-span-full py-12 text-center text-foreground-400">
+        <div className="col-span-full py-12 text-center text-neutral-content-muted">
           <p className="text-[13px]">No workspaces yet. Create your first one!</p>
         </div>
       )}

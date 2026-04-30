@@ -53,40 +53,14 @@ export function ComponentSelector({
   };
 
   return (
-    <div
-      style={{
-        position: "absolute",
-        top: "100%",
-        left: "50%",
-        transform: "translateX(-50%)",
-        marginTop: "8px",
-        background: "#1a1a1a",
-        border: "1px solid rgba(255,255,255,0.1)",
-        borderRadius: "12px",
-        padding: "8px",
-        zIndex: 1000,
-        minWidth: "240px",
-        boxShadow: "0 10px 25px rgba(0,0,0,0.5)",
-        pointerEvents: "auto",
-      }}
-    >
-      <div style={{ padding: "4px" }}>
+    <div className="absolute left-1/2 top-full z-[1000] mt-2 min-w-[240px] -translate-x-1/2 rounded-xl border border-neutral-border bg-neutral-surface p-2 shadow-2xl pointer-events-auto">
+      <div className="p-1">
         <input
           ref={inputRef}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search components..."
-          style={{
-            width: "100%",
-            background: "rgba(255,255,255,0.05)",
-            border: "1px solid rgba(255,255,255,0.1)",
-            borderRadius: "8px",
-            padding: "10px 12px",
-            color: "white",
-            fontSize: "13px",
-            outline: "none",
-            boxSizing: "border-box",
-          }}
+          className="w-full rounded-lg border border-neutral-border bg-neutral-surface-hover px-3 py-2.5 text-[13px] text-neutral-content outline-none transition-colors focus:border-accent-border"
           onKeyDown={(e) => {
             if (e.key === "Enter" && results.length === 0 && query.trim()) {
               onCreate();
@@ -97,38 +71,15 @@ export function ComponentSelector({
         />
       </div>
 
-      <div
-        style={{
-          marginTop: "4px",
-          maxHeight: "240px",
-          overflowY: "auto",
-          padding: "4px",
-        }}
-      >
+      <div className="mt-1 max-h-[240px] overflow-y-auto p-1">
         {results.map((res) => (
           <div
             key={res.id}
             onClick={() => onSelect(res.id)}
-            style={{
-              padding: "8px 12px",
-              borderRadius: "8px",
-              cursor: "pointer",
-              color: "white",
-              fontSize: "14px",
-              transition: "background 0.2s",
-              display: "flex",
-              flexDirection: "column",
-              gap: "2px",
-            }}
-            onMouseOver={(e) =>
-              (e.currentTarget.style.background = "rgba(255,255,255,0.08)")
-            }
-            onMouseOut={(e) =>
-              (e.currentTarget.style.background = "transparent")
-            }
+            className="flex cursor-pointer flex-col gap-0.5 rounded-lg px-3 py-2 text-sm text-neutral-content transition-colors hover:bg-neutral-surface-hover"
           >
-            <div style={{ fontWeight: "600" }}>{res.name}</div>
-            <div style={{ fontSize: "10px", color: "rgba(255,255,255,0.4)" }}>
+            <div className="font-semibold">{res.name}</div>
+            <div className="text-[10px] text-neutral-content-muted">
               {res.id}
             </div>
           </div>
@@ -137,53 +88,20 @@ export function ComponentSelector({
         {query.trim() && results.length === 0 && !loading && (
           <div
             onClick={onCreate}
-            style={{
-              padding: "12px",
-              borderRadius: "8px",
-              cursor: "pointer",
-              background: "rgba(59, 130, 246, 0.05)",
-              border: "1px dashed rgba(59, 130, 246, 0.2)",
-              color: "#60a5fa",
-              fontSize: "13px",
-              textAlign: "center",
-              marginTop: "4px",
-              transition: "all 0.2s",
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.background = "rgba(59, 130, 246, 0.1)";
-              e.currentTarget.style.borderColor = "rgba(59, 130, 246, 0.4)";
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.background = "rgba(59, 130, 246, 0.05)";
-              e.currentTarget.style.borderColor = "rgba(59, 130, 246, 0.2)";
-            }}
+            className="mt-1 cursor-pointer rounded-lg border border-dashed border-accent-border bg-accent-surface p-3 text-center text-[13px] text-accent transition-all hover:border-accent-border-hover hover:bg-accent-surface-hover"
           >
             Create module "{query}"
           </div>
         )}
 
         {loading && (
-          <div
-            style={{
-              padding: "16px",
-              color: "rgba(255,255,255,0.3)",
-              fontSize: "12px",
-              textAlign: "center",
-            }}
-          >
+          <div className="p-4 text-center text-[12px] text-neutral-content-muted">
             Searching team components...
           </div>
         )}
 
         {!query.trim() && !loading && (
-          <div
-            style={{
-              padding: "16px",
-              color: "rgba(255,255,255,0.2)",
-              fontSize: "12px",
-              textAlign: "center",
-            }}
-          >
+          <div className="p-4 text-center text-[12px] text-neutral-content-muted">
             Type to search or create
           </div>
         )}

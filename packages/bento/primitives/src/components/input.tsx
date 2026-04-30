@@ -2,12 +2,12 @@ import { forwardRef, InputHTMLAttributes } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 
 export const inputVariants = cva(
-  "flex w-full rounded-md border bg-transparent text-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-dark-300 focus-visible:outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50",
+  "flex w-full rounded-md border bg-transparent text-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-neutral-content-muted focus-visible:outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50",
   {
     variants: {
       variant: {
-        default: "border-dark-200 focus-visible:ring-primary-500",
-        error: "border-red-500 focus-visible:ring-red-500",
+        default: "border-neutral-border focus-visible:ring-accent",
+        error: "border-destructive focus-visible:ring-destructive",
       },
       inputSize: {
         default: "h-10 px-3 py-2",

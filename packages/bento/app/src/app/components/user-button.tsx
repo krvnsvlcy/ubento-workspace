@@ -28,7 +28,7 @@ export function UserButton() {
     return (
       <a
         href="/api/auth/login"
-        className="flex h-10 items-center justify-center rounded-full bg-foreground px-6 text-sm font-medium text-background transition-transform hover:scale-105 active:scale-95"
+        className="flex h-10 items-center justify-center rounded-full bg-neutral-content px-6 text-sm font-medium text-neutral-contrast transition-transform hover:scale-105 active:scale-95"
       >
         Sign In
       </a>
@@ -41,7 +41,7 @@ export function UserButton() {
         onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
         className="group flex items-center gap-2"
       >
-        <div className="flex h-9 w-9 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-background-300 text-foreground-200 ring-2 ring-transparent transition-all hover:scale-105 hover:bg-background-400 active:scale-95 group-hover:ring-primary-500/30">
+        <div className="flex h-9 w-9 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-neutral-surface-hover text-neutral-content-subtle ring-2 ring-transparent transition-all hover:scale-105 hover:bg-neutral-surface-active active:scale-95 group-hover:ring-accent/30">
           {user?.picture ? (
             <img
               src={user.picture}
@@ -61,13 +61,13 @@ export function UserButton() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="z-50 absolute right-0 top-full mt-2 w-56 origin-top-right overflow-hidden rounded-2xl border border-background-400/50 bg-background-200 p-1.5 shadow-2xl"
+            className="z-50 absolute right-0 top-full mt-2 w-56 origin-top-right overflow-hidden rounded-2xl border border-neutral-border bg-neutral-surface p-1.5 shadow-2xl"
           >
-            <div className="mb-1 border-b border-background-400/30 px-3 py-2">
-              <p className="text-xs font-semibold uppercase tracking-wider text-foreground-400">
+            <div className="mb-1 border-b border-neutral-border px-3 py-2">
+              <p className="text-xs font-semibold uppercase tracking-wider text-neutral-content-muted">
                 Account
               </p>
-              <p className="truncate text-sm font-medium text-foreground">
+              <p className="truncate text-sm font-medium text-neutral-content">
                 {user?.name || "Loading..."}
               </p>
             </div>
@@ -77,9 +77,9 @@ export function UserButton() {
                 setIsUserMenuOpen(false);
                 openModal("account");
               }}
-              className="group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-foreground-200 transition-all hover:bg-background-300 hover:text-foreground"
+              className="group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-neutral-content-subtle transition-all hover:bg-neutral-surface-hover hover:text-neutral-content"
             >
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-background-400/50 transition-colors group-hover:bg-primary-500/10 group-hover:text-primary-500">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-neutral-surface-active/50 transition-colors group-hover:bg-accent-surface group-hover:text-accent">
                 <SettingsIcon className="h-4 w-4" />
               </div>
               Settings
@@ -87,9 +87,9 @@ export function UserButton() {
 
             <a
               href="/api/auth/logout"
-              className="group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-red-400 transition-all hover:bg-red-400/10 hover:text-red-300"
+              className="group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-destructive-content transition-all hover:bg-destructive-surface hover:text-destructive"
             >
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-400/5 transition-colors group-hover:bg-red-400/10">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-destructive-surface/50 transition-colors group-hover:bg-destructive-surface-hover">
                 <LogOut className="h-4 w-4" />
               </div>
               Logout

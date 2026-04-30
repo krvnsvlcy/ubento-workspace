@@ -35,14 +35,14 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
             <div className="flex h-full flex-col">
               {/* Header */}
               <div className="flex items-center justify-between px-8 py-6">
-                <h2 className="text-xl font-semibold tracking-tight text-foreground">
+                <h2 className="text-xl font-semibold tracking-tight text-neutral-content">
                   {title}
                 </h2>
                 <button
                   onClick={onClose}
-                  className="group flex h-8 w-8 cursor-pointer items-center justify-center rounded-full transition-colors hover:bg-background-300"
+                  className="group flex h-8 w-8 cursor-pointer items-center justify-center rounded-full transition-colors hover:bg-neutral-surface"
                 >
-                  <X className="h-5 w-5 text-foreground-300 group-hover:text-foreground-200" />
+                  <X className="h-5 w-5 text-neutral-content-subtle group-hover:text-neutral-content" />
                 </button>
               </div>
 

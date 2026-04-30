@@ -2,18 +2,18 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { ButtonHTMLAttributes, forwardRef } from "react";
 
 export const buttonVariants = cva(
-  "inline-flex items-center justify-center text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:pointer-events-none disabled:opacity-50 cursor-pointer",
+  "inline-flex items-center justify-center text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:pointer-events-none disabled:opacity-50 cursor-pointer",
   {
     variants: {
       variant: {
-        default: "bg-foreground/10 text-foreground hover:bg-foreground/20",
-        primary: "bg-primary-300 text-white hover:bg-primary-300",
-        destructive: "bg-red-500 text-white hover:bg-red-400",
+        default: "bg-neutral-surface text-neutral-content hover:bg-neutral-surface-hover",
+        primary: "bg-accent text-accent-contrast hover:bg-accent-hover",
+        destructive: "bg-destructive text-destructive-contrast hover:bg-destructive-hover",
         outline:
-          "border border-dark-200 bg-transparent hover:bg-dark-100 text-dark-500",
-        secondary: "bg-secondary-500 text-dark-500 hover:bg-secondary-400",
-        ghost: "hover:bg-dark-100 hover:text-dark-500",
-        link: "text-primary-500 underline-offset-4 hover:underline",
+          "border border-neutral-border bg-transparent hover:bg-neutral-surface text-neutral-content",
+        secondary: "bg-neutral-surface text-neutral-content hover:bg-neutral-surface-hover",
+        ghost: "hover:bg-neutral-surface hover:text-neutral-content",
+        link: "text-accent underline-offset-4 hover:underline",
       },
       size: {
         default: "h-7 px-3",

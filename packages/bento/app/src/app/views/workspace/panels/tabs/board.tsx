@@ -24,12 +24,12 @@ export function BoardTab({ controller }: { controller: WorkspaceController }) {
   if (!element) {
     if (!board) {
       return (
-        <div className="flex h-full flex-col items-center justify-center gap-4 p-8 text-center text-foreground-400">
+        <div className="flex h-full flex-col items-center justify-center gap-4 p-8 text-center text-neutral-content-muted">
           <div className="flex h-16 w-16 items-center justify-center rounded-full">
             <Eye size={24} />
           </div>
           <div>
-            <h3 className="text-sm font-bold text-foreground">No selection</h3>
+            <h3 className="text-sm font-bold text-neutral-content">No selection</h3>
             <p className="mt-1 text-xs">
               Select an element on the board to edit its properties.
             </p>
@@ -90,7 +90,7 @@ export function BoardTab({ controller }: { controller: WorkspaceController }) {
 
           <Section title="Settings" icon={Settings2}>
             <PropertyRow label="Board ID">
-              <span className="font-mono text-[10px] text-foreground-500">
+              <span className="font-mono text-[10px] text-neutral-content-subtle">
                 {board.id}
               </span>
             </PropertyRow>
@@ -208,12 +208,12 @@ export function BoardTab({ controller }: { controller: WorkspaceController }) {
 
         <Section title="Settings" icon={Settings2}>
           <PropertyRow label="ID">
-            <span className="font-mono text-[10px] text-foreground-500">
+            <span className="font-mono text-[10px] text-neutral-content-subtle">
               {selectedId}
             </span>
           </PropertyRow>
           <PropertyRow label="Type">
-            <span className="text-[10px] font-bold uppercase text-foreground-500">
+            <span className="text-[10px] font-bold uppercase text-neutral-content-subtle">
               {element.type}
             </span>
           </PropertyRow>
@@ -224,7 +224,7 @@ export function BoardTab({ controller }: { controller: WorkspaceController }) {
                 selectedId &&
                 controller.getState().deleteElement(currentBoardId, selectedId)
               }
-              className="w-full rounded-md py-2 text-[10px] font-bold uppercase tracking-wider text-red-500 transition-colors"
+              className="w-full rounded-md py-2 text-[10px] font-bold uppercase tracking-wider text-destructive transition-colors hover:bg-destructive-surface"
             >
               Delete Element
             </button>

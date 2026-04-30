@@ -1,24 +1,24 @@
-import { useBentoHost } from "@/contexts/host";
+import { useUbentoEngine } from "@/engine/engine";
+import Editor from "@monaco-editor/react";
 import { PendingView } from "@ubento/bento-primitives";
+import { Code2, Eye, Save } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useStore } from "zustand";
-import { createBuilderController } from "./controller.js";
-import Editor from "@monaco-editor/react";
-import { Code2, Eye, Save } from "lucide-react";
 import { CopilotPanel } from "../../components/copilot/CopilotPanel.js";
+import { createBuilderController } from "./controller.js";
 
 export function Builder({ moduleId }: { moduleId: string }) {
-  const host = useBentoHost();
+  const host = useUbentoEngine();
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [activeTab, setActiveTab] = useState<"preview" | "code">("preview");
 
   const controller = useMemo(
     () =>
       createBuilderController({
-        ubento: host.ubentoApi,
+        ubento: host.ubento,
         moduleId,
       }),
-    [host.ubentoApi, moduleId],
+    [host.ubento, moduleId],
   );
 
   const { loading, code } = useStore(controller);

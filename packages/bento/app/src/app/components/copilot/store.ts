@@ -1,7 +1,7 @@
-import { create } from "zustand";
-import { useEffect, useState } from "react";
+import { UbentoService } from "@/services/ubento/ubento";
 import { useMutation } from "@ubento/fabric";
-import { UbentoSDK } from "@ubento/sdk";
+import { useEffect, useState } from "react";
+import { create } from "zustand";
 
 export interface CopilotMessage {
   id: string;
@@ -25,7 +25,10 @@ export const useCopilotStore = create<CopilotState>((set) => ({
 
 // Hooks
 
-export function useCopilotThread(ubento: UbentoSDK, threadId: string | null) {
+export function useCopilotThread(
+  ubento: UbentoService,
+  threadId: string | null,
+) {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<CopilotMessage[]>([]);
 
@@ -38,11 +41,14 @@ export function useCopilotThread(ubento: UbentoSDK, threadId: string | null) {
     const load = async () => {
       setLoading(true);
       try {
-        const res = await ubento.intelligence.listMessages({ thread_id: threadId });
+        const res = await ubento.intelligence.listMessages({
+          thread_id: threadId,
+        });
         const messages = res.data.map((msg: any) => ({
           id: msg.id,
           role: msg.role,
-          content: msg.data?.text || msg.data?.content || JSON.stringify(msg.data),
+          content:
+            msg.data?.text || msg.data?.content || JSON.stringify(msg.data),
         })) as CopilotMessage[];
         setData(messages);
       } finally {
@@ -56,11 +62,20 @@ export function useCopilotThread(ubento: UbentoSDK, threadId: string | null) {
   return { data, loading, setData };
 }
 
-export function useSendCopilotMessage(ubento: UbentoSDK, onMessage?: (msg: CopilotMessage) => void) {
+export function useSendCopilotMessage(
+  ubento: UbentoService,
+  onMessage?: (msg: CopilotMessage) => void,
+) {
   const setInput = useCopilotStore((state) => state.setInput);
 
   return useMutation({
-    mutationFn: async ({ threadId, content }: { threadId: string; content: string }) => {
+    mutationFn: async ({
+      threadId,
+      content,
+    }: {
+      threadId: string;
+      content: string;
+    }) => {
       const res = await ubento.intelligence.createMessage({
         thread_id: threadId,
         role: "user",
@@ -73,7 +88,8 @@ export function useSendCopilotMessage(ubento: UbentoSDK, onMessage?: (msg: Copil
       const msg = {
         id: res.id,
         role: res.role,
-        content: (res.data as any)?.text || (res.data as any)?.content || content,
+        content:
+          (res.data as any)?.text || (res.data as any)?.content || content,
       } as CopilotMessage;
 
       onMessage?.(msg);
@@ -81,4 +97,3 @@ export function useSendCopilotMessage(ubento: UbentoSDK, onMessage?: (msg: Copil
     },
   });
 }
-

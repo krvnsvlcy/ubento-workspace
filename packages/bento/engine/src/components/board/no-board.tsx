@@ -46,7 +46,7 @@ export function NoBoard(): React.JSX.Element {
   }
 
   return (
-    <div className="relative h-full px-8 py-20 font-sans text-foreground overflow-y-auto selection:bg-foreground-200">
+    <div className="relative h-full px-8 py-20 font-sans text-neutral-content overflow-y-auto selection:bg-accent-surface">
       <div className="relative mx-auto w-full max-w-5xl">
         <motion.header
           initial={{ opacity: 0 }}
@@ -60,20 +60,20 @@ export function NoBoard(): React.JSX.Element {
               <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
                 Workspace Boards
               </h1>
-              <p className="mt-2 text-sm text-foreground-400">
+              <p className="mt-2 text-sm text-neutral-content-muted">
                 Choose a board to start building your experience, or create a
                 new one from scratch.
               </p>
             </div>
 
             <div className="relative w-full sm:max-w-xs">
-              <SearchIcon className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-foreground-400" />
+              <SearchIcon className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-content-muted" />
               <input
                 type="text"
                 placeholder="Search boards..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="h-11 w-full rounded-2xl border border-white/10 bg-background-300/50 pl-10 pr-4 text-sm outline-none transition-all focus:border-primary-500/50 focus:bg-background-300 focus:ring-4 focus:ring-primary-500/10"
+                className="h-11 w-full rounded-2xl border border-neutral-border bg-neutral-surface/50 pl-10 pr-4 text-sm outline-none transition-all focus:border-accent-border focus:bg-neutral-surface focus:ring-4 focus:ring-accent/10"
               />
             </div>
           </div>
@@ -89,7 +89,7 @@ export function NoBoard(): React.JSX.Element {
             <EmptyView message="No boards match your search.">
               <button
                 onClick={() => setSearch("")}
-                className="mt-4 text-sm font-medium text-primary-300 hover:text-primary-200"
+                className="mt-4 text-sm font-medium text-accent-content hover:text-accent-content-subtle"
               >
                 Clear search
               </button>
@@ -99,7 +99,7 @@ export function NoBoard(): React.JSX.Element {
               <button
                 onClick={handleCreateBoard}
                 disabled={creating}
-                className="mt-4 px-6 py-3 bg-primary-300 hover:bg-primary-200 text-white font-semibold rounded-xl transition-all shadow-lg shadow-primary-500/20 disabled:opacity-50 flex items-center gap-2 mx-auto"
+                className="mt-4 px-6 py-3 bg-accent hover:bg-accent-hover text-accent-contrast font-semibold rounded-xl transition-all shadow-lg shadow-accent/20 disabled:opacity-50 flex items-center gap-2 mx-auto"
               >
                 {creating ? (
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -117,18 +117,18 @@ export function NoBoard(): React.JSX.Element {
                   onClick={() => {
                     goTo(board.id);
                   }}
-                  className="bg-background-100 group relative flex flex-col items-start p-6 border hover:border-foreground/20 rounded-2xl text-left"
+                  className="bg-neutral-surface group relative flex flex-col items-start p-6 border hover:border-neutral-border-hover rounded-2xl text-left"
                 >
-                  <div className="w-12 h-12 rounded-xl bg-background-200 flex items-center justify-center mb-4">
+                  <div className="w-12 h-12 rounded-xl bg-neutral-surface-hover flex items-center justify-center mb-4">
                     <BoardIcon className="w-6 h-6" />
                   </div>
-                  <h3 className="text-lg font-semibold text-foreground-100 mb-1">
+                  <h3 className="text-lg font-semibold text-neutral-content mb-1">
                     {board.name || "Untitled Board"}
                   </h3>
-                  <p className="text-sm text-foreground-400 mb-4">
+                  <p className="text-sm text-neutral-content-muted mb-4">
                     Last updated recently
                   </p>
-                  <div className="mt-auto flex items-center text-sm font-medium text-foreground-300 opacity-0 transition-opacity group-hover:opacity-100">
+                  <div className="mt-auto flex items-center text-sm font-medium text-neutral-content-subtle opacity-0 transition-opacity group-hover:opacity-100">
                     Open Board <ArrowRightIcon className="ml-1 w-4 h-4" />
                   </div>
                 </button>
@@ -137,10 +137,10 @@ export function NoBoard(): React.JSX.Element {
               <button
                 onClick={handleCreateBoard}
                 disabled={creating}
-                className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-background-400 rounded-2xl text-foreground-400 transition-all hover:border-primary-400 hover:text-primary-300 hover:bg-primary-500 group disabled:opacity-50"
+                className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-neutral-border-active rounded-2xl text-neutral-content-muted transition-all hover:border-accent-border-hover hover:text-accent-content-subtle hover:bg-accent-surface group disabled:opacity-50"
               >
                 {creating ? (
-                  <div className="w-8 h-8 border-3 border-primary-300 border-t-transparent rounded-full animate-spin mb-4" />
+                  <div className="w-8 h-8 border-3 border-accent border-t-transparent rounded-full animate-spin mb-4" />
                 ) : (
                   <div className="w-12 h-12 rounded-full border-2 border-current flex items-center justify-center mb-4 transition-transform group-hover:scale-110">
                     <PlusIcon className="w-6 h-6" />

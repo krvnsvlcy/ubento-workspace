@@ -48,7 +48,7 @@ export function WorkspaceTab({
           />
         </PropertyRow>
         <PropertyRow label="Slug">
-          <span className="font-mono text-[10px] text-foreground-500">
+          <span className="font-mono text-[10px] text-neutral-content-subtle">
             {workspace.slug}
           </span>
         </PropertyRow>
@@ -66,13 +66,13 @@ export function WorkspaceTab({
           {Object.entries(workspace.services || {}).map(([name, data]) => (
             <div key={name} className="mb-2 flex flex-col rounded-md p-2">
               <div className="flex items-center justify-between">
-                <span className="text-[11px] font-bold text-foreground">
+                <span className="text-[11px] font-bold text-neutral-content">
                   {name}
                 </span>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => handleRemoveService(name)}
-                    className="text-foreground-500 hover:text-red-500 transition-colors"
+                    className="text-neutral-content-subtle hover:text-destructive transition-colors"
                   >
                     <Trash2 size={12} />
                   </button>
@@ -80,18 +80,18 @@ export function WorkspaceTab({
               </div>
               <div className="mt-1 flex flex-col gap-1 pt-1">
                 <div className="flex items-center justify-between">
-                  <span className="text-[9px] uppercase tracking-wider text-foreground-500">
+                  <span className="text-[9px] uppercase tracking-wider text-neutral-content-subtle">
                     Module
                   </span>
-                  <span className="text-[10px] font-mono text-foreground-300">
+                  <span className="text-[10px] font-mono text-neutral-content-subtle">
                     {data.moduleId}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[9px] uppercase tracking-wider text-foreground-500">
+                  <span className="text-[9px] uppercase tracking-wider text-neutral-content-subtle">
                     Version
                   </span>
-                  <span className="text-[10px] font-mono text-foreground-300">
+                  <span className="text-[10px] font-mono text-neutral-content-subtle">
                     {data.moduleVersionId || "latest"}
                   </span>
                 </div>
@@ -100,7 +100,7 @@ export function WorkspaceTab({
           ))}
           <button
             onClick={handleAddService}
-            className="mt-2 flex w-full items-center justify-center gap-2 rounded-md py-2 text-[10px] font-bold uppercase tracking-wider text-foreground-400 transition-colors hover:text-primary-500"
+            className="mt-2 flex w-full items-center justify-center gap-2 rounded-md py-2 text-[10px] font-bold uppercase tracking-wider text-neutral-content-muted transition-colors hover:text-accent"
           >
             <Plus size={12} />
             Add Service
@@ -110,12 +110,12 @@ export function WorkspaceTab({
 
       <Section title="Info" icon={Globe}>
         <PropertyRow label="Workspace ID">
-          <span className="font-mono text-[10px] text-foreground-500">
+          <span className="font-mono text-[10px] text-neutral-content-subtle">
             {workspace.id}
           </span>
         </PropertyRow>
         <PropertyRow label="Team ID">
-          <span className="font-mono text-[10px] text-foreground-500">
+          <span className="font-mono text-[10px] text-neutral-content-subtle">
             {workspace.teamId}
           </span>
         </PropertyRow>

@@ -107,10 +107,7 @@ export function createUbentoIntelligenceService({
     },
 
     // Messages
-    useMessages: (
-      params: { thread_id: string },
-      options?: UseStoreOptions,
-    ) => {
+    useMessages: (params: { thread_id: string }, options?: UseStoreOptions) => {
       return useStoreEntities(messageStore, params, options);
     },
     useCreateMessage: () => {
@@ -153,7 +150,7 @@ export function createUbentoIntelligenceService({
       threadStore.push(thread);
       return thread;
     },
-    getMessages: async (params: {
+    listMes8sages: async (params: {
       thread_id: string;
       limit?: number;
       cursor?: string;

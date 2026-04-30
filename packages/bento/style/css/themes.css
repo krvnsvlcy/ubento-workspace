@@ -1,8 +1,4 @@
-@import "./themes/base.css";
-@import "./themes/sky.css";
-@import "./themes/sunset.css";
-@import "./themes/forest.css";
-@import "./themes/carbon.css";
+@import "./themes/default.css";
 
 *,
 ::after,
@@ -10,5 +6,5 @@
 ::backdrop,
 ::file-selector-button {
   scrollbar-width: none;
-  border-color: color-mix(in srgb, var(--foreground-500) 10%, transparent);
+  border-color: var(--color-neutral-border);
 }

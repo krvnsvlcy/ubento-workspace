@@ -47,6 +47,8 @@ export default defineConfig({
   theme: {
     colors: {
       background: "var(--color-background)",
+      transparent: "transparent",
+
       // themes
       accent: colorTheme("accent"),
       neutral: colorTheme("neutral"),

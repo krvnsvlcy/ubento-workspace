@@ -1,23 +1,33 @@
+import { useUbentoEngine } from "@/engine/engine";
 import { Send } from "lucide-react";
 import React, { useEffect } from "react";
-import { useCopilotStore, useCopilotThread, useSendCopilotMessage } from "./store.js";
-import { useBentoHost } from "@/contexts/host";
+import {
+  useCopilotStore,
+  useCopilotThread,
+  useSendCopilotMessage,
+} from "./store.js";
 
 export function CopilotPanel() {
-  const host = useBentoHost();
+  const host = useUbentoEngine();
   const { threadId, input, setInput, setThreadId } = useCopilotStore();
-  const { data: messages, isLoading } = useCopilotThread(host.ubentoApi, threadId);
-  const sendMessage = useSendCopilotMessage(host.ubentoApi);
+  const { data: messages, loading } = useCopilotThread(
+    host.ubento,
+    threadId,
+  );
+  const sendMessage = useSendCopilotMessage(host.ubento);
 
   // Initialize a thread if one does not exist
   useEffect(() => {
     if (!threadId) {
-      host.ubentoApi.intelligence.createThread({
-        workspace_id: host.getState().session?.workspaceId || "default",
-        title: "Copilot Chat"
-      }).then((thread) => {
-        setThreadId(thread.id);
-      }).catch(console.error);
+      host.ubento.intelligence
+        .createThread({
+          workspace_id: (host.getState().session as any)?.workspaceId || "default",
+          title: "Copilot Chat",
+        })
+        .then((thread: any) => {
+          setThreadId(thread.id);
+        })
+        .catch(console.error);
     }
   }, [threadId, host, setThreadId]);
 
@@ -34,30 +44,32 @@ export function CopilotPanel() {
   };
 
   return (
-    <div className="flex h-full w-80 flex-col border-r border-background-300 bg-background-100/50 backdrop-blur-xl">
-      <div className="flex h-14 items-center justify-between border-b border-background-300 px-4">
-        <h2 className="font-semibold text-foreground-100">AI Copilot</h2>
+    <div className="flex h-full w-80 flex-col border-r border-neutral-border bg-background/50 backdrop-blur-xl">
+      <div className="flex h-14 items-center justify-between border-b border-neutral-border px-4">
+        <h2 className="font-semibold text-neutral-content">AI Copilot</h2>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4">
         <div className="flex flex-col gap-4">
           {/* Informational message */}
-          <div className="rounded-xl border border-background-300 bg-background-200/50 p-3 text-sm text-foreground-400">
+          <div className="rounded-xl border border-neutral-border bg-neutral-surface/50 p-3 text-sm text-neutral-content-muted">
             Tell the AI what you want to build or change in this component.
           </div>
 
           {/* Chat Messages */}
           <div className="flex flex-col gap-3">
-            {isLoading ? (
-              <div className="text-sm text-foreground-400">Loading messages...</div>
+            {loading ? (
+              <div className="text-sm text-neutral-content-muted">
+                Loading messages...
+              </div>
             ) : (
               messages?.map((msg) => (
                 <div
                   key={msg.id}
                   className={`max-w-[85%] rounded-2xl px-4 py-2 text-sm ${
                     msg.role === "user"
-                      ? "self-end bg-primary-500 text-white"
-                      : "self-start bg-background-200 text-foreground-200"
+                      ? "self-end bg-accent text-accent-contrast"
+                      : "self-start bg-neutral-surface text-neutral-content-subtle"
                   }`}
                 >
                   {msg.content}
@@ -65,7 +77,7 @@ export function CopilotPanel() {
               ))
             )}
             {sendMessage.isPending && (
-              <div className="self-start rounded-2xl bg-background-200 px-4 py-2 text-sm text-foreground-400 italic">
+              <div className="self-start rounded-2xl bg-neutral-surface px-4 py-2 text-sm text-neutral-content-muted italic">
                 Copilot is thinking...
               </div>
             )}
@@ -74,10 +86,10 @@ export function CopilotPanel() {
       </div>
 
       {/* Input Area */}
-      <div className="border-t border-background-300 p-4">
-        <div className="relative flex items-center bg-background-200 rounded-xl border border-background-400 focus-within:border-primary-500 transition-colors">
+      <div className="border-t border-neutral-border p-4">
+        <div className="relative flex items-center bg-neutral-surface rounded-xl border border-neutral-border-active focus-within:border-accent transition-colors">
           <textarea
-            className="w-full resize-none bg-transparent px-4 py-3 text-sm text-foreground-100 focus:outline-none"
+            className="w-full resize-none bg-transparent px-4 py-3 text-sm text-neutral-content focus:outline-none"
             placeholder="Ask AI to generate code..."
             rows={2}
             value={input}
@@ -87,7 +99,7 @@ export function CopilotPanel() {
           <button
             onClick={handleSend}
             disabled={!input.trim() || sendMessage.isPending}
-            className="absolute right-2 bottom-2 p-1.5 text-foreground-400 hover:text-primary-500 hover:bg-background-300 rounded-lg disabled:opacity-50 transition-colors"
+            className="absolute right-2 bottom-2 p-1.5 text-neutral-content-muted hover:text-accent hover:bg-neutral-surface-hover rounded-lg disabled:opacity-50 transition-colors"
           >
             <Send size={16} />
           </button>

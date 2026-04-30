@@ -1,4 +1,4 @@
-import { useBentoHost } from "@/contexts/host";
+import { useUbentoEngine } from "@/engine/engine";
 import { useUbento } from "@/engine/engine";
 import { BaseStyle, BlockData, BoardData, ElementData } from "@ubento/engine";
 import {
@@ -32,15 +32,15 @@ export function Section({
       >
         <Icon
           size={14}
-          className="text-foreground-400 transition-colors group-hover:text-primary-400"
+          className="text-neutral-content-muted transition-colors group-hover:text-accent-active"
         />
-        <span className="text-[11px] font-bold uppercase tracking-wider text-foreground-400 group-hover:text-foreground-200">
+        <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-content-muted group-hover:text-neutral-content">
           {title}
         </span>
         <div className="ml-auto">
           <ChevronRight
             size={14}
-            className={`text-foreground-500 transition-transform duration-300 ${
+            className={`text-neutral-content-subtle transition-transform duration-300 ${
               isOpen ? "rotate-90" : ""
             }`}
           />
@@ -72,7 +72,9 @@ export function PropertyRow({
 }) {
   return (
     <div className="flex items-center justify-between px-4 py-1.5">
-      <span className="text-xs font-medium text-foreground-400">{label}</span>
+      <span className="text-xs font-medium text-neutral-content-muted">
+        {label}
+      </span>
       <div className="flex max-w-[60%] flex-1 justify-end">{children}</div>
     </div>
   );
@@ -100,14 +102,14 @@ export function TextInput({
   };
 
   return (
-    <div className="flex w-full items-center rounded-md px-2 py-1 transition-all focus-within:ring-1 focus-within:ring-primary-500/50">
+    <div className="flex w-full items-center rounded-md px-2 py-1 transition-all focus-within:ring-1 focus-within:ring-accent/50">
       <input
         type="text"
         value={localValue}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         onChange={(e) => handleChange(e.target.value)}
-        className="w-full border-none bg-transparent text-xs text-foreground-200 outline-none"
+        className="w-full border-none bg-transparent text-xs text-neutral-content-subtle outline-none"
       />
     </div>
   );
@@ -144,17 +146,17 @@ export function NumberInput({
   };
 
   return (
-    <div className="group flex items-center rounded-md px-2 py-1 transition-all focus-within:ring-1 focus-within:ring-primary-500/50">
+    <div className="group flex items-center rounded-md px-2 py-1 transition-all focus-within:ring-1 focus-within:ring-accent/50">
       <input
         type="number"
         value={localValue}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         onChange={(e) => handleChange(e.target.value)}
-        className="w-full border-none bg-transparent font-mono text-xs text-right outline-none text-foreground-200 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        className="w-full border-none bg-transparent font-mono text-xs text-right outline-none text-neutral-content-subtle [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
       />
       {unit && (
-        <span className="ml-1 text-[10px] font-medium text-foreground-500">
+        <span className="ml-1 text-[10px] font-medium text-neutral-content-subtle">
           {unit}
         </span>
       )}
@@ -164,7 +166,7 @@ export function NumberInput({
             onChange(undefined);
             setLocalValue("");
           }}
-          className="ml-1 text-foreground-500 opacity-0 transition-opacity hover:text-red-400 group-hover:opacity-100"
+          className="text-neutral-content-subtle hover:text-destructive transition-colors"
           title="Clear"
         >
           <X size={10} />
@@ -187,7 +189,7 @@ export function Select({
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="cursor-pointer rounded-md border-none px-2 py-1 text-xs text-foreground-200 outline-none transition-colors"
+      className="cursor-pointer rounded-md border-none px-2 py-1 text-xs text-neutral-content-subtle outline-none transition-colors"
     >
       {options.map((opt) => (
         <option key={opt} value={opt}>
@@ -231,7 +233,7 @@ export function ColorInput({
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         onChange={(e) => handleChange(e.target.value)}
-        className="w-full border-none bg-transparent font-mono text-[10px] text-foreground-200 outline-none"
+        className="w-full border-none bg-transparent font-mono text-[10px] text-neutral-content-subtle outline-none"
         placeholder="#000000"
       />
     </div>
@@ -247,7 +249,7 @@ export function PaddingControl({
 }) {
   return (
     <div className="mt-2 px-4">
-      <span className="text-[10px] font-bold uppercase tracking-wider text-foreground-500">
+      <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-content-subtle">
         Padding
       </span>
       <div className="mt-1 grid grid-cols-2 gap-2">
@@ -287,14 +289,14 @@ export function BoardHeader({
     <div className="sticky top-0 z-10 px-4 py-4 backdrop-blur-sm">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="rounded-lg p-1.5 text-orange-500">
+          <div className="rounded-lg p-1.5 text-accent">
             <Layout size={14} />
           </div>
           <div className="flex flex-col">
-            <span className="text-[10px] font-bold uppercase leading-none tracking-widest text-foreground-400">
+            <span className="text-[10px] font-bold uppercase leading-none tracking-widest text-neutral-content-muted">
               Board
             </span>
-            <span className="max-w-[180px] truncate text-sm font-bold text-foreground">
+            <span className="max-w-[180px] truncate text-sm font-bold text-neutral-content">
               {board.name || "Untitled Board"}
             </span>
           </div>
@@ -303,7 +305,7 @@ export function BoardHeader({
         {onAddElement && (
           <button
             onClick={onAddElement}
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-primary-500 transition-colors"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-accent transition-colors"
             title="Add Element"
           >
             <Plus size={16} />
@@ -327,7 +329,7 @@ export function PanelHeader({
     <div className="sticky top-0 z-10 px-4 py-4 backdrop-blur-sm">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="rounded-lg p-1.5 text-primary-500">
+          <div className="rounded-lg p-1.5 text-accent">
             {element.type === "stack" ? (
               <Layers size={14} />
             ) : (
@@ -335,10 +337,10 @@ export function PanelHeader({
             )}
           </div>
           <div className="flex flex-col">
-            <span className="text-[10px] font-bold uppercase leading-none tracking-widest text-foreground-400">
+            <span className="text-[10px] font-bold uppercase leading-none tracking-widest text-neutral-content-muted">
               {element.type}
             </span>
-            <span className="max-w-[180px] truncate text-sm font-bold text-foreground">
+            <span className="max-w-[180px] truncate text-sm font-bold text-neutral-content">
               {id}
             </span>
           </div>
@@ -347,7 +349,7 @@ export function PanelHeader({
         {element.type === "stack" && onAddElement && (
           <button
             onClick={onAddElement}
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-primary-500 transition-colors"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-accent transition-colors"
             title="Add Element"
           >
             <Plus size={16} />
@@ -367,7 +369,7 @@ export function ModuleSection({
   selectedId: string;
   controller: WorkspaceController;
 }) {
-  const host = useBentoHost();
+  const host = useUbentoEngine();
   const ubento = useUbento();
   const { data: moduleMetadata, isLoading } = ubento.module.useModule(
     element.moduleId,
@@ -405,10 +407,10 @@ export function ModuleSection({
                     .setBlockModule(
                       selectedId,
                       element.moduleId,
-                      moduleMetadata.latest_version_id,
+                      moduleMetadata.latest_version_id || "",
                     );
                 }}
-                className="shrink-0 rounded-md px-2 py-1 text-[8px] font-bold uppercase tracking-tight text-white"
+                className="shrink-0 rounded-md bg-accent px-2 py-1 text-[8px] font-bold uppercase tracking-tight text-accent-contrast"
                 title={`Update to latest: ${moduleMetadata.latest_version_id}`}
               >
                 Update
@@ -421,7 +423,7 @@ export function ModuleSection({
           onClick={() => {
             console.log("Editing props for", selectedId);
           }}
-          className="w-full rounded-md py-1.5 text-center text-[10px] font-bold uppercase tracking-wider text-foreground-300 transition-colors"
+          className="w-full rounded-md py-1.5 text-center text-[10px] font-bold uppercase tracking-wider text-neutral-content-subtle transition-colors hover:bg-neutral-surface"
         >
           Edit Props
         </button>
@@ -432,7 +434,7 @@ export function ModuleSection({
               params: { moduleId: element.moduleId },
             });
           }}
-          className="flex w-full items-center justify-center gap-2 rounded-md py-2 text-center text-[10px] font-bold uppercase tracking-wider text-primary-500 transition-colors"
+          className="flex w-full items-center justify-center gap-2 rounded-md py-2 text-center text-[10px] font-bold uppercase tracking-wider text-accent transition-colors hover:bg-accent-surface"
         >
           <Code2 size={12} />
           Edit Component

@@ -1,7 +1,7 @@
 import { ThemeSelector } from "@/app/components/ThemeSelector.js";
 import { UserButton } from "@/app/components/user-button.js";
+import { useUbentoEngine } from "@/engine/engine";
 import { useTheme } from "@/contexts/theme.js";
-import { useBentoHost } from "@/contexts/host.js";
 import { IconButton } from "@ubento/bento-primitives";
 import { Eye, Home, LayoutDashboard, Pencil } from "lucide-react";
 import { useStore } from "zustand";
@@ -12,14 +12,14 @@ export function WorkspaceNavigation({
 }: {
   controller: WorkspaceController;
 }) {
-  const host = useBentoHost();
+  const host = useUbentoEngine();
   const snap = useStore(controller);
   const theme = useTheme();
 
   return (
     <div className="relative z-[200] w-full p-1.5">
       <div
-        className={`mx-auto flex h-14 w-full items-center justify-between px-4 transition-all rounded-2xl bg-background-100/70`}
+        className={`mx-auto flex h-14 w-full items-center justify-between px-4 transition-all rounded-2xl bg-background/70`}
         style={{
           background: "var(--page-background)",
         }}
@@ -45,13 +45,11 @@ export function WorkspaceNavigation({
 
         <div className="flex items-center gap-3">
           <button
-            onClick={() =>
-              snap.setMode(snap.mode === "edit" ? "live" : "edit")
-            }
+            onClick={() => snap.setMode(snap.mode === "edit" ? "live" : "edit")}
             className={`flex h-9 items-center gap-2 rounded-full px-4 text-[13px] font-medium transition-all ${
               snap.mode === "edit"
-                ? "bg-primary-500 text-white shadow-lg shadow-primary-500/20"
-                : "bg-background-300 text-foreground-200 hover:bg-background-400"
+                ? "bg-accent text-accent-contrast shadow-lg shadow-accent/20"
+                : "bg-neutral-surface text-neutral-content-subtle hover:bg-neutral-surface-hover"
             }`}
           >
             {snap.mode === "edit" ? (

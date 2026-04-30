@@ -1,8 +1,9 @@
-import { useBentoHostApi } from "@/contexts/host";
+import { useUbentoEngine } from "@/engine/engine";
 import { useEffect, useRef } from "react";
 import { WorkspaceContent } from "./content";
 import { createWorkspaceController } from "./controller";
 import { useKeyboardShortcuts } from "./keyboard";
+
 export function Workspace({
   slug,
   boardId,
@@ -10,12 +11,11 @@ export function Workspace({
   slug: string;
   boardId?: string;
 }) {
-  const host = useBentoHostApi();
+  const engine = useUbentoEngine();
 
   const workspaceController = useRef(
     createWorkspaceController({
-      ubento: host.ubentoApi,
-      host,
+      engine,
       slug,
     }),
   );

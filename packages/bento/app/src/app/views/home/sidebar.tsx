@@ -1,10 +1,10 @@
+import { useUbentoEngine } from "@/engine/engine";
 import { useGlobalModals } from "@/contexts/modals";
-import { useBentoHost } from "@/contexts/host";
-import { LayoutGrid, Plus, Settings, Sparkles } from "lucide-react";
+import { LayoutGrid, Plus, Settings } from "lucide-react";
 import { motion } from "motion/react";
 
 export function Sidebar() {
-  const host = useBentoHost();
+  const host = useUbentoEngine();
   const { openModal } = useGlobalModals();
 
   return (
@@ -16,39 +16,38 @@ export function Sidebar() {
     >
       {/* Create Section */}
       <div>
-        <h2 className="mb-4 text-[13px] font-medium tracking-tight text-gray-200">
+        <h2 className="mb-4 text-[13px] font-medium tracking-tight text-neutral-content-muted">
           Create
         </h2>
         <div className="flex flex-col gap-1">
           <button
             onClick={() => openModal("create")}
-            className="flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-2 py-1.5 transition-colors hover:bg-background-300"
+            className="flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-2 py-1.5 transition-colors hover:bg-neutral-surface-hover"
           >
-            <div className="group flex h-6 w-6 items-center justify-center rounded-md bg-background-300 hover:bg-background-400">
-              <Plus className="h-3.5 w-3.5 text-foreground-200" />
+            <div className="group flex h-6 w-6 items-center justify-center rounded-md bg-background-300 hover:bg-neutral-surface-active">
+              <Plus className="h-3.5 w-3.5 text-neutral-content-subtle" />
             </div>
-            <span className="text-[13px] truncate font-medium text-foreground-100">
+            <span className="text-[13px] truncate font-medium text-neutral-content">
               New Workspace
             </span>
           </button>
         </div>
       </div>
 
-
       {/* Quick Links Section */}
       <div>
-        <h2 className="mb-4 text-[13px] font-medium tracking-tight text-gray-200">
+        <h2 className="mb-4 text-[13px] font-medium tracking-tight text-neutral-content-muted">
           Quick Links
         </h2>
         <div className="flex flex-col gap-1">
           <button
             onClick={() => openModal("team")}
-            className="flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-2 py-1.5 transition-colors hover:bg-background-300"
+            className="flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-2 py-1.5 transition-colors hover:bg-neutral-surface-hover"
           >
             <div className="flex h-6 w-6 items-center justify-center rounded-md bg-background-300">
-              <Settings className="h-3.5 w-3.5 text-foreground-200" />
+              <Settings className="h-3.5 w-3.5 text-neutral-content-subtle" />
             </div>
-            <span className="text-[13px] font-medium text-foreground-100">
+            <span className="text-[13px] font-medium text-neutral-content">
               Team Settings
             </span>
           </button>
@@ -57,13 +56,12 @@ export function Sidebar() {
             onClick={() =>
               host.goToLocation({ view: "workspaces", params: {} })
             }
-
-            className="flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-2 py-1.5 transition-colors hover:bg-background-300"
+            className="flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-2 py-1.5 transition-colors hover:bg-neutral-surface-hover"
           >
             <div className="flex h-6 w-6 items-center justify-center rounded-md bg-background-300">
-              <LayoutGrid className="h-3.5 w-3.5 text-foreground-200" />
+              <LayoutGrid className="h-3.5 w-3.5 text-neutral-content-subtle" />
             </div>
-            <span className="text-[13px] font-medium text-foreground-100">
+            <span className="text-[13px] font-medium text-neutral-content">
               All workspaces
             </span>
           </button>

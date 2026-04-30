@@ -1,6 +1,6 @@
 import { Header } from "@/app/components/header";
 import { WorkspaceGrid } from "@/app/views/home/workspace-grid";
-import { useBentoHost } from "@/contexts/host";
+import { useUbentoEngine } from "@/engine/engine";
 import { useBentoSession } from "@/contexts/session";
 import { useUbento } from "@/engine/engine";
 import { ArrowLeft, Search } from "lucide-react";
@@ -8,7 +8,7 @@ import { motion } from "motion/react";
 import { useState } from "react";
 
 export function Workspaces() {
-  const host = useBentoHost();
+  const host = useUbentoEngine();
   const ubento = useUbento();
   const session = useBentoSession();
   const { data: workspacesData, isFetching } = ubento.workspace.useWorkspaces({
@@ -30,7 +30,7 @@ export function Workspaces() {
   };
 
   return (
-    <div className="relative min-h-screen px-8 py-10 font-sans text-foreground overflow-x-hidden selection:bg-foreground-200">
+    <div className="relative min-h-screen px-8 py-10 font-sans text-neutral-content overflow-x-hidden selection:bg-accent-surface">
       <div className="relative mx-auto w-full max-w-5xl">
         <Header />
         <motion.header
@@ -41,7 +41,7 @@ export function Workspaces() {
         >
           <button
             onClick={onBack}
-            className="group flex w-fit items-center gap-2 text-sm font-medium text-foreground-300 transition-colors hover:text-foreground"
+            className="group flex w-fit items-center gap-2 text-sm font-medium text-neutral-content-muted transition-colors hover:text-neutral-content"
           >
             <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
             Back to Dashboard
@@ -52,19 +52,19 @@ export function Workspaces() {
               <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
                 All Workspaces
               </h1>
-              <p className="mt-2 text-sm text-foreground-400">
+              <p className="mt-2 text-sm text-neutral-content-muted">
                 Manage and access all your projects in one place.
               </p>
             </div>
 
             <div className="relative w-full sm:max-w-xs">
-              <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-foreground-400" />
+              <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-content-muted" />
               <input
                 type="text"
                 placeholder="Search projects..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="h-11 w-full rounded-2xl border border-white/10 bg-background-300/50 pl-10 pr-4 text-sm outline-none transition-all focus:border-primary-500/50 focus:bg-background-300 focus:ring-4 focus:ring-primary-500/10"
+                className="h-11 w-full rounded-2xl border border-neutral-border bg-neutral-surface pl-10 pr-4 text-sm text-neutral-content placeholder:text-neutral-content-muted outline-none transition-all focus:border-neutral-border-hover focus:bg-neutral-surface-hover"
               />
             </div>
           </div>

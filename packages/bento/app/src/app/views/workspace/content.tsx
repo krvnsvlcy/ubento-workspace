@@ -1,5 +1,5 @@
 import { ErrorView } from "@/app/components/error.js";
-import { useBentoHost } from "@/contexts/host";
+import { useUbentoEngine } from "@/engine/engine";
 import { useMemo, useRef, useState } from "react";
 import { useStore } from "zustand";
 import { SideSplitView } from "./components/split-view.js";
@@ -14,7 +14,7 @@ export function WorkspaceContent({
 }) {
   const isEditMode = useStore(controller, (state) => state.mode === "edit");
   const error = useStore(controller, (state) => state.error);
-  const host = useBentoHost();
+  const host = useUbentoEngine();
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [inspectorWidth, setInspectorWidth] = useState(320);
 

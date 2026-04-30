@@ -22,25 +22,25 @@ export const UsageTab: FC = () => {
       {usageItems.map((item) => (
         <div
           key={item.label}
-          className="p-5 rounded-2xl bg-background-200 border border-foreground/5 space-y-3"
+          className="p-5 rounded-2xl bg-neutral-surface border border-neutral-border space-y-3"
         >
           <div className="flex justify-between items-end">
             <div>
-              <h4 className="font-bold text-foreground">{item.label}</h4>
-              <p className="text-[10px] text-foreground-400 uppercase font-bold tracking-wider">
+              <h4 className="font-bold text-neutral-content">{item.label}</h4>
+              <p className="text-[10px] text-neutral-content-muted uppercase font-bold tracking-wider">
                 Usage this period
               </p>
             </div>
             <p className="text-sm font-bold">
               {item.used}{" "}
-              <span className="text-foreground-400 font-medium">
+              <span className="text-neutral-content-muted font-medium">
                 / {item.total} {item.unit}
               </span>
             </p>
           </div>
-          <div className="h-2 w-full bg-background-400 rounded-full overflow-hidden">
+          <div className="h-2 w-full bg-neutral-surface-active rounded-full overflow-hidden">
             <div
-              className="h-full bg-primary-500 transition-all duration-1000"
+              className="h-full bg-accent transition-all duration-1000"
               style={{
                 width: `${(item.used / item.total) * 100}%`,
               }}

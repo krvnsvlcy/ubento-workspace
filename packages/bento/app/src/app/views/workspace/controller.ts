@@ -1,6 +1,4 @@
-import { UbentoEngine } from "@/engine/engine";
-import { createUbentoModuleService } from "@/services/ubento/services/module";
-import { createUbentoWorkspaceService } from "@/services/ubento/services/workspace";
+import { UbentoEngine, UbentoEngineState } from "@/engine/engine";
 import {
   BlockData,
   BoardData,
@@ -19,7 +17,6 @@ import {
   createWindowPort,
   DuplexRpc,
 } from "@ubento/rpc-utils";
-import { UbentoSDK } from "@ubento/sdk";
 import { dequal } from "dequal/lite";
 import { createStore, StoreApi } from "zustand/vanilla";
 
@@ -87,21 +84,19 @@ export type WorkspaceStore = WorkspaceState & {
 export type WorkspaceController = StoreApi<WorkspaceStore>;
 
 export function createWorkspaceController({
-  ubento,
-  host,
+  engine,
   slug,
 }: {
-  ubento: UbentoSDK;
-  host: UbentoEngine;
+  engine: UbentoEngine;
   slug: string;
 }): WorkspaceController {
   let rpc: DuplexRpc<HostRpcInterface, GuestRpcInterface> | null = null;
-  const workspaceService = createUbentoWorkspaceService({ ubentoSdk: ubento });
-  const moduleService = createUbentoModuleService({ ubentoSdk: ubento });
+  const workspaceService = engine.ubento.workspace;
+  const moduleService = engine.ubento.module;
 
   const store = createStore<WorkspaceStore>()((set, get) => ({
     loading: false,
-    error: false,
+    error: "",
     mode: "live",
     selection: [],
     connected: false,
@@ -120,7 +115,7 @@ export function createWorkspaceController({
             if (current.workspace) {
               rpc!.egress.init({
                 workspace: current.workspace,
-                moduleUrlTemplate: host.moduleUrlTemplate,
+                moduleUrlTemplate: engine.moduleUrlTemplate,
               });
             }
           },
@@ -200,7 +195,7 @@ export function createWorkspaceController({
           getModule: async ({ moduleId }) => {
             const res = await moduleService.getModule(moduleId);
             const module = {
-              latestVersionId: res.latest_version_id,
+              latestVersionId: res.latest_version_id || "",
             };
             set((s) => ({
               modules: { ...s.modules, [moduleId]: module },
@@ -214,7 +209,7 @@ export function createWorkspaceController({
             moduleId: string;
             versionId: string;
           }) => {
-            return await ubento.module.getModuleVersionArtifact(
+            return await engine.ubento.module.getModuleVersionArtifact(
               moduleId,
               versionId,
             );
@@ -244,7 +239,7 @@ export function createWorkspaceController({
             });
             return {
               id: res.id,
-              latestVersionId: res.latest_version_id,
+              latestVersionId: res.latest_version_id || "",
             };
           },
           setMode: ({ mode }) => {
@@ -252,7 +247,7 @@ export function createWorkspaceController({
           },
           setLocation: ({ location }) => {
             if (location) {
-              host.goToLocation({
+              engine.goToLocation({
                 view: "workspace",
                 params: {
                   slug,
@@ -260,7 +255,7 @@ export function createWorkspaceController({
                 },
               });
             } else {
-              host.goToLocation({ view: "workspace", params: { slug } });
+              engine.goToLocation({ view: "workspace", params: { slug } });
             }
           },
           setSelectionScope: ({ selectionScope }) => {
@@ -329,7 +324,7 @@ export function createWorkspaceController({
         if (rpc && current.connected) {
           rpc.egress.init({
             workspace: data,
-            moduleUrlTemplate: host.moduleUrlTemplate,
+            moduleUrlTemplate: engine.moduleUrlTemplate,
           });
         }
       } catch (err) {
@@ -352,7 +347,7 @@ export function createWorkspaceController({
     },
     goTo: (boardId: string, params?: Record<string, string>) => {
       set({ location: { boardId, params: params || {} } });
-      host.goToLocation({
+      engine.goToLocation({
         view: "workspace",
         params: { slug, boardId, ...params },
       });
@@ -456,7 +451,7 @@ export function createWorkspaceController({
 
   // sync host location
 
-  host.subscribe((curr, prev) => {
+  engine.subscribe((curr: UbentoEngineState, prev: UbentoEngineState) => {
     if (!dequal(curr.location, prev.location)) {
       const location = curr.location;
       if (location?.view === "workspace" && location?.params?.slug) {

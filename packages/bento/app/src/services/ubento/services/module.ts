@@ -246,6 +246,34 @@ export function createUbentoModuleService({
       moduleVersionStore.pushMany(res.data);
       return res;
     },
+    createModule: async (data: {
+      name: string;
+      slug?: string;
+      team_id: string;
+      source: string;
+      scope: "public" | "team";
+    }) => {
+      const mod = await ubentoSdk.module.createModule(data);
+      moduleStore.push(mod);
+      return mod;
+    },
+    getModuleVersionArtifact: async (moduleId: string, versionId: string) => {
+      return await ubentoSdk.module.getModuleVersionArtifact(
+        moduleId,
+        versionId,
+      );
+    },
+    getModuleVersionSource: async (moduleId: string, versionId: string) => {
+      return await ubentoSdk.module.getModuleVersionSource(
+        moduleId,
+        versionId,
+      );
+    },
+    publishModuleVersion: async (moduleId: string) => {
+      const v = await ubentoSdk.module.publishModuleVersion(moduleId);
+      moduleVersionStore.push(v);
+      return v;
+    },
   };
 
   return {

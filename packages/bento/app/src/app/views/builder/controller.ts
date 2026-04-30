@@ -7,7 +7,7 @@ import {
   createWindowPort,
   DuplexRpc,
 } from "@ubento/rpc-utils";
-import { UbentoSDK } from "@ubento/sdk";
+import { UbentoService } from "@/services/ubento/ubento";
 import { createStore, StoreApi } from "zustand/vanilla";
 
 export type BuilderState = {
@@ -35,7 +35,7 @@ export function createBuilderController({
   ubento,
   moduleId,
 }: {
-  ubento: UbentoSDK;
+  ubento: UbentoService;
   moduleId: string;
 }): BuilderController {
   let rpc: DuplexRpc<
@@ -85,7 +85,7 @@ export function createBuilderController({
         const module = await ubento.module.getModule(moduleId);
         const source = await ubento.module.getModuleVersionSource(
           moduleId,
-          module.latest_version_id,
+          module.latest_version_id || "",
         );
         set({
           code: source,
@@ -112,9 +112,7 @@ export function createBuilderController({
 
     save: async () => {
       const current = get();
-      await ubento.module.publishModuleVersion(moduleId, {
-        source: current.code,
-      });
+      await ubento.module.publishModuleVersion(moduleId);
     },
   }));
 }

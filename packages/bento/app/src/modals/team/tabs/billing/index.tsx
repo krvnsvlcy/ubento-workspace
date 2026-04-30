@@ -17,15 +17,15 @@ export const BillingTab: FC = () => {
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
       {/* Billing Sub-navigation */}
-      <div className="flex gap-1 p-1 rounded-2xl bg-background-200 w-fit">
+      <div className="flex gap-1 p-1 rounded-2xl bg-neutral-surface w-fit">
         {billingTabs.map((tab) => (
           <button
             key={tab.key}
             onClick={() => setActiveBillingTab(tab.key)}
             className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all ${
               activeBillingTab === tab.key
-                ? "bg-background shadow-sm text-foreground"
-                : "text-foreground-400 hover:text-foreground"
+                ? "bg-background shadow-sm text-neutral-content"
+                : "text-neutral-content-muted hover:text-neutral-content"
             }`}
           >
             {tab.label}
