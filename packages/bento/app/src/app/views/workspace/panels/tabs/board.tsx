@@ -123,8 +123,8 @@ export function BoardTab({ controller }: { controller: WorkspaceEngine }) {
       type: "stack",
       content: [],
       style: {
-        width: 100,
-        height: 100,
+        width: { value: 1, unit: "fr" },
+        height: { value: 1, unit: "fr" },
       },
     });
   };

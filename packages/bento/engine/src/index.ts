@@ -6,6 +6,7 @@ export * from "./components/elements/element.js";
 export * from "./components/workspace.js";
 export * from "./constants.js";
 export * from "./engine.js";
+export * from "./flags.js";
 export * from "./models.js";
 export * from "./runtime_service.js";
 export * from "./services.js";

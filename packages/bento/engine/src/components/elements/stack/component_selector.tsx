@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useBentoEngine } from "../../engine";
+import { useBentoEngine } from "../../../engine";
 
 export function ComponentSelector({
   onSelect,

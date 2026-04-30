@@ -1,10 +1,11 @@
-import { ErrorView, PendingView } from "@ubento/bento-primitives";
+import { EmptyView, ErrorView, PendingView } from "@ubento/bento-primitives";
 import React, { useEffect, useState } from "react";
 import { spacingBaseUnit } from "../../constants.js";
 import { useBentoEngine } from "../../engine.js";
 import { BoardStyle } from "../../models.js";
+import { StackContext } from "../core/core.js";
 import { Element, ElementRegistryProvider } from "../elements/element.js";
-import { Initializer } from "../elements/initializer.js";
+import { Initializer } from "../handles/initializer.js";
 
 function paddingStyle(padding: BoardStyle["padding"]) {
   const sidePadding = (value?: number) =>
@@ -26,9 +27,8 @@ function getBoardStyle(style: BoardStyle = {}): React.CSSProperties {
     display: "flex",
     alignContent: "start",
     flexDirection: style.direction || "row",
-    flexWrap: "wrap",
     gap: style.gap ? `${style.gap * spacingBaseUnit}px` : undefined,
-    overflow: style.direction === "row" ? "hidden auto" : "auto hidden",
+    overflow: style.direction === "row" ? "auto hidden" : "hidden auto",
     pointerEvents: "auto",
     padding: paddingStyle(style.padding),
     transition: "padding 0.2s",
@@ -37,52 +37,20 @@ function getBoardStyle(style: BoardStyle = {}): React.CSSProperties {
 
 function BoardContent({ boardId }: { boardId: string }): React.JSX.Element {
   const engine = useBentoEngine();
-  const { select, addElement, setBoardContent, getModule } = engine;
+  const { select } = engine;
   const isEditMode = engine.useState((s) => s.mode === "edit");
   const board = engine.useState((s) => s.boards[boardId]);
 
-  if (!board) return <></>;
-
-  const onAddRootStack = (direction: "row" | "column") => {
-    const id = addElement("root", {
-      type: "stack",
-      content: [],
-      style: {
-        direction,
-        gap: 1,
-        padding: { top: 1, bottom: 1, left: 1, right: 1 },
-        width: 100,
-        height: 100,
-      } as any,
-    });
-    setBoardContent(boardId, [id]);
-  };
-
-  const onAddRootComponent = (moduleId: string) => {
-    getModule(moduleId).then((m) => {
-      const id = addElement("root", {
-        type: "block",
-        moduleId,
-        moduleVersionId: m.latestVersionId,
-        style: {
-          width: 100,
-          height: 100,
-        } as any,
-        props: {},
-      });
-      setBoardContent(boardId, [id]);
-    });
-  };
+  if (!board) {
+    return <ErrorView message="Board not found" />;
+  }
 
   const isEmpty = board.content.length === 0;
   const content = isEmpty ? (
     isEditMode ? (
-      <Initializer
-        onAddStack={onAddRootStack}
-        onAddComponent={onAddRootComponent}
-      />
+      <Initializer targetId={boardId} targetType="board" />
     ) : (
-      <></>
+      <EmptyView message="This board is empty." />
     )
   ) : (
     board.content.map((id) => <Element key={id} id={id} />)
@@ -90,14 +58,16 @@ function BoardContent({ boardId }: { boardId: string }): React.JSX.Element {
 
   return (
     <ElementRegistryProvider registry={board.elements as any}>
-      <div
-        onClick={() => {
-          select([]);
-        }}
-        style={getBoardStyle(board.style)}
-      >
-        {content}
-      </div>
+      <StackContext value={{ flex: board.style?.direction || "row" }}>
+        <div
+          onClick={() => {
+            select([]);
+          }}
+          style={getBoardStyle(board.style)}
+        >
+          {content}
+        </div>
+      </StackContext>
     </ElementRegistryProvider>
   );
 }

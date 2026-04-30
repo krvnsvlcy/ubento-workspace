@@ -1,7 +1,7 @@
 import React, { createContext, useContext } from "react";
 import { ElementData } from "../../models";
 import { Block } from "./block";
-import { Stack } from "./stack";
+import { Stack } from "./stack/stack";
 
 export type ElementRegistry = {
   [key: string]: ElementData;
@@ -28,7 +28,7 @@ export function Element({ id }: { id: string }): React.JSX.Element {
   const element = registry[id];
 
   if (!element) {
-    return <></>;
+    return <>Element {id} not found</>;
   }
 
   switch (element.type) {
@@ -37,6 +37,6 @@ export function Element({ id }: { id: string }): React.JSX.Element {
     case "block":
       return <Block id={id} data={element} />;
     default:
-      return <></>;
+      return <>Unknown element type</>;
   }
 }

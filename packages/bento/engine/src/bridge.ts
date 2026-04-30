@@ -11,6 +11,8 @@ export type HostRpcInterface = {
   setLocation: (payload: { location?: BentoLocation }) => void;
   setSelectionScope: (payload: { selectionScope?: string }) => void;
   setSelection: (payload: { selection: string[] }) => void;
+  setHover: (payload: { elementId: string }) => void;
+  clearHover: (payload: { elementId: string }) => void;
 
   // content retrieval
   getBoard: (payload: { boardId: string }) => Promise<BoardData>;
@@ -49,6 +51,7 @@ export type GuestRpcInterface = {
   locationChanged: (payload: { location?: BentoLocation }) => void;
   selectionScopeChanged: (payload: { selectionScope?: string }) => void;
   selectionChanged: (payload: { selection: string[] }) => void;
+  hoverChanged: (payload: { hover?: string }) => void;
 
   // workspace mutators
   setHomeBoardId: (payload: { homeBoardId: string }) => Promise<void>;

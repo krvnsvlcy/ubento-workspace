@@ -1,7 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, {
+  PropsWithChildren,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { baseLengthUnit, spacingBaseUnit } from "../../constants";
 import { useBentoEngine } from "../../engine";
-import { ElementData } from "../../models";
+import { ElementData, Length } from "../../models";
 
 type ResizeDirection =
   | "n"
@@ -79,50 +85,269 @@ export function RadiusHandle({
   width: number;
   height: number;
 }) {
-  const widthPx = width * baseLengthUnit;
-  const heightPx = height * baseLengthUnit;
+  const widthPx = width;
+  const heightPx = height;
   const radiusPx = radius * spacingBaseUnit;
   const limitPx = Math.min(widthPx / 2, heightPx / 2);
   const pos = Math.min(limitPx, Math.max(12, radiusPx));
 
   return (
+    <>
+      <style>{`
+        @container (width < 60px) or (height < 60px) {
+          .bento-radius-handle {
+            display: none !important;
+          }
+        }
+      `}</style>
+      <div
+        className="bento-radius-handle"
+        onMouseDown={(e) => onMouseDown(e, "radius")}
+        style={{
+          position: "absolute",
+          top: pos,
+          right: pos,
+          width: 10,
+          height: 10,
+          backgroundColor: "white",
+          border: "2px solid var(--color-accent)",
+          borderRadius: "50%",
+          transform: "translate(50%, -50%)",
+          zIndex: 110,
+          cursor: "pointer",
+          boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+        }}
+      />
+    </>
+  );
+}
+
+export function SizeControl({
+  id,
+  width,
+  height,
+}: {
+  id: string;
+  width?: Length;
+  height?: Length;
+}) {
+  const engine = useBentoEngine();
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleToggle = (e: React.MouseEvent, dimension: "width" | "height") => {
+    e.stopPropagation();
+
+    if (e.shiftKey) {
+      engine.setElementStyle(id, { [dimension]: undefined });
+      return;
+    }
+
+    const currentUnit = dimension === "width" ? width?.unit : height?.unit;
+    let targetUnit: "px" | "%" = "px";
+
+    if (currentUnit === "px") {
+      targetUnit = "%";
+    } else {
+      // If currently % or fr, toggle back to px
+      targetUnit = "px";
+    }
+
+    engine.convertElementSizeUnit(id, dimension, targetUnit);
+  };
+
+  const handleFill = (e: React.MouseEvent, dimension: "width" | "height") => {
+    e.stopPropagation();
+    const current = dimension === "width" ? width : height;
+
+    if (current?.unit === "fr") {
+      const delta = e.shiftKey ? -1 : 1;
+      const nextValue = Math.max(1, (current.value ?? 1) + delta);
+      engine.setElementStyle(id, {
+        [dimension]: { value: nextValue, unit: "fr" },
+      });
+    } else {
+      engine.setElementStyle(id, {
+        [dimension]: { value: 1, unit: "fr" },
+      });
+    }
+  };
+
+  const ref = useRef<HTMLDivElement>(null);
+  const [translate, setTranslate] = useState({ x: "-50%", y: "0px" });
+
+  useLayoutEffect(() => {
+    if (!ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    const padding = 12;
+
+    let tx = -50;
+    let ty = 0;
+
+    if (rect.left < padding) {
+      tx = tx + (padding - rect.left);
+    } else if (rect.right > window.innerWidth - padding) {
+      tx = tx - (rect.right - (window.innerWidth - padding));
+    }
+
+    if (rect.bottom > window.innerHeight - padding) {
+      // Move above the element if it's at the bottom
+      ty = -(rect.height + 16);
+    }
+
+    setTranslate({ x: `${tx}%`, y: `${ty}px` });
+  }, [isHovered, width, height]);
+
+  return (
     <div
-      onMouseDown={(e) => onMouseDown(e, "radius")}
+      ref={ref}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       style={{
         position: "absolute",
-        top: pos,
-        right: pos,
-        width: 10,
-        height: 10,
-        backgroundColor: "white",
-        border: "2px solid #3b82f6",
-        borderRadius: "50%",
-        transform: "translate(50%, -50%)",
-        zIndex: 110,
-        cursor: "pointer",
-        boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+        top: "calc(100% + 8px)",
+        left: "50%",
+        transform: `translate(${translate.x}, ${translate.y})`,
+        background: "var(--color-accent-content)",
+        color: "var(--color-accent-contrast)",
+        padding: "2px 8px",
+        borderRadius: "6px",
+        fontSize: "10px",
+        fontWeight: "600",
+        pointerEvents: "auto",
+        whiteSpace: "nowrap",
+        zIndex: 100,
+        boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+        display: "flex",
+        alignItems: "center",
+        gap: "6px",
+        transition: "all 0.2s ease",
+        minWidth: isHovered ? "120px" : "auto",
+        justifyContent: "center",
       }}
-    />
+    >
+      {isHovered && (
+        <button
+          onClick={(e) => handleFill(e, "width")}
+          title="Fill width (1fr)"
+          style={{
+            background: "rgba(255,255,255,0.1)",
+            border: "none",
+            color: "inherit",
+            padding: "2px 4px",
+            borderRadius: "4px",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="m18 8 4 4-4 4" />
+            <path d="M2 12h20" />
+            <path d="m6 8-4 4 4 4" />
+          </svg>
+        </button>
+      )}
+
+      <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+        <span
+          onClick={(e) => handleToggle(e, "width")}
+          style={{ cursor: "pointer", display: "flex", gap: "1px" }}
+          title="Toggle unit, Shift+Click for fit"
+        >
+          {width ? (
+            <>
+              {width.value}
+              <span style={{ opacity: 0.7 }}>{width.unit}</span>
+            </>
+          ) : (
+            "fit"
+          )}
+        </span>
+        <span style={{ opacity: 0.5 }}>×</span>
+        <span
+          onClick={(e) => handleToggle(e, "height")}
+          style={{ cursor: "pointer", display: "flex", gap: "1px" }}
+          title="Toggle unit, Shift+Click for fit"
+        >
+          {height ? (
+            <>
+              {height.value}
+              <span style={{ opacity: 0.7 }}>{height.unit}</span>
+            </>
+          ) : (
+            "fit"
+          )}
+        </span>
+      </div>
+
+      {isHovered && (
+        <button
+          onClick={(e) => handleFill(e, "height")}
+          title="Fill height (1fr)"
+          style={{
+            background: "rgba(255,255,255,0.1)",
+            border: "none",
+            color: "inherit",
+            padding: "2px 4px",
+            borderRadius: "4px",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="m8 18 4 4 4-4" />
+            <path d="M12 2v20" />
+            <path d="m8 6 4-4 4 4" />
+          </svg>
+        </button>
+      )}
+    </div>
   );
 }
 
 export function BoxHandle({
   id,
   element,
-}: {
+  isEmpty,
+  children,
+}: PropsWithChildren<{
   id: string;
   element: ElementData;
-}) {
+  isEmpty?: boolean;
+}>) {
   const engine = useBentoEngine();
   const { setElementStyle, select } = engine;
   const isSelected = engine.useState((e) => e.selection?.includes(id));
-  const isEditMode = engine.useState((e) => e.mode === "edit");
+  const isHovered = engine.useState((e) => e.hover === id);
 
   const [dragType, setDragType] = useState<ResizeDirection | null>(null);
   const [dragStart, setDragStart] = useState<{
     x: number;
     y: number;
     initialStyle: any;
+    initialRect?: { width: number; height: number };
+    parentRect?: { width: number; height: number };
   } | null>(null);
 
   useEffect(() => {
@@ -148,29 +373,76 @@ export function BoxHandle({
         const unitChange = Math.round(pixelChange / spacingBaseUnit);
         styleUpdates.cornerRadius = Math.max(0, initialRadius + unitChange);
       } else {
-        const initialWidth = dragStart.initialStyle.width ?? 0;
-        const initialHeight = dragStart.initialStyle.height ?? 0;
+        const initialWidth = dragStart.initialStyle.width as Length | undefined;
+        const initialHeight = dragStart.initialStyle.height as
+          | Length
+          | undefined;
 
-        if (dragType.includes("e")) {
-          styleUpdates.width = Math.max(1, initialWidth + unitDeltaX);
+        const currentPixelWidth = dragStart.initialRect?.width ?? 0;
+        const currentPixelHeight = dragStart.initialRect?.height ?? 0;
+
+        let targetPixelWidth = currentPixelWidth;
+        if (dragType.includes("e")) targetPixelWidth += totalDeltaX;
+        if (dragType.includes("w")) targetPixelWidth -= totalDeltaX;
+        targetPixelWidth = Math.max(
+          baseLengthUnit,
+          Math.round(targetPixelWidth / baseLengthUnit) * baseLengthUnit,
+        );
+
+        let targetPixelHeight = currentPixelHeight;
+        if (dragType.includes("s")) targetPixelHeight += totalDeltaY;
+        if (dragType.includes("n")) targetPixelHeight -= totalDeltaY;
+        targetPixelHeight = Math.max(
+          baseLengthUnit,
+          Math.round(targetPixelHeight / baseLengthUnit) * baseLengthUnit,
+        );
+
+        if (dragType.includes("e") || dragType.includes("w")) {
+          if (initialWidth?.unit === "%" && dragStart.parentRect?.width) {
+            styleUpdates.width = {
+              value: Math.round(
+                (targetPixelWidth / dragStart.parentRect.width) * 100,
+              ),
+              unit: "%",
+            };
+          } else {
+            styleUpdates.width = {
+              value: targetPixelWidth,
+              unit: "px",
+            };
+          }
         }
-        if (dragType.includes("w")) {
-          styleUpdates.width = Math.max(1, initialWidth - unitDeltaX);
-        }
-        if (dragType.includes("s")) {
-          styleUpdates.height = Math.max(1, initialHeight + unitDeltaY);
-        }
-        if (dragType.includes("n")) {
-          styleUpdates.height = Math.max(1, initialHeight - unitDeltaY);
+
+        if (dragType.includes("s") || dragType.includes("n")) {
+          if (initialHeight?.unit === "%" && dragStart.parentRect?.height) {
+            styleUpdates.height = {
+              value: Math.round(
+                (targetPixelHeight / dragStart.parentRect.height) * 100,
+              ),
+              unit: "%",
+            };
+          } else {
+            styleUpdates.height = {
+              value: targetPixelHeight,
+              unit: "px",
+            };
+          }
         }
       }
 
       if (Object.keys(styleUpdates).length > 0) {
         // Only update if the unit-based values have actually changed
         const currentStyle = element.style as any;
-        const hasChanged = Object.entries(styleUpdates).some(
-          ([key, value]) => currentStyle[key] !== value,
-        );
+        const hasChanged = Object.entries(styleUpdates).some(([key, value]) => {
+          const currentValue = currentStyle[key];
+          if (typeof value === "object" && value !== null) {
+            return (
+              currentValue?.value !== (value as any).value ||
+              currentValue?.unit !== (value as any).unit
+            );
+          }
+          return currentValue !== value;
+        });
         if (hasChanged) {
           setElementStyle(id, styleUpdates);
         }
@@ -191,21 +463,30 @@ export function BoxHandle({
     };
   }, [dragType, dragStart, element, id]);
 
-  if (!isEditMode) return null;
-
   const handleMouseDown = (e: React.MouseEvent, dir: ResizeDirection) => {
     e.stopPropagation();
     e.preventDefault();
+
+    const el = engine.getHtmlElement(id);
+    const rect = el?.getBoundingClientRect();
+    const parentRect = el?.parentElement?.getBoundingClientRect();
+
     setDragType(dir);
     setDragStart({
       x: e.clientX,
       y: e.clientY,
       initialStyle: { ...element.style },
+      initialRect: rect
+        ? { width: rect.width, height: rect.height }
+        : undefined,
+      parentRect: parentRect
+        ? { width: parentRect.width, height: parentRect.height }
+        : undefined,
     });
   };
 
-  const width = element.style?.width ?? 0;
-  const height = element.style?.height ?? 0;
+  const width = element.style?.width;
+  const height = element.style?.height;
 
   return (
     <div
@@ -217,9 +498,23 @@ export function BoxHandle({
         position: "absolute",
         inset: 0,
         zIndex: 10,
+        containerType: "size",
         cursor: isSelected ? "default" : "pointer",
-        boxShadow: isSelected ? "0 0 0 2px #3b82f6" : "none",
+        border: isSelected
+          ? "2px solid var(--color-accent-content)"
+          : isHovered
+            ? "2px dashed var(--color-accent-content)"
+            : isEmpty
+              ? "1px dashed var(--color-neutral-content-muted)"
+              : "none",
         pointerEvents: "auto",
+        borderRadius: isEmpty ? "12px" : "0",
+      }}
+      onMouseEnter={() => {
+        engine.hover(id);
+      }}
+      onMouseLeave={() => {
+        engine.unHover(id);
       }}
     >
       {isSelected && (
@@ -232,8 +527,22 @@ export function BoxHandle({
           <EdgeHandle position="s" onMouseDown={handleMouseDown} />
           <EdgeHandle position="e" onMouseDown={handleMouseDown} />
           <EdgeHandle position="w" onMouseDown={handleMouseDown} />
+          <SizeControl id={id} width={width} height={height} />
         </>
       )}
+
+      {
+        <div
+          style={{
+            height: "100%",
+            width: "100%",
+            opacity: isHovered || isSelected ? 1 : 0,
+            transition: "opacity 0.2s",
+          }}
+        >
+          {children}
+        </div>
+      }
     </div>
   );
 }

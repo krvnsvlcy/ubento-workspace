@@ -1,8 +1,9 @@
 import { ErrorView, PendingView } from "@ubento/bento-primitives";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useBentoEngine } from "../../engine";
 import { BlockData } from "../../models";
 import { BaseElement, getBaseStyle } from "./base_element";
+import { StackContext } from "./stack/stack";
 
 export function Block({
   id,
@@ -11,6 +12,7 @@ export function Block({
   id: string;
   data: BlockData;
 }): React.JSX.Element {
+  const stackContext = useContext(StackContext);
   const engine = useBentoEngine();
   const { getModule, resolveModuleValue } = engine;
   const latestVersionId = engine.useState(
@@ -57,7 +59,13 @@ export function Block({
     return <ErrorView message="No default export found in component module" />;
 
   return (
-    <BaseElement id={id} data={data} style={getBaseStyle(data.style || {})}>
+    <BaseElement
+      id={id}
+      data={data}
+      style={getBaseStyle(data.style || {}, {
+        flex: stackContext.flex,
+      })}
+    >
       <Component {...data.props} />
     </BaseElement>
   );

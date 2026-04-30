@@ -1,8 +1,14 @@
 import { z } from "zod";
 
+export const lengthSchema = z.object({
+  value: z.number(),
+  unit: z.enum(["px", "%", "fr"]),
+});
+export type Length = z.infer<typeof lengthSchema>;
+
 export const baseElementStyleSchema = z.object({
-  width: z.number().optional(),
-  height: z.number().optional(),
+  width: lengthSchema.optional(),
+  height: lengthSchema.optional(),
   minWidth: z.number().optional(),
   maxWidth: z.number().optional(),
   minHeight: z.number().optional(),
@@ -16,6 +22,7 @@ export const baseElementStyleSchema = z.object({
       right: z.number().optional(),
     })
     .optional(),
+  cornerRadius: z.number().optional(),
 });
 export type BaseStyle = z.infer<typeof baseElementStyleSchema>;
 

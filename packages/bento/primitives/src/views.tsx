@@ -62,16 +62,16 @@ export const EmptyView: React.FC<ViewProps> = ({
   );
 };
 
-export const ErrorView: React.FC<ViewProps & { error?: Error | string }> = ({
-  message = "Something went wrong",
-  error,
-  className = "",
-  children,
-}) => {
+export const ErrorView: React.FC<
+  ViewProps & {
+    error?: Error | string;
+    action?: { label: string; onClick: () => void };
+  }
+> = ({ message = "Something went wrong", error, className = "", children }) => {
   return (
     <div
       id="error-view"
-      className={`flex flex-col items-center justify-center min-h-[300px] w-full p-8 text-center border border-destructive-border rounded-2xl bg-destructive-surface animate-in slide-in-from-bottom-4 duration-500 ${className}`}
+      className={`flex flex-col items-center justify-center h-full w-full p-8 text-center border border-destructive-border rounded-2xl bg-destructive-surface animate-in slide-in-from-bottom-4 duration-500 ${className}`}
     >
       <div className="w-16 h-16 rounded-full bg-destructive-surface-hover flex items-center justify-center mb-4">
         <svg

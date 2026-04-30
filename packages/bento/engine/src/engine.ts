@@ -27,6 +27,7 @@ export type BentoEngineState = {
   location?: BentoLocation;
 
   selectionScope?: string;
+  hover?: string;
   selection: string[];
 
   workspace: WorkspaceData | null;
@@ -41,7 +42,9 @@ export type BentoEngine = StateController<BentoEngineState> & {
   toggleMode: () => void;
 
   // selection
-  select: (blockIds: string[], toggle?: boolean) => void;
+  select: (elementIds: string[], toggle?: boolean) => void;
+  hover: (elementId: string) => void;
+  unHover: (elementId: string) => void;
 
   // navigation
   goTo: (location: BentoLocation) => void;
@@ -57,16 +60,6 @@ export type BentoEngine = StateController<BentoEngineState> & {
   createModule: (name: string) => Promise<ModuleData & { id: string }>;
 
   // mutators
-  setMode: (mode: BentoMode) => void;
-  setWorkspace: (workspace: WorkspaceData) => void;
-  setSelection: (selection: string[]) => void;
-  setLocation: (location?: BentoLocation) => void;
-  setSelectionScope: (selectionScope?: string) => void;
-  setRuntimeService: (name: string, service: any) => void;
-
-  setHomeBoardId: (homeBoardId: string) => void;
-  updateWorkspace: (workspace: Partial<WorkspaceData>) => void;
-
   setBoardStyle: (boardId: string, style: Partial<BaseStyle>) => void;
   setBoardContent: (boardId: string, content: string[]) => void;
 
@@ -86,6 +79,18 @@ export type BentoEngine = StateController<BentoEngineState> & {
   ) => string;
   deleteElement: (id: string, boardId?: string) => void;
   replaceElement: (id: string, element: ElementData) => void;
+
+  // dom tracking
+  setHtmlElement: (id: string, element?: HTMLElement) => void;
+  getHtmlElement: (id: string) => HTMLElement | undefined;
+  convertElementSizeUnit: (
+    id: string,
+    dimension: "width" | "height",
+    targetUnit: "px" | "%",
+  ) => void;
+
+  // selectors
+  selectActiveBoard: (state: BentoEngineState) => BoardData | undefined;
 };
 
 export function createBentoEngine({
@@ -94,6 +99,7 @@ export function createBentoEngine({
   rpc: DuplexRpc<GuestRpcInterface, HostRpcInterface>;
 }): BentoEngine {
   const moduleValueCache = new Map<string, any>();
+  const htmlElements = new Map<string, HTMLElement>();
 
   const store = createZustandStore<BentoEngineState>()(() => ({
     mode: "live",
@@ -108,23 +114,6 @@ export function createBentoEngine({
 
   const engine: BentoEngine = {
     ...controller,
-    setMode: (mode: BentoMode) => {
-      store.setState({ mode });
-    },
-    setSelection: (selection: string[]) => {
-      store.setState({ selection });
-    },
-    setLocation: (location?: BentoLocation) => {
-      store.setState({ location });
-    },
-    setSelectionScope: (selectionScope?: string) => {
-      store.setState({ selectionScope });
-    },
-    setRuntimeService: (name: string, service: any) => {
-      store.setState((s) => ({
-        runtimeServices: { ...s.runtimeServices, [name]: service },
-      }));
-    },
 
     // interaction
     toggleMode: () => {
@@ -149,27 +138,16 @@ export function createBentoEngine({
         selection: nextSelection,
       });
     },
+    hover: (elementId: string) => {
+      rpc.egress.setHover({ elementId });
+    },
+    unHover: (elementId: string) => {
+      rpc.egress.clearHover({ elementId });
+    },
 
     // navigation
     goTo: (location: BentoLocation) => {
       rpc.egress.setLocation({ location });
-    },
-
-    // workspace mutators
-    setWorkspace: (workspace: WorkspaceData) => {
-      store.setState({ workspace });
-    },
-
-    setHomeBoardId: (homeBoardId: string) => {
-      store.setState((s) => ({
-        workspace: s.workspace ? { ...s.workspace, homeBoardId } : null,
-      }));
-    },
-
-    updateWorkspace: (workspace: Partial<WorkspaceData>) => {
-      store.setState((s) => ({
-        workspace: s.workspace ? { ...s.workspace, ...workspace } : null,
-      }));
     },
 
     // board mutators
@@ -587,6 +565,44 @@ export function createBentoEngine({
       }));
       return res;
     },
+    setHtmlElement: (id: string, element?: HTMLElement) => {
+      if (element) {
+        htmlElements.set(id, element);
+      } else {
+        htmlElements.delete(id);
+      }
+    },
+    getHtmlElement: (id: string) => {
+      return htmlElements.get(id);
+    },
+    convertElementSizeUnit: (id, dimension, targetUnit) => {
+      const el = htmlElements.get(id);
+      if (!el) return;
+
+      const rect = el.getBoundingClientRect();
+      const parentRect = el.parentElement?.getBoundingClientRect();
+
+      let value = 0;
+      if (targetUnit === "px") {
+        value = Math.round(dimension === "width" ? rect.width : rect.height);
+      } else if (targetUnit === "%" && parentRect) {
+        const size = dimension === "width" ? rect.width : rect.height;
+        const parentSize =
+          dimension === "width" ? parentRect.width : parentRect.height;
+        if (parentSize > 0) {
+          value = Math.round((size / parentSize) * 100);
+        }
+      }
+
+      engine.setElementStyle(id, {
+        [dimension]: { value, unit: targetUnit },
+      });
+    },
+
+    selectActiveBoard: (state: BentoEngineState) => {
+      const activeBoardId = state.location?.boardId;
+      return activeBoardId ? state.boards[activeBoardId] : undefined;
+    },
   };
 
   // Sync workspace services
@@ -656,32 +672,41 @@ export function createBentoEngine({
   // Handle Host requests
   rpc.setHandlers({
     init: async ({ workspace, state }) => {
-      engine.setWorkspace(workspace);
+      store.setState((s) => ({ workspace }));
       if (state) {
-        if (state.mode) engine.setMode(state.mode);
-        if (state.location) engine.setLocation(state.location);
+        if (state.mode) store.setState((s) => ({ mode: state.mode }));
+        if (state.location)
+          store.setState((s) => ({ location: state.location }));
         if (state.selectionScope)
-          engine.setSelectionScope(state.selectionScope);
-        if (state.selection) engine.setSelection(state.selection);
+          store.setState((s) => ({ selectionScope: state.selectionScope }));
+        if (state.selection)
+          store.setState((s) => ({ selection: state.selection }));
       }
     },
     modeChanged: async ({ mode }) => {
-      engine.setMode(mode);
+      store.setState((s) => ({ mode }));
     },
     locationChanged: async ({ location }) => {
-      engine.setLocation(location);
+      store.setState((s) => ({ location }));
     },
     selectionScopeChanged: async ({ selectionScope }) => {
-      engine.setSelectionScope(selectionScope);
+      store.setState((s) => ({ selectionScope }));
     },
     selectionChanged: async ({ selection }) => {
-      engine.setSelection(selection);
+      store.setState((s) => ({ selection }));
+    },
+    hoverChanged: async ({ hover }) => {
+      store.setState((s) => ({ hover }));
     },
     setHomeBoardId: async ({ homeBoardId }) => {
-      engine.setHomeBoardId(homeBoardId);
+      store.setState((s) => ({
+        workspace: s.workspace ? { ...s.workspace, homeBoardId } : null,
+      }));
     },
     updateWorkspace: async ({ workspace }) => {
-      engine.updateWorkspace(workspace);
+      store.setState((s) => ({
+        workspace: s.workspace ? { ...s.workspace, ...workspace } : null,
+      }));
     },
     deleteBoard: async ({ boardId }) => {
       engine.deleteBoard(boardId);

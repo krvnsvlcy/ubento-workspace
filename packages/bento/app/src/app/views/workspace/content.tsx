@@ -36,7 +36,7 @@ export function WorkspaceContent({
     );
   }
 
-  const engine = (
+  const content = (
     <iframe
       ref={iframeRef}
       src={iframeUrl}
@@ -65,6 +65,9 @@ export function WorkspaceContent({
           transition: "padding 0.2s ease-in-out",
         } as any
       }
+      onClick={() => {
+        controller.select([]);
+      }}
     >
       <SideSplitView
         side={{
@@ -85,7 +88,7 @@ export function WorkspaceContent({
               transition: "padding 0.2s ease-in-out",
             }}
           >
-            {engine}
+            {content}
           </div>
         </div>
       </SideSplitView>

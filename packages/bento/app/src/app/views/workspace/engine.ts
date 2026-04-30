@@ -34,6 +34,7 @@ export type WorkspaceState = {
   location?: BentoLocation;
   selectionScope?: string;
   selection: string[];
+  hover?: string;
 
   // rpc
   connected: boolean; // the iframe has established communication
@@ -176,10 +177,44 @@ export function createWorkspaceEngine({
               elements: {
                 root: {
                   type: "stack",
+                  content: ["left", "right"],
+                  style: {
+                    width: {
+                      value: 100,
+                      unit: "%",
+                    },
+                    height: {
+                      value: 300,
+                      unit: "px",
+                    },
+                  },
+                },
+                left: {
+                  type: "stack",
                   content: [],
                   style: {
-                    width: 100,
-                    height: 100,
+                    width: {
+                      value: 1,
+                      unit: "fr",
+                    },
+                    height: {
+                      value: 1,
+                      unit: "fr",
+                    },
+                  },
+                },
+                right: {
+                  type: "stack",
+                  content: [],
+                  style: {
+                    width: {
+                      value: 1,
+                      unit: "fr",
+                    },
+                    height: {
+                      value: 1,
+                      unit: "fr",
+                    },
                   },
                 },
               },
@@ -270,6 +305,17 @@ export function createWorkspaceEngine({
           },
           setSelection: ({ selection }) => {
             store.setState({ selection });
+          },
+          setHover: ({ elementId }) => {
+            store.setState({ hover: elementId });
+          },
+          clearHover: ({ elementId }) => {
+            store.setState((state) => {
+              if (state.hover === elementId) {
+                return { hover: undefined };
+              }
+              return {};
+            });
           },
 
           // sync
@@ -492,6 +538,9 @@ export function createWorkspaceEngine({
     }
     if (!dequal(curr.selection, prev.selection)) {
       rpc?.egress.selectionChanged({ selection: curr.selection });
+    }
+    if (!dequal(curr.hover, prev.hover)) {
+      rpc?.egress.hoverChanged({ hover: curr.hover });
     }
 
     // persist workspace and board changes
