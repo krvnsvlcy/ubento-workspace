@@ -18,10 +18,17 @@ export function WorkspaceContent({
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [inspectorWidth, setInspectorWidth] = useState(320);
 
+  const iframeUrl = useMemo(() => {
+    const url = new URL(host.workspaceRuntimeUrl);
+    url.searchParams.set("editPaddingSize", "6px");
+    return url.toString();
+  }, [host.workspaceRuntimeUrl]);
+
   if (error) {
     return (
       <ErrorView
         message={"Error Loading Workspace"}
+        details={<p>{String(error)}</p>}
         action={{
           label: "Retry",
           handler: () => window.location.reload(),
@@ -29,12 +36,6 @@ export function WorkspaceContent({
       />
     );
   }
-
-  const iframeUrl = useMemo(() => {
-    const url = new URL(host.workspaceRuntimeUrl);
-    url.searchParams.set("editPaddingSize", "6px");
-    return url.toString();
-  }, [host.workspaceRuntimeUrl]);
 
   const engine = (
     <iframe

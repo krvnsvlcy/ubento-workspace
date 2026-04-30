@@ -4,6 +4,11 @@ import { createStore as createZustandStore } from "zustand/vanilla";
 
 export type AsyncDataStatus = "pending" | "error" | "success";
 export type AsyncDataFetchStatus = "idle" | "fetching";
+export type FetchPolicy =
+  | "cache-first" // Return cache if available, otherwise fetch
+  | "network-only" // Always fetch, ignore cache
+  | "cache-and-network" // Return cache if available, but always fetch in background
+  | "cache-only"; // Only return cache, never fetch
 
 export type Usage = {
   users: number;
@@ -18,7 +23,6 @@ export type QueryState<P = unknown> = {
   nextPage?: P;
 };
 
-// Notice: usage is strictly removed from the reactive tree
 export interface StoreState<D, P = unknown> {
   data: Record<string, D>;
   queries: Record<string, QueryState<P>>;
@@ -33,6 +37,15 @@ export type EntityList<D, P = unknown> = {
   data: D[];
   query: QueryState<P>;
 };
+
+export interface FetchOptions {
+  fetchPolicy?: FetchPolicy;
+}
+
+export interface FetchManyOptions<J, P> extends FetchOptions {
+  params?: J;
+  page?: P;
+}
 
 // --- INTERNAL UTILITIES ---
 
@@ -62,9 +75,9 @@ export function createStore<
   namespace,
   getKey,
   fetchOne,
-  fetchMany,
+  fetchMany: fetchManyApi,
   project,
-  gcTime = 1000 * 60 * 5, // Default GC time: 5 minutes
+  gcTime = 1000 * 60 * 5,
 }: {
   namespace: string;
   getKey: (entity: D) => string;
@@ -74,11 +87,9 @@ export function createStore<
     previousPage?: P;
     nextPage?: P;
   }>;
-  // project runs even if params are undefined to establish default sorting
   project?: (entities: D[], params?: J) => D[];
   gcTime?: number;
 }) {
-  // 1. The Reactive State (Triggers React renders)
   const store = createZustandStore<StoreState<D, P>>(() => ({
     data: {},
     queries: {},
@@ -87,13 +98,12 @@ export function createStore<
   const get = store.getState;
   const set = store.setState;
 
-  // 2. The Shadow State (Invisible to React, handles Garbage Collection)
   const usageTracker = new Map<string, Usage>();
   const gcTimers = new Map<string, NodeJS.Timeout>();
 
   return {
     namespace,
-    store, // Expose raw vanilla store for React hooks
+    store,
 
     // --- GARBAGE COLLECTION API ---
     retain: (cacheKey: string) => {
@@ -122,7 +132,6 @@ export function createStore<
             const newData = { ...state.data };
             const newQueries = { ...state.queries };
 
-            // Clean up the dictionary if it's an item, or clean up the query metadata
             if (cacheKey.startsWith("item:")) {
               const id = cacheKey.replace("item:", "");
               delete newData[id];
@@ -140,26 +149,21 @@ export function createStore<
       }
     },
 
-    // --- INJECTION ---
+    // --- INJECTION & EVICTION ---
     push: (item: D) => {
       const key = getKey(item);
-      set((state) => ({
-        data: { ...state.data, [key]: item },
-      }));
+      set((state) => ({ data: { ...state.data, [key]: item } }));
     },
 
     pushMany: (items: D[]) => {
       if (items.length === 0) return;
       set((state) => {
         const newData = { ...state.data };
-        items.forEach((item) => {
-          newData[getKey(item)] = item;
-        });
+        items.forEach((item) => (newData[getKey(item)] = item));
         return { data: newData };
       });
     },
 
-    // --- EVICTION ---
     remove: (key: string) => {
       set((state) => {
         const newData = { ...state.data };
@@ -175,28 +179,21 @@ export function createStore<
           keysOrMatcher.forEach((key) => delete newData[key]);
         } else {
           Object.values(newData).forEach((item) => {
-            if (keysOrMatcher(item)) {
-              delete newData[getKey(item)];
-            }
+            if (keysOrMatcher(item)) delete newData[getKey(item)];
           });
         }
         return { data: newData };
       });
     },
 
-    // --- UPDATES ---
     update: (key: string, updater: Partial<D> | ((data: D) => Partial<D>)) => {
       set((state) => {
         const currentItem = state.data[key];
         if (!currentItem) return state;
 
-        const patch =
-          typeof updater === "function" ? updater(currentItem) : updater;
+        const patch = typeof updater === "function" ? updater(currentItem) : updater;
         return {
-          data: {
-            ...state.data,
-            [key]: { ...currentItem, ...patch },
-          },
+          data: { ...state.data, [key]: { ...currentItem, ...patch } },
         };
       });
     },
@@ -214,8 +211,7 @@ export function createStore<
         keysToUpdate.forEach((key) => {
           const currentItem = newData[key];
           if (currentItem) {
-            const patch =
-              typeof updater === "function" ? updater(currentItem) : updater;
+            const patch = typeof updater === "function" ? updater(currentItem) : updater;
             newData[key] = { ...currentItem, ...patch };
           }
         });
@@ -225,8 +221,14 @@ export function createStore<
     },
 
     // --- QUERIES ---
-    fetch: async (key: string) => {
+    fetch: async (key: string, options?: FetchOptions) => {
+      const { fetchPolicy = "cache-first" } = options || {};
       const queryKey = getEntityQueryKey(key);
+      const isCached = get().data[key] !== undefined;
+
+      // Apply Fetch Policy Rules
+      if (fetchPolicy === "cache-only") return;
+      if (fetchPolicy === "cache-first" && isCached) return;
 
       set((state) => ({
         queries: {
@@ -257,10 +259,7 @@ export function createStore<
           queries: {
             ...state.queries,
             [queryKey]: {
-              status:
-                state.queries[queryKey]?.status === "success"
-                  ? "success"
-                  : "error",
+              status: state.queries[queryKey]?.status === "success" ? "success" : "error",
               fetchStatus: "idle",
               error,
             },
@@ -269,8 +268,14 @@ export function createStore<
       }
     },
 
-    fetchMany: async (params?: J, page?: P) => {
+    fetchMany: async (options?: FetchManyOptions<J, P>) => {
+      const { params, page, fetchPolicy = "cache-first" } = options || {};
       const queryKey = getEntityProjectionQueryKey(params);
+      const isCached = get().queries[queryKey]?.status === "success";
+
+      // Apply Fetch Policy Rules (Pagination bypasses cache-first)
+      if (fetchPolicy === "cache-only") return;
+      if (fetchPolicy === "cache-first" && isCached && page === undefined) return;
 
       set((state) => {
         const existingQuery = state.queries[queryKey] || {};
@@ -289,7 +294,7 @@ export function createStore<
       });
 
       try {
-        const { data, nextPage, previousPage } = await fetchMany({
+        const { data, nextPage, previousPage } = await fetchManyApi({
           params,
           page,
         });
@@ -321,8 +326,7 @@ export function createStore<
             queries: {
               ...state.queries,
               [queryKey]: {
-                status:
-                  existingQuery.status === "success" ? "success" : "error",
+                status: existingQuery.status === "success" ? "success" : "error",
                 fetchStatus: "idle",
                 error,
                 nextPage: existingQuery.nextPage,
@@ -361,11 +365,7 @@ export function createStore<
       };
 
       const allEntities: D[] = Object.values(state.data);
-
-      // Execute projection even if params are missing to ensure default sorting
-      const projectedData = project
-        ? project(allEntities, params)
-        : allEntities;
+      const projectedData = project ? project(allEntities, params) : allEntities;
 
       return {
         data: projectedData,
@@ -375,7 +375,6 @@ export function createStore<
   };
 }
 
-// Extract the inferred type to avoid manual interface maintenance
 export type Store<
   D,
   J extends Record<string, unknown> = {},

@@ -1,6 +1,6 @@
 import { UbentoEngine } from "@/engine/engine";
-import { createUbentoWorkspaceService } from "@/services/ubento/services/workspace";
 import { createUbentoModuleService } from "@/services/ubento/services/module";
+import { createUbentoWorkspaceService } from "@/services/ubento/services/workspace";
 import {
   BlockData,
   BoardData,
@@ -26,7 +26,7 @@ import { createStore, StoreApi } from "zustand/vanilla";
 export type WorkspaceState = {
   // status
   loading: boolean;
-  error: boolean;
+  error: string;
 
   // context
   mode: EngineMode;
@@ -334,7 +334,7 @@ export function createWorkspaceController({
         }
       } catch (err) {
         set({
-          error: true,
+          error: String(err),
           loading: false,
         });
       }

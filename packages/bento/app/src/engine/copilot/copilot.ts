@@ -1,4 +1,4 @@
-import { UbentoSDK } from "@ubento/sdk";
+import { UbentoService } from "@/services/ubento/ubento.js";
 import { Agent, createAgent } from "./agent/agent.js";
 import { createUbentoAgentEnvironment } from "./copilot/environment.js";
 import {
@@ -9,11 +9,11 @@ import {
 export type UbentoCopilot = Agent;
 
 export function createUbentoCopilot({
-  ubentoApi,
+  ubento,
 }: {
-  ubentoApi: UbentoSDK;
+  ubento: UbentoService;
 }): UbentoCopilot {
-  const env = createUbentoAgentEnvironment({ ubentoApi });
+  const env = createUbentoAgentEnvironment({ ubento });
 
   return createAgent({
     name: "ubento-copilot",

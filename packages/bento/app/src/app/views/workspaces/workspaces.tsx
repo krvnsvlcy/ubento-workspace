@@ -2,7 +2,7 @@ import { Header } from "@/app/components/header";
 import { WorkspaceGrid } from "@/app/views/home/workspace-grid";
 import { useBentoHost } from "@/contexts/host";
 import { useBentoSession } from "@/contexts/session";
-import { useUbento } from "@/services/ubento/ubento";
+import { useUbento } from "@/engine/engine";
 import { ArrowLeft, Search } from "lucide-react";
 import { motion } from "motion/react";
 import { useState } from "react";

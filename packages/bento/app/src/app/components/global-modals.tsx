@@ -1,9 +1,9 @@
 import { useGlobalModals } from "@/contexts/modals";
 import { useBentoSession } from "@/contexts/session";
+import { useUbento } from "@/engine/engine";
 import { AccountModal } from "@/modals/account/account";
 import { CreateWorkspaceModal } from "@/modals/create_workspace/create_workspace";
 import { TeamModal } from "@/modals/team/team_modal";
-import { useUbento } from "@/services/ubento/ubento";
 import { useState } from "react";
 
 export function GlobalModals() {

@@ -1,4 +1,4 @@
-import { UbentoSDK } from "@ubento/sdk";
+import { UbentoService } from "@/services/ubento/ubento.js";
 import { createStore } from "zustand/vanilla";
 import { AttachmentType } from "../agent/attachments.js";
 import { AgentContext, AgentContextStats } from "../agent/context.js";
@@ -10,11 +10,9 @@ import { ToolSet } from "../agent/tool_set/tool_set.js";
 import { LanguageModel } from "../utils/models.js";
 
 export function createUbentoAgentEnvironment({
-  ubentoApi,
-  workspaceId,
+  ubento,
 }: {
-  ubentoApi: UbentoSDK;
-  workspaceId: string;
+  ubento: UbentoService;
 }): AgentEnvironment {
   const store = createStore<{
     toolSets: Record<string, ToolSet>;
@@ -85,8 +83,7 @@ export function createUbentoAgentEnvironment({
       let messages: IntelligenceMessageData[] = [];
       let context: AgentContext = { resources: [] };
 
-      const threadA = await ubentoApi.intelligence.createThread({
-        workspace_id: workspaceId,
+      const threadA = await ubento.intelligence.createThread({
         title,
       });
 

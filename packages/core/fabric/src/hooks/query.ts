@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef } from "react";
 import { useStoreWithEqualityFn } from "zustand/traditional";
-import { getEntityProjectionQueryKey, Store } from "../store.js";
+import { FetchOptions, getEntityProjectionQueryKey, Store } from "../store.js";
 
-export type UseStoreOptions = {
+export type UseStoreOptions = FetchOptions & {
   enabled?: boolean;
 };
 
@@ -15,7 +15,7 @@ export function useStoreEntity<
   J extends Record<string, unknown> = {},
   P extends Record<string, unknown> = {},
 >(store: Store<D, J, P>, key: string, options: UseStoreOptions = {}) {
-  const { enabled = true } = options;
+  const { enabled = true, fetchPolicy = "cache-first" } = options;
   const cacheKey = `item:${key}`;
 
   useEffect(() => {
@@ -25,9 +25,9 @@ export function useStoreEntity<
 
   useEffect(() => {
     if (enabled) {
-      store.fetch(key);
+      store.fetch(key, { fetchPolicy });
     }
-  }, [store, key, enabled]);
+  }, [store, key, enabled, fetchPolicy]);
 
   const entity = useStoreWithEqualityFn(
     store.store,
@@ -67,7 +67,7 @@ export function useStoreEntities<
   J extends Record<string, unknown> = {},
   P extends Record<string, unknown> = {},
 >(store: Store<D, J, P>, params?: J, options: UseStoreOptions = {}) {
-  const { enabled = true } = options;
+  const { enabled = true, fetchPolicy = "cache-first" } = options;
   const queryKey = useMemo(() => getEntityProjectionQueryKey(params), [params]);
 
   const paramsRef = useRef(params);
@@ -82,9 +82,12 @@ export function useStoreEntities<
 
   useEffect(() => {
     if (enabled) {
-      store.fetchMany(paramsRef.current);
+      store.fetchMany({
+        params: paramsRef.current,
+        fetchPolicy,
+      });
     }
-  }, [store, queryKey, enabled]);
+  }, [store, queryKey, enabled, fetchPolicy]);
 
   const result = useStoreWithEqualityFn(
     store.store,
@@ -123,11 +126,19 @@ export function useStoreEntities<
     isError: status === "error",
     isFetching: fetchStatus === "fetching",
     isLoading: status === "pending" && fetchStatus === "fetching",
-    refetch: () => store.fetchMany(paramsRef.current),
+    refetch: () =>
+      store.fetchMany({
+        params: paramsRef.current,
+        fetchPolicy,
+      }),
     // Helper to fetch the next page seamlessly
     fetchNextPage: () => {
       if (nextPage) {
-        store.fetchMany(paramsRef.current, nextPage as P);
+        store.fetchMany({
+          params: paramsRef.current,
+          page: nextPage as P,
+          fetchPolicy,
+        });
       }
     },
   };

@@ -2,11 +2,12 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { ButtonHTMLAttributes, forwardRef } from "react";
 
 export const buttonVariants = cva(
-  "inline-flex items-center justify-center text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center justify-center text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:pointer-events-none disabled:opacity-50 cursor-pointer",
   {
     variants: {
       variant: {
         default: "bg-foreground/10 text-foreground hover:bg-foreground/20",
+        primary: "bg-primary-300 text-white hover:bg-primary-300",
         destructive: "bg-red-500 text-white hover:bg-red-400",
         outline:
           "border border-dark-200 bg-transparent hover:bg-dark-100 text-dark-500",

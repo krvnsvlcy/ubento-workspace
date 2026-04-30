@@ -1,3 +1,4 @@
+import { createUbentoService, UbentoService } from "@/services/ubento/ubento";
 import {
   createZustandStateController,
   StateController,
@@ -17,7 +18,7 @@ export type UbentoEngineState = {
 export type UbentoEngine = StateController<UbentoEngineState> & {
   // modules
   copilot: UbentoCopilot;
-  ubentoApi: UbentoSDK;
+  ubento: UbentoService;
 
   // configs
   workspaceRuntimeUrl: string;
@@ -52,14 +53,16 @@ export function createUbentoEngine({
   }));
   const stateController = createZustandStateController(store);
 
+  const ubento = createUbentoService({ ubentoSdk: ubentoApi });
+  const copilot = createUbentoCopilot({ ubento });
+
   return {
     ...stateController,
-
+    ubento,
+    copilot,
     workspaceRuntimeUrl,
     componentRuntimeUrl,
     moduleUrlTemplate,
-    ubentoApi,
-    copilot: createUbentoCopilot({ ubentoApi }),
     goToLocation(location: UbentoLocation) {
       stateController.setState((state) => ({
         ...state,
@@ -70,10 +73,16 @@ export function createUbentoEngine({
 }
 
 export const UbentoEngineContext = createContext<UbentoEngine | null>(null);
+
 export function useUbentoEngine() {
   const engine = useContext(UbentoEngineContext);
   if (!engine) {
     throw new Error("useUbentoEngine must be used within UbentoEngineProvider");
   }
   return engine;
+}
+
+export function useUbento() {
+  const engine = useUbentoEngine();
+  return engine.ubento;
 }

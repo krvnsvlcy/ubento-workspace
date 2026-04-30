@@ -1,5 +1,5 @@
 import { useBentoHost } from "@/contexts/host";
-import { useUbento } from "@/services/ubento/ubento";
+import { useUbento } from "@/engine/engine";
 import { BaseStyle, BlockData, BoardData, ElementData } from "@ubento/engine";
 import {
   Box,

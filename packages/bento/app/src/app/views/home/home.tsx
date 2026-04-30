@@ -1,27 +1,19 @@
 import { Header } from "@/app/components/header";
 import { useBentoHost } from "@/contexts/host";
 import { useBentoSession } from "@/contexts/session";
-import { useUbento } from "@/services/ubento/ubento";
+import { useUbento } from "@/engine/engine";
 import { motion } from "motion/react";
-import React from "react";
 import { Sidebar } from "./sidebar";
 import { WorkspaceGrid } from "./workspace-grid";
-
-
-
-
-
-
 
 export function Home() {
   const host = useBentoHost();
   const ubento = useUbento();
   const session = useBentoSession();
 
-  const { data: workspacesData, isFetching } = ubento.workspace.useWorkspaces({
+  const { data: workspaces, isFetching } = ubento.workspace.useWorkspaces({
     team_id: session.teamId,
   });
-  const workspaces = workspacesData || [];
 
   const onOpenWorkspace = (workspace: any) => {
     host.goToLocation({ view: "workspace", params: { slug: workspace.slug } });
