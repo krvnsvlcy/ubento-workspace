@@ -1,7 +1,7 @@
 import { ErrorView, PendingView } from "@ubento/bento-primitives";
 import React, { useContext, useEffect, useState } from "react";
 import { useBentoEngine } from "../../engine/engine";
-import { BlockData } from "../../models";
+import { BlockData } from "../../engine/models";
 import { ParentContext, StackContext } from "../core/context";
 import { BoxHandle } from "../handles/box-handle";
 import { BaseElement, getBaseStyle } from "./base_element";

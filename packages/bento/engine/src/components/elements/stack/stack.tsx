@@ -1,7 +1,7 @@
 import { CSSProperties, useContext, useState } from "react";
 import { spacingBaseUnit } from "../../../constants";
 import { useBentoEngine } from "../../../engine/engine";
-import { StackData } from "../../../models";
+import { StackData } from "../../../engine/models";
 import { BaseElement, getBaseStyle } from "../base_element";
 
 import { ParentContext, StackContext } from "../../core/context";

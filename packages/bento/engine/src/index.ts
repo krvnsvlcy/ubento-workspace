@@ -7,6 +7,5 @@ export * from "./components/workspace.js";
 export * from "./constants.js";
 export * from "./engine/bridge.js";
 export * from "./engine/engine.js";
-export * from "./engine/service_manager.js";
+export * from "./engine/models.js";
 export * from "./flags.js";
-export * from "./models.js";

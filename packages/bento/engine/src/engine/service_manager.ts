@@ -1,7 +1,7 @@
 import { createZustandStateController } from "@ubento/bento-primitives";
 import { useCallback, useEffect } from "react";
 import { createStore as createZustandStore } from "zustand";
-import { ModuleReference } from "../models.js";
+import { ModuleReference } from "./models.js";
 import { ModuleManager, ModuleManagerState } from "./module_manager.js";
 
 export type ServiceState = {

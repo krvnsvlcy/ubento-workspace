@@ -4,16 +4,16 @@ import { DuplexRpc } from "@ubento/rpc-utils";
 import { createContext, useContext } from "react";
 import { createStore as createZustandStore } from "zustand";
 import {
+  BentoEngineHostRpcInterface,
+  BentoEngineRuntimeRpcInterface,
+} from "./bridge.js";
+import {
   BaseStyle,
   BoardData,
   BoardStyle,
   ElementData,
   WorkspaceData,
-} from "../models.js";
-import {
-  BentoEngineHostRpcInterface,
-  BentoEngineRuntimeRpcInterface,
-} from "./bridge.js";
+} from "./models.js";
 import { createModuleManager } from "./module_manager.js";
 import { createServiceManager } from "./service_manager.js";
 

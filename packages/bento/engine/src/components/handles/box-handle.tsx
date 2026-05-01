@@ -8,7 +8,7 @@ import React, {
 } from "react";
 import { baseLengthUnit, spacingBaseUnit } from "../../constants";
 import { useBentoEngine } from "../../engine/engine";
-import { ElementData, Length } from "../../models";
+import { ElementData, Length } from "../../engine/models";
 import { ParentContext } from "../core/context";
 
 type ResizeDirection =

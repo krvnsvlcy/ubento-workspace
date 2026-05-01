@@ -1,5 +1,5 @@
-import { BoardData, ModuleData, StableModuleReference } from "../models.js";
 import { BentoEngineState } from "./engine.js";
+import { BoardData, ModuleData, StableModuleReference } from "./models.js";
 
 export type BentoEngineHostRpcInterface = {
   // connection

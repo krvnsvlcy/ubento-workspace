@@ -2,7 +2,7 @@ import { EmptyView, ErrorView, PendingView } from "@ubento/bento-primitives";
 import React, { useEffect, useState } from "react";
 import { spacingBaseUnit } from "../../constants.js";
 import { useBentoEngine } from "../../engine/engine.js";
-import { BoardStyle } from "../../models.js";
+import { BoardStyle } from "../../engine/models.js";
 import { StackContext } from "../core/context.js";
 import { Element, ElementRegistryProvider } from "../elements/element.js";
 import { Initializer } from "../handles/initializer.js";

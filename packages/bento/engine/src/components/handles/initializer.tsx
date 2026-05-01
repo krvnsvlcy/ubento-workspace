@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useBentoEngine } from "../../engine/engine";
-import { StackStyle } from "../../models";
+import { StackStyle } from "../../engine/models";
 import { ComponentSelector } from "../elements/stack/component_selector";
 
 export type InitializerProps = {

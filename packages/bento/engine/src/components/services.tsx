@@ -1,7 +1,7 @@
 import { ErrorView, PendingView } from "@ubento/bento-primitives";
 import React, { createContext, useContext, useMemo } from "react";
 import { useBentoEngine } from "../engine/engine";
-import { ServiceData } from "../models";
+import { ServiceData } from "../engine/models";
 
 export const ServicesContext = createContext<Record<string, any>>({});
 

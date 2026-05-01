@@ -5,14 +5,14 @@ import { DuplexRpc } from "@ubento/rpc-utils";
 import { useCallback, useEffect } from "react";
 import { createStore as createZustandStore } from "zustand";
 import {
-  ModuleData,
-  ModuleReference,
-  StableModuleReference,
-} from "../models.js";
-import {
   BentoEngineHostRpcInterface,
   BentoEngineRuntimeRpcInterface,
 } from "./bridge.js";
+import {
+  ModuleData,
+  ModuleReference,
+  StableModuleReference,
+} from "./models.js";
 
 export function moduleKey(module: ModuleReference) {
   if (module.versionId) {

@@ -1,7 +1,7 @@
 import React, { createContext, JSX } from "react";
 import { baseLengthConstraintsUnit, baseLengthUnit } from "../../constants";
 import { useBentoEngine } from "../../engine/engine";
-import { BaseStyle, ElementData, Length } from "../../models";
+import { BaseStyle, ElementData, Length } from "../../engine/models";
 
 export type ElementRegistry = {
   [key: string]: ElementData;
