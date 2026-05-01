@@ -30,18 +30,18 @@ export type EnvEntryDefinition<T extends EnvType = EnvType> = {
   parser?: (raw: string) => EnvTypeMap[T];
 };
 
-export type EnvDefinition = Record<string, EnvEntryDefinition>;
+export type EnvDefinition = TPage<string, EnvEntryDefinition>;
 
 /** Compute the value type for a given entry definition. */
 export type EnvEntryTypeInterface<T extends EnvType> = T extends "string"
   ? string
   : T extends "number"
-  ? number
-  : T extends "boolean"
-  ? boolean
-  : T extends "json"
-  ? unknown
-  : never;
+    ? number
+    : T extends "boolean"
+      ? boolean
+      : T extends "json"
+        ? unknown
+        : never;
 
 /**
  * If required=true → value type
@@ -52,8 +52,8 @@ export type EnvEntryInterface<D extends EnvEntryDefinition> =
   D["required"] extends true
     ? EnvEntryTypeInterface<D["type"]>
     : undefined extends D["default"]
-    ? EnvEntryTypeInterface<D["type"]> | undefined
-    : EnvEntryTypeInterface<D["type"]>;
+      ? EnvEntryTypeInterface<D["type"]> | undefined
+      : EnvEntryTypeInterface<D["type"]>;
 
 export type EnvInterface<D extends EnvDefinition> = {
   [K in keyof D]: EnvEntryInterface<D[K]>;
@@ -79,14 +79,14 @@ export function getRequiredEnv(name: string): string {
 
 export function getEnvAsNumber(
   name: string,
-  required = false
+  required = false,
 ): number | undefined {
   const v = getEnv(name, required);
   if (v === undefined) return undefined;
   const n = Number.parseInt(v, 10);
   if (Number.isNaN(n)) {
     throw new Error(
-      `Environment variable ${name} must be a valid integer, got "${v}"`
+      `Environment variable ${name} must be a valid integer, got "${v}"`,
     );
   }
   return n;
@@ -99,7 +99,7 @@ export function getRequiredEnvAsNumber(name: string): number {
 
 export function getEnvAsBoolean(
   name: string,
-  required = false
+  required = false,
 ): boolean | undefined {
   const v = getEnv(name, required);
   if (v === undefined) return undefined;
@@ -108,7 +108,7 @@ export function getEnvAsBoolean(
   if (["true", "1", "yes", "y", "on"].includes(s)) return true;
   if (["false", "0", "no", "n", "off"].includes(s)) return false;
   throw new Error(
-    `Environment variable ${name} must be a boolean (true/false/1/0/yes/no/on/off), got "${v}"`
+    `Environment variable ${name} must be a boolean (true/false/1/0/yes/no/on/off), got "${v}"`,
   );
 }
 
@@ -124,7 +124,7 @@ export function getEnvAsJSON(name: string, required = false): unknown {
     return JSON.parse(v);
   } catch (e) {
     throw new Error(
-      `Environment variable ${name} must be valid JSON: ${(e as Error).message}`
+      `Environment variable ${name} must be valid JSON: ${(e as Error).message}`,
     );
   }
 }
@@ -137,9 +137,9 @@ export function getRequiredEnvAsJSON(name: string): unknown {
 /* ───────────────────────────── defineEnv<D>() ───────────────────────────── */
 
 export function defineEnv<D extends EnvDefinition>(
-  definition: D
+  definition: D,
 ): EnvInterface<D> {
-  const out: Record<string, unknown> = {};
+  const out: TPage<string, unknown> = {};
 
   for (const key of Object.keys(definition) as (keyof D)[]) {
     const entry = definition[key];
@@ -162,7 +162,7 @@ export function defineEnv<D extends EnvDefinition>(
           throw new Error(
             `Failed to parse env ${String(key)} via custom parser: ${
               (e as Error).message
-            }`
+            }`,
           );
         }
       } else {
@@ -177,8 +177,8 @@ export function defineEnv<D extends EnvDefinition>(
             if (Number.isNaN(n)) {
               throw new Error(
                 `Environment variable ${String(
-                  key
-                )} must be a valid integer, got "${raw}"`
+                  key,
+                )} must be a valid integer, got "${raw}"`,
               );
             }
             value = n;
@@ -192,8 +192,8 @@ export function defineEnv<D extends EnvDefinition>(
             else {
               throw new Error(
                 `Environment variable ${String(
-                  key
-                )} must be a boolean (true/false/1/0/yes/no/on/off), got "${raw}"`
+                  key,
+                )} must be a boolean (true/false/1/0/yes/no/on/off), got "${raw}"`,
               );
             }
             break;
@@ -205,7 +205,7 @@ export function defineEnv<D extends EnvDefinition>(
               throw new Error(
                 `Environment variable ${String(key)} must be valid JSON: ${
                   (e as Error).message
-                }`
+                }`,
               );
             }
             break;
@@ -214,7 +214,7 @@ export function defineEnv<D extends EnvDefinition>(
             // Exhaustive check
             const neverType: never = type;
             throw new Error(
-              `Unsupported environment variable type: ${String(neverType)}`
+              `Unsupported environment variable type: ${String(neverType)}`,
             );
         }
       }

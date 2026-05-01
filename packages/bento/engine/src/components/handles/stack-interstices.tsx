@@ -1,5 +1,5 @@
-import React, { useLayoutEffect, useState } from "react";
-import { useBentoEngine } from "../../engine";
+import { useLayoutEffect, useState } from "react";
+import { useBentoEngine } from "../../engine/engine";
 
 export function StackInterstices({
   id,
@@ -32,7 +32,9 @@ export function StackInterstices({
         return;
       }
 
-      const rects = currentChildren.map((child) => child.getBoundingClientRect());
+      const rects = currentChildren.map((child) =>
+        child.getBoundingClientRect(),
+      );
       const newInterstices = [];
 
       for (let i = 0; i < rects.length - 1; i++) {

@@ -18,7 +18,7 @@
       "output": "./src/clients/workspace",
       "clientName": "createWorkspaceServiceClient",
       "clean": true,
-      "host": "http://localhost:39694",
+      // "host": "http://localhost:39694",
     },
     {
       "service": "module-service",
@@ -49,4 +49,5 @@
       "host": "http://localhost:6124",
     },
   ],
+  "only": ["workspace-service"],
 }

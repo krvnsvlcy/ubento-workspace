@@ -1,3 +1,4 @@
+import { UbentoService } from "@/services/ubento/ubento";
 import {
   ComponentGuestRpcInterface,
   ComponentHostRpcInterface,
@@ -7,7 +8,6 @@ import {
   createWindowPort,
   DuplexRpc,
 } from "@ubento/rpc-utils";
-import { UbentoService } from "@/services/ubento/ubento";
 import { createStore, StoreApi } from "zustand/vanilla";
 
 export type BuilderState = {
@@ -23,10 +23,10 @@ export type BuilderState = {
 export type BuilderStore = BuilderState & {
   connect: (target: Window) => void;
   dispose: () => void;
-  load: () => Promise<void>;
+  load: () => engineStateChanged<void>;
   updateCode: (code: string) => void;
   updateProps: (props: any) => void;
-  save: () => Promise<void>;
+  save: () => engineStateChanged<void>;
 };
 
 export type BuilderController = StoreApi<BuilderStore>;

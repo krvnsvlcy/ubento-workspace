@@ -52,7 +52,7 @@ export type WorkspaceState = {
 export type WorkspaceEngine = StateController<WorkspaceState> & {
   connect: (target: Window) => void;
   dispose: () => void;
-  load: () => Promise<void>;
+  load: () => engineStateChanged<void>;
 
   // actions
   setMode: (mode: BentoMode) => void;
@@ -60,28 +60,36 @@ export type WorkspaceEngine = StateController<WorkspaceState> & {
   setSelectionScope: (selectionScope?: string) => void;
   setLeftPanelOpen: (open: boolean) => void;
   toggleLeftPanel: () => void;
-  goTo: (boardId: string, params?: Record<string, string>) => void;
+  goTo: (boardId: string, params?: TPage<string, string>) => void;
 
   // workspace mutators
-  setHomeBoardId: (homeBoardId: string) => Promise<void>;
-  updateWorkspace: (workspace: Partial<WorkspaceData>) => Promise<void>;
+  setHomeBoardId: (homeBoardId: string) => engineStateChanged<void>;
+  updateWorkspace: (
+    workspace: Partial<WorkspaceData>,
+  ) => engineStateChanged<void>;
 
   // board mutators
-  createBoard: (init: { name?: string }) => Promise<BoardData>;
-  deleteBoard: (boardId: string) => Promise<void>;
-  setBoardContent: (boardId: string, content: string[]) => Promise<void>;
+  createBoard: (init: { name?: string }) => engineStateChanged<BoardData>;
+  deleteBoard: (boardId: string) => engineStateChanged<void>;
+  setBoardContent: (
+    boardId: string,
+    content: string[],
+  ) => engineStateChanged<void>;
   addElement: (
     boardId: string,
     containerId: string,
     element: ElementData,
-  ) => Promise<string>;
-  deleteElement: (boardId: string, elementId: string) => Promise<void>;
+  ) => engineStateChanged<string>;
+  deleteElement: (
+    boardId: string,
+    elementId: string,
+  ) => engineStateChanged<void>;
   setBoardStyle: (boardId: string, style: BoardData["style"]) => void;
 
   // element mutators
   setElementStyle: (id: string, style: ElementData["style"]) => void;
   // --> stacks only
-  setStackContent: (id: string, content: string[]) => Promise<void>;
+  setStackContent: (id: string, content: string[]) => engineStateChanged<void>;
   // --> blocks only
   setBlockModule: (
     id: string,
@@ -152,8 +160,8 @@ export function createWorkspaceEngine({
           listBoards: async () => {
             const current = store.getState();
             if (!current.workspace) return [];
-            const response = await workspaceService.getBoards({
-              workspace_id: current.workspace.id,
+            const response = await workspaceService.listBoards({
+              workspaceId: current.workspace.id,
             });
             const boardDatas = response.data
               .map((p) => {
@@ -296,14 +304,11 @@ export function createWorkspaceEngine({
           setLocation: ({ location }) => {
             if (location) {
               engine.goToLocation({
-                view: "workspace",
-                params: {
-                  slug,
-                  boardId: location.boardId,
-                },
+                workspace: slug,
+                board: location.boardId,
               });
             } else {
-              engine.goToLocation({ view: "workspace", params: { slug } });
+              engine.goToLocation({ workspace: slug });
             }
           },
           setSelectionScope: ({ selectionScope }) => {
@@ -325,7 +330,7 @@ export function createWorkspaceEngine({
           },
 
           // sync
-          boardChanged: ({ boardId, board }) => {
+          readModule: ({ boardId, board }) => {
             store.setState((s) => ({
               boards: { ...s.boards, [boardId]: board },
             }));
@@ -412,11 +417,12 @@ export function createWorkspaceEngine({
     toggleLeftPanel: () => {
       store.setState((s) => ({ leftPanelOpen: !s.leftPanelOpen }));
     },
-    goTo: (boardId: string, params?: Record<string, string>) => {
+    goTo: (boardId: string, params?: TPage<string, string>) => {
       store.setState({ location: { boardId, params: params || {} } });
       engine.goToLocation({
-        view: "workspace",
-        params: { slug, boardId, ...params },
+        workspace: slug,
+        board: boardId,
+        params,
       });
     },
 
@@ -521,13 +527,13 @@ export function createWorkspaceEngine({
   engine.subscribe((curr: UbentoEngineState, prev: UbentoEngineState) => {
     if (!dequal(curr.location, prev.location)) {
       const location = curr.location;
-      if (location?.view === "workspace" && location?.params?.slug) {
+      if (location?.workspace) {
         store.setState((s) => ({
           ...s,
-          location: location.params.boardId
+          location: location.board
             ? {
-                boardId: location.params.boardId,
-                params: location.params,
+                boardId: location.board,
+                params: location.params || {},
               }
             : undefined,
         }));

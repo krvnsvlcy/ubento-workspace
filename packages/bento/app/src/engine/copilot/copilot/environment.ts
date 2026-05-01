@@ -15,9 +15,9 @@ export function createUbentoAgentEnvironment({
   ubento: UbentoService;
 }): AgentEnvironment {
   const store = createStore<{
-    toolSets: Record<string, ToolSet>;
-    resourceTypes: Record<string, ResourceType>;
-    attachmentTypes: Record<string, AttachmentType<any, any>>;
+    toolSets: TPage<string, ToolSet>;
+    resourceTypes: TPage<string, ResourceType>;
+    attachmentTypes: TPage<string, AttachmentType<any, any>>;
   }>()(() => ({
     toolSets: {},
     resourceTypes: {},
@@ -96,7 +96,7 @@ export function createUbentoAgentEnvironment({
         },
         getContextStats: async (
           modelId: string,
-        ): Promise<AgentContextStats> => {
+        ): engineStateChanged<AgentContextStats> => {
           return {
             usage: 0,
             budget: 100000,

@@ -1,10 +1,10 @@
 import { ErrorView, PendingView } from "@ubento/bento-primitives";
 import React, { useContext, useEffect, useState } from "react";
-import { useBentoEngine } from "../../engine";
+import { useBentoEngine } from "../../engine/engine";
 import { BlockData } from "../../models";
-import { BaseElement, getBaseStyle } from "./base_element";
 import { ParentContext, StackContext } from "../core/context";
 import { BoxHandle } from "../handles/box-handle";
+import { BaseElement, getBaseStyle } from "./base_element";
 
 export function Block({
   id,
@@ -70,9 +70,7 @@ export function Block({
         flex: stackContext.flex,
       })}
     >
-      {isEditMode && (
-        <BoxHandle id={id} element={data} isEmpty={false} />
-      )}
+      {isEditMode && <BoxHandle id={id} element={data} isEmpty={false} />}
       <Component {...data.props} />
     </BaseElement>
   );

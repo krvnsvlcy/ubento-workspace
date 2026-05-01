@@ -68,9 +68,9 @@ export function getEntityQueryKey(key: string) {
 // --- CORE FACTORY ---
 
 export function createStore<
-  D,
-  J extends Record<string, unknown> = {},
-  P extends Record<string, unknown> = {},
+  TData,
+  TParams extends Record<string, unknown> = {},
+  TPage extends Record<string, unknown> = {},
 >({
   namespace,
   getKey,
@@ -80,17 +80,17 @@ export function createStore<
   gcTime = 1000 * 60 * 5,
 }: {
   namespace: string;
-  getKey: (entity: D) => string;
-  fetchOne: (key: string) => Promise<D>;
-  fetchMany: (options: { params?: J; page?: P }) => Promise<{
-    data: D[];
-    previousPage?: P;
-    nextPage?: P;
+  getKey: (entity: TData) => string;
+  fetchOne: (key: string) => Promise<TData>;
+  fetchMany: (options: { params?: TParams; page?: TPage }) => Promise<{
+    data: TData[];
+    previousPage?: TPage;
+    nextPage?: TPage;
   }>;
-  project?: (entities: D[], params?: J) => D[];
+  project?: (entities: TData[], params?: TParams) => TData[];
   gcTime?: number;
 }) {
-  const store = createZustandStore<StoreState<D, P>>(() => ({
+  const store = createZustandStore<StoreState<TData, TPage>>(() => ({
     data: {},
     queries: {},
   }));
@@ -150,12 +150,12 @@ export function createStore<
     },
 
     // --- INJECTION & EVICTION ---
-    push: (item: D) => {
+    push: (item: TData) => {
       const key = getKey(item);
       set((state) => ({ data: { ...state.data, [key]: item } }));
     },
 
-    pushMany: (items: D[]) => {
+    pushMany: (items: TData[]) => {
       if (items.length === 0) return;
       set((state) => {
         const newData = { ...state.data };
@@ -172,7 +172,7 @@ export function createStore<
       });
     },
 
-    removeMany: (keysOrMatcher: string[] | ((data: D) => boolean)) => {
+    removeMany: (keysOrMatcher: string[] | ((data: TData) => boolean)) => {
       set((state) => {
         const newData = { ...state.data };
         if (Array.isArray(keysOrMatcher)) {
@@ -186,12 +186,16 @@ export function createStore<
       });
     },
 
-    update: (key: string, updater: Partial<D> | ((data: D) => Partial<D>)) => {
+    update: (
+      key: string,
+      updater: Partial<TData> | ((data: TData) => Partial<TData>),
+    ) => {
       set((state) => {
         const currentItem = state.data[key];
         if (!currentItem) return state;
 
-        const patch = typeof updater === "function" ? updater(currentItem) : updater;
+        const patch =
+          typeof updater === "function" ? updater(currentItem) : updater;
         return {
           data: { ...state.data, [key]: { ...currentItem, ...patch } },
         };
@@ -199,8 +203,8 @@ export function createStore<
     },
 
     updateMany: (
-      match: string[] | ((data: D) => boolean),
-      updater: Partial<D> | ((data: D) => Partial<D>),
+      match: string[] | ((data: TData) => boolean),
+      updater: Partial<TData> | ((data: TData) => Partial<TData>),
     ) => {
       set((state) => {
         const newData = { ...state.data };
@@ -211,7 +215,8 @@ export function createStore<
         keysToUpdate.forEach((key) => {
           const currentItem = newData[key];
           if (currentItem) {
-            const patch = typeof updater === "function" ? updater(currentItem) : updater;
+            const patch =
+              typeof updater === "function" ? updater(currentItem) : updater;
             newData[key] = { ...currentItem, ...patch };
           }
         });
@@ -259,7 +264,10 @@ export function createStore<
           queries: {
             ...state.queries,
             [queryKey]: {
-              status: state.queries[queryKey]?.status === "success" ? "success" : "error",
+              status:
+                state.queries[queryKey]?.status === "success"
+                  ? "success"
+                  : "error",
               fetchStatus: "idle",
               error,
             },
@@ -268,14 +276,15 @@ export function createStore<
       }
     },
 
-    fetchMany: async (options?: FetchManyOptions<J, P>) => {
+    fetchMany: async (options?: FetchManyOptions<TParams, TPage>) => {
       const { params, page, fetchPolicy = "cache-first" } = options || {};
       const queryKey = getEntityProjectionQueryKey(params);
       const isCached = get().queries[queryKey]?.status === "success";
 
       // Apply Fetch Policy Rules (Pagination bypasses cache-first)
       if (fetchPolicy === "cache-only") return;
-      if (fetchPolicy === "cache-first" && isCached && page === undefined) return;
+      if (fetchPolicy === "cache-first" && isCached && page === undefined)
+        return;
 
       set((state) => {
         const existingQuery = state.queries[queryKey] || {};
@@ -326,7 +335,8 @@ export function createStore<
             queries: {
               ...state.queries,
               [queryKey]: {
-                status: existingQuery.status === "success" ? "success" : "error",
+                status:
+                  existingQuery.status === "success" ? "success" : "error",
                 fetchStatus: "idle",
                 error,
                 nextPage: existingQuery.nextPage,
@@ -339,7 +349,10 @@ export function createStore<
     },
 
     // --- SELECTORS ---
-    selectEntity: (key: string, state: StoreState<D, P>): Entity<D> => {
+    selectEntity: (
+      key: string,
+      state: StoreState<TData, TPage>,
+    ): Entity<TData> => {
       const queryKey = getEntityQueryKey(key);
       const defaultQuery: QueryState = {
         status: "pending",
@@ -354,18 +367,20 @@ export function createStore<
     },
 
     selectManyEntities: (
-      state: StoreState<D, P>,
-      params?: J,
-    ): EntityList<D, P> => {
+      state: StoreState<TData, TPage>,
+      params?: TParams,
+    ): EntityList<TData, TPage> => {
       const queryKey = getEntityProjectionQueryKey(params);
-      const defaultQuery: QueryState<P> = {
+      const defaultQuery: QueryState<TPage> = {
         status: "pending",
         fetchStatus: "idle",
         error: undefined,
       };
 
-      const allEntities: D[] = Object.values(state.data);
-      const projectedData = project ? project(allEntities, params) : allEntities;
+      const allEntities: TData[] = Object.values(state.data);
+      const projectedData = project
+        ? project(allEntities, params)
+        : allEntities;
 
       return {
         data: projectedData,
@@ -376,7 +391,7 @@ export function createStore<
 }
 
 export type Store<
-  D,
-  J extends Record<string, unknown> = {},
-  P extends Record<string, unknown> = {},
-> = ReturnType<typeof createStore<D, J, P>>;
+  TData,
+  TParams extends Record<string, unknown> = {},
+  TPage extends Record<string, unknown> = {},
+> = ReturnType<typeof createStore<TData, TParams, TPage>>;

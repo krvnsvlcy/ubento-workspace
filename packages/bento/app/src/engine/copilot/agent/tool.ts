@@ -3,7 +3,7 @@ import { AgentActionInstance } from "./message.js";
 import { AgentActionData } from "./message/action.js";
 import { LLMContent } from "./message/llm.js";
 
-export type ToolCallResult<O extends Record<string, unknown> = {}> = {
+export type ToolCallResult<O extends TPage<string, unknown> = {}> = {
   content: LLMContent;
   structuredContent?: O;
   isError?: boolean;
@@ -12,7 +12,7 @@ export type ToolCallResult<O extends Record<string, unknown> = {}> = {
 
 export interface Tool<
   I extends z.ZodObject<any> = z.ZodObject<any>,
-  O extends Record<string, unknown> = {},
+  O extends TPage<string, unknown> = {},
 > {
   name: string;
   toolName?: string;
@@ -24,8 +24,8 @@ export interface Tool<
   run(
     args: z.infer<I>,
     action: AgentActionInstance,
-  ): Promise<ToolCallResult<O>>;
-  play?(args: z.infer<I>): Promise<ToolCallResult<O>>;
+  ): engineStateChanged<ToolCallResult<O>>;
+  play?(args: z.infer<I>): engineStateChanged<ToolCallResult<O>>;
 }
 
 export type ToolInputType<T extends Tool> =
@@ -38,4 +38,3 @@ export type ToolActionData<T extends Tool> = AgentActionData<
   ToolInputType<T>,
   ToolOutputType<T>
 >;
-

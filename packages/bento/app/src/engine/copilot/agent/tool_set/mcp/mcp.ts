@@ -1,8 +1,11 @@
-import { Client, StreamableHTTPClientTransport } from "../../../utils/mcp_shim.js";
 import { z } from "zod";
-import { LLMContent, LLMContentBlock } from "../../message/llm.js";
-import { Tool, ToolCallResult } from "../../tool.js";
-import { createToolSet, ToolSet, ToolSummary } from "../tool_set.js";
+import {
+  Client,
+  StreamableHTTPClientTransport,
+} from "../../../utils/mcp_shim.js";
+import { LLMContent } from "../../message/llm.js";
+import { Tool } from "../../tool.js";
+import { createToolSet, ToolSet } from "../tool_set.js";
 
 export enum ExtensionStatus {
   Disconnected = "disconnected",
@@ -11,7 +14,7 @@ export enum ExtensionStatus {
   Errored = "errored",
 }
 
-export type TokenProvider = () => string | Promise<string>;
+export type TokenProvider = () => string | engineStateChanged<string>;
 
 export type AgentExtensionToolDef = {
   name: string;
@@ -29,13 +32,13 @@ export interface McpToolSetConfig {
   name: string;
   url: string;
   tokenProvider?: TokenProvider;
-  headers?: Record<string, string>;
+  headers?: TPage<string, string>;
 }
 
 export interface McpToolSet extends ToolSet {
   status: ExtensionStatus;
-  connect(): Promise<void>;
-  disconnect(): Promise<void>;
+  connect(): engineStateChanged<void>;
+  disconnect(): engineStateChanged<void>;
 }
 
 export function createMcpToolSet(config: McpToolSetConfig): McpToolSet {
@@ -45,8 +48,8 @@ export function createMcpToolSet(config: McpToolSetConfig): McpToolSet {
   });
 
   let _status = ExtensionStatus.Disconnected;
-  let _toolMap: Record<string, AgentExtensionToolDef> | undefined = undefined;
-  const _toolInstanceMap: Record<string, Tool> = {};
+  let _toolMap: TPage<string, AgentExtensionToolDef> | undefined = undefined;
+  const _toolInstanceMap: TPage<string, Tool> = {};
 
   const baseToolSet = createToolSet({
     name: config.name,
@@ -86,11 +89,15 @@ export function createMcpToolSet(config: McpToolSetConfig): McpToolSet {
     },
   });
 
-  async function getToolMap(): Promise<Record<string, AgentExtensionToolDef>> {
+  async function getToolMap(): engineStateChanged<
+    TPage<string, AgentExtensionToolDef>
+  > {
     if (_toolMap) return _toolMap;
     await awaitConnected();
     const result = await client.listTools();
-    _toolMap = Object.fromEntries((result.tools as any[]).map((t) => [t.name, t]));
+    _toolMap = Object.fromEntries(
+      (result.tools as any[]).map((t) => [t.name, t]),
+    );
     return _toolMap!;
   }
 

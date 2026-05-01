@@ -1,53 +1,59 @@
-import { Home, LayoutDashboard, PanelLeft, Plus, Trash2 } from "lucide-react";
-import { useUbentoEngine } from "@/engine/engine";
+import { Grid, LayoutDashboard, Plus, Trash2 } from "lucide-react";
+import { useUbentoEngine, useUbento } from "@/engine/engine";
+import { useSession } from "@/contexts/session";
 import { WorkspaceEngine } from "../engine";
 import { Section } from "./shared";
 
 export function NavigationPanel({ controller }: { controller: WorkspaceEngine }) {
   const host = useUbentoEngine();
+  const ubento = useUbento();
+  const session = useSession();
   const state = controller.useState();
   const boards = Object.values(state.boards);
+
+  const { data: workspaces } = ubento.workspace.useWorkspaces({
+    team_id: session.teamId,
+  });
 
   return (
     <div className="h-full flex flex-col bg-neutral-surface/20 border-r overflow-hidden">
       <div className="flex flex-col gap-0.5 p-2">
         <div className="flex items-center justify-between px-3 py-2 mb-2">
-          <div className="flex items-center gap-2 font-semibold text-sm">
+          <div className="flex items-center gap-2 font-semibold text-sm text-neutral-content">
             <div className="w-5 h-5 rounded bg-accent flex items-center justify-center text-[10px] text-accent-contrast">
-              {state.workspace?.name?.charAt(0)}
+              {state.workspace?.name?.charAt(0) || "U"}
             </div>
-            <span className="truncate">{state.workspace?.name}</span>
+            <span className="truncate">{state.workspace?.name || "Ubento"}</span>
           </div>
-          <button
-            onClick={() => controller.toggleLeftPanel()}
-            className="text-neutral-content-muted hover:text-neutral-content p-1 hover:bg-neutral-surface-hover rounded transition-all"
-          >
-            <PanelLeft size={14} />
-          </button>
         </div>
-
-        <button
-          onClick={() => host.goToLocation({ view: "home", params: {} })}
-          className="flex items-center gap-3 w-full rounded-lg px-3 py-1.5 text-[13px] text-neutral-content-subtle hover:bg-neutral-surface-hover hover:text-neutral-content transition-all"
-        >
-          <Home size={16} />
-          <span>Home</span>
-        </button>
-        <button
-          onClick={() =>
-            host.goToLocation({
-              view: "workspace",
-              params: { slug: state.workspace?.slug! },
-            })
-          }
-          className="flex items-center gap-3 w-full rounded-lg px-3 py-1.5 text-[13px] text-neutral-content-subtle hover:bg-neutral-surface-hover hover:text-neutral-content transition-all"
-        >
-          <LayoutDashboard size={16} />
-          <span>Workspace</span>
-        </button>
       </div>
 
-      <div className="mt-4 flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto">
+        <Section title="Workspaces" icon={Grid}>
+          <div className="flex flex-col gap-0.5 p-2">
+            {(workspaces || []).map((workspace: any) => (
+              <button
+                key={workspace.id}
+                onClick={() =>
+                  host.goToLocation({
+                    view: "workspace",
+                    params: { slug: workspace.slug },
+                  })
+                }
+                className={`flex items-center gap-3 w-full rounded-lg px-3 py-1.5 text-[13px] transition-all ${
+                  state.workspace?.slug === workspace.slug
+                    ? "bg-accent/10 text-accent font-medium shadow-sm"
+                    : "text-neutral-content-subtle hover:bg-neutral-surface-hover hover:text-neutral-content"
+                }`}
+              >
+                <div className="w-4 h-4 rounded bg-neutral-border flex items-center justify-center text-[8px] text-neutral-content-muted">
+                  {workspace.name.charAt(0)}
+                </div>
+                <span className="truncate">{workspace.name}</span>
+              </button>
+            ))}
+          </div>
+        </Section>
       <Section title="Boards" icon={LayoutDashboard}>
         <div className="flex flex-col gap-1 p-2">
           {boards.map((board) => (

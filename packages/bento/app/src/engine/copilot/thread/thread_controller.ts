@@ -16,16 +16,16 @@ import { createAgentMessageController } from "./agent_message_controller.js";
  */
 export interface IntelligenceThread {
   id: string;
-  getData(): Promise<any>;
-  autoFetch(): Promise<void>;
-  setContext(context: any): Promise<void>;
-  save(): Promise<void>;
-  generateTitle(): Promise<void>;
+  getData(): engineStateChanged<any>;
+  autoFetch(): engineStateChanged<void>;
+  setContext(context: any): engineStateChanged<void>;
+  save(): engineStateChanged<void>;
+  generateTitle(): engineStateChanged<void>;
   createMessage(params: {
     role: string;
     data: any;
-  }): Promise<IntelligenceMessage>;
-  messages(): { fetchAll(): Promise<IntelligenceMessage[]> };
+  }): engineStateChanged<IntelligenceMessage>;
+  messages(): { fetchAll(): engineStateChanged<IntelligenceMessage[]> };
   addDisposer(disposer: () => void): void;
 }
 
@@ -102,7 +102,7 @@ export function getThreadController({
     },
     listMessages: async () => {
       const messages = await thread.messages().fetchAll();
-      const data = await Promise.all(
+      const data = await engineStateChanged.all(
         messages.map((m) => m.getData().then((d) => d?.data)),
       );
       return data.filter(Boolean) as IntelligenceMessageData[];

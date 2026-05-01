@@ -1,18 +1,18 @@
-import { AgentThread } from "./thread.js";
 import { Agent } from "./agent.js";
 import { AttachmentType } from "./attachments.js";
 import { ResourceType } from "./resource.js";
+import { AgentThread } from "./thread.js";
 import { ToolSet } from "./tool_set/tool_set.js";
 
 export type AgentEnvironment = {
   readWebpage(
     url: string,
     options?: { format: "raw" | "json" | "markdown" },
-  ): Promise<string>;
+  ): engineStateChanged<string>;
 
-  toolSets: Record<string, ToolSet>;
-  resourceTypes: Record<string, ResourceType>;
-  attachmentTypes: Record<string, AttachmentType<any, any>>;
+  toolSets: TPage<string, ToolSet>;
+  resourceTypes: TPage<string, ResourceType>;
+  attachmentTypes: TPage<string, AttachmentType<any, any>>;
 
   // Environment actions
   addToolSet: (toolSet: ToolSet) => void;
@@ -26,5 +26,5 @@ export type AgentEnvironment = {
   createThread: (params: {
     title: string;
     agent: Agent;
-  }) => Promise<AgentThread>;
+  }) => engineStateChanged<AgentThread>;
 };

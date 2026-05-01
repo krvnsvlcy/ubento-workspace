@@ -1,7 +1,7 @@
-import { generateText } from "ai";
 import { renderYaml } from "@/engine/copilot/utils/format.js";
 import { LanguageModel } from "@/engine/copilot/utils/models.js";
 import { safeYamlParse } from "@/engine/copilot/utils/yaml.js";
+import { generateText } from "ai";
 import { ToolSummary } from "./tool_set.js";
 
 export async function searchTools({
@@ -14,7 +14,7 @@ export async function searchTools({
   tools: ToolSummary[];
   model: LanguageModel;
   limit?: number;
-}): Promise<ToolSummary[]> {
+}): engineStateChanged<ToolSummary[]> {
   // 1. Clear system instructions enforcing the YAML output format
   const system = `
 You are an intelligent tool routing assistant. Your task is to help other agents find the most relevant tools to fulfill their query. 

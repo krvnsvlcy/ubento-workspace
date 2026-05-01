@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import {
   createStore,
   useMutation,
@@ -8,6 +7,7 @@ import {
 } from "@ubento/fabric";
 import { ubentoEntities } from "@ubento/primitives";
 import { billingClient, UbentoSDK } from "@ubento/sdk";
+import { useEffect, useState } from "react";
 import { UbentoApiPage, ubentoToFabricPagedResponse } from "../libs/pagination";
 
 export function createUbentoBillingService({
@@ -19,7 +19,7 @@ export function createUbentoBillingService({
 
   const productStore = createStore<
     billingClient.Product,
-    Record<string, never>,
+    TPage<string, never>,
     UbentoApiPage
   >({
     namespace: ubentoEntities.billingProduct.name,
@@ -221,7 +221,7 @@ export function createUbentoBillingService({
           quantity?: number;
           redirect_url: string;
           duration?: number;
-          metadata?: Record<string, any>;
+          metadata?: TPage<string, any>;
         }) => {
           return await ubentoSdk.billing.createCheckout(data);
         },
@@ -239,7 +239,8 @@ export function createUbentoBillingService({
         const load = async () => {
           setLoading(true);
           try {
-            const res = await ubentoSdk.billing.getEntitlements(organization_id);
+            const res =
+              await ubentoSdk.billing.getEntitlements(organization_id);
             setData(res);
           } finally {
             setLoading(false);

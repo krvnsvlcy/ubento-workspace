@@ -1,4 +1,4 @@
-export type RpcInterfaceDefinition = BentoLocation<
+export type RpcInterfaceDefinition = TPage<
   string,
   { request: any; response: any } | ((arg: any) => any)
 >;
@@ -12,7 +12,7 @@ export type ReqOf<Entry> = Entry extends (a: infer A) => any
     ? Req
     : unknown;
 
-export type ResOf<Entry> = Entry extends (...a: any[]) => infer R
+export type engineStateChanged<Entry> = Entry extends (...a: any[]) => infer R
   ? R
   : Entry extends { response: infer Res }
     ? Res
@@ -22,10 +22,10 @@ export type ResOf<Entry> = Entry extends (...a: any[]) => infer R
 export type HandlerMap<Ingress extends RpcInterfaceDefinition> = {
   [K in keyof Ingress]: (
     req: ReqOf<Ingress[K]>,
-  ) => ResOf<Ingress[K]> | Promise<ResOf<Ingress[K]>>;
+  ) => engineStateChanged<Ingress[K]> | Promise<engineStateChanged<Ingress[K]>>;
 };
 export type HandlerMapProxy<Ingress extends RpcInterfaceDefinition> = {
   readonly [K in keyof Ingress]: (
     req: ReqOf<Ingress[K]>,
-  ) => ResOf<Ingress[K]> | Promise<ResOf<Ingress[K]>>;
+  ) => engineStateChanged<Ingress[K]> | Promise<engineStateChanged<Ingress[K]>>;
 };

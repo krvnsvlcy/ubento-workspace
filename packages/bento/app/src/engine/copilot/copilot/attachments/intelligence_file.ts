@@ -1,7 +1,7 @@
 import { AttachmentType } from "@/engine/copilot/agent/attachments.js";
 import { MessageItem } from "@/engine/copilot/agent/message/item.js";
-import { CopilotAttachmentInputEvent } from "../input.js";
 import { Agent } from "../../agent/agent.js";
+import { CopilotAttachmentInputEvent } from "../input.js";
 
 export interface IntelligenceFile {
   id: string;
@@ -49,7 +49,7 @@ export function intelligenceFileCopilotInputAttachmentType(): AttachmentType<
         id: data.intelligenceFile.id,
       };
     },
-    format: async (data): Promise<MessageItem | undefined> => {
+    format: async (data): engineStateChanged<MessageItem | undefined> => {
       // Shim for formatting
       return {
         type: "file",

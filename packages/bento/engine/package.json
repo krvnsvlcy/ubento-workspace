@@ -21,6 +21,8 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@ubento/bento-primitives": "workspace:*",
+    "@ubento/primitives": "workspace:*",
+    "@ubento/fabric": "workspace:*",
     "@ubento/rpc-utils": "workspace:*",
     "motion": "^12.38.0",
     "wouter": "^3.6.0",

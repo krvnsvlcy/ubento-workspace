@@ -1,5 +1,5 @@
 import { createWorkerPort } from "~/ports/worker.js";
-import { ReqOf, ResOf, RpcInterfaceDefinition } from "~/types.js";
+import { engineStateChanged, ReqOf, RpcInterfaceDefinition } from "~/types.js";
 import { createDuplexRpc, DuplexRpc } from "./core.js";
 import { createDuplexRpcWithInitializer } from "./with_initializer.js";
 
@@ -14,7 +14,7 @@ export type BaseWorkerOptions = {
 
 export class RpcWorkerClient<
   Ingress extends RpcInterfaceDefinition,
-  Egress extends RpcInterfaceDefinition
+  Egress extends RpcInterfaceDefinition,
 > {
   private _rpc: ReturnType<typeof createDuplexRpc<Ingress, Egress>> | null =
     null;
@@ -67,8 +67,8 @@ export class RpcWorkerClient<
   /** Typed main->worker call. */
   protected async call<K extends Extract<keyof Egress, string>>(
     method: K,
-    arg: ReqOf<Egress[K]>
-  ): Promise<ResOf<Egress[K]>> {
+    arg: ReqOf<Egress[K]>,
+  ): Promise<engineStateChanged<Egress[K]>> {
     return this.rpc.call(method, arg);
   }
 

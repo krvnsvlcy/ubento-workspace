@@ -1,8 +1,8 @@
 import React from "react";
-import { BentoEngine, EngineContext } from "../engine.js";
-import { ServicesProvider } from "../services.js";
+import { BentoEngine, EngineContext } from "../engine/engine.js";
 import { Board } from "./board/board.js";
 import { NoBoard } from "./board/no-board.js";
+import { ServiceProvider } from "./services.js";
 
 export function Workspace({
   engine,
@@ -20,7 +20,7 @@ export function Workspace({
 
   return (
     <EngineContext value={engine}>
-      <ServicesProvider>{content}</ServicesProvider>
+      <ServiceProvider>{content}</ServiceProvider>
     </EngineContext>
   );
 }

@@ -1,7 +1,7 @@
 import {
-  createIntegrationServiceClient,
-  ConnectionProvider,
   Connection,
+  ConnectionProvider,
+  createIntegrationServiceClient,
 } from "~/clients/integration/client.js";
 import { extractResponseData } from "~/lib/client.js";
 import { TokenManager } from "~/lib/token_manager.js";
@@ -27,21 +27,26 @@ export class IntegrationService {
 
   // ===== Connection Providers =====
 
-  async listConnectionProviders(options: {
-    organization_id?: string;
-    name?: string;
-    limit?: number;
-    cursor?: string;
-  } = {}) {
-    const result = await this.integrationClient.get("/integration/connection-providers", {
-      params: { query: options },
-    });
+  async listConnectionProviders(
+    options: {
+      organization_id?: string;
+      name?: string;
+      limit?: number;
+      cursor?: string;
+    } = {},
+  ) {
+    const result = await this.integrationClient.get(
+      "/integration/connection-providers",
+      {
+        params: { query: options },
+      },
+    );
     return extractResponseData(result, true);
   }
 
   async getConnectionProvider(
     providerId: string,
-  ): Promise<ConnectionProvider> {
+  ): engineStateChanged<ConnectionProvider> {
     const result = await this.integrationClient.get(
       "/integration/connection-providers/{provider_id}",
       {
@@ -53,18 +58,23 @@ export class IntegrationService {
 
   // ===== Connections =====
 
-  async listConnections(options: {
-    organization_id?: string;
-    limit?: number;
-    cursor?: string;
-  } = {}) {
-    const result = await this.integrationClient.get("/integration/connections", {
-      params: { query: options },
-    });
+  async listConnections(
+    options: {
+      organization_id?: string;
+      limit?: number;
+      cursor?: string;
+    } = {},
+  ) {
+    const result = await this.integrationClient.get(
+      "/integration/connections",
+      {
+        params: { query: options },
+      },
+    );
     return extractResponseData(result, true);
   }
 
-  async getConnection(connectionId: string): Promise<Connection> {
+  async getConnection(connectionId: string): engineStateChanged<Connection> {
     const result = await this.integrationClient.get(
       "/integration/connections/{connection_id}",
       {
@@ -77,8 +87,8 @@ export class IntegrationService {
   async createConnection(data: {
     organization_id: string;
     provider_id: string;
-    auth?: Record<string, any>;
-  }): Promise<Connection> {
+    auth?: TPage<string, any>;
+  }): engineStateChanged<Connection> {
     const result = await this.integrationClient.post(
       "/integration/connections",
       {
@@ -92,9 +102,12 @@ export class IntegrationService {
   }
 
   async deleteConnection(connectionId: string) {
-    const result = await this.integrationClient.delete("/integration/connections/{connection_id}", {
-      params: { path: { connection_id: connectionId } },
-    });
+    const result = await this.integrationClient.delete(
+      "/integration/connections/{connection_id}",
+      {
+        params: { path: { connection_id: connectionId } },
+      },
+    );
     return extractResponseData(result, true);
   }
 }

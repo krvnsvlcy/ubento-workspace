@@ -1,8 +1,4 @@
-import {
-  Board,
-  Workspace,
-  createWorkspaceServiceClient,
-} from "~/clients/workspace/client.js";
+import { createWorkspaceServiceClient } from "~/clients/workspace/client.js";
 import { extractResponseData } from "~/lib/client.js";
 import { TokenManager } from "~/lib/token_manager.js";
 
@@ -73,7 +69,7 @@ export class WorkspaceService {
     name: string;
     team_id: string;
     description?: string;
-    data: Record<string, unknown>;
+    data: TPage<string, unknown>;
   }) {
     const result = await this.workspaceClient.post("/workspaces", {
       body: data,
@@ -86,7 +82,7 @@ export class WorkspaceService {
     data: {
       name?: string;
       description?: string;
-      data?: Record<string, unknown>;
+      data?: TPage<string, unknown>;
     },
   ) {
     const result = await this.workspaceClient.patch(
@@ -119,10 +115,12 @@ export class WorkspaceService {
     workspace_id,
     limit,
     cursor,
+    parent_id,
   }: {
     workspace_id: string;
     limit?: number;
     cursor?: string;
+    parent_id?: string;
   }) {
     const result = await this.workspaceClient.get("/boards", {
       params: {
@@ -130,6 +128,7 @@ export class WorkspaceService {
           workspace_id,
           limit,
           cursor,
+          parent_id,
         },
       },
     });
@@ -145,7 +144,12 @@ export class WorkspaceService {
     return extractResponseData(result, true);
   }
 
-  async createBoard(data: { workspace_id: string; name: string; data: any }) {
+  async createBoard(data: {
+    workspace_id: string;
+    name: string;
+    parent_id?: string;
+    data: any;
+  }) {
     const result = await this.workspaceClient.post("/boards", {
       body: data as any,
     });
@@ -154,7 +158,7 @@ export class WorkspaceService {
 
   async updateBoard(
     boardId: string,
-    data: { name?: string; path?: string; data?: any },
+    data: { name?: string; parent_id?: string; data?: any },
   ) {
     const result = await this.workspaceClient.patch("/boards/{board_id}", {
       params: {

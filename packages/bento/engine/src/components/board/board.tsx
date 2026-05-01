@@ -1,7 +1,7 @@
 import { EmptyView, ErrorView, PendingView } from "@ubento/bento-primitives";
 import React, { useEffect, useState } from "react";
 import { spacingBaseUnit } from "../../constants.js";
-import { useBentoEngine } from "../../engine.js";
+import { useBentoEngine } from "../../engine/engine.js";
 import { BoardStyle } from "../../models.js";
 import { StackContext } from "../core/context.js";
 import { Element, ElementRegistryProvider } from "../elements/element.js";
@@ -67,9 +67,9 @@ function BoardContent({ boardId }: { boardId: string }): React.JSX.Element {
         if (state.mode === "edit" && state.selection.length > 0) {
           e.preventDefault();
           if (e.shiftKey) {
-            engine.unwrapSelection(state.selection);
+            engine.unwrapStack(state.selection);
           } else {
-            engine.wrapSelection(state.selection);
+            engine.wrapWithStack(state.selection);
           }
         }
       }
@@ -118,12 +118,12 @@ export function Board({
   params?: Record<string, any>;
 }): React.JSX.Element {
   const engine = useBentoEngine();
-  const getBoard = engine.getBoard;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    getBoard(id)
+    engine
+      .fetchBoard(id)
       .then(() => {
         // Data is now in controller.state
       })
@@ -133,7 +133,7 @@ export function Board({
       .finally(() => {
         setLoading(false);
       });
-  }, [id, getBoard]);
+  }, [id, engine]);
 
   if (loading) return <PendingView message="Loading board..." />;
   if (error) return <ErrorView message="Failed to load board" />;

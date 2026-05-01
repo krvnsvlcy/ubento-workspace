@@ -78,6 +78,12 @@
         "workspace_id": {
           "type": "string"
         },
+        "parent_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "name": {
           "type": "string"
         },

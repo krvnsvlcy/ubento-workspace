@@ -9,8 +9,8 @@ import { buildAgentManagerPrompt } from "./prompts/manager/prompt/prompt.js";
 import { Tool } from "./tool.js";
 
 export type AgentState = {
-  tools: Record<string, Tool>;
-  agents: Record<string, Agent>;
+  tools: TPage<string, Tool>;
+  agents: TPage<string, Agent>;
 };
 
 export type Agent = {
@@ -32,23 +32,25 @@ export type Agent = {
   removeAgent: (name: string) => void;
 
   // Logic actions
-  getInstructions: () => Promise<string>;
-  getPrompt: (context: AgentContext) => Promise<any>;
-  resolveTool: (toolRef: string) => Promise<Tool | undefined>;
+  getInstructions: () => engineStateChanged<string>;
+  getPrompt: (context: AgentContext) => engineStateChanged<any>;
+  resolveTool: (toolRef: string) => engineStateChanged<Tool | undefined>;
 
   // Thread actions
-  createThread: (params: { title: string }) => Promise<any>;
+  createThread: (params: { title: string }) => engineStateChanged<any>;
   sendMessage: (
     content: string,
     params: { threadId?: string; attachments?: any[] },
-  ) => Promise<void>;
+  ) => engineStateChanged<void>;
 };
 
 export interface AgentConfig {
   name: string;
   description: string;
   toolkit: AgentEnvironment;
-  getAgentInstructions: () => AgentInstructions | Promise<AgentInstructions>;
+  getAgentInstructions: () =>
+    | AgentInstructions
+    | engineStateChanged<AgentInstructions>;
 }
 
 export function createAgent(config: AgentConfig): Agent {

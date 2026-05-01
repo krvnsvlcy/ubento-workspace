@@ -17,7 +17,7 @@ export const ubentoProducts = {
     description:
       "Ubento Storage Add-On is a subscription-based service that provides additional storage for the Ubento platform.",
   },
-} satisfies Record<
+} satisfies TPage<
   string,
   {
     code: string;

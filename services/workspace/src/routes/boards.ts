@@ -27,6 +27,7 @@ boardsRouter.get(
     validate({
       query: z.object({
         workspace_id: z.string(),
+        parent_id: z.string().optional(),
         limit: z.coerce.number().optional(),
         cursor: z.string().optional(),
       }),
@@ -46,6 +47,7 @@ boardsRouter.get(
     async (req, res) => {
       const result = await listBoards({
         workspace_id: req.query.workspace_id as string,
+        parent_id: req.query.parent_id as string | undefined,
         limit: req.query.limit ? Number(req.query.limit) : undefined,
         cursor: req.query.cursor as string | undefined,
       });
@@ -94,6 +96,7 @@ boardsRouter.post(
     validate({
       body: z.object({
         workspace_id: z.string(),
+        parent_id: z.string().optional(),
         name: z.string(),
         data: z.any(),
       }),
@@ -126,7 +129,7 @@ boardsRouter.patch(
       }),
       body: z.object({
         name: z.string().optional(),
-        path: z.string().optional(),
+        parent_id: z.string().nullable().optional(),
         data: z.any().optional(),
         metadata: z.any().optional(),
       }),

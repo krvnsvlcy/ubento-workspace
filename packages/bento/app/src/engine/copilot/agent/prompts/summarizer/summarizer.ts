@@ -1,9 +1,9 @@
-import { generateText } from "ai";
 import {
   AgentMessageData,
   UserMessageData,
 } from "@/engine/copilot/agent/message/message.js";
 import { LanguageModel } from "@/engine/copilot/utils/models.js";
+import { generateText } from "ai";
 import { Agent } from "../../agent.js";
 import { AgentContext, AgentHistorySummaryEntry } from "../../context.js";
 import {
@@ -21,7 +21,7 @@ export async function summarize({
   agent: Agent;
   model: LanguageModel;
   maxLength?: number;
-}): Promise<AgentContext> {
+}): engineStateChanged<AgentContext> {
   const history = context.history || [];
   if (history.length <= 1) return context;
 

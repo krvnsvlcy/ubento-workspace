@@ -36,14 +36,14 @@ export class BillingService {
     return extractResponseData(result, true);
   }
 
-  async getProduct(id: string): Promise<Product> {
+  async getProduct(id: string): engineStateChanged<Product> {
     const result = await this.billingClient.get("/billing/products/{id}", {
       params: { path: { id } },
     });
     return extractResponseData(result, true);
   }
 
-  async getProductByCode(code: string): Promise<Product> {
+  async getProductByCode(code: string): engineStateChanged<Product> {
     const result = await this.billingClient.get(
       "/billing/products/by-code/{code}",
       {
@@ -67,21 +67,21 @@ export class BillingService {
     return extractResponseData(result, true);
   }
 
-  async createOffer(data: any): Promise<Offer> {
+  async createOffer(data: any): engineStateChanged<Offer> {
     const result = await this.billingClient.post("/billing/offers", {
       body: data,
     });
     return extractResponseData(result, true);
   }
 
-  async getOffer(id: string): Promise<Offer> {
+  async getOffer(id: string): engineStateChanged<Offer> {
     const result = await this.billingClient.get("/billing/offers/{id}", {
       params: { path: { id } },
     });
     return extractResponseData(result, true);
   }
 
-  async updateOffer(id: string, data: any): Promise<Offer> {
+  async updateOffer(id: string, data: any): engineStateChanged<Offer> {
     const result = await this.billingClient.patch("/billing/offers/{id}", {
       params: { path: { id } },
       body: data,
@@ -107,14 +107,14 @@ export class BillingService {
     return extractResponseData(result, true);
   }
 
-  async getSubscription(id: string): Promise<Subscription> {
+  async getSubscription(id: string): engineStateChanged<Subscription> {
     const result = await this.billingClient.get("/billing/subscriptions/{id}", {
       params: { path: { id } },
     });
     return extractResponseData(result, true);
   }
 
-  async cancelSubscription(id: string): Promise<Subscription> {
+  async cancelSubscription(id: string): engineStateChanged<Subscription> {
     const result = await this.billingClient.post(
       "/billing/subscriptions/{id}/cancel",
       {
@@ -193,8 +193,8 @@ export class BillingService {
     quantity?: number;
     redirect_url: string;
     duration?: number;
-    metadata?: Record<string, any>;
-  }): Promise<Checkout> {
+    metadata?: TPage<string, any>;
+  }): engineStateChanged<Checkout> {
     const result = await this.billingClient.post("/billing/checkout", {
       body: {
         organization_id: data.organization_id,

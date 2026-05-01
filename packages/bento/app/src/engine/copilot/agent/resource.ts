@@ -6,9 +6,12 @@ export type AgentResource = {
   data: unknown;
 };
 
-export type ResourceType<D extends Record<string, any> = any> = {
+export type ResourceType<D extends TPage<string, any> = any> = {
   type: string;
-  getMessageItem: (data: D, key: string) => Promise<MessageItem | undefined>;
+  getMessageItem: (
+    data: D,
+    key: string,
+  ) => engineStateChanged<MessageItem | undefined>;
 };
 
 export type ResourceTypeData<R> = R extends ResourceType<infer D> ? D : never;

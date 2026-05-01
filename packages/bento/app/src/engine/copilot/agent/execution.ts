@@ -79,7 +79,7 @@ export type AgentExecution = StateController<AgentExecutionState> & {
   run: (params: {
     message: UserMessageData;
     maxIterations?: number;
-  }) => Promise<void>;
+  }) => engineStateChanged<void>;
   stop: () => void;
   setError: (error: AgentExecutionError) => void;
 };
@@ -107,7 +107,7 @@ export function createAgentExecution({
 
   async function runTurn(
     iteration: number,
-  ): Promise<{ shouldContinue: boolean }> {
+  ): engineStateChanged<{ shouldContinue: boolean }> {
     const threadState = thread.getState();
     const agent = threadState.agent;
 
@@ -133,7 +133,7 @@ export function createAgentExecution({
     prompt: MessagePart[];
     instructions: string;
     iteration: number;
-  }): Promise<{ shouldContinue: boolean }> {
+  }): engineStateChanged<{ shouldContinue: boolean }> {
     const threadState = thread.getState();
     const agent = threadState.agent;
 

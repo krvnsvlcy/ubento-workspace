@@ -39,7 +39,10 @@ export function createUbentoIntegrationService({
     project: (entities, params) => {
       return [...entities]
         .filter((cp) => {
-          if (params?.name && !cp.name.toLowerCase().includes(params.name.toLowerCase()))
+          if (
+            params?.name &&
+            !cp.name.toLowerCase().includes(params.name.toLowerCase())
+          )
             return false;
           return true;
         })
@@ -68,7 +71,10 @@ export function createUbentoIntegrationService({
     },
     project: (entities, params) => {
       return [...entities].filter((c) => {
-        if (params?.organization_id && c.organization_id !== params.organization_id)
+        if (
+          params?.organization_id &&
+          c.organization_id !== params.organization_id
+        )
           return false;
         return true;
       });
@@ -104,7 +110,7 @@ export function createUbentoIntegrationService({
         mutationFn: async (data: {
           organization_id: string;
           provider_id: string;
-          auth?: Record<string, any>;
+          auth?: TPage<string, any>;
         }) => {
           return await ubentoSdk.integration.createConnection(data);
         },

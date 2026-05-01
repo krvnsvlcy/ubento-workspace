@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export type TokenManager = {
-  getToken: () => Promise<string>;
+  getToken: () => engineStateChanged<string>;
 };
 
 /**
@@ -51,7 +51,7 @@ export function createClientCredentialsTokenManager({
     tokenType = tokenResponse.data.token_type;
   }
 
-  async function getToken(): Promise<string> {
+  async function getToken(): engineStateChanged<string> {
     const now = Date.now() / 1000;
     if (
       !token ||
@@ -117,7 +117,7 @@ export function createRefreshTokenTokenManager({
     expiresAt = Date.now() / 1000 + (currentExpiresIn || 1);
   }
 
-  async function getToken(): Promise<string> {
+  async function getToken(): engineStateChanged<string> {
     const now = Date.now() / 1000;
 
     if (!currentRefreshToken) return token;

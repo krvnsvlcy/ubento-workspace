@@ -2,8 +2,8 @@ import { ModalProvider } from "../contexts/modals";
 import { ThemeProvider } from "../contexts/theme";
 import { UbentoEngine, UbentoEngineContext } from "../engine/engine";
 import { GlobalModals } from "./components/global-modals";
-import { Router } from "./router";
 import { SessionProvider } from "./session";
+import { Layout } from "./workspace/layout";
 
 export function Ubento({ engine }: { engine: UbentoEngine }) {
   return (
@@ -11,7 +11,7 @@ export function Ubento({ engine }: { engine: UbentoEngine }) {
       <SessionProvider>
         <ThemeProvider>
           <ModalProvider>
-            <Router />
+            <Layout />
             <GlobalModals />
           </ModalProvider>
         </ThemeProvider>

@@ -1,7 +1,7 @@
 import { EmptyView, PendingView } from "@ubento/bento-primitives";
 import { motion } from "motion/react";
 import React, { useEffect, useState } from "react";
-import { useBentoEngine } from "../../engine.js";
+import { useBentoEngine } from "../../engine/engine.js";
 import { BoardData } from "../../models.js";
 
 export function NoBoard(): React.JSX.Element {

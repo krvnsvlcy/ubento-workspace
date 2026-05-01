@@ -1,5 +1,5 @@
 import z from "zod";
-import { AgentExecution, AgentExecutionErrorCode, AgentExecutionError } from "./execution.js";
+import { AgentExecution } from "./execution.js";
 import { AgentActionData, AgentActionStatus } from "./message/action.js";
 import { AgentError } from "./message/error.js";
 import { LLMContent } from "./message/llm.js";
@@ -9,9 +9,9 @@ import { Tool } from "./tool.js";
 // Local interface to replace dependency on @elllphnt/backend
 export interface IntelligenceMessage {
   id: string;
-  getData(): Promise<any>;
-  update(data: any): Promise<void>;
-  save(): Promise<void>;
+  getData(): engineStateChanged<any>;
+  update(data: any): engineStateChanged<void>;
+  save(): engineStateChanged<void>;
 }
 
 export interface AgentMessageInstance {
@@ -21,38 +21,41 @@ export interface AgentMessageInstance {
   startAction<T extends Tool>(params: {
     toolRef: string;
     tool: T;
-  }): Promise<AgentActionInstance<T>>;
-  logError(error: AgentError): Promise<void>;
-  logReasoning(reasoning: string): Promise<void>;
-  complete(params?: { error?: AgentMessageError }): Promise<void>;
-  getActionData(index: number): Promise<AgentActionData>;
-  updateAction(index: number, updates: Partial<AgentActionData>): Promise<void>;
+  }): engineStateChanged<AgentActionInstance<T>>;
+  logError(error: AgentError): engineStateChanged<void>;
+  logReasoning(reasoning: string): engineStateChanged<void>;
+  complete(params?: { error?: AgentMessageError }): engineStateChanged<void>;
+  getActionData(index: number): engineStateChanged<AgentActionData>;
+  updateAction(
+    index: number,
+    updates: Partial<AgentActionData>,
+  ): engineStateChanged<void>;
 }
 
 export interface AgentActionInstance<T extends Tool = Tool> {
   index: number;
   message: AgentMessageInstance;
   tool: T;
-  start(): Promise<void>;
-  complete(): Promise<void>;
-  fail(): Promise<void>;
-  abort(): Promise<void>;
-  getInput(): Promise<z.infer<T["args"]>>;
-  setInput(input: z.infer<T["args"]>): Promise<void>;
-  updateInput(input: Partial<z.infer<T["args"]>>): Promise<void>;
-  getOutput(): Promise<any>;
-  setOutput(output: LLMContent): Promise<void>;
-  getStructuredOutput(): Promise<any>;
-  setStructuredOutput(output: any): Promise<void>;
-  run(): Promise<boolean>;
+  start(): engineStateChanged<void>;
+  complete(): engineStateChanged<void>;
+  fail(): engineStateChanged<void>;
+  abort(): engineStateChanged<void>;
+  getInput(): engineStateChanged<z.infer<T["args"]>>;
+  setInput(input: z.infer<T["args"]>): engineStateChanged<void>;
+  updateInput(input: Partial<z.infer<T["args"]>>): engineStateChanged<void>;
+  getOutput(): engineStateChanged<any>;
+  setOutput(output: LLMContent): engineStateChanged<void>;
+  getStructuredOutput(): engineStateChanged<any>;
+  setStructuredOutput(output: any): engineStateChanged<void>;
+  run(): engineStateChanged<boolean>;
 }
 
 export function createAgentMessage(params: {
   message: IntelligenceMessage;
   execution: AgentExecution;
-  getData: () => Promise<AgentMessageData>;
-  setData: (data: AgentMessageData) => Promise<void>;
-  save: () => Promise<void>;
+  getData: () => engineStateChanged<AgentMessageData>;
+  setData: (data: AgentMessageData) => engineStateChanged<void>;
+  save: () => engineStateChanged<void>;
 }): AgentMessageInstance {
   let _data: AgentMessageData | undefined;
 
@@ -61,7 +64,9 @@ export function createAgentMessage(params: {
     return _data;
   };
 
-  const updateData = async <T>(updater: (data: AgentMessageData) => [AgentMessageData, T]) => {
+  const updateData = async <T>(
+    updater: (data: AgentMessageData) => [AgentMessageData, T],
+  ) => {
     const currentData = await ensureLoaded();
     const [newData, extra] = updater(currentData);
     _data = newData;
@@ -82,10 +87,17 @@ export function createAgentMessage(params: {
           tool: toolRef,
           status: AgentActionStatus.Pending,
         };
-        return [{ ...data, events: [...events, { type: "action", data: newAction }] }, events.length];
+        return [
+          { ...data, events: [...events, { type: "action", data: newAction }] },
+          events.length,
+        ];
       });
 
-      return createAgentAction({ index: index as number, message: instance, tool });
+      return createAgentAction({
+        index: index as number,
+        message: instance,
+        tool,
+      });
     },
 
     async getActionData(index) {
@@ -99,14 +111,23 @@ export function createAgentMessage(params: {
       await updateData((data) => {
         const events = [...(data.events || [])];
         if (events[index] && events[index].type === "action") {
-          events[index] = { ...events[index], data: { ...events[index].data, ...updates } } as any;
+          events[index] = {
+            ...events[index],
+            data: { ...events[index].data, ...updates },
+          } as any;
         }
         return [{ ...data, events }, undefined];
       });
     },
 
     async logError(error) {
-      await updateData((data) => [{ ...data, events: [...(data.events || []), { type: "error", data: error }] }, undefined]);
+      await updateData((data) => [
+        {
+          ...data,
+          events: [...(data.events || []), { type: "error", data: error }],
+        },
+        undefined,
+      ]);
     },
 
     async logReasoning(reasoning) {
@@ -114,7 +135,10 @@ export function createAgentMessage(params: {
     },
 
     async complete({ error } = {}) {
-      const [updatedData] = await updateData((data) => [{ ...data, status: error ? "error" : "success", error }, undefined]);
+      const [updatedData] = await updateData((data) => [
+        { ...data, status: error ? "error" : "success", error },
+        undefined,
+      ]);
       await params.save();
     },
   };
@@ -127,7 +151,8 @@ export function createAgentAction<T extends Tool>(params: {
   message: AgentMessageInstance;
   tool: T;
 }): AgentActionInstance<T> {
-  const update = (updates: Partial<AgentActionData>) => params.message.updateAction(params.index, updates);
+  const update = (updates: Partial<AgentActionData>) =>
+    params.message.updateAction(params.index, updates);
 
   const instance: AgentActionInstance<T> = {
     index: params.index,
@@ -169,12 +194,16 @@ export function createAgentAction<T extends Tool>(params: {
         await update({
           output: result.content,
           structured_output: result.structuredContent,
-          status: result.isError ? AgentActionStatus.Failed : AgentActionStatus.Completed,
+          status: result.isError
+            ? AgentActionStatus.Failed
+            : AgentActionStatus.Completed,
         });
         return !result.shouldEnd;
       } catch (error) {
         await update({
-          output: [{ type: "text", text: `Unexpected Error: ${String(error)}` }],
+          output: [
+            { type: "text", text: `Unexpected Error: ${String(error)}` },
+          ],
           status: AgentActionStatus.Failed,
         });
         return true;

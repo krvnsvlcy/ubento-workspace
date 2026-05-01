@@ -7,7 +7,7 @@ import React, {
   useState,
 } from "react";
 import { baseLengthUnit, spacingBaseUnit } from "../../constants";
-import { useBentoEngine } from "../../engine";
+import { useBentoEngine } from "../../engine/engine";
 import { ElementData, Length } from "../../models";
 import { ParentContext } from "../core/context";
 
@@ -29,7 +29,7 @@ export function CornerHandle({
   position: "ne" | "nw" | "se" | "sw";
   onMouseDown: (e: React.MouseEvent, dir: ResizeDirection) => void;
 }) {
-  const styles: Record<string, React.CSSProperties> = {
+  const styles: TPage<string, React.CSSProperties> = {
     nw: { top: -6, left: -6, cursor: "nw-resize" },
     ne: { top: -6, right: -6, cursor: "ne-resize" },
     sw: { bottom: -6, left: -6, cursor: "sw-resize" },
@@ -57,7 +57,7 @@ export function EdgeHandle({
   position: "n" | "s" | "e" | "w";
   onMouseDown: (e: React.MouseEvent, dir: ResizeDirection) => void;
 }) {
-  const styles: Record<string, React.CSSProperties> = {
+  const styles: TPage<string, React.CSSProperties> = {
     n: { top: -4, left: "10%", right: "10%", height: 8, cursor: "n-resize" },
     s: { bottom: -4, left: "10%", right: "10%", height: 8, cursor: "s-resize" },
     e: { right: -4, top: "10%", bottom: "10%", width: 8, cursor: "e-resize" },

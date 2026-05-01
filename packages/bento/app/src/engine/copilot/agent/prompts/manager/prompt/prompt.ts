@@ -1,6 +1,6 @@
-import { FilePart, ImagePart, TextPart } from "ai";
 import { AgentError } from "@/engine/copilot/agent/message/error.js";
 import { MessageItem } from "@/engine/copilot/agent/message/item.js";
+import { FilePart, ImagePart, TextPart } from "ai";
 import { indent, renderYaml } from "../../../../utils/format.js";
 import { Agent } from "../../../agent.js";
 import { AgentContext, AgentHistoryEntry } from "../../../context.js";
@@ -13,7 +13,7 @@ export type MessagePart = TextPart | ImagePart | FilePart;
 export async function formatUserMessage(
   message: UserMessageData,
   agent: Agent,
-): Promise<MessagePart[]> {
+): engineStateChanged<MessagePart[]> {
   const parts: MessagePart[] = [];
 
   if (message.text) {
@@ -23,7 +23,7 @@ export async function formatUserMessage(
     });
   }
 
-  const attachments = await Promise.all(
+  const attachments = await engineStateChanged.all(
     message.attachments?.map((attachment) => {
       const attachmentType = agent.environment.attachmentTypes[attachment.type];
       if (!attachmentType) {
@@ -159,7 +159,7 @@ export const buildAgentManagerPrompt = async ({
 }: {
   context: AgentContext;
   agent: Agent;
-}): Promise<MessagePart[]> => {
+}): engineStateChanged<MessagePart[]> => {
   const history = [...(context.history || [])];
   let lastUserMessage: UserMessageData | undefined;
   const currentProgress: AgentHistoryEntry[] = [];

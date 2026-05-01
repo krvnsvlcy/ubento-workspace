@@ -486,6 +486,12 @@ importers:
       '@ubento/bento-primitives':
         specifier: workspace:*
         version: link:../primitives
+      '@ubento/fabric':
+        specifier: workspace:*
+        version: link:../../core/fabric
+      '@ubento/primitives':
+        specifier: workspace:*
+        version: link:../../core/primitives
       '@ubento/rpc-utils':
         specifier: workspace:*
         version: link:../../core/rpc

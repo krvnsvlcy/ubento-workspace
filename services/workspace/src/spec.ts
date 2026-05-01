@@ -199,6 +199,11 @@ export const spec: OpenAPIV3.Document = {
             required: true,
             schema: { type: "string" },
           },
+          {
+            name: "parent_id",
+            in: "query",
+            schema: { type: "string" },
+          },
         ],
         responses: {
           "200": {
@@ -223,6 +228,7 @@ export const spec: OpenAPIV3.Document = {
                 type: "object",
                 properties: {
                   workspace_id: { type: "string" },
+                  parent_id: { type: "string" },
                   name: { type: "string" },
                   path: { type: "string" },
                 },
@@ -284,7 +290,7 @@ export const spec: OpenAPIV3.Document = {
                 type: "object",
                 properties: {
                   name: { type: "string" },
-                  path: { type: "string" },
+                  parent_id: { type: "string", nullable: true },
                 },
               },
             },

@@ -1,563 +1,563 @@
 export interface paths {
-    "/modules/slug/{slug}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Module by Slug */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    slug: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Module details */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Module"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+  "/modules/slug/{slug}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/modules": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    /** Get Module by Slug */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          slug: string;
         };
-        /** List Modules */
-        get: {
-            parameters: {
-                query?: {
-                    team_id?: string;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description A list of modules */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            data: components["schemas"]["Module"][];
-                            page: {
-                                /** @enum {string} */
-                                type: "cursor";
-                                nextCursor?: string | null;
-                            };
-                        };
-                    };
-                };
-            };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Module details */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["Module"];
+          };
         };
-        put?: never;
-        /** Create Module */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": {
-                        name: string;
-                        slug?: string;
-                        team_id: string;
-                        source: string;
-                        /** @enum {string} */
-                        scope: "team" | "public";
-                    };
-                };
-            };
-            responses: {
-                /** @description Module created */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Module"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+      };
     };
-    "/modules/{module_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Module */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    module_id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Module details */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Module"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        /** Delete Module */
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    module_id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Module deleted */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            success?: boolean;
-                        };
-                    };
-                };
-            };
-        };
-        options?: never;
-        head?: never;
-        /** Update Module */
-        patch: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    module_id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: {
-                content: {
-                    "application/json": {
-                        name?: string;
-                        slug?: string;
-                    };
-                };
-            };
-            responses: {
-                /** @description Module updated */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Module"];
-                    };
-                };
-            };
-        };
-        trace?: never;
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/modules": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/modules/{module_id}/versions": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    /** List Modules */
+    get: {
+      parameters: {
+        query?: {
+          team_id?: string;
         };
-        /** List Module Versions */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    module_id: string;
-                };
-                cookie?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description A list of modules */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": {
+              data: components["schemas"]["Module"][];
+              page: {
+                /** @enum {string} */
+                type: "cursor";
+                nextCursor?: string | null;
+              };
             };
-            requestBody?: never;
-            responses: {
-                /** @description A list of module versions */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            data: components["schemas"]["ModuleVersion"][];
-                            page: {
-                                /** @enum {string} */
-                                type: "cursor";
-                                nextCursor?: string | null;
-                            };
-                        };
-                    };
-                };
-            };
+          };
         };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+      };
     };
-    "/modules/{module_id}/files/{filename}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /** Update Module File */
-        put: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    module_id: string;
-                    filename: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": {
-                        content: string;
-                        autoTranspile?: boolean;
-                    };
-                };
-            };
-            responses: {
-                /** @description File updated */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            [key: string]: string;
-                        };
-                    };
-                };
-            };
-        };
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/modules/{module_id}/files/{filename}/restore": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Restore Module File */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    module_id: string;
-                    filename: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": {
-                        hash: string;
-                    };
-                };
-            };
-            responses: {
-                /** @description File restored */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            success?: boolean;
-                        };
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/modules/{module_id}/publish": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Publish Module Version */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    module_id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Version published */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ModuleVersion"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/modules/{module_id}/versions/{version_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Module Version */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    module_id: string;
-                    version_id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Module version details */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ModuleVersion"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/modules/{module_id}/versions/{version_id}/source": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Module Version Source */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    module_id: string;
-                    version_id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Module version source code (TSX) */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            data: {
-                                source: string;
-                            };
-                        };
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/modules/{module_id}/versions/{version_id}/artifact": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Module Version Artifact */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    module_id: string;
-                    version_id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Module version transpiled artifact (JS) */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            data: {
-                                artifact: string;
-                            };
-                        };
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-}
-export type webhooks = Record<string, never>;
-export interface components {
-    schemas: {
-        Module: {
-            id: string;
-            /** @default module */
-            entity: string;
-            team_id: string;
+    put?: never;
+    /** Create Module */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": {
             name: string;
-            type: string;
-            summary: string;
-            latest_version_id?: string;
+            slug?: string;
+            team_id: string;
+            source: string;
             /** @enum {string} */
-            scope: "public" | "private";
-            files: Record<string, never>;
-            /** @default 1 */
-            version: number;
-            /** Format: date-time */
-            created_at: string;
-            /** Format: date-time */
-            updated_at: string;
-            /** Format: date-time */
-            deleted_at?: string;
+            scope: "team" | "public";
+          };
         };
-        ModuleVersion: {
-            id: string;
-            /** @default module_version */
-            entity: string;
-            module_id: string;
-            files: Record<string, never>;
-            /** @default 1 */
-            version: number;
-            /** Format: date-time */
-            created_at: string;
-            /** Format: date-time */
-            updated_at: string;
+      };
+      responses: {
+        /** @description Module created */
+        201: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["Module"];
+          };
         };
-        Error: {
-            error: {
-                code: string;
-                message: string;
-                details?: Record<string, never>;
-            };
-        };
+      };
     };
-    responses: never;
-    parameters: never;
-    requestBodies: never;
-    headers: never;
-    pathItems: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/modules/{module_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get Module */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          module_id: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Module details */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["Module"];
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    /** Delete Module */
+    delete: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          module_id: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Module deleted */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": {
+              success?: boolean;
+            };
+          };
+        };
+      };
+    };
+    options?: never;
+    head?: never;
+    /** Update Module */
+    patch: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          module_id: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: {
+        content: {
+          "application/json": {
+            name?: string;
+            slug?: string;
+          };
+        };
+      };
+      responses: {
+        /** @description Module updated */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["Module"];
+          };
+        };
+      };
+    };
+    trace?: never;
+  };
+  "/modules/{module_id}/versions": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List Module Versions */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          module_id: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description A list of module versions */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": {
+              data: components["schemas"]["ModuleVersion"][];
+              page: {
+                /** @enum {string} */
+                type: "cursor";
+                nextCursor?: string | null;
+              };
+            };
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/modules/{module_id}/files/{filename}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    /** Update Module File */
+    put: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          module_id: string;
+          filename: string;
+        };
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": {
+            content: string;
+            autoTranspile?: boolean;
+          };
+        };
+      };
+      responses: {
+        /** @description File updated */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": {
+              [key: string]: string;
+            };
+          };
+        };
+      };
+    };
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/modules/{module_id}/files/{filename}/restore": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Restore Module File */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          module_id: string;
+          filename: string;
+        };
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": {
+            hash: string;
+          };
+        };
+      };
+      responses: {
+        /** @description File restored */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": {
+              success?: boolean;
+            };
+          };
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/modules/{module_id}/publish": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Publish Module Version */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          module_id: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Version published */
+        201: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["ModuleVersion"];
+          };
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/modules/{module_id}/versions/{version_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get Module Version */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          module_id: string;
+          version_id: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Module version details */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["ModuleVersion"];
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/modules/{module_id}/versions/{version_id}/source": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get Module Version Source */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          module_id: string;
+          version_id: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Module version source code (TSX) */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": {
+              data: {
+                source: string;
+              };
+            };
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/modules/{module_id}/versions/{version_id}/artifact": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get Module Version Artifact */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          module_id: string;
+          version_id: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Module version transpiled artifact (JS) */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": {
+              data: {
+                artifact: string;
+              };
+            };
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
-export type $defs = Record<string, never>;
-export type operations = Record<string, never>;
+export type webhooks = TPage<string, never>;
+export interface components {
+  schemas: {
+    Module: {
+      id: string;
+      /** @default module */
+      entity: string;
+      team_id: string;
+      name: string;
+      type: string;
+      summary: string;
+      latest_version_id?: string;
+      /** @enum {string} */
+      scope: "public" | "private";
+      files: TPage<string, never>;
+      /** @default 1 */
+      version: number;
+      /** Format: date-time */
+      created_at: string;
+      /** Format: date-time */
+      updated_at: string;
+      /** Format: date-time */
+      deleted_at?: string;
+    };
+    ModuleVersion: {
+      id: string;
+      /** @default module_version */
+      entity: string;
+      module_id: string;
+      files: TPage<string, never>;
+      /** @default 1 */
+      version: number;
+      /** Format: date-time */
+      created_at: string;
+      /** Format: date-time */
+      updated_at: string;
+    };
+    Error: {
+      error: {
+        code: string;
+        message: string;
+        details?: TPage<string, never>;
+      };
+    };
+  };
+  responses: never;
+  parameters: never;
+  requestBodies: never;
+  headers: never;
+  pathItems: never;
+}
+export type $defs = TPage<string, never>;
+export type operations = TPage<string, never>;

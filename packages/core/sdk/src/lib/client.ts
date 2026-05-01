@@ -15,7 +15,7 @@ export type UbentoClient<Paths extends {}> = {
   options: ClientMethod<Paths, "options", `${string}/${string}`>;
   trace: ClientMethod<Paths, "trace", `${string}/${string}`>;
 
-  fetch: (request: Request) => Promise<Response>;
+  fetch: (request: Request) => engineStateChanged<Response>;
 };
 
 export function createClientFactory<Paths extends {}>() {
@@ -28,7 +28,7 @@ export function createClientFactory<Paths extends {}>() {
   }: {
     baseUrl?: string;
     tokenManager?: TokenManager;
-    headers?: Record<string, string>;
+    headers?: TPage<string, string>;
   }): UbentoClient<Paths> {
     const baseUrl = _baseUrl ?? "https://api.ubento.pro";
     const fetcher = async (request: Request) => {

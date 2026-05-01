@@ -48,7 +48,7 @@ export function createUbentoWorkspaceService({
 
   const boardStore = createStore<
     workspaceClient.Board,
-    { workspace_id: string },
+    { workspace_id: string; parent_id?: string | null },
     UbentoApiPage
   >({
     namespace: ubentoEntities.board.name,
@@ -63,6 +63,7 @@ export function createUbentoWorkspaceService({
       return ubentoToFabricPagedResponse(
         await ubentoSdk.workspace.listBoards({
           workspace_id: params.workspace_id,
+          parent_id: params?.parent_id,
           cursor: page?.cursor,
           limit: page?.limit,
         }),
@@ -76,6 +77,14 @@ export function createUbentoWorkspaceService({
             board.workspace_id !== params.workspace_id
           )
             return false;
+
+          if (
+            params &&
+            "parent_id" in params &&
+            board.parent_id !== params.parent_id
+          )
+            return false;
+
           return true;
         })
         .sort((a, b) => a.name.localeCompare(b.name));
@@ -188,7 +197,7 @@ export function createUbentoWorkspaceService({
           name: string;
           team_id: string;
           description?: string;
-          data: Record<string, unknown>;
+          data: TPage<string, unknown>;
         }) => {
           return await ubentoSdk.workspace.createWorkspace(data);
         },
@@ -202,7 +211,7 @@ export function createUbentoWorkspaceService({
         mutationFn: async (data: {
           name?: string;
           description?: string;
-          data?: Record<string, unknown>;
+          data?: TPage<string, unknown>;
         }) => {
           return await ubentoSdk.workspace.updateWorkspace(workspaceId, data);
         },
@@ -227,7 +236,7 @@ export function createUbentoWorkspaceService({
       return useStoreEntity(boardStore, boardId, options);
     },
     useBoards: (
-      params: { workspace_id: string },
+      params: { workspace_id: string; parent_id?: string | null },
       options?: UseStoreOptions,
     ) => {
       return useStoreEntities(boardStore, params, options);
@@ -237,8 +246,8 @@ export function createUbentoWorkspaceService({
         mutationFn: async (data: {
           workspace_id: string;
           name: string;
-          path: string;
           data: any;
+          parent_id?: string;
         }) => {
           return await ubentoSdk.workspace.createBoard(data);
         },
@@ -251,8 +260,8 @@ export function createUbentoWorkspaceService({
       return useMutation({
         mutationFn: async (data: {
           name?: string;
-          path?: string;
           data?: any;
+          parent_id?: string;
         }) => {
           return await ubentoSdk.workspace.updateBoard(boardId, data);
         },
@@ -371,7 +380,7 @@ export function createUbentoWorkspaceService({
       name: string;
       team_id: string;
       description?: string;
-      data: Record<string, unknown>;
+      data: TPage<string, unknown>;
     }) => {
       const ws = await ubentoSdk.workspace.createWorkspace(data);
       workspaceStore.push(ws);
@@ -382,7 +391,7 @@ export function createUbentoWorkspaceService({
       data: {
         name?: string;
         description?: string;
-        data?: Record<string, unknown>;
+        data?: TPage<string, unknown>;
       },
     ) => {
       const ws = await ubentoSdk.workspace.updateWorkspace(workspaceId, data);
@@ -401,25 +410,40 @@ export function createUbentoWorkspaceService({
       boardStore.push(board);
       return board;
     },
-    getBoards: async (params: {
-      workspace_id: string;
+    listBoards: async (params: {
+      workspaceId: string;
       limit?: number;
       cursor?: string;
+      parentId?: string;
     }) => {
-      const res = await ubentoSdk.workspace.listBoards(params);
+      const res = await ubentoSdk.workspace.listBoards({
+        workspace_id: params.workspaceId,
+        limit: params.limit,
+        cursor: params.cursor,
+        parent_id: params.parentId,
+      });
       boardStore.pushMany(res.data);
       return res;
     },
-    createBoard: async (data: any) => {
+    createBoard: async (data: {
+      name: string;
+      workspace_id: string;
+      data: TPage<string, unknown>;
+      parentId?: string;
+    }) => {
       const board = await ubentoSdk.workspace.createBoard(data);
       boardStore.push(board);
       return board;
     },
     updateBoard: async (
       boardId: string,
-      data: { name?: string; path?: string; data?: any },
+      update: {
+        name?: string;
+        data?: TPage<string, unknown>;
+        parentId?: string;
+      },
     ) => {
-      const board = await ubentoSdk.workspace.updateBoard(boardId, data);
+      const board = await ubentoSdk.workspace.updateBoard(boardId, update);
       boardStore.push(board);
       return board;
     },

@@ -1,16 +1,16 @@
 import { TokenManager } from "./lib/token_manager.js";
-import { WorkspaceService } from "./services/workspace.js";
-import { IamService } from "./services/iam.js";
-import { ModuleService } from "./services/module.js";
-import { IntelligenceService } from "./services/intelligence.js";
 import { BillingService } from "./services/billing.js";
+import { IamService } from "./services/iam.js";
 import { IntegrationService } from "./services/integration.js";
+import { IntelligenceService } from "./services/intelligence.js";
+import { ModuleService } from "./services/module.js";
+import { WorkspaceService } from "./services/workspace.js";
 
 export interface UbentoSDKOptions {
   /** Global baseUrl fallback for all services */
   baseUrl?: string;
   /** Optional map to override baseUrl per service */
-  serviceBaseUrls?: Partial<Record<ServiceKey, string>>;
+  serviceBaseUrls?: Partial<TPage<ServiceKey, string>>;
   tokenManager: TokenManager;
   /** Optional EventSource factory for pubsub service */
   createEventSource?: (url: string) => EventSource;

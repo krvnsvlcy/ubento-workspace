@@ -1,5 +1,24 @@
 import { z } from "zod";
 
+export const moduleReferenceSchema = z.discriminatedUnion("scope", [
+  z.object({
+    scope: z.literal("public"),
+    id: z.string(),
+    versionId: z.string(),
+  }),
+  z.object({
+    scope: z.literal("private"),
+    id: z.string(),
+    versionId: z.string().optional(),
+  }),
+]);
+export type ModuleReference = z.infer<typeof moduleReferenceSchema>;
+export type StableModuleReference = {
+  scope: ModuleReference["scope"];
+  id: string;
+  versionId: string;
+};
+
 export const lengthSchema = z.object({
   value: z.number(),
   unit: z.enum(["px", "%", "fr"]),
@@ -35,14 +54,14 @@ export const stackDataSchema = z.object({
 export type StackData = z.infer<typeof stackDataSchema>;
 
 export const moduleDataSchema = z.object({
+  id: z.string(),
   latestVersionId: z.string(),
 });
 export type ModuleData = z.infer<typeof moduleDataSchema>;
 
 export const blockDataSchema = z.object({
   type: z.literal("block"),
-  moduleId: z.string(),
-  moduleVersionId: z.string().optional(),
+  module: moduleReferenceSchema,
   props: z.record(z.string(), z.any()).optional(),
   style: baseElementStyleSchema.optional(),
 });
@@ -79,8 +98,7 @@ export const boardDataSchema = z.object({
 export type BoardData = z.infer<typeof boardDataSchema>;
 
 export const serviceDataSchema = z.object({
-  moduleId: z.string(),
-  moduleVersionId: z.string().optional(),
+  module: moduleReferenceSchema,
   args: z.record(z.string(), z.any()).optional(),
 });
 export type ServiceData = z.infer<typeof serviceDataSchema>;

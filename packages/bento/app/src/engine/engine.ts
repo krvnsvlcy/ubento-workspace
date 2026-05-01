@@ -7,12 +7,14 @@ import type { UbentoSDK } from "@ubento/sdk";
 import { createContext, useContext } from "react";
 import { createStore } from "zustand";
 import { createUbentoCopilot, UbentoCopilot } from "./copilot/copilot";
-import { UbentoLocation } from "./location";
+import { parseLocation, stringifyLocation, UbentoLocation } from "./location";
 import { UbentoSession } from "./session";
 
 export type UbentoEngineState = {
   session?: UbentoSession;
   location: UbentoLocation;
+  leftPanelOpen: boolean;
+  leftPanelWidth: number;
 };
 
 export type UbentoEngine = StateController<UbentoEngineState> & {
@@ -27,6 +29,7 @@ export type UbentoEngine = StateController<UbentoEngineState> & {
 
   // commands
   goToLocation: (location: UbentoLocation) => void;
+  openWorkspace: (slug: string) => void;
 };
 
 export function createUbentoEngine({
@@ -35,23 +38,39 @@ export function createUbentoEngine({
   moduleUrlTemplate,
   ubentoApi,
   session,
-  location,
 }: {
   workspaceRuntimeUrl: string;
   componentRuntimeUrl: string;
   moduleUrlTemplate: string;
   ubentoApi: UbentoSDK;
   session?: UbentoSession;
-  location?: UbentoLocation;
 }): UbentoEngine {
+  const initialLocation = parseLocation();
   const store = createStore<UbentoEngineState>()(() => ({
     session,
-    location: location || {
-      view: "home",
-      params: {},
-    },
+    location: initialLocation,
+    leftPanelOpen: true,
+    leftPanelWidth: 240,
   }));
   const stateController = createZustandStateController(store);
+
+  // Sync state to URL
+  store.subscribe((state, prevState) => {
+    if (state.location !== prevState.location) {
+      const url = stringifyLocation(state.location);
+      if (window.location.pathname + window.location.search !== url) {
+        window.history.pushState(null, "", url);
+      }
+    }
+  });
+
+  // Sync URL to state
+  window.addEventListener("popstate", () => {
+    stateController.setState((state) => ({
+      ...state,
+      location: parseLocation(),
+    }));
+  });
 
   const ubento = createUbentoService({ ubentoSdk: ubentoApi });
   const copilot = createUbentoCopilot({ ubento });
@@ -63,10 +82,22 @@ export function createUbentoEngine({
     workspaceRuntimeUrl,
     componentRuntimeUrl,
     moduleUrlTemplate,
-    goToLocation(location: UbentoLocation) {
+    goToLocation(location: Partial<UbentoLocation>) {
       stateController.setState((state) => ({
         ...state,
-        location,
+        location: {
+          ...state.location,
+          ...location,
+        },
+      }));
+    },
+    openWorkspace(slug: string) {
+      stateController.setState((state) => ({
+        ...state,
+        location: {
+          workspace: slug,
+          tab: "workspace",
+        },
       }));
     },
   };

@@ -131,12 +131,12 @@ export function tokenize(input: string): Token[] {
               value += "u"; // Fail gracefully
             }
           } else {
-            const escapes: Record<string, string> = {
-              "n": "\n",
-              "r": "\r",
-              "t": "\t",
-              "b": "\b",
-              "f": "\f",
+            const escapes: TPage<string, string> = {
+              n: "\n",
+              r: "\r",
+              t: "\t",
+              b: "\b",
+              f: "\f",
               '"': '"',
               "'": "'",
               "\\": "\\",
@@ -229,7 +229,7 @@ export function parse(tokens: Token[]): any {
         stacks,
         tokens,
         i,
-        tokenLength
+        tokenLength,
       );
 
       if (result.shouldReturn) return result.value;
@@ -278,7 +278,7 @@ export function parse(tokens: Token[]): any {
       currentContainer,
       tokens,
       i,
-      tokenLength
+      tokenLength,
     );
     if (assignResult.shouldReturn) return assignResult.value;
     if (assignResult.skipNext) i++;
@@ -306,7 +306,7 @@ function handleBracketToken(
   stacks: Container[],
   tokens: Token[],
   index: number,
-  tokenLength: number
+  tokenLength: number,
 ): HandlerResult {
   if (token.value === "{")
     return createContainer(CONTAINER_TYPES.OBJECT, currentContainer, stacks);
@@ -336,7 +336,7 @@ function handleBracketToken(
 function createContainer(
   type: ContainerType,
   currentContainer: Container | null,
-  stacks: Container[]
+  stacks: Container[],
 ): HandlerResult {
   const newContainer: Container = {
     type,
@@ -375,7 +375,7 @@ function handlePunctuationToken(
   token: Token,
   tokens: Token[],
   index: number,
-  tokenLength: number
+  tokenLength: number,
 ): HandlerResult {
   if (token.value === ",") {
     // Ignore trailing commas before closing brackets
@@ -419,7 +419,7 @@ function assignValue(
   currentContainer: Container | null,
   tokens: Token[],
   index: number,
-  tokenLength: number
+  tokenLength: number,
 ): HandlerResult {
   if (!currentContainer) return { shouldReturn: true, value };
 
@@ -438,7 +438,7 @@ function assignValue(
 
 function handleUnclosedContainers(
   stacks: Container[],
-  currentContainer: Container | null
+  currentContainer: Container | null,
 ): any {
   if (stacks.length === 0) return undefined;
 

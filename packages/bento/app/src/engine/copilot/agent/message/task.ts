@@ -16,7 +16,7 @@ export type AgentTask = {
   preamble: string;
   message: string;
   status: AgentTaskStatus;
-  data?: Record<string, any>;
+  data?: TPage<string, any>;
   output?: string;
   error?: string;
   events?: AgentEventData[];

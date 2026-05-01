@@ -6,7 +6,7 @@ export type CopilotInputAttachment<T extends string = string, D = unknown> = {
   type: T;
   status: "pending" | "ready" | "errored";
   data?: D;
-  getData?: () => Promise<D>;
+  getData?: () => engineStateChanged<D>;
 };
 
 export type CopilotAttachmentInputEvent = {
@@ -33,14 +33,23 @@ export interface CopilotInputActions {
   addAttachment: (attachment: CopilotInputAttachment) => void;
   removeAttachment: (id: string) => void;
   clearAttachments: () => void;
-  updateAttachment: (id: string, update: Partial<CopilotInputAttachment>) => void;
+  updateAttachment: (
+    id: string,
+    update: Partial<CopilotInputAttachment>,
+  ) => void;
   inputAttachment: (event: CopilotAttachmentInputEvent) => void;
   setModel: (model: string | undefined) => void;
 }
 
-export type CopilotInputInstance = StoreApi<CopilotInputState & CopilotInputActions>;
+export type CopilotInputInstance = StoreApi<
+  CopilotInputState & CopilotInputActions
+>;
 
-export function createCopilotInput({ agent }: { agent: Agent }): CopilotInputInstance {
+export function createCopilotInput({
+  agent,
+}: {
+  agent: Agent;
+}): CopilotInputInstance {
   return createStore<CopilotInputState & CopilotInputActions>()((set, get) => ({
     text: "",
     isLoading: false,
