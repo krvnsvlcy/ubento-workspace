@@ -9,7 +9,7 @@ import React, {
 import { baseLengthUnit, spacingBaseUnit } from "../../constants";
 import { useBentoEngine } from "../../engine/engine";
 import { ElementData, Length } from "../../engine/models";
-import { ParentContext } from "../core/context";
+import { BoardContext, ParentContext } from "../core/context";
 
 type ResizeDirection =
   | "n"
@@ -29,7 +29,7 @@ export function CornerHandle({
   position: "ne" | "nw" | "se" | "sw";
   onMouseDown: (e: React.MouseEvent, dir: ResizeDirection) => void;
 }) {
-  const styles: TPage<string, React.CSSProperties> = {
+  const styles: Record<string, React.CSSProperties> = {
     nw: { top: -6, left: -6, cursor: "nw-resize" },
     ne: { top: -6, right: -6, cursor: "ne-resize" },
     sw: { bottom: -6, left: -6, cursor: "sw-resize" },
@@ -57,7 +57,7 @@ export function EdgeHandle({
   position: "n" | "s" | "e" | "w";
   onMouseDown: (e: React.MouseEvent, dir: ResizeDirection) => void;
 }) {
-  const styles: TPage<string, React.CSSProperties> = {
+  const styles: Record<string, React.CSSProperties> = {
     n: { top: -4, left: "10%", right: "10%", height: 8, cursor: "n-resize" },
     s: { bottom: -4, left: "10%", right: "10%", height: 8, cursor: "s-resize" },
     e: { right: -4, top: "10%", bottom: "10%", width: 8, cursor: "e-resize" },
@@ -134,13 +134,14 @@ export function SizeControl({
   height?: Length;
 }) {
   const engine = useBentoEngine();
+  const boardId = useContext(BoardContext);
   const [isHovered, setIsHovered] = useState(false);
 
   const handleToggle = (e: React.MouseEvent, dimension: "width" | "height") => {
     e.stopPropagation();
 
     if (e.shiftKey) {
-      engine.setElementStyle(id, { [dimension]: undefined });
+      engine.setElementStyle(boardId!, id, { [dimension]: undefined });
       return;
     }
 
@@ -154,7 +155,7 @@ export function SizeControl({
       targetUnit = "px";
     }
 
-    engine.convertElementSizeUnit(id, dimension, targetUnit);
+    engine.convertElementSizeUnit(boardId!, id, dimension, targetUnit);
   };
 
   const handleFill = (e: React.MouseEvent, dimension: "width" | "height") => {
@@ -164,11 +165,11 @@ export function SizeControl({
     if (current?.unit === "fr") {
       const delta = e.shiftKey ? -1 : 1;
       const nextValue = Math.max(1, (current.value ?? 1) + delta);
-      engine.setElementStyle(id, {
+      engine.setElementStyle(boardId!, id, {
         [dimension]: { value: nextValue, unit: "fr" },
       });
     } else {
-      engine.setElementStyle(id, {
+      engine.setElementStyle(boardId!, id, {
         [dimension]: { value: 1, unit: "fr" },
       });
     }
@@ -340,6 +341,7 @@ export function BoxHandle({
 }>) {
   const engine = useBentoEngine();
   const { select, setElementStyle } = engine;
+  const boardId = useContext(BoardContext);
   const isSelected = engine.useState((s) => s.selection.includes(id));
   const isHovered = engine.useState((s) => s.hover === id);
   const selectionScope = engine.useState((s) => s.selectionScope);
@@ -459,7 +461,7 @@ export function BoxHandle({
           return currentValue !== value;
         });
         if (hasChanged) {
-          setElementStyle(id, styleUpdates);
+          setElementStyle(boardId!, id, styleUpdates);
         }
       }
     };

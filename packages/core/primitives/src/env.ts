@@ -30,7 +30,7 @@ export type EnvEntryDefinition<T extends EnvType = EnvType> = {
   parser?: (raw: string) => EnvTypeMap[T];
 };
 
-export type EnvDefinition = TPage<string, EnvEntryDefinition>;
+export type EnvDefinition = Record<string, EnvEntryDefinition>;
 
 /** Compute the value type for a given entry definition. */
 export type EnvEntryTypeInterface<T extends EnvType> = T extends "string"
@@ -139,7 +139,7 @@ export function getRequiredEnvAsJSON(name: string): unknown {
 export function defineEnv<D extends EnvDefinition>(
   definition: D,
 ): EnvInterface<D> {
-  const out: TPage<string, unknown> = {};
+  const out: Record<string, unknown> = {};
 
   for (const key of Object.keys(definition) as (keyof D)[]) {
     const entry = definition[key];

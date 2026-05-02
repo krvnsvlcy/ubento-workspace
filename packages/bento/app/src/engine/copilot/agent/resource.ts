@@ -6,7 +6,7 @@ export type AgentResource = {
   data: unknown;
 };
 
-export type ResourceType<D extends TPage<string, any> = any> = {
+export type ResourceType<D extends Record<string, any> = any> = {
   type: string;
   getMessageItem: (
     data: D,

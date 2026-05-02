@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { WorkspaceEngine } from "./engine.js";
+import { WorkspaceEngine } from "./engine/engine.js";
 
 export function useKeyboardShortcuts({
   controller,

@@ -15,9 +15,9 @@ export function createUbentoAgentEnvironment({
   ubento: UbentoService;
 }): AgentEnvironment {
   const store = createStore<{
-    toolSets: TPage<string, ToolSet>;
-    resourceTypes: TPage<string, ResourceType>;
-    attachmentTypes: TPage<string, AttachmentType<any, any>>;
+    toolSets: Record<string, ToolSet>;
+    resourceTypes: Record<string, ResourceType>;
+    attachmentTypes: Record<string, AttachmentType<any, any>>;
   }>()(() => ({
     toolSets: {},
     resourceTypes: {},

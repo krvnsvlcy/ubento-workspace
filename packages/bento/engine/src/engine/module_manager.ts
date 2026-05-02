@@ -48,8 +48,9 @@ export function createModuleManager({
       const module = await rpc.egress.getModule({ moduleId: key });
       return module;
     },
-    fetchMany: async () => {
-      throw new Error("Cannot fetch modules in batch");
+    fetchMany: async ({ params }) => {
+      const modules = await rpc.egress.listModules(params || {});
+      return { data: modules };
     },
   });
 
@@ -244,6 +245,16 @@ export function createModuleManager({
     moduleStore,
     selectModule,
     watchModule,
+    searchModules: async (params: any) => {
+      await moduleStore.fetchMany({ params });
+      return moduleStore.selectManyEntities(moduleStore.store.getState(), params)
+        .data;
+    },
+    createModule: async (name: string) => {
+      const module = await rpc.egress.createModule({ name });
+      moduleStore.push(module);
+      return module;
+    },
 
     // The React Hook is now just a thin consumer of the Engine
     useModuleValue(module: ModuleReference) {

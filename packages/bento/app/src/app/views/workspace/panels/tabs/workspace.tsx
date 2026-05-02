@@ -1,6 +1,6 @@
 import { ServiceData } from "@ubento/engine";
 import { Globe, Plus, Puzzle, Settings2, Trash2 } from "lucide-react";
-import { WorkspaceEngine } from "../../engine";
+import { WorkspaceEngine } from "../../engine/engine";
 import { PropertyRow, Section, Select, TextInput } from "../shared";
 
 export function WorkspaceTab({ controller }: { controller: WorkspaceEngine }) {

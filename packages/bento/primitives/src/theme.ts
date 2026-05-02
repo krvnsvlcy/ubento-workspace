@@ -1,4 +1,4 @@
-export type ThemeVariables = TPage<string, string>;
+export type ThemeVariables = Record<string, string>;
 
 export type ColorScale = {
   100: string;
@@ -41,7 +41,7 @@ export interface BentoTheme {
   };
 }
 
-function deepMerge<T extends TPage<string, any>>(target: T, source: T): T {
+function deepMerge<T extends Record<string, any>>(target: T, source: T): T {
   const result = { ...target } as any;
   if (!source) return result;
   for (const key of Object.keys(source)) {

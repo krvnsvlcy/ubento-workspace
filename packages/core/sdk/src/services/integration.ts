@@ -87,7 +87,7 @@ export class IntegrationService {
   async createConnection(data: {
     organization_id: string;
     provider_id: string;
-    auth?: TPage<string, any>;
+    auth?: Record<string, any>;
   }): engineStateChanged<Connection> {
     const result = await this.integrationClient.post(
       "/integration/connections",

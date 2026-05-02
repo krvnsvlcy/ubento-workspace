@@ -1,28 +1,16 @@
 import { EmptyView, PendingView } from "@ubento/bento-primitives";
+import { useStoreEntities } from "@ubento/fabric";
 import { motion } from "motion/react";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useBentoEngine } from "../../engine/engine.js";
-import { BoardData } from "../../engine/models.js";
 
 export function NoBoard(): React.JSX.Element {
   const engine = useBentoEngine();
-  const { listBoards, createBoard, goTo } = engine;
+  const { createBoard, goTo } = engine;
 
-  const [boards, setBoards] = useState<BoardData[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: boards, isLoading } = useStoreEntities(engine.boardStore);
   const [creating, setCreating] = useState(false);
   const [search, setSearch] = useState("");
-
-  useEffect(() => {
-    listBoards()
-      .then((res: BoardData[]) => {
-        setBoards(res);
-        setLoading(false);
-      })
-      .catch(() => {
-        setLoading(false);
-      });
-  }, [listBoards]);
 
   const handleCreateBoard = async () => {
     setCreating(true);
@@ -40,7 +28,7 @@ export function NoBoard(): React.JSX.Element {
     board.name?.toLowerCase().includes(search.toLowerCase()),
   );
 
-  if (loading) {
+  if (isLoading) {
     return <PendingView message="Loading boards..." />;
   }
 

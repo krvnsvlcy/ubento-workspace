@@ -9,8 +9,8 @@ import { buildAgentManagerPrompt } from "./prompts/manager/prompt/prompt.js";
 import { Tool } from "./tool.js";
 
 export type AgentState = {
-  tools: TPage<string, Tool>;
-  agents: TPage<string, Agent>;
+  tools: Record<string, Tool>;
+  agents: Record<string, Agent>;
 };
 
 export type Agent = {

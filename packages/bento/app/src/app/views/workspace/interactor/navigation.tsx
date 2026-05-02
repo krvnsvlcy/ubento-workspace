@@ -3,8 +3,8 @@ import { UserButton } from "@/app/components/user-button.js";
 import { useTheme } from "@/contexts/theme.js";
 import { useUbentoEngine } from "@/engine/engine";
 import { IconButton } from "@ubento/bento-primitives";
-import { Eye, Home, LayoutDashboard, PanelLeft, Pencil } from "lucide-react";
-import { WorkspaceEngine } from "../engine.js";
+import { Eye, PanelLeft, Pencil } from "lucide-react";
+import { WorkspaceEngine } from "../engine/engine.js";
 
 export function WorkspaceNavigation({
   controller,

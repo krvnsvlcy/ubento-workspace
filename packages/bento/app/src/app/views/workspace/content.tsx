@@ -1,63 +1,59 @@
 import { ErrorView } from "@/app/components/error.js";
 import { useUbentoEngine } from "@/engine/engine";
-import { useMemo, useRef } from "react";
-import { WorkspaceEngine } from "./engine.js";
-import { WorkspaceNavigation } from "./interactor/navigation.js";
+import { PendingView } from "@ubento/bento-primitives";
+import { WorkspaceEngine } from "./engine/engine.js";
 
-export function WorkspaceContent({
-  controller,
-}: {
-  controller: WorkspaceEngine;
-}) {
-  const error = controller.useState((state) => state.error);
-  const host = useUbentoEngine();
-  const iframeRef = useRef<HTMLIFrameElement>(null);
+function WorkspaceOverlay({ engine }: { engine: WorkspaceEngine }) {
+  const runtimeStatus = engine.useState((state) => state.runtimeStatus);
+  const workspaceStatus = engine.useState((state) => state.workspaceStatus);
 
-  const iframeUrl = useMemo(() => {
-    const url = new URL(host.workspaceRuntimeUrl);
-    return url.toString();
-  }, [host.workspaceRuntimeUrl]);
-
-  if (error) {
-    return (
-      <ErrorView
-        message={"Error Loading Workspace"}
-        details={<p>{String(error)}</p>}
-        action={{
-          label: "Retry",
-          handler: () => window.location.reload(),
-        }}
-      />
-    );
+  if (runtimeStatus === "ready" && workspaceStatus === "loaded") {
+    return <></>;
   }
 
-  const content = (
-    <iframe
-      ref={iframeRef}
-      src={iframeUrl}
-      onLoad={() => {
-        if (iframeRef.current?.contentWindow) {
-          controller.connect(iframeRef.current.contentWindow);
-        }
-      }}
-      style={{
-        height: "100%",
-        width: "100%",
-        border: "none",
-        outline: "none",
-      }}
-    />
-  );
+  let content = <></>;
+
+  if (workspaceStatus === "error") {
+    content = <ErrorView message="Failed to load workspace" />;
+  } else {
+    content = <PendingView message="Loading workspace..." />;
+  }
 
   return (
     <div
-      className="h-full w-full relative overflow-hidden flex flex-col bg-background"
-      onClick={() => {
-        controller.select([]);
+      style={{
+        position: "absolute",
+        inset: 0,
+        zIndex: 1000,
       }}
+      className="bg-background"
     >
-      <WorkspaceNavigation controller={controller} />
-      <div className="flex-1 overflow-hidden">{content}</div>
+      {content}
+    </div>
+  );
+}
+
+export function WorkspaceContent({ engine }: { engine: WorkspaceEngine }) {
+  const ubentoEngine = useUbentoEngine();
+
+  return (
+    <div className="h-full w-full relative overflow-hidden">
+      <iframe
+        src={ubentoEngine.workspaceRuntimeUrl}
+        onLoad={(e) => {
+          if (e.currentTarget.contentWindow) {
+            engine.init(e.currentTarget.contentWindow);
+          }
+        }}
+        style={{
+          height: "100%",
+          width: "100%",
+          border: "none",
+          outline: "none",
+        }}
+      />
+
+      <WorkspaceOverlay engine={engine} />
     </div>
   );
 }

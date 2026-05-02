@@ -1,7 +1,7 @@
 import { Command, Send, Sparkles } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
-import { WorkspaceEngine } from "../engine.js";
+import { WorkspaceEngine } from "../engine/engine.js";
 
 export function Console({ controller }: { controller: WorkspaceEngine }) {
   const snap = controller.useState();

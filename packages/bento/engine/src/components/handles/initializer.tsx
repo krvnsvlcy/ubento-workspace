@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useBentoEngine } from "../../engine/engine";
 import { StackStyle } from "../../engine/models";
+import { BoardContext } from "../core/context";
 import { ComponentSelector } from "../elements/stack/component_selector";
 
 export type InitializerProps = {
@@ -37,29 +38,31 @@ export function Initializer({
   style,
 }: InitializerProps) {
   const engine = useBentoEngine();
+  const boardId = useContext(BoardContext);
   const {
     setElementStyle,
     addElement,
-    getModule,
     replaceElement,
     setBoardContent,
+    moduleManager,
+    boardStore,
   } = engine;
   const [showMenu, setShowMenu] = useState(false);
 
   const onAddStack = (direction: "row" | "column") => {
     if (targetType === "stack") {
-      const data = engine.selectActiveBoard(engine.getState());
+      const data = engine.boardStore.getCached(boardId!);
       if (!data) return;
 
       // Update current stack style
-      setElementStyle(targetId, {
+      setElementStyle(boardId!, targetId, {
         ...data.style,
         direction,
         gap: 1,
       } as StackStyle);
 
       // Add 2 colored elements directly to this stack
-      addElement(targetId, {
+      addElement(boardId!, targetId, {
         type: "stack",
         content: [],
         style: {
@@ -68,7 +71,7 @@ export function Initializer({
         },
       });
 
-      addElement(targetId, {
+      addElement(boardId!, targetId, {
         type: "stack",
         content: [],
         style: {
@@ -77,7 +80,7 @@ export function Initializer({
         },
       });
     } else {
-      const id = addElement("root", {
+      const id = addElement(boardId!, "root", {
         type: "stack",
         content: [],
         style: {
@@ -87,37 +90,43 @@ export function Initializer({
           height: { value: 1, unit: "fr" },
         } as any,
       });
-      setBoardContent(targetId, [id]);
+      setBoardContent(boardId!, [id]);
     }
   };
 
   const onAddComponent = (moduleId: string) => {
     if (targetType === "stack") {
-      const data = engine.selectActiveBoard(engine.getState());
+      const data = engine.boardStore.getCached(boardId!);
       if (!data) return;
 
-      getModule(moduleId).then((m) => {
-        replaceElement(targetId, {
+      moduleManager.moduleStore.fetch(moduleId).then((m: any) => {
+        replaceElement(boardId!, targetId, {
           type: "block",
-          moduleId,
-          moduleVersionId: m.latestVersionId,
+          module: {
+            scope: "private",
+            id: moduleId,
+            versionId: m.latestVersionId,
+          },
           style: data.style as any,
           props: {},
         });
       });
     } else {
-      getModule(moduleId).then((m) => {
-        const id = addElement("root", {
+      moduleManager.moduleStore.fetch(moduleId).then((m: any) => {
+        const id = addElement(boardId!, "root", {
           type: "block",
-          moduleId,
-          moduleVersionId: m.latestVersionId,
+          module: {
+            scope: "private",
+            id: moduleId,
+            versionId: m.latestVersionId,
+          },
           style: {
             width: { value: 100, unit: "%" },
             height: { value: 100, unit: "%" },
           } as any,
           props: {},
         });
-        setBoardContent(targetId, [id]);
+        setBoardContent(boardId!, [id]);
       });
     }
     setShowMenu(false);

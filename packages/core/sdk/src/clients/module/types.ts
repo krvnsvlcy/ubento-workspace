@@ -508,7 +508,7 @@ export interface paths {
     trace?: never;
   };
 }
-export type webhooks = TPage<string, never>;
+export type webhooks = Record<string, never>;
 export interface components {
   schemas: {
     Module: {
@@ -522,7 +522,7 @@ export interface components {
       latest_version_id?: string;
       /** @enum {string} */
       scope: "public" | "private";
-      files: TPage<string, never>;
+      files: Record<string, never>;
       /** @default 1 */
       version: number;
       /** Format: date-time */
@@ -537,7 +537,7 @@ export interface components {
       /** @default module_version */
       entity: string;
       module_id: string;
-      files: TPage<string, never>;
+      files: Record<string, never>;
       /** @default 1 */
       version: number;
       /** Format: date-time */
@@ -549,7 +549,7 @@ export interface components {
       error: {
         code: string;
         message: string;
-        details?: TPage<string, never>;
+        details?: Record<string, never>;
       };
     };
   };
@@ -559,5 +559,5 @@ export interface components {
   headers: never;
   pathItems: never;
 }
-export type $defs = TPage<string, never>;
-export type operations = TPage<string, never>;
+export type $defs = Record<string, never>;
+export type operations = Record<string, never>;

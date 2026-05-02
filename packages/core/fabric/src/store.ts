@@ -40,6 +40,7 @@ export type EntityList<D, P = unknown> = {
 
 export interface FetchOptions {
   fetchPolicy?: FetchPolicy;
+  throwOnError?: boolean;
 }
 
 export interface FetchManyOptions<J, P> extends FetchOptions {
@@ -229,11 +230,16 @@ export function createStore<
     fetch: async (key: string, options?: FetchOptions) => {
       const { fetchPolicy = "cache-first" } = options || {};
       const queryKey = getEntityQueryKey(key);
-      const isCached = get().data[key] !== undefined;
+      const cached = get().data[key] ?? undefined;
+      const isCached = cached !== undefined;
 
       // Apply Fetch Policy Rules
-      if (fetchPolicy === "cache-only") return;
-      if (fetchPolicy === "cache-first" && isCached) return;
+      if (fetchPolicy === "cache-only") {
+        return cached;
+      }
+      if (fetchPolicy === "cache-first" && isCached) {
+        return cached;
+      }
 
       set((state) => ({
         queries: {
@@ -259,6 +265,7 @@ export function createStore<
             },
           },
         }));
+        return data;
       } catch (error) {
         set((state) => ({
           queries: {
@@ -273,6 +280,10 @@ export function createStore<
             },
           },
         }));
+
+        if (options?.throwOnError) {
+          throw error;
+        }
       }
     },
 
@@ -386,6 +397,11 @@ export function createStore<
         data: projectedData,
         query: state.queries[queryKey] || defaultQuery,
       };
+    },
+
+    // --- GETTERS ---
+    getCached: (key: string) => {
+      return get().data[key];
     },
   };
 }

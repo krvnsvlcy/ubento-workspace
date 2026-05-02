@@ -24,13 +24,18 @@ export type BentoLocation = {
   params: Record<string, string>;
 };
 
-export type BentoEngineState = {
-  workspace: WorkspaceData;
-  mode: BentoMode;
+// local state synced to host
+export type BentoLocalState = {
   selection: string[];
-  location: BentoLocation;
   selectionScope?: string;
   hover?: string;
+};
+
+export type BentoEngineState = BentoLocalState & {
+  // remote state synced from host
+  mode: BentoMode;
+  workspace: WorkspaceData;
+  location?: BentoLocation;
 };
 
 export function createBentoEngine({
@@ -107,7 +112,7 @@ export function createBentoEngine({
 
     // navigation
     goTo: (location: BentoLocation) => {
-      store.setState({ location });
+      rpc.egress.goTo({ location });
     },
 
     // board operations
@@ -115,10 +120,6 @@ export function createBentoEngine({
       const board = await rpc.egress.createBoard({ name });
       boardStore.push(board);
       return board;
-    },
-    deleteBoard: (boardId: string) => {
-      rpc.egress.deleteBoard({ boardId });
-      boardStore.remove(boardId);
     },
     updateBoardStyle: (boardId: string, updates: Partial<BoardStyle>) => {
       boardStore.update(boardId, (board) => ({
@@ -449,7 +450,7 @@ export function createBentoEngine({
 
   // Sync state to host
   store.subscribe((curr) => {
-    rpc.egress.engineStateChanged(curr);
+    rpc.egress.localStateChanged(curr);
   });
 
   // Sync boards to host
@@ -463,8 +464,14 @@ export function createBentoEngine({
 
   // Handle Host requests
   rpc.setHandlers({
-    updateEngineState: (payload) => {
-      store.setState(payload);
+    setMode: ({ mode }) => {
+      store.setState({ mode });
+    },
+    setLocation: ({ location }) => {
+      store.setState({ location });
+    },
+    updateWorkspace: ({ workspace }) => {
+      store.setState({ workspace });
     },
     updateBoard: ({ boardId, board }) => {
       boardStore.update(boardId, board);

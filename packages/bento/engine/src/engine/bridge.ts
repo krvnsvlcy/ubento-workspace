@@ -1,5 +1,15 @@
-import { BentoEngineState } from "./engine.js";
-import { BoardData, ModuleData, StableModuleReference } from "./models.js";
+import {
+  BentoEngineState,
+  BentoLocalState,
+  BentoLocation,
+  BentoMode,
+} from "./engine.js";
+import {
+  BoardData,
+  ModuleData,
+  StableModuleReference,
+  WorkspaceData,
+} from "./models.js";
 
 export type BentoEngineHostRpcInterface = {
   // connection
@@ -10,18 +20,19 @@ export type BentoEngineHostRpcInterface = {
   getBoard: (payload: { boardId: string }) => Promise<BoardData>;
   listBoards: (payload: {}) => Promise<BoardData[]>;
   createBoard: (payload: { name?: string }) => Promise<BoardData>;
-  updateBoard: (payload: {
-    boardId: string;
-    updates: Partial<BoardData>;
-  }) => Promise<BoardData>;
-  deleteBoard: (payload: { boardId: string }) => Promise<void>;
 
   // modules
   getModule: (payload: { moduleId: string }) => Promise<ModuleData>;
+  listModules: (payload: any) => Promise<ModuleData[]>;
+  createModule: (payload: { name: string }) => Promise<ModuleData>;
   readModule: (payload: StableModuleReference) => Promise<string>;
 
+  // external state
+  goTo: (payload: { location: BentoLocation }) => void;
+  setMode: (payload: { mode: BentoMode }) => void;
+
   // Sync
-  engineStateChanged: (payload: BentoEngineState) => void;
+  localStateChanged: (payload: BentoLocalState) => void;
   boardChanged: (payload: { boardId: string; board: BoardData }) => void;
 };
 
@@ -33,7 +44,10 @@ export type BentoEngineRuntimeRpcInterface = {
   }) => void;
 
   // Engine state
-  updateEngineState: (payload: Partial<BentoEngineState>) => void;
+  setMode: (payload: { mode: BentoMode }) => void;
+  setLocation: (payload: { location: BentoLocation }) => void;
+
+  updateWorkspace: (payload: { workspace: WorkspaceData }) => void;
   updateBoard: (payload: {
     boardId: string;
     board: Partial<BoardData>;

@@ -1272,7 +1272,7 @@ export interface paths {
     trace?: never;
   };
 }
-export type webhooks = TPage<string, never>;
+export type webhooks = Record<string, never>;
 export interface components {
   schemas: {
     Team: {
@@ -1327,7 +1327,7 @@ export interface components {
        * @enum {string}
        */
       status: "ACTIVE" | "EXPIRED" | "REVOKED";
-      metadata?: TPage<string, never>;
+      metadata?: Record<string, never>;
       ip?: string;
       user_agent?: string;
       /** Format: date-time */
@@ -1355,7 +1355,7 @@ export interface components {
        * @enum {string}
        */
       status: "ACTIVE" | "INACTIVE";
-      metadata?: TPage<string, never>;
+      metadata?: Record<string, never>;
       /** @default 1 */
       version: number;
       /** Format: date-time */
@@ -1382,7 +1382,7 @@ export interface components {
       /** Format: date-time */
       last_used_at?: string;
       last_used_ip?: string;
-      metadata?: TPage<string, never>;
+      metadata?: Record<string, never>;
       /** @default 1 */
       version: number;
       /** Format: date-time */
@@ -1440,7 +1440,7 @@ export interface components {
       error: {
         code: string;
         message: string;
-        details?: TPage<string, never>;
+        details?: Record<string, never>;
       };
     };
   };
@@ -1465,7 +1465,7 @@ export interface components {
             /** @example VALIDATION_ERROR */
             code: string;
             message: string;
-            details?: TPage<string, never>;
+            details?: Record<string, never>;
           };
         };
       };
@@ -1495,5 +1495,5 @@ export interface components {
   headers: never;
   pathItems: never;
 }
-export type $defs = TPage<string, never>;
-export type operations = TPage<string, never>;
+export type $defs = Record<string, never>;
+export type operations = Record<string, never>;

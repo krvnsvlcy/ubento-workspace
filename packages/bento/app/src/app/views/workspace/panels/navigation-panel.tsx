@@ -1,10 +1,14 @@
-import { Grid, LayoutDashboard, Plus, Trash2 } from "lucide-react";
-import { useUbentoEngine, useUbento } from "@/engine/engine";
 import { useSession } from "@/contexts/session";
-import { WorkspaceEngine } from "../engine";
+import { useUbento, useUbentoEngine } from "@/engine/engine";
+import { Grid, LayoutDashboard, Plus, Trash2 } from "lucide-react";
+import { WorkspaceEngine } from "../engine/engine";
 import { Section } from "./shared";
 
-export function NavigationPanel({ controller }: { controller: WorkspaceEngine }) {
+export function NavigationPanel({
+  controller,
+}: {
+  controller: WorkspaceEngine;
+}) {
   const host = useUbentoEngine();
   const ubento = useUbento();
   const session = useSession();
@@ -23,7 +27,9 @@ export function NavigationPanel({ controller }: { controller: WorkspaceEngine })
             <div className="w-5 h-5 rounded bg-accent flex items-center justify-center text-[10px] text-accent-contrast">
               {state.workspace?.name?.charAt(0) || "U"}
             </div>
-            <span className="truncate">{state.workspace?.name || "Ubento"}</span>
+            <span className="truncate">
+              {state.workspace?.name || "Ubento"}
+            </span>
           </div>
         </div>
       </div>
@@ -54,42 +60,42 @@ export function NavigationPanel({ controller }: { controller: WorkspaceEngine })
             ))}
           </div>
         </Section>
-      <Section title="Boards" icon={LayoutDashboard}>
-        <div className="flex flex-col gap-1 p-2">
-          {boards.map((board) => (
-            <div
-              key={board.id}
-              onClick={() => controller.goTo(board.id)}
-              className={`group flex items-center justify-between rounded-lg px-3 py-2 text-sm transition-all cursor-pointer ${
-                state.location?.boardId === board.id
-                  ? "bg-accent/10 text-accent font-medium shadow-sm"
-                  : "text-neutral-content-subtle hover:bg-neutral-surface-hover hover:text-neutral-content"
-              }`}
-            >
-              <span className="truncate">{board.name}</span>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (confirm(`Delete board "${board.name}"?`)) {
-                    controller.deleteBoard(board.id);
-                  }
-                }}
-                className="opacity-0 group-hover:opacity-100 text-neutral-content-subtle hover:text-destructive transition-all p-1"
+        <Section title="Boards" icon={LayoutDashboard}>
+          <div className="flex flex-col gap-1 p-2">
+            {boards.map((board) => (
+              <div
+                key={board.id}
+                onClick={() => controller.goTo(board.id)}
+                className={`group flex items-center justify-between rounded-lg px-3 py-2 text-sm transition-all cursor-pointer ${
+                  state.location?.boardId === board.id
+                    ? "bg-accent/10 text-accent font-medium shadow-sm"
+                    : "text-neutral-content-subtle hover:bg-neutral-surface-hover hover:text-neutral-content"
+                }`}
               >
-                <Trash2 size={12} />
-              </button>
-            </div>
-          ))}
+                <span className="truncate">{board.name}</span>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (confirm(`Delete board "${board.name}"?`)) {
+                      controller.deleteBoard(board.id);
+                    }
+                  }}
+                  className="opacity-0 group-hover:opacity-100 text-neutral-content-subtle hover:text-destructive transition-all p-1"
+                >
+                  <Trash2 size={12} />
+                </button>
+              </div>
+            ))}
 
-          <button
-            onClick={() => controller.createBoard({ name: "New Board" })}
-            className="mt-2 flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-neutral-content-muted transition-all hover:bg-neutral-surface-hover hover:text-accent"
-          >
-            <Plus size={14} />
-            <span>New Board</span>
-          </button>
-        </div>
-      </Section>
+            <button
+              onClick={() => controller.createBoard({ name: "New Board" })}
+              className="mt-2 flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-neutral-content-muted transition-all hover:bg-neutral-surface-hover hover:text-accent"
+            >
+              <Plus size={14} />
+              <span>New Board</span>
+            </button>
+          </div>
+        </Section>
       </div>
     </div>
   );

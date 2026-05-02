@@ -24,7 +24,7 @@ export interface paths {
       };
       requestBody: {
         content: {
-          "application/json": TPage<string, never>;
+          "application/json": Record<string, never>;
         };
       };
       responses: {
@@ -34,7 +34,7 @@ export interface paths {
             [name: string]: unknown;
           };
           content: {
-            "application/json": TPage<string, never>;
+            "application/json": Record<string, never>;
           };
         };
         /** @description Model not found */
@@ -93,7 +93,7 @@ export interface paths {
             /** @description The model identifier (e.g., 'gpt-4.1', 'gpt-4.1-mini', 'gpt-5') */
             model_id: string;
             /** @description JSON schema for structured output (used when format is 'json' or when structured output is desired) */
-            schema?: TPage<string, never>;
+            schema?: Record<string, never>;
             /**
              * @description Response format - 'json' for structured output, omit for text response
              * @enum {string}
@@ -110,7 +110,7 @@ export interface paths {
           };
           content: {
             "application/json": {
-              response: string | TPage<string, never>;
+              response: string | Record<string, never>;
             };
           };
         };
@@ -366,9 +366,9 @@ export interface paths {
             /** @description New thread title */
             title?: string;
             /** @description Optional thread metadata */
-            metadata?: TPage<string, never>;
+            metadata?: Record<string, never>;
             /** @description Optional thread context */
-            context?: TPage<string, never>;
+            context?: Record<string, never>;
           };
         };
       };
@@ -557,7 +557,7 @@ export interface paths {
               /** @description Optional author identifier */
               author?: string;
               /** @description Message content data */
-              data: TPage<string, never>;
+              data: Record<string, never>;
             };
           };
         };
@@ -733,7 +733,7 @@ export interface paths {
         content: {
           "application/json": {
             /** @description Updated message data */
-            data?: TPage<string, never>;
+            data?: Record<string, never>;
             /** @description Error message if any */
             error?: string;
           };
@@ -1117,7 +1117,7 @@ export interface paths {
     trace?: never;
   };
 }
-export type webhooks = TPage<string, never>;
+export type webhooks = Record<string, never>;
 export interface components {
   schemas: {
     Message: {
@@ -1129,7 +1129,13 @@ export interface components {
       thread_id: string;
       role: string;
       author?: string | null;
-      data: number | string | boolean | TPage<string, never> | unknown[] | null;
+      data:
+        | number
+        | string
+        | boolean
+        | Record<string, never>
+        | unknown[]
+        | null;
       error?: string | null;
       /** @default 1 */
       version: number;
@@ -1150,7 +1156,7 @@ export interface components {
         | number
         | string
         | boolean
-        | TPage<string, never>
+        | Record<string, never>
         | unknown[]
         | null;
       /** @default 1 */
@@ -1195,5 +1201,5 @@ export interface components {
   headers: never;
   pathItems: never;
 }
-export type $defs = TPage<string, never>;
-export type operations = TPage<string, never>;
+export type $defs = Record<string, never>;
+export type operations = Record<string, never>;

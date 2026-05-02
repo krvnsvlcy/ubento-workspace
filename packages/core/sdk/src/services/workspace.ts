@@ -69,7 +69,7 @@ export class WorkspaceService {
     name: string;
     team_id: string;
     description?: string;
-    data: TPage<string, unknown>;
+    data: Record<string, unknown>;
   }) {
     const result = await this.workspaceClient.post("/workspaces", {
       body: data,
@@ -82,7 +82,7 @@ export class WorkspaceService {
     data: {
       name?: string;
       description?: string;
-      data?: TPage<string, unknown>;
+      data?: Record<string, unknown>;
     },
   ) {
     const result = await this.workspaceClient.patch(

@@ -55,7 +55,7 @@ export interface paths {
             name: string;
             display_name: string;
             description?: string | null;
-            config?: TPage<string, never> | null;
+            config?: Record<string, never> | null;
           };
         };
       };
@@ -154,7 +154,7 @@ export interface paths {
             name?: string;
             display_name?: string;
             description?: string | null;
-            config?: TPage<string, never> | null;
+            config?: Record<string, never> | null;
           };
         };
       };
@@ -225,7 +225,7 @@ export interface paths {
           "application/json": {
             organization_id: string;
             provider_id: string;
-            auth?: TPage<string, never> | null;
+            auth?: Record<string, never> | null;
           };
         };
       };
@@ -334,7 +334,7 @@ export interface paths {
       };
       requestBody?: {
         content: {
-          "application/json": TPage<string, never>;
+          "application/json": Record<string, never>;
         };
       };
       responses: {
@@ -356,7 +356,7 @@ export interface paths {
     trace?: never;
   };
 }
-export type webhooks = TPage<string, never>;
+export type webhooks = Record<string, never>;
 export interface components {
   schemas: {
     ConnectionProvider: {
@@ -367,7 +367,7 @@ export interface components {
       name: string;
       display_name: string;
       description?: string;
-      config?: TPage<string, never>;
+      config?: Record<string, never>;
       /** @default 1 */
       version: number;
       /** Format: date-time */
@@ -419,5 +419,5 @@ export interface components {
   headers: never;
   pathItems: never;
 }
-export type $defs = TPage<string, never>;
-export type operations = TPage<string, never>;
+export type $defs = Record<string, never>;
+export type operations = Record<string, never>;

@@ -13,7 +13,7 @@ interface LLMBaseContent {
     priority?: number;
     lastModified?: string;
   };
-  _meta?: TPage<string, unknown>;
+  _meta?: Record<string, unknown>;
 }
 
 export interface LLMTextContent extends LLMBaseContent {
@@ -40,13 +40,13 @@ export interface LLMResourceContent extends LLMBaseContent {
         uri: string;
         text: string;
         mimeType?: string;
-        _meta?: TPage<string, unknown>;
+        _meta?: Record<string, unknown>;
       }
     | {
         uri: string;
         blob: string;
         mimeType?: string;
-        _meta?: TPage<string, unknown>;
+        _meta?: Record<string, unknown>;
       };
 }
 

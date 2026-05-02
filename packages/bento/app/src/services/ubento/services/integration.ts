@@ -110,7 +110,7 @@ export function createUbentoIntegrationService({
         mutationFn: async (data: {
           organization_id: string;
           provider_id: string;
-          auth?: TPage<string, any>;
+          auth?: Record<string, any>;
         }) => {
           return await ubentoSdk.integration.createConnection(data);
         },

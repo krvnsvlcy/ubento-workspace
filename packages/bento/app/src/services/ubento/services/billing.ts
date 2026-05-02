@@ -19,7 +19,7 @@ export function createUbentoBillingService({
 
   const productStore = createStore<
     billingClient.Product,
-    TPage<string, never>,
+    Record<string, never>,
     UbentoApiPage
   >({
     namespace: ubentoEntities.billingProduct.name,
@@ -221,7 +221,7 @@ export function createUbentoBillingService({
           quantity?: number;
           redirect_url: string;
           duration?: number;
-          metadata?: TPage<string, any>;
+          metadata?: Record<string, any>;
         }) => {
           return await ubentoSdk.billing.createCheckout(data);
         },

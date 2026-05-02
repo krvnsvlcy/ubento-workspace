@@ -86,7 +86,7 @@ type ModelData = {
     output: string;
   };
 };
-let modelData: TPage<string, ModelData> | null = null;
+let modelData: Record<string, ModelData> | null = null;
 
 export async function getModelData(
   modelId: string,

@@ -193,7 +193,7 @@ export class BillingService {
     quantity?: number;
     redirect_url: string;
     duration?: number;
-    metadata?: TPage<string, any>;
+    metadata?: Record<string, any>;
   }): engineStateChanged<Checkout> {
     const result = await this.billingClient.post("/billing/checkout", {
       body: {

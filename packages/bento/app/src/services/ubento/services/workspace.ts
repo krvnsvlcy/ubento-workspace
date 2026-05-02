@@ -1,13 +1,13 @@
 import {
   createStore,
   useMutation,
+  useQuery,
   useStoreEntities,
   useStoreEntity,
   UseStoreOptions,
 } from "@ubento/fabric";
 import { ubentoEntities } from "@ubento/primitives";
 import { UbentoSDK, workspaceClient } from "@ubento/sdk";
-import { useEffect, useState } from "react";
 import { UbentoApiPage, ubentoToFabricPagedResponse } from "../libs/pagination";
 
 export function createUbentoWorkspaceService({
@@ -163,27 +163,14 @@ export function createUbentoWorkspaceService({
       { slug }: { slug: string },
       options?: { enabled?: boolean },
     ) => {
-      const [loading, setLoading] = useState(false);
-      const [data, setData] = useState<workspaceClient.Workspace | null>(null);
-
-      useEffect(() => {
-        if (options?.enabled === false || !slug) return;
-
-        const load = async () => {
-          setLoading(true);
-          try {
-            const ws = await ubentoSdk.workspace.getWorkspaceBySlug(slug);
-            workspaceStore.push(ws);
-            setData(ws);
-          } finally {
-            setLoading(false);
-          }
-        };
-
-        load();
-      }, [slug, options?.enabled]);
-
-      return { data, loading };
+      return useQuery({
+        queryKey: ["workspace", "slug", slug],
+        queryFn: () => ubentoSdk.workspace.getWorkspaceBySlug(slug),
+        enabled: options?.enabled !== false && Boolean(slug),
+        onSuccess: (ws) => {
+          workspaceStore.push(ws);
+        },
+      });
     },
     useWorkspaces: (
       params?: { team_id?: string },
@@ -197,7 +184,7 @@ export function createUbentoWorkspaceService({
           name: string;
           team_id: string;
           description?: string;
-          data: TPage<string, unknown>;
+          data: Record<string, unknown>;
         }) => {
           return await ubentoSdk.workspace.createWorkspace(data);
         },
@@ -211,7 +198,7 @@ export function createUbentoWorkspaceService({
         mutationFn: async (data: {
           name?: string;
           description?: string;
-          data?: TPage<string, unknown>;
+          data?: Record<string, unknown>;
         }) => {
           return await ubentoSdk.workspace.updateWorkspace(workspaceId, data);
         },
@@ -380,7 +367,7 @@ export function createUbentoWorkspaceService({
       name: string;
       team_id: string;
       description?: string;
-      data: TPage<string, unknown>;
+      data: Record<string, unknown>;
     }) => {
       const ws = await ubentoSdk.workspace.createWorkspace(data);
       workspaceStore.push(ws);
@@ -391,7 +378,7 @@ export function createUbentoWorkspaceService({
       data: {
         name?: string;
         description?: string;
-        data?: TPage<string, unknown>;
+        data?: Record<string, unknown>;
       },
     ) => {
       const ws = await ubentoSdk.workspace.updateWorkspace(workspaceId, data);
@@ -428,7 +415,7 @@ export function createUbentoWorkspaceService({
     createBoard: async (data: {
       name: string;
       workspace_id: string;
-      data: TPage<string, unknown>;
+      data: Record<string, unknown>;
       parentId?: string;
     }) => {
       const board = await ubentoSdk.workspace.createBoard(data);
@@ -439,7 +426,7 @@ export function createUbentoWorkspaceService({
       boardId: string,
       update: {
         name?: string;
-        data?: TPage<string, unknown>;
+        data?: Record<string, unknown>;
         parentId?: string;
       },
     ) => {

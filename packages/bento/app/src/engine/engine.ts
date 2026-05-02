@@ -28,7 +28,7 @@ export type UbentoEngine = StateController<UbentoEngineState> & {
   moduleUrlTemplate: string;
 
   // commands
-  goToLocation: (location: UbentoLocation) => void;
+  goToLocation: (location: Partial<UbentoLocation>) => void;
   openWorkspace: (slug: string) => void;
 };
 

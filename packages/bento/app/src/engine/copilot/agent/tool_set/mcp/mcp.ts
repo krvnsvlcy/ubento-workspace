@@ -32,7 +32,7 @@ export interface McpToolSetConfig {
   name: string;
   url: string;
   tokenProvider?: TokenProvider;
-  headers?: TPage<string, string>;
+  headers?: Record<string, string>;
 }
 
 export interface McpToolSet extends ToolSet {
@@ -48,8 +48,8 @@ export function createMcpToolSet(config: McpToolSetConfig): McpToolSet {
   });
 
   let _status = ExtensionStatus.Disconnected;
-  let _toolMap: TPage<string, AgentExtensionToolDef> | undefined = undefined;
-  const _toolInstanceMap: TPage<string, Tool> = {};
+  let _toolMap: Record<string, AgentExtensionToolDef> | undefined = undefined;
+  const _toolInstanceMap: Record<string, Tool> = {};
 
   const baseToolSet = createToolSet({
     name: config.name,
@@ -90,7 +90,7 @@ export function createMcpToolSet(config: McpToolSetConfig): McpToolSet {
   });
 
   async function getToolMap(): engineStateChanged<
-    TPage<string, AgentExtensionToolDef>
+    Record<string, AgentExtensionToolDef>
   > {
     if (_toolMap) return _toolMap;
     await awaitConnected();

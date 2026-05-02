@@ -1,4 +1,4 @@
-import { WorkspaceState } from "../engine.js";
+import { WorkspaceState } from "../engine/engine.js";
 
 export function WorkspaceInteractor({
   workspace,

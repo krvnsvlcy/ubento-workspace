@@ -28,10 +28,10 @@ function BoardTreeItem({
     <div className="flex flex-col">
       <div
         onClick={() => {
-          engine.setState((s) => ({
-            ...s,
-            location: { ...s.location, board: board.id },
-          }));
+          engine.goToLocation({
+            board: board.id,
+            params: {},
+          });
         }}
         style={{ paddingLeft: `${level * 12 + 8}px` }}
         className={`group flex items-center gap-2 py-1.5 pr-2 rounded-lg cursor-pointer transition-colors ${
@@ -84,12 +84,12 @@ export function WorkspaceTab() {
   const ubento = useUbento();
   const location = engine.useState((s) => s.location);
 
-  const { data: workspace } = ubento.workspace.useWorkspaceBySlug(
+  const { data: workspace, isLoading } = ubento.workspace.useWorkspaceBySlug(
     { slug: location.workspace! },
     { enabled: !!location.workspace },
   );
 
-  const { data: rootBoards, isLoading } = ubento.workspace.useBoards(
+  const { data: rootBoards } = ubento.workspace.useBoards(
     { workspace_id: workspace?.id!, parent_id: null },
     { enabled: !!workspace?.id },
   );

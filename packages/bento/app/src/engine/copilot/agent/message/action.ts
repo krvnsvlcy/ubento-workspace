@@ -9,8 +9,8 @@ export enum AgentActionStatus {
 }
 
 export type AgentActionData<
-  I extends TPage<string, any> = TPage<string, any>,
-  O extends TPage<string, any> = TPage<string, any>,
+  I extends Record<string, any> = Record<string, any>,
+  O extends Record<string, any> = Record<string, any>,
 > = {
   id: string;
   tool: string;

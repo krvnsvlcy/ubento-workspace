@@ -131,7 +131,7 @@ export function tokenize(input: string): Token[] {
               value += "u"; // Fail gracefully
             }
           } else {
-            const escapes: TPage<string, string> = {
+            const escapes: Record<string, string> = {
               n: "\n",
               r: "\r",
               t: "\t",

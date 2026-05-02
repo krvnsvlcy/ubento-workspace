@@ -10,7 +10,7 @@ export interface UbentoSDKOptions {
   /** Global baseUrl fallback for all services */
   baseUrl?: string;
   /** Optional map to override baseUrl per service */
-  serviceBaseUrls?: Partial<TPage<ServiceKey, string>>;
+  serviceBaseUrls?: Partial<Record<ServiceKey, string>>;
   tokenManager: TokenManager;
   /** Optional EventSource factory for pubsub service */
   createEventSource?: (url: string) => EventSource;

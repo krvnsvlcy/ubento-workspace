@@ -28,7 +28,7 @@ export function createClientFactory<Paths extends {}>() {
   }: {
     baseUrl?: string;
     tokenManager?: TokenManager;
-    headers?: TPage<string, string>;
+    headers?: Record<string, string>;
   }): UbentoClient<Paths> {
     const baseUrl = _baseUrl ?? "https://api.ubento.pro";
     const fetcher = async (request: Request) => {

@@ -1155,7 +1155,7 @@ export interface paths {
             note: string;
             duration: number;
             ref: string;
-            data?: TPage<string, never>;
+            data?: Record<string, never>;
           };
         };
       };
@@ -1260,7 +1260,7 @@ export interface paths {
             [name: string]: unknown;
           };
           content: {
-            "application/json": TPage<string, never>;
+            "application/json": Record<string, never>;
           };
         };
         default: components["responses"]["Problem"];
@@ -1341,7 +1341,7 @@ export interface paths {
             [name: string]: unknown;
           };
           content: {
-            "application/json": TPage<string, never>;
+            "application/json": Record<string, never>;
           };
         };
         default: components["responses"]["Problem"];
@@ -1502,7 +1502,7 @@ export interface paths {
             /** Format: uri */
             redirect_url: string;
             duration?: number;
-            data?: TPage<string, never>;
+            data?: Record<string, never>;
           };
         };
       };
@@ -1677,7 +1677,7 @@ export interface paths {
     trace?: never;
   };
 }
-export type webhooks = TPage<string, never>;
+export type webhooks = Record<string, never>;
 export interface components {
   schemas: {
     Product: {
@@ -1708,8 +1708,8 @@ export interface components {
       description?: string;
       /** @default true */
       active: boolean;
-      entitlements: TPage<string, never>[];
-      metadata?: TPage<string, never>;
+      entitlements: Record<string, never>[];
+      metadata?: Record<string, never>;
       /** @default 1 */
       version: number;
       /** Format: date-time */
@@ -1782,7 +1782,7 @@ export interface components {
       status: "HELD" | "COMMITTED" | "RELEASED" | "EXPIRED";
       /** Format: date-time */
       expires_at: string;
-      data?: TPage<string, never>;
+      data?: Record<string, never>;
       /** Format: date-time */
       committed_at?: string;
       /** Format: date-time */
@@ -1803,7 +1803,7 @@ export interface components {
       value: number;
       ref?: string;
       note: string;
-      data?: TPage<string, never>;
+      data?: Record<string, never>;
       /** @default 1 */
       version: number;
       /** Format: date-time */
@@ -1831,7 +1831,7 @@ export interface components {
         | "UNPAID"
         | "CANCELLED"
         | "EXPIRED";
-      data?: TPage<string, never>;
+      data?: Record<string, never>;
       /** @default 1 */
       version: number;
       /** Format: date-time */
@@ -1866,7 +1866,7 @@ export interface components {
       /** Format: date-time */
       due_at?: string;
       hosted_url?: string;
-      data?: TPage<string, never>;
+      data?: Record<string, never>;
       /** @default 1 */
       version: number;
       /** Format: date-time */
@@ -1896,7 +1896,7 @@ export interface components {
       currency?: string;
       amount_total?: number;
       line_items?: components["schemas"]["OrderLineItem"][];
-      data?: TPage<string, never>;
+      data?: Record<string, never>;
       /** Format: date-time */
       link_updated_at?: string;
       /** @default 1 */
@@ -1918,7 +1918,7 @@ export interface components {
       /** @enum {string} */
       provider: "LEMON_SQUEEZY";
       provider_id: string;
-      data?: TPage<string, never>;
+      data?: Record<string, never>;
       /** @default 1 */
       version: number;
       /** Format: date-time */
@@ -1933,7 +1933,7 @@ export interface components {
       /** @enum {string} */
       provider: "LEMON_SQUEEZY";
       provider_id: string;
-      payload: TPage<string, never>;
+      payload: Record<string, never>;
       event: string;
       attempts?: components["schemas"]["WebhookEventAttempt"][];
       /**
@@ -1958,7 +1958,7 @@ export interface components {
       organization_id: string;
       /** Format: date-time */
       expires_at: string;
-      data: TPage<string, never>;
+      data: Record<string, never>;
       /** @default 1 */
       version: number;
       /** Format: date-time */
@@ -1974,7 +1974,7 @@ export interface components {
       unit_price?: number;
       amount?: number;
       currency?: string;
-      metadata?: TPage<string, never>;
+      metadata?: Record<string, never>;
     };
     WebhookEventAttempt: {
       id: string;
@@ -2022,5 +2022,5 @@ export interface components {
   };
   pathItems: never;
 }
-export type $defs = TPage<string, never>;
-export type operations = TPage<string, never>;
+export type $defs = Record<string, never>;
+export type operations = Record<string, never>;

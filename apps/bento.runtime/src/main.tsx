@@ -5,12 +5,24 @@ import "./modules.js";
 import { GuestWorkspace } from "./workspace.js";
 
 import "@ubento/bento-style/css/themes.css";
-import { engineFlags } from "@ubento/engine";
+import { createBentoEngine, engineFlags } from "@ubento/engine";
+import { rpc } from "./rpc.js";
 
 engineFlags.DEV_MODE = !!import.meta.env.DEV_MODE;
 
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <GuestWorkspace />
-  </StrictMode>,
-);
+rpc.setHandlers({
+  init: ({ state, publicModuleUrlTemplate }) => {
+    const engine = createBentoEngine({ rpc, publicModuleUrlTemplate, state });
+
+    createRoot(document.getElementById("root")!).render(
+      <StrictMode>
+        <GuestWorkspace engine={engine} />
+      </StrictMode>,
+    );
+
+    rpc.egress.ready({});
+  },
+});
+
+rpc.run();
+rpc.egress.connect({});

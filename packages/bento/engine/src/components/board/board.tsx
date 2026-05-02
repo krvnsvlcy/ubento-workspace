@@ -1,9 +1,10 @@
 import { EmptyView, ErrorView, PendingView } from "@ubento/bento-primitives";
+import { useStoreEntity } from "@ubento/fabric";
 import React, { useEffect, useState } from "react";
 import { spacingBaseUnit } from "../../constants.js";
 import { useBentoEngine } from "../../engine/engine.js";
 import { BoardStyle } from "../../engine/models.js";
-import { StackContext } from "../core/context.js";
+import { BoardContext, StackContext } from "../core/context.js";
 import { Element, ElementRegistryProvider } from "../elements/element.js";
 import { Initializer } from "../handles/initializer.js";
 
@@ -39,7 +40,7 @@ function BoardContent({ boardId }: { boardId: string }): React.JSX.Element {
   const engine = useBentoEngine();
   const { select } = engine;
   const isEditMode = engine.useState((s) => s.mode === "edit");
-  const board = engine.useState((s) => s.boards[boardId]);
+  const { data: board } = useStoreEntity(engine.boardStore, boardId);
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -56,7 +57,7 @@ function BoardContent({ boardId }: { boardId: string }): React.JSX.Element {
         if (state.mode === "edit" && state.selection.length > 0) {
           e.preventDefault();
           for (const id of state.selection) {
-            engine.deleteElement(id);
+            engine.deleteElement(boardId, id);
           }
           engine.select([]);
         }
@@ -67,9 +68,49 @@ function BoardContent({ boardId }: { boardId: string }): React.JSX.Element {
         if (state.mode === "edit" && state.selection.length > 0) {
           e.preventDefault();
           if (e.shiftKey) {
-            engine.unwrapStack(state.selection);
+            // Find parent of selection
+            const firstId = state.selection[0];
+            let parentId: string | undefined;
+
+            if (board.content.includes(firstId)) {
+              parentId = "root_content";
+            } else {
+              for (const [id, el] of Object.entries(
+                board.elements as Record<string, any>,
+              )) {
+                if (el.type === "stack" && el.content.includes(firstId)) {
+                  parentId = id;
+                  break;
+                }
+              }
+            }
+
+            if (parentId) {
+              for (const id of state.selection) {
+                engine.unwrapStack(boardId, id, parentId);
+              }
+            }
           } else {
-            engine.wrapWithStack(state.selection);
+            // Find parent of selection
+            const firstId = state.selection[0];
+            let parentId: string | undefined;
+
+            if (board.content.includes(firstId)) {
+              parentId = "root_content";
+            } else {
+              for (const [id, el] of Object.entries(
+                board.elements as Record<string, any>,
+              )) {
+                if (el.type === "stack" && el.content.includes(firstId)) {
+                  parentId = id;
+                  break;
+                }
+              }
+            }
+
+            if (parentId) {
+              engine.wrapWithStack(boardId, state.selection, parentId);
+            }
           }
         }
       }
@@ -91,23 +132,25 @@ function BoardContent({ boardId }: { boardId: string }): React.JSX.Element {
       <EmptyView message="This board is empty." />
     )
   ) : (
-    board.content.map((id) => <Element key={id} id={id} />)
+    board.content.map((id: string) => <Element key={id} id={id} />)
   );
 
   return (
-    <ElementRegistryProvider registry={board.elements as any}>
-      <StackContext value={{ flex: board.style?.direction || "row" }}>
-        <div
-          onClick={() => {
-            select([]);
-            engine.setSelectionScope(undefined);
-          }}
-          style={getBoardStyle(board.style)}
-        >
-          {content}
-        </div>
-      </StackContext>
-    </ElementRegistryProvider>
+    <BoardContext value={boardId}>
+      <ElementRegistryProvider registry={board.elements as any}>
+        <StackContext value={{ flex: board.style?.direction || "row" }}>
+          <div
+            onClick={() => {
+              select([]);
+              engine.setSelectionScope(undefined);
+            }}
+            style={getBoardStyle(board.style)}
+          >
+            {content}
+          </div>
+        </StackContext>
+      </ElementRegistryProvider>
+    </BoardContext>
   );
 }
 
@@ -122,8 +165,8 @@ export function Board({
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    engine
-      .fetchBoard(id)
+    engine.boardStore
+      .fetch(id)
       .then(() => {
         // Data is now in controller.state
       })

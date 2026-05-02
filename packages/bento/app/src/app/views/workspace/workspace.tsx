@@ -1,37 +1,40 @@
 import { useUbentoEngine } from "@/engine/engine";
-import { useEffect, useRef } from "react";
+import { ErrorView, PendingView } from "@ubento/bento-primitives";
+import { workspaceClient } from "@ubento/sdk";
+import { useMemo } from "react";
 import { WorkspaceContent } from "./content";
-import { createWorkspaceEngine } from "./engine";
-import { useKeyboardShortcuts } from "./keyboard";
+import { createWorkspaceEngine } from "./engine/engine";
 
-export function Workspace({
-  slug,
-  boardId,
+function WorkspaceCanvas({
+  workspace,
 }: {
-  slug: string;
-  boardId?: string;
+  workspace: workspaceClient.Workspace;
 }) {
   const engine = useUbentoEngine();
 
-  const workspaceController = useRef(
-    createWorkspaceEngine({
-      engine,
-      slug,
-    }),
+  const workspaceEngine = useMemo(
+    () =>
+      createWorkspaceEngine({
+        workspaceId: workspace.id,
+        engine,
+      }),
+    [workspace],
   );
 
-  useEffect(() => {
-    workspaceController.current.load();
-    return () => workspaceController.current.dispose();
-  }, []);
+  return <WorkspaceContent engine={workspaceEngine} />;
+}
 
-  useKeyboardShortcuts({ controller: workspaceController.current });
+export function Workspace({ slug }: { slug: string }) {
+  const engine = useUbentoEngine();
+  const { data: workspace, status } =
+    engine.ubento.workspace.useWorkspaceBySlug({ slug });
 
-  useEffect(() => {
-    if (boardId) {
-      workspaceController.current.goTo(boardId);
-    }
-  }, [boardId, workspaceController]);
-
-  return <WorkspaceContent controller={workspaceController.current} />;
+  if (status === "pending") {
+    return <PendingView message={`Loading workspace ${slug}...`} />;
+  } else if (status === "error") {
+    return <ErrorView message={`Failed to load workspace ${slug}...`} />;
+  } else if (!workspace) {
+    return <ErrorView message={`Workspace ${slug} not found...`} />;
+  }
+  return <WorkspaceCanvas workspace={workspace} />;
 }

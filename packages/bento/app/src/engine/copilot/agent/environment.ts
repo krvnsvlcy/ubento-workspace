@@ -10,9 +10,9 @@ export type AgentEnvironment = {
     options?: { format: "raw" | "json" | "markdown" },
   ): engineStateChanged<string>;
 
-  toolSets: TPage<string, ToolSet>;
-  resourceTypes: TPage<string, ResourceType>;
-  attachmentTypes: TPage<string, AttachmentType<any, any>>;
+  toolSets: Record<string, ToolSet>;
+  resourceTypes: Record<string, ResourceType>;
+  attachmentTypes: Record<string, AttachmentType<any, any>>;
 
   // Environment actions
   addToolSet: (toolSet: ToolSet) => void;

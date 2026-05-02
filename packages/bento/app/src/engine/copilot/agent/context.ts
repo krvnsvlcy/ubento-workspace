@@ -36,5 +36,5 @@ export type AgentContextStats = {
   window: number;
   budget: number;
   usage: number;
-  breakdown: TPage<string, number>;
+  breakdown: Record<string, number>;
 };

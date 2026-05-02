@@ -4,7 +4,7 @@ import { useBentoEngine } from "../../../engine/engine";
 import { StackData } from "../../../engine/models";
 import { BaseElement, getBaseStyle } from "../base_element";
 
-import { ParentContext, StackContext } from "../../core/context";
+import { BoardContext, ParentContext, StackContext } from "../../core/context";
 import { BoxHandle } from "../../handles/box-handle";
 import { Initializer } from "../../handles/initializer";
 import { Element } from "../element";
@@ -13,6 +13,7 @@ import { ComponentSelector } from "./component_selector";
 export function Stack({ id, data }: { id: string; data: StackData }) {
   const stackContext = useContext(StackContext);
   const engine = useBentoEngine();
+  const boardId = useContext(BoardContext);
   const isEditMode = engine.useState((s) => s.mode === "edit");
   const [showSelector, setShowSelector] = useState(false);
 
@@ -83,11 +84,17 @@ export function Stack({ id, data }: { id: string; data: StackData }) {
                   <div className="pointer-events-auto relative z-[1000]">
                     <ComponentSelector
                       onSelect={async (moduleId) => {
-                        const m = await engine.getModule(moduleId);
-                        engine.replaceElement(id, {
-                          type: "block",
+                        const m = await engine.moduleManager.moduleStore.fetch(
                           moduleId,
-                          moduleVersionId: m.latestVersionId,
+                        );
+                        if (!m) return;
+                        engine.replaceElement(boardId!, id, {
+                          type: "block",
+                          module: {
+                            scope: "private",
+                            id: moduleId,
+                            versionId: m.latestVersionId,
+                          },
                           style: data.style as any,
                           props: {},
                         });

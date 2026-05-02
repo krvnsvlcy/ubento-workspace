@@ -1,7 +1,7 @@
 export type UbentoLocation = {
   workspace?: string;
   board?: string;
-  params?: TPage<string, string>;
+  params?: Record<string, string>;
   tab?: string;
 };
 
@@ -14,7 +14,7 @@ export function parseLocation(): UbentoLocation {
   const urlParams = new URLSearchParams(window.location.search);
   const jsonParams = urlParams.get("params");
   const tab = urlParams.get("tab") || undefined;
-  let params: TPage<string, string> | undefined;
+  let params: Record<string, string> | undefined;
 
   if (jsonParams) {
     try {

@@ -288,11 +288,11 @@ export type EntityName =
 
 const entitiesByName = Object.fromEntries(
   Object.entries(ubentoEntities).map(([_, value]) => [value.name, value]),
-) as TPage<EntityName, EntityDefinition>;
+) as Record<EntityName, EntityDefinition>;
 
 const entitiesByCode = Object.fromEntries(
   Object.entries(ubentoEntities).map(([_, value]) => [value.code, value]),
-) as TPage<string, EntityDefinition>;
+) as Record<string, EntityDefinition>;
 
 export function getEntityByName(
   name: EntityName,

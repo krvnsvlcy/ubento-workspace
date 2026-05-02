@@ -1,7 +1,7 @@
 import cx from "clsx";
 import { AppWindow, LayoutDashboard, Sparkles } from "lucide-react";
 import { useState } from "react";
-import { WorkspaceEngine } from "../engine";
+import { WorkspaceEngine } from "../engine/engine";
 import { BoardTab } from "./tabs/board";
 import { CopilotTab } from "./tabs/copilot/copilot";
 import { WorkspaceTab } from "./tabs/workspace";

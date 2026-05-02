@@ -1,6 +1,6 @@
 import { BaseStyle, BlockData, BoardStyle, StackStyle } from "@ubento/engine";
 import { Eye, Layout, Palette, Settings2 } from "lucide-react";
-import { WorkspaceEngine } from "../../engine";
+import { WorkspaceEngine } from "../../engine/engine";
 import {
   BoardHeader,
   ModuleSection,

@@ -189,7 +189,7 @@ export class HttpTransport implements Transport {
   }
 
   private async _commonHeaders(): engineStateChanged<Headers> {
-    const headers: TPage<string, string> = {};
+    const headers: Record<string, string> = {};
 
     // Fetch and inject the token right before the request
     if (this._tokenManager) {

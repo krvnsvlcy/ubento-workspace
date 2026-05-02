@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import React, { useEffect, useState } from "react";
-import { WorkspaceEngine } from "../engine";
+import { WorkspaceEngine } from "../engine/engine";
 
 export function Section({
   title,

@@ -1,6 +1,6 @@
 import { useUbentoEngine } from "@/engine/engine";
 import { useState } from "react";
-import { WorkspaceEngine } from "../../../engine";
+import { WorkspaceEngine } from "../../../engine/engine";
 import { CopilotInput } from "./input";
 import { CopilotThread } from "./thread";
 

@@ -1,4 +1,4 @@
-export type RpcInterfaceDefinition = TPage<
+export type RpcInterfaceDefinition = Record<
   string,
   { request: any; response: any } | ((arg: any) => any)
 >;
