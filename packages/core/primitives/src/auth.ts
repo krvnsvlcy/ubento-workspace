@@ -100,6 +100,9 @@ export const ubentoAuth = {
       admin: "admin",
       user: "user",
     },
+    public: {
+      guest: "guest",
+    },
     team: {
       owner: "team:owner",
       admin: "team:admin",
@@ -114,9 +117,8 @@ export const ubentoAuth = {
   },
   scopes: {
     root: "/",
+    public: "/public",
     team: ({ team_id }: { team_id: string }) => `/team/${team_id}`,
-    teamOrHigher: ({ team_id }: { team_id?: string }) =>
-      team_id ? `/team/${team_id}` : "/",
     workspace: ({
       team_id,
       workspace_id,
@@ -124,17 +126,5 @@ export const ubentoAuth = {
       team_id: string;
       workspace_id: string;
     }) => `/team/${team_id}/workspace/${workspace_id}`,
-    workspaceOrHigher: ({
-      team_id,
-      workspace_id,
-    }: {
-      team_id?: string;
-      workspace_id?: string;
-    }) =>
-      team_id && workspace_id
-        ? `/team/${team_id}/workspace/${workspace_id}`
-        : team_id
-          ? `/team/${team_id}`
-          : "/",
   },
 };

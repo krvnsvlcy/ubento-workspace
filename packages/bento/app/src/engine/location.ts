@@ -2,10 +2,12 @@ export type UbentoLocation = {
   workspace?: string;
   board?: string;
   params?: Record<string, string>;
-  tab?: string;
+  workspaceTab?: string;
+  componentTab?: string;
+  component?: string;
 };
 
-// /w/{workspaceSlug}/{boardId}?params={json}&tab={tab}
+// /w/{workspaceSlug}/{boardId}?params={json}&workspaceTab={tab}&component={moduleId}&componentTab={tab}
 
 export function parseLocation(): UbentoLocation {
   const path = window.location.pathname;
@@ -13,7 +15,9 @@ export function parseLocation(): UbentoLocation {
 
   const urlParams = new URLSearchParams(window.location.search);
   const jsonParams = urlParams.get("params");
-  const tab = urlParams.get("tab") || undefined;
+  const workspaceTab = urlParams.get("workspaceTab") || undefined;
+  const componentTab = urlParams.get("componentTab") || undefined;
+  const component = urlParams.get("component") || undefined;
   let params: Record<string, string> | undefined;
 
   if (jsonParams) {
@@ -29,11 +33,13 @@ export function parseLocation(): UbentoLocation {
       workspace: parts[1],
       board: parts[2],
       params,
-      tab,
+      workspaceTab,
+      componentTab,
+      component,
     };
   }
 
-  return { params, tab };
+  return { params, workspaceTab, componentTab, component };
 }
 
 export function stringifyLocation(location: UbentoLocation): string {
@@ -52,8 +58,14 @@ export function stringifyLocation(location: UbentoLocation): string {
       `params=${encodeURIComponent(JSON.stringify(location.params))}`,
     );
   }
-  if (location.tab) {
-    queryParts.push(`tab=${encodeURIComponent(location.tab)}`);
+  if (location.workspaceTab) {
+    queryParts.push(`workspaceTab=${encodeURIComponent(location.workspaceTab)}`);
+  }
+  if (location.componentTab) {
+    queryParts.push(`componentTab=${encodeURIComponent(location.componentTab)}`);
+  }
+  if (location.component) {
+    queryParts.push(`component=${encodeURIComponent(location.component)}`);
   }
 
   if (queryParts.length > 0) {

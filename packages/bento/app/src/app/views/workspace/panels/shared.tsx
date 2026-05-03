@@ -1,12 +1,16 @@
 import { useUbento, useUbentoEngine } from "@/engine/engine";
 import { BaseStyle, BlockData, BoardData, ElementData } from "@ubento/engine";
+import cx from "clsx";
 import {
   Box,
   ChevronRight,
   Code2,
+  Grid,
   Layers,
   Layout,
+  Move,
   Plus,
+  Square,
   X,
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
@@ -118,13 +122,20 @@ export function NumberInput({
   value,
   onChange,
   unit,
+  step = 1,
+  min = -Infinity,
+  max = Infinity,
 }: {
   value?: number;
   onChange: (v: number | undefined) => void;
   unit?: string;
+  step?: number;
+  min?: number;
+  max?: number;
 }) {
   const [localValue, setLocalValue] = useState<string>(value?.toString() ?? "");
   const [isFocused, setIsFocused] = useState(false);
+  const [mode, setMode] = useState<"view" | "edit">("view");
 
   useEffect(() => {
     if (!isFocused) {
@@ -144,28 +155,85 @@ export function NumberInput({
     }
   };
 
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (mode === "edit") return;
+
+    e.preventDefault();
+    const initialValue = value ?? 0;
+    let delta = 0;
+    let initialized = false;
+
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      if (!moveEvent.movementX && !moveEvent.movementY) return;
+
+      if (!initialized) {
+        initialized = true;
+        return;
+      }
+
+      delta += moveEvent.movementX;
+      const newValue = initialValue + delta * step;
+      const clamped = Math.min(Math.max(newValue, min), max);
+      onChange(clamped);
+    };
+
+    const handleMouseUp = () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
+  };
+
   return (
-    <div className="group flex items-center rounded-md px-2 py-1 transition-all focus-within:ring-1 focus-within:ring-accent/50">
+    <div
+      onMouseDown={handleMouseDown}
+      onClick={() => {
+        if (mode === "view") setMode("edit");
+      }}
+      className={cx(
+        "group flex items-center rounded-md px-2 py-0.5 transition-all border border-transparent",
+        "bg-neutral-surface/30 hover:bg-neutral-surface/50",
+        {
+          "ring-1 ring-accent/30 border-accent/20":
+            isFocused || mode === "edit",
+          "cursor-ew-resize": mode === "view",
+        },
+      )}
+    >
       <input
         type="number"
         value={localValue}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
+        onFocus={() => {
+          setIsFocused(true);
+          setMode("edit");
+        }}
+        onBlur={() => {
+          setIsFocused(false);
+          setMode("view");
+        }}
         onChange={(e) => handleChange(e.target.value)}
-        className="w-full border-none bg-transparent font-mono text-xs text-right outline-none text-neutral-content-subtle [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        className={cx(
+          "w-full border-none bg-transparent font-mono text-[11px] text-right outline-none text-neutral-content-subtle [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
+          {
+            "pointer-events-none": mode === "view",
+          },
+        )}
       />
       {unit && (
-        <span className="ml-1 text-[10px] font-medium text-neutral-content-subtle">
+        <span className="ml-1 text-[9px] font-bold text-neutral-content-muted select-none">
           {unit}
         </span>
       )}
-      {value !== undefined && (
+      {value !== undefined && mode === "edit" && (
         <button
-          onClick={() => {
+          onClick={(e) => {
+            e.stopPropagation();
             onChange(undefined);
             setLocalValue("");
           }}
-          className="text-neutral-content-subtle hover:text-destructive transition-colors"
+          className="ml-1 text-neutral-content-muted hover:text-destructive transition-colors"
           title="Clear"
         >
           <X size={10} />
@@ -246,32 +314,101 @@ export function PaddingControl({
   value?: BaseStyle["padding"];
   onChange: (v: BaseStyle["padding"]) => void;
 }) {
+  const [mode, setMode] = useState<"all" | "axis" | "individual">("all");
+  const p = value || {};
+
   return (
     <div className="mt-2 px-4">
-      <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-content-subtle">
-        Padding
-      </span>
-      <div className="mt-1 grid grid-cols-2 gap-2">
-        <NumberInput
-          value={value?.top}
-          onChange={(v) => onChange({ ...value, top: v })}
-          unit="T"
-        />
-        <NumberInput
-          value={value?.right}
-          onChange={(v) => onChange({ ...value, right: v })}
-          unit="R"
-        />
-        <NumberInput
-          value={value?.bottom}
-          onChange={(v) => onChange({ ...value, bottom: v })}
-          unit="B"
-        />
-        <NumberInput
-          value={value?.left}
-          onChange={(v) => onChange({ ...value, left: v })}
-          unit="L"
-        />
+      <div className="mb-2 flex items-center justify-between">
+        <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-content-subtle">
+          Padding
+        </span>
+        <div className="flex gap-1 rounded-md bg-neutral-surface p-1">
+          <button
+            onClick={() => setMode("all")}
+            className={cx("rounded p-1 transition-colors", {
+              "bg-accent text-accent-contrast": mode === "all",
+              "text-neutral-content-muted hover:text-neutral-content":
+                mode !== "all",
+            })}
+            title="All sides"
+          >
+            <Square size={10} />
+          </button>
+          <button
+            onClick={() => setMode("axis")}
+            className={cx("rounded p-1 transition-colors", {
+              "bg-accent text-accent-contrast": mode === "axis",
+              "text-neutral-content-muted hover:text-neutral-content":
+                mode !== "axis",
+            })}
+            title="Axis"
+          >
+            <Move size={10} />
+          </button>
+          <button
+            onClick={() => setMode("individual")}
+            className={cx("rounded p-1 transition-colors", {
+              "bg-accent text-accent-contrast": mode === "individual",
+              "text-neutral-content-muted hover:text-neutral-content":
+                mode !== "individual",
+            })}
+            title="Individual"
+          >
+            <Grid size={10} />
+          </button>
+        </div>
+      </div>
+
+      <div className="mt-1">
+        {mode === "all" && (
+          <NumberInput
+            value={p.top}
+            onChange={(v) => onChange({ top: v, bottom: v, left: v, right: v })}
+            unit="PX"
+            min={0}
+          />
+        )}
+
+        {mode === "axis" && (
+          <div className="grid grid-cols-2 gap-2">
+            <NumberInput
+              value={p.top}
+              onChange={(v) => onChange({ ...p, top: v, bottom: v })}
+              unit="Y"
+            />
+            <NumberInput
+              value={p.left}
+              onChange={(v) => onChange({ ...p, left: v, right: v })}
+              unit="X"
+            />
+          </div>
+        )}
+
+        {mode === "individual" && (
+          <div className="grid grid-cols-2 gap-2">
+            <NumberInput
+              value={p.top}
+              onChange={(v) => onChange({ ...p, top: v })}
+              unit="T"
+            />
+            <NumberInput
+              value={p.right}
+              onChange={(v) => onChange({ ...p, right: v })}
+              unit="R"
+            />
+            <NumberInput
+              value={p.bottom}
+              onChange={(v) => onChange({ ...p, bottom: v })}
+              unit="B"
+            />
+            <NumberInput
+              value={p.left}
+              onChange={(v) => onChange({ ...p, left: v })}
+              unit="L"
+            />
+          </div>
+        )}
       </div>
     </div>
   );

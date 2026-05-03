@@ -15,6 +15,7 @@ type ReqMsg<
   K extends RpcMethod<T> = keyof T,
 > = {
   __rpc__: true;
+  channel?: string;
   kind: "request";
   id: string;
   method: K;
@@ -26,6 +27,7 @@ type ResOkMsg<
   K extends RpcMethod<T> = keyof T,
 > = {
   __rpc__: true;
+  channel?: string;
   kind: "response";
   id: string;
   method: K;
@@ -35,6 +37,7 @@ type ResOkMsg<
 
 type ResErrMsg = {
   __rpc__: true;
+  channel?: string;
   kind: "response";
   id: string;
   method: string;
@@ -45,7 +48,10 @@ type ResErrMsg = {
 type AnyMsg = ReqMsg | ResOkMsg | ResErrMsg;
 
 const isRpcMsg = (x: any): x is AnyMsg =>
-  !!x && x.__rpc__ === true && (x.kind === "request" || x.kind === "response");
+  !!x &&
+  x.__rpc__ === true &&
+  (typeof x.channel === "string" || x.channel === undefined) &&
+  (x.kind === "request" || x.kind === "response");
 
 const rid = () => Math.random().toString(36).slice(2);
 
@@ -91,6 +97,7 @@ export function createDuplexRpc<
   Egress extends RpcInterfaceDefinition,
 >(opts: {
   port: RpcPort;
+  channel?: string;
   handlers?: HandlerMap<Ingress>;
 }): DuplexRpc<Ingress, Egress>;
 
@@ -100,9 +107,10 @@ export function createDuplexRpc<
   Egress extends RpcInterfaceDefinition,
 >(opts: {
   port: RpcPort;
+  channel?: string;
   handlers?: HandlerMap<Ingress>;
 }): DuplexRpc<Ingress, Egress> {
-  const { port } = opts;
+  const { port, channel } = opts;
 
   // ─────────────────────────────────────────────
   // Handlers
@@ -211,6 +219,7 @@ export function createDuplexRpc<
       const id = rid();
       const msg: ReqMsg = {
         __rpc__: true,
+        channel,
         kind: "request",
         id,
         method: method as any,
@@ -268,6 +277,11 @@ export function createDuplexRpc<
   // Inbox
   // ─────────────────────────────────────────────
   const handleInboxMessage = (msg: AnyMsg) => {
+    // Exact match enforcing:
+    // - Unchanneled instances only process unchanneled messages (undefined === undefined)
+    // - Channeled instances only process their specific channel
+    if (msg.channel !== channel) return;
+
     // 1. Response handling (we received a response to our call)
     if (msg.kind === "response") {
       const p = pending.get(msg.id);
@@ -319,6 +333,7 @@ export function createDuplexRpc<
       if (!fn) {
         const err: ResErrMsg = {
           __rpc__: true,
+          channel,
           kind: "response",
           id: req.id,
           method: req.method as string,
@@ -345,6 +360,7 @@ export function createDuplexRpc<
           const payload = await fn(req.payload);
           const ok: ResOkMsg = {
             __rpc__: true,
+            channel,
             kind: "response",
             id: req.id,
             method: req.method as string,
@@ -369,6 +385,7 @@ export function createDuplexRpc<
           console.error(e);
           const err: ResErrMsg = {
             __rpc__: true,
+            channel,
             kind: "response",
             id: req.id,
             method: req.method as string,

@@ -3,13 +3,14 @@ import {
   BentoLocalState,
   BentoLocation,
   BentoMode,
-} from "./engine.js";
+} from "../engine/engine.js";
 import {
   BoardData,
+  BoardStyle,
   ModuleData,
   StableModuleReference,
   WorkspaceData,
-} from "./models.js";
+} from "../engine/models.js";
 
 export type BentoEngineHostRpcInterface = {
   // connection
@@ -31,6 +32,9 @@ export type BentoEngineHostRpcInterface = {
   goTo: (payload: { location: BentoLocation }) => void;
   setMode: (payload: { mode: BentoMode }) => void;
 
+  // external ui
+  openComponentBrowser: (payload: {}) => void;
+
   // Sync
   localStateChanged: (payload: BentoLocalState) => void;
   boardChanged: (payload: { boardId: string; board: BoardData }) => void;
@@ -51,6 +55,10 @@ export type BentoEngineRuntimeRpcInterface = {
   updateBoard: (payload: {
     boardId: string;
     board: Partial<BoardData>;
+  }) => void;
+  updateBoardStyle: (payload: {
+    boardId: string;
+    style: Partial<BoardStyle>;
   }) => void;
   updateModule: (payload: {
     moduleId: string;

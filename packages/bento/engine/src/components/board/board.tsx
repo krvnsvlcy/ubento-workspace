@@ -20,19 +20,39 @@ function paddingStyle(padding: BoardStyle["padding"]) {
   ].join(" ");
 }
 
-function getBoardStyle(style: BoardStyle = {}): React.CSSProperties {
+function getBoardStyle(style: BoardStyle): React.CSSProperties {
   return {
     position: "relative",
-    width: "100%",
-    height: "100%",
+    width:
+      style.direction === "row"
+        ? style.flow === "fixed"
+          ? "100%"
+          : "fit-content"
+        : "100%",
+    height:
+      style.direction === "column"
+        ? style.flow === "fixed"
+          ? "100%"
+          : "fit-content"
+        : "100%",
     display: "flex",
     alignContent: "start",
     flexDirection: style.direction || "row",
     gap: style.gap ? `${style.gap * spacingBaseUnit}px` : undefined,
-    overflow: style.direction === "row" ? "auto hidden" : "hidden auto",
+    overflowX:
+      style.direction === "row"
+        ? style.flow === "fixed"
+          ? "hidden"
+          : "auto"
+        : "hidden",
+    overflowY:
+      style.direction === "column"
+        ? style.flow === "fixed"
+          ? "hidden"
+          : "auto"
+        : "hidden",
     pointerEvents: "auto",
     padding: paddingStyle(style.padding),
-    transition: "padding 0.2s",
   };
 }
 
@@ -135,18 +155,33 @@ function BoardContent({ boardId }: { boardId: string }): React.JSX.Element {
     board.content.map((id: string) => <Element key={id} id={id} />)
   );
 
+  const direction = board.style?.direction || "row";
+
   return (
     <BoardContext value={boardId}>
       <ElementRegistryProvider registry={board.elements as any}>
-        <StackContext value={{ flex: board.style?.direction || "row" }}>
+        <StackContext value={{ flex: direction }}>
           <div
             onClick={() => {
               select([]);
               engine.setSelectionScope(undefined);
             }}
+            onDoubleClick={() => {
+              engine.toggleMode();
+            }}
             style={getBoardStyle(board.style)}
           >
             {content}
+
+            {isEditMode ? (
+              <div
+                style={{
+                  height: direction === "row" ? "100%" : "50vh",
+                  width: direction === "column" ? "100%" : "50vw",
+                  // backgroundColor: "blue",
+                }}
+              />
+            ) : null}
           </div>
         </StackContext>
       </ElementRegistryProvider>

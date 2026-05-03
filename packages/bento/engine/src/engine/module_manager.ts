@@ -7,7 +7,7 @@ import { createStore as createZustandStore } from "zustand";
 import {
   BentoEngineHostRpcInterface,
   BentoEngineRuntimeRpcInterface,
-} from "./bridge.js";
+} from "../rpc/bento.js";
 import {
   ModuleData,
   ModuleReference,
@@ -247,8 +247,10 @@ export function createModuleManager({
     watchModule,
     searchModules: async (params: any) => {
       await moduleStore.fetchMany({ params });
-      return moduleStore.selectManyEntities(moduleStore.store.getState(), params)
-        .data;
+      return moduleStore.selectManyEntities(
+        moduleStore.store.getState(),
+        params,
+      ).data;
     },
     createModule: async (name: string) => {
       const module = await rpc.egress.createModule({ name });

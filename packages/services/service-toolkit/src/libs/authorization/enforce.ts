@@ -32,10 +32,10 @@ export function enforce<T extends Request>(
 ): SafeMiddleware<T, T>;
 export function enforce<T extends Request>({
   permissions,
-  resource,
+  scope,
 }: {
   permissions: string[];
-  resource: (req: Request) => Promise<string | undefined> | string | undefined;
+  scope: (req: Request) => Promise<string | undefined> | string | undefined;
 }): SafeMiddleware<T, T>;
 export function enforce<T extends Request>(
   ...args:
@@ -43,14 +43,14 @@ export function enforce<T extends Request>(
     | [
         {
           permissions: string[];
-          resource: (
+          scope: (
             req: Request,
           ) => Promise<string | undefined> | string | undefined;
         },
       ]
 ): SafeMiddleware<T, T> {
   let permissions: string[];
-  let getResource:
+  let getScope:
     | ((req: Request) => Promise<string | undefined> | string | undefined)
     | undefined;
 
@@ -58,7 +58,7 @@ export function enforce<T extends Request>(
     permissions = args as string[];
   } else {
     permissions = args[0].permissions;
-    getResource = args[0].resource;
+    getScope = args[0].scope;
   }
 
   return async (req, res, next) => {
@@ -71,8 +71,8 @@ export function enforce<T extends Request>(
       }
     }
 
-    const resource = getResource ? await getResource(req) : undefined;
-    if (resource) {
+    const scope = getScope ? await getScope(req) : undefined;
+    if (scope) {
       const authorizer = req.authorizer;
       if (!authorizer) {
         req.context.logger.error("No authorizer found in enforce middleware", {
@@ -82,14 +82,14 @@ export function enforce<T extends Request>(
       }
       const can = await Promise.all(
         permissions.map((permission) =>
-          authorizer.can(auth.subject, resource, permission),
+          authorizer.can(auth.subject, scope, permission),
         ),
       );
       if (!can.every((c) => c))
         return res.status(403).json({
           message: "Forbidden",
           subject: auth.subject,
-          resource,
+          scope,
           permissions,
         });
     }

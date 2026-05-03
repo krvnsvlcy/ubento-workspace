@@ -45,21 +45,12 @@ export class ModuleService {
     return extractResponseData(result, true) as Module;
   }
 
-  async getModuleBySlug(slug: string) {
-    const result = await this.moduleClient.get("/modules/slug/{slug}", {
-      params: {
-        path: { slug },
-      },
-    });
-    return extractResponseData(result, true) as Module;
-  }
-
   async createModule(data: {
     name: string;
-    slug?: string;
     team_id: string;
     source: string;
-    scope: "public" | "team";
+    scope: "public" | "private";
+    type: string;
   }) {
     const result = await this.moduleClient.post("/modules", {
       body: data,
@@ -67,7 +58,7 @@ export class ModuleService {
     return extractResponseData(result, true) as Module;
   }
 
-  async updateModule(moduleId: string, data: { name?: string; slug?: string }) {
+  async updateModule(moduleId: string, data: { name?: string }) {
     const result = await this.moduleClient.patch("/modules/{module_id}", {
       params: {
         path: { module_id: moduleId },

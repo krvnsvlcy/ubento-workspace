@@ -4,6 +4,7 @@ import { workspaceClient } from "@ubento/sdk";
 import { useMemo } from "react";
 import { WorkspaceContent } from "./content";
 import { createWorkspaceEngine } from "./engine/engine";
+import { WorkspaceControl } from "./interactor/control";
 
 function WorkspaceCanvas({
   workspace,
@@ -21,7 +22,12 @@ function WorkspaceCanvas({
     [workspace],
   );
 
-  return <WorkspaceContent engine={workspaceEngine} />;
+  return (
+    <div className="relative w-full h-full">
+      <WorkspaceContent engine={workspaceEngine} />
+      <WorkspaceControl engine={workspaceEngine} />
+    </div>
+  );
 }
 
 export function Workspace({ slug }: { slug: string }) {

@@ -28,27 +28,28 @@ export type Length = z.infer<typeof lengthSchema>;
 export const baseElementStyleSchema = z.object({
   width: lengthSchema.optional(),
   height: lengthSchema.optional(),
-  minWidth: z.number().optional(),
+  minWidth: z.number().default(64),
   maxWidth: z.number().optional(),
-  minHeight: z.number().optional(),
+  minHeight: z.number().default(64),
   maxHeight: z.number().optional(),
-  flex: z.number().optional(),
 });
 export type BaseStyle = z.infer<typeof baseElementStyleSchema>;
 
 export const stackStyleSchema = baseElementStyleSchema.extend({
-  direction: z.enum(["row", "column"]).optional(),
-  gap: z.number().optional(),
+  direction: z.enum(["row", "column"]).default("column"),
+  gap: z.number().default(24),
   justify: z
     .enum(["start", "end", "center", "space-between", "space-around"])
-    .optional(),
+    .default("start"),
   overflow: z.enum(["visible", "hidden", "scroll", "auto"]).optional(),
 });
 export type StackStyle = z.infer<typeof stackStyleSchema>;
 
+export const defaultStackStyle = stackStyleSchema.parse({});
+
 export const stackDataSchema = z.object({
   type: z.literal("stack"),
-  style: stackStyleSchema,
+  style: stackStyleSchema.default(defaultStackStyle),
   content: z.array(z.string()),
 });
 export type StackData = z.infer<typeof stackDataSchema>;
@@ -81,17 +82,19 @@ export const boardStyleSchema = z.object({
       left: z.number().optional(),
       right: z.number().optional(),
     })
-    .optional(),
-  direction: z.enum(["row", "column"]).optional(),
-  gap: z.number().optional(),
-  overflow: z.enum(["visible", "hidden", "scroll", "auto"]).optional(),
+    .default({ top: 24, bottom: 24, left: 24, right: 24 }),
+  direction: z.enum(["row", "column"]).default("column"),
+  gap: z.number().default(24),
+  flow: z.enum(["scroll", "fixed"]).default("scroll"),
 });
 export type BoardStyle = z.infer<typeof boardStyleSchema>;
+
+export const defaultBoardStyle = boardStyleSchema.parse({});
 
 export const boardDataSchema = z.object({
   id: z.string(),
   name: z.string().optional(),
-  style: boardStyleSchema.optional(),
+  style: boardStyleSchema.default(defaultBoardStyle),
   content: z.array(z.string()).default([]),
   elements: z.record(z.string(), elementDataSchema).default({}),
 });
@@ -112,20 +115,3 @@ export const workspaceDataSchema = z.object({
   services: z.record(z.string(), serviceDataSchema).default({}),
 });
 export type WorkspaceData = z.infer<typeof workspaceDataSchema>;
-
-export function createBoard(
-  data: Partial<BoardData> & { id: string },
-): BoardData {
-  return {
-    name: "Untitled Board",
-    content: ["root"],
-    elements: {
-      root: {
-        type: "stack",
-        content: [],
-        style: {},
-      },
-    },
-    ...data,
-  };
-}

@@ -6,7 +6,7 @@ import { createStore as createZustandStore } from "zustand";
 import {
   BentoEngineHostRpcInterface,
   BentoEngineRuntimeRpcInterface,
-} from "./bridge.js";
+} from "../rpc/bento.js";
 import {
   BaseStyle,
   BoardData,
@@ -440,6 +440,11 @@ export function createBentoEngine({
       });
     },
 
+    // external UI
+    openComponentBrowser: () => {
+      rpc.egress.openComponentBrowser({});
+    },
+
     // stores
     boardStore,
     moduleManager,
@@ -475,6 +480,12 @@ export function createBentoEngine({
     },
     updateBoard: ({ boardId, board }) => {
       boardStore.update(boardId, board);
+    },
+    updateBoardStyle: ({ boardId, style }) => {
+      boardStore.update(boardId, (board) => ({
+        ...board,
+        style: { ...(board.style || {}), ...style },
+      }));
     },
     updateModule: ({ moduleId, module }) => {
       moduleManager.moduleStore.update(moduleId, module);

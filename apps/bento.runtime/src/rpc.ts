@@ -9,6 +9,7 @@ export const rpc = createDuplexRpc<
   BentoEngineRuntimeRpcInterface,
   BentoEngineHostRpcInterface
 >({
+  channel: "workspace",
   port,
 });
 

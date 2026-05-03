@@ -1,13 +1,14 @@
-import { useEffect, useState } from "react";
 import {
   createStore,
   useMutation,
+  useQuery,
   useStoreEntities,
   useStoreEntity,
   UseStoreOptions,
 } from "@ubento/fabric";
 import { ubentoEntities } from "@ubento/primitives";
 import { moduleClient, UbentoSDK } from "@ubento/sdk";
+import { useEffect, useState } from "react";
 import { UbentoApiPage, ubentoToFabricPagedResponse } from "../libs/pagination";
 
 export function createUbentoModuleService({
@@ -79,36 +80,7 @@ export function createUbentoModuleService({
     useModule: (moduleId: string, options?: UseStoreOptions) => {
       return useStoreEntity(moduleStore, moduleId, options);
     },
-    useModuleBySlug: (
-      { slug }: { slug: string },
-      options?: { enabled?: boolean },
-    ) => {
-      const [loading, setLoading] = useState(false);
-      const [data, setData] = useState<moduleClient.Module | null>(null);
-
-      useEffect(() => {
-        if (options?.enabled === false || !slug) return;
-
-        const load = async () => {
-          setLoading(true);
-          try {
-            const mod = await ubentoSdk.module.getModuleBySlug(slug);
-            moduleStore.push(mod);
-            setData(mod);
-          } finally {
-            setLoading(false);
-          }
-        };
-
-        load();
-      }, [slug, options?.enabled]);
-
-      return { data, loading };
-    },
-    useModules: (
-      params?: { team_id?: string },
-      options?: UseStoreOptions,
-    ) => {
+    useModules: (params?: { team_id?: string }, options?: UseStoreOptions) => {
       return useStoreEntities(moduleStore, params, options);
     },
     useCreateModule: () => {
@@ -118,7 +90,8 @@ export function createUbentoModuleService({
           slug?: string;
           team_id: string;
           source: string;
-          scope: "public" | "team";
+          scope: "public" | "private";
+          type: string;
         }) => {
           return await ubentoSdk.module.createModule(data);
         },
@@ -192,29 +165,15 @@ export function createUbentoModuleService({
       return { data, loading };
     },
     useModuleVersionSource: (moduleId: string, versionId: string) => {
-      const [loading, setLoading] = useState(false);
-      const [data, setData] = useState<string | null>(null);
-
-      useEffect(() => {
-        if (!moduleId || !versionId) return;
-
-        const load = async () => {
-          setLoading(true);
-          try {
-            const source = await ubentoSdk.module.getModuleVersionSource(
-              moduleId,
-              versionId,
-            );
-            setData(source);
-          } finally {
-            setLoading(false);
-          }
-        };
-
-        load();
-      }, [moduleId, versionId]);
-
-      return { data, loading };
+      return useQuery({
+        queryKey: ["moduleVersionSource", moduleId, versionId],
+        queryFn: async () => {
+          return await ubentoSdk.module.getModuleVersionSource(
+            moduleId,
+            versionId,
+          );
+        },
+      });
     },
   };
 
@@ -223,11 +182,6 @@ export function createUbentoModuleService({
   const imperatives = {
     getModule: async (moduleId: string) => {
       const mod = await ubentoSdk.module.getModule(moduleId);
-      moduleStore.push(mod);
-      return mod;
-    },
-    getModuleBySlug: async (slug: string) => {
-      const mod = await ubentoSdk.module.getModuleBySlug(slug);
       moduleStore.push(mod);
       return mod;
     },
@@ -248,10 +202,10 @@ export function createUbentoModuleService({
     },
     createModule: async (data: {
       name: string;
-      slug?: string;
       team_id: string;
       source: string;
-      scope: "public" | "team";
+      scope: "public" | "private";
+      type: string;
     }) => {
       const mod = await ubentoSdk.module.createModule(data);
       moduleStore.push(mod);
@@ -264,10 +218,7 @@ export function createUbentoModuleService({
       );
     },
     getModuleVersionSource: async (moduleId: string, versionId: string) => {
-      return await ubentoSdk.module.getModuleVersionSource(
-        moduleId,
-        versionId,
-      );
+      return await ubentoSdk.module.getModuleVersionSource(moduleId, versionId);
     },
     publishModuleVersion: async (moduleId: string) => {
       const v = await ubentoSdk.module.publishModuleVersion(moduleId);
@@ -281,4 +232,3 @@ export function createUbentoModuleService({
     ...imperatives,
   };
 }
-

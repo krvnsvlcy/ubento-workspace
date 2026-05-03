@@ -9,35 +9,23 @@ export const spec: OpenAPIV3.Document = {
     version: "1.0.0",
   },
   paths: {
-    "/modules/slug/{slug}": {
-      get: {
-        summary: "Get Module by Slug",
-        parameters: [
-          {
-            name: "slug",
-            in: "path",
-            required: true,
-            schema: { type: "string" },
-          },
-        ],
-        responses: {
-          "200": {
-            description: "Module details",
-            content: {
-              "application/json": {
-                schema: { $ref: "#/components/schemas/Module" },
-              },
-            },
-          },
-        },
-      },
-    },
+
     "/modules": {
       get: {
         summary: "List Modules",
         parameters: [
           {
             name: "team_id",
+            in: "query",
+            schema: { type: "string" },
+          },
+          {
+            name: "limit",
+            in: "query",
+            schema: { type: "integer" },
+          },
+          {
+            name: "cursor",
             in: "query",
             schema: { type: "string" },
           },
@@ -65,12 +53,12 @@ export const spec: OpenAPIV3.Document = {
                 type: "object",
                 properties: {
                   name: { type: "string" },
-                  slug: { type: "string" },
                   team_id: { type: "string" },
                   source: { type: "string" },
-                  scope: { type: "string", enum: ["team", "public"] },
+                  scope: { type: "string", enum: ["private", "public"] },
+                  type: { type: "string" },
                 },
-                required: ["name", "team_id", "source", "scope"],
+                required: ["name", "team_id", "source", "scope", "type"],
               },
             },
           },
@@ -126,7 +114,6 @@ export const spec: OpenAPIV3.Document = {
                 type: "object",
                 properties: {
                   name: { type: "string" },
-                  slug: { type: "string" },
                 },
               },
             },

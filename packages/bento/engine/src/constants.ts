@@ -1,3 +1,3 @@
-export const baseLengthUnit = 8; // 8px
-export const spacingBaseUnit = 8; // 8px
-export const baseLengthConstraintsUnit = baseLengthUnit * 8; // 64px
+export const baseLengthUnit = 1; // 8px
+export const spacingBaseUnit = 1; // 8px
+export const baseLengthConstraintsUnit = baseLengthUnit * 1; // 64px

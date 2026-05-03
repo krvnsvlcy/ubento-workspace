@@ -3,18 +3,18 @@ import { MongooseAdapter } from "casbin-mongoose-adapter";
 
 /**
  * Custom Matcher: Checks if the user's assigned scope covers the requested object.
- * Casbin passes: (requestObject, assignedScope)
+ * Casbin passes: (requestScope, assignedScope)
  */
-function matchScope(requestObject: string, assignedScope: string): boolean {
+function matchScope(requestScope: string, assignedScope: string): boolean {
   // Global admin override
   if (assignedScope === "/" || assignedScope === "*") return true;
 
   // Exact match
-  if (requestObject === assignedScope) return true;
+  if (requestScope === assignedScope) return true;
 
   // Child match (e.g. assigned on /team/123, accessing /team/123/app/456)
   const cleanAssigned = assignedScope.replace(/\/$/, "");
-  return requestObject.startsWith(cleanAssigned + "/");
+  return requestScope.startsWith(cleanAssigned + "/");
 }
 
 export class Authorizer {
@@ -23,7 +23,7 @@ export class Authorizer {
 
   private readonly modelConf = `
 [request_definition]
-r = sub, obj, act
+r = sub, scp, act
 
 [policy_definition]
 p = role, act
@@ -35,10 +35,9 @@ g = _, _, _
 e = some(where (p.eft == allow))
 
 [matchers]
-# We pass the Request Object as the 'domain' to g()
-# But we define a custom domain matching function for the role manager.
-m = g(r.sub, p.role, r.obj) && (p.act == r.act || p.act == "*")
-  `.trim();
+# Short-circuit: Check if accessing public scope as a guest FIRST, then fallback to DB roles
+m = ((r.scp == "/public" && p.role == "guest") || g(r.sub, p.role, r.scp)) && (p.act == r.act || p.act == "*")
+`.trim();
 
   constructor(private mongoUri: string) {}
 

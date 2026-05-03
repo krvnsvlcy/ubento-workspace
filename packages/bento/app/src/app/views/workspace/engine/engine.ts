@@ -1,4 +1,5 @@
 import { UbentoEngine, UbentoEngineState } from "@/engine/engine";
+import { UbentoLocation } from "@/engine/location";
 import { createZustandStateController } from "@ubento/bento-primitives";
 import {
   BentoEngineHostRpcInterface,
@@ -6,6 +7,7 @@ import {
   BentoMode,
   BoardData,
   boardDataSchema,
+  BoardStyle,
   workspaceDataSchema,
 } from "@ubento/engine";
 import {
@@ -25,8 +27,10 @@ export type WorkspaceState = {
 
   // local state
   mode: BentoMode;
+  location: UbentoLocation;
 
   // synced from runtime
+  boards: Record<string, BoardData>;
   selectionScope?: string;
   selection: string[];
   hover?: string;
@@ -50,9 +54,9 @@ export function createWorkspaceEngine({
     workspaceStatus: "pending",
     runtimeStatus: "pending",
     mode: "live",
+    location: engine.getState().location,
+    boards: {},
     selection: [],
-    connected: false,
-    ready: false,
   }));
 
   const controller = createZustandStateController(store);
@@ -99,6 +103,7 @@ export function createWorkspaceEngine({
         BentoEngineRuntimeRpcInterface
       >({
         port: createWindowPort(window, target),
+        channel: "workspace",
         handlers: {
           connect: async () => {
             store.setState({ runtimeStatus: "connected" });
@@ -238,7 +243,12 @@ export function createWorkspaceEngine({
             });
           },
           boardChanged: ({ boardId, board }) => {
-            console.log("board changed", boardId, board);
+            store.setState((s) => ({
+              boards: { ...s.boards, [boardId]: board },
+            }));
+          },
+          openComponentBrowser: () => {
+            engine.goToLocation({ tab: "assets" });
           },
         },
       });
@@ -257,16 +267,29 @@ export function createWorkspaceEngine({
     // actions
     setMode: (mode: BentoMode) => {
       store.setState({ mode });
+      rpc?.egress.setMode({ mode });
+    },
+
+    updateBoardStyle: (boardId: string, style: Partial<BoardStyle>) => {
+      rpc?.egress.updateBoardStyle({ boardId, style });
+    },
+
+    setBoardName: (boardId: string, name: string) => {
+      rpc?.egress.updateBoard({ boardId, board: { name } });
     },
   };
 
   // sync host location
 
   engine.subscribe((curr: UbentoEngineState, prev: UbentoEngineState) => {
+    if (curr.location !== prev.location) {
+      store.setState({ location: curr.location });
+    }
+
     if (
       curr.location.board &&
-      curr.location.board !== prev.location.board &&
-      !dequal(curr.location.params, prev.location.params)
+      (curr.location.board !== prev.location.board ||
+        !dequal(curr.location.params, prev.location.params))
     ) {
       rpc?.egress.setLocation({
         location: {

@@ -8,14 +8,12 @@ import { BoardContext, ParentContext, StackContext } from "../../core/context";
 import { BoxHandle } from "../../handles/box-handle";
 import { Initializer } from "../../handles/initializer";
 import { Element } from "../element";
-import { ComponentSelector } from "./component_selector";
 
 export function Stack({ id, data }: { id: string; data: StackData }) {
   const stackContext = useContext(StackContext);
   const engine = useBentoEngine();
   const boardId = useContext(BoardContext);
   const isEditMode = engine.useState((s) => s.mode === "edit");
-  const [showSelector, setShowSelector] = useState(false);
 
   const style = data.style;
 
@@ -60,54 +58,14 @@ export function Stack({ id, data }: { id: string; data: StackData }) {
             !isEditMode
               ? (e) => {
                   e.stopPropagation();
-                  setShowSelector(true);
+                  engine.openComponentBrowser();
                 }
               : undefined
           }
           className={`h-full w-full flex items-center justify-center rounded-xl transition-all duration-300 bg-neutral-surface group relative ${
             !isEditMode ? "cursor-pointer" : ""
           }`}
-        >
-          {isEditMode ? (
-            <></>
-          ) : (
-            <>
-              {showSelector && (
-                <>
-                  <div
-                    className="fixed inset-0 z-[999] cursor-default"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setShowSelector(false);
-                    }}
-                  />
-                  <div className="pointer-events-auto relative z-[1000]">
-                    <ComponentSelector
-                      onSelect={async (moduleId) => {
-                        const m = await engine.moduleManager.moduleStore.fetch(
-                          moduleId,
-                        );
-                        if (!m) return;
-                        engine.replaceElement(boardId!, id, {
-                          type: "block",
-                          module: {
-                            scope: "private",
-                            id: moduleId,
-                            versionId: m.latestVersionId,
-                          },
-                          style: data.style as any,
-                          props: {},
-                        });
-                        setShowSelector(false);
-                      }}
-                      onClose={() => setShowSelector(false)}
-                    />
-                  </div>
-                </>
-              )}
-            </>
-          )}
-        </div>
+        ></div>
       ) : (
         <StackContext
           value={{

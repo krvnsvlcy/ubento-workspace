@@ -49,5 +49,5 @@
       "host": "http://localhost:6124",
     },
   ],
-  "only": ["workspace-service"],
+  "only": ["module-service"],
 }

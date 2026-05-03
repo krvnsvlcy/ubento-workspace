@@ -22,18 +22,31 @@ enum ModuleScope {
     private
 }
 
+enum ModuleVersionScope {
+    public
+    private
+}
+
 model Module {
     id      String @id @map("_id")
     entity  String @default("module")
     team_id String
 
-    name              String
-    type              String
-    summary           String
-    latest_version_id String?
-    scope             ModuleScope
+    name               String
+    type               String
+    summary            String?
+    latest_version_id  String
+    private_version_id String
+    public_version_id  String?
+    scope              ModuleScope
 
-    files Json // Record<string, string> filename -> hash
+    // Named relations for quick access to specific states
+    latest_version  ModuleVersion  @relation("Latest", fields: [latest_version_id], references: [id], onUpdate: NoAction, onDelete: NoAction)
+    private_version ModuleVersion  @relation("Private", fields: [private_version_id], references: [id], onUpdate: NoAction, onDelete: NoAction)
+    public_version  ModuleVersion? @relation("Public", fields: [public_version_id], references: [id], onUpdate: NoAction, onDelete: NoAction)
+
+    // Collection of all versions for history/changelog
+    versions ModuleVersion[] @relation("ModuleToVersions")
 
     version    Int       @default(1)
     created_at DateTime  @default(now())
@@ -45,28 +58,22 @@ model Module {
     @@map("modules")
 }
 
-model ModuleFileRevision {
-    id        String @id @map("_id")
-    entity    String @default("module_file_revision")
-    module_id String
-    filename  String
-    hash      String
-    author_id String
-
-    version    Int      @default(1)
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
-
-    @@index([module_id, filename])
-    @@map("module_file_revisions")
-}
-
 model ModuleVersion {
     id        String @id @map("_id")
     entity    String @default("module_version")
     module_id String
 
-    files Json // Record<string, string> filename -> hash
+    author_id String
+    scope     ModuleVersionScope
+    files     Json // filename -> hash mapping (CAS)
+
+    // Back-relations to Module
+    module Module @relation("ModuleToVersions", fields: [module_id], references: [id], onDelete: Cascade)
+
+    // Reverse named relations (required by Prisma for explicit mapping)
+    latest_of_module  Module[] @relation("Latest")
+    private_of_module Module[] @relation("Private")
+    public_of_module  Module[] @relation("Public")
 
     version    Int      @default(1)
     created_at DateTime @default(now())

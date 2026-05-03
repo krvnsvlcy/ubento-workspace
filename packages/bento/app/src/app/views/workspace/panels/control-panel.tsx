@@ -1,5 +1,6 @@
+import { Button } from "@ubento/bento-primitives";
 import cx from "clsx";
-import { AppWindow, LayoutDashboard, Sparkles } from "lucide-react";
+import { AppWindow, Eye, LayoutDashboard, Pencil, Sparkles, X } from "lucide-react";
 import { useState } from "react";
 import { WorkspaceEngine } from "../engine/engine";
 import { BoardTab } from "./tabs/board";
@@ -45,8 +46,15 @@ function Tab({
   );
 }
 
-export function ControlPanel({ controller }: { controller: WorkspaceEngine }) {
-  const [activeTab, setActiveTab] = useState<string>("context");
+export function ControlPanel({
+  controller,
+  onClose,
+}: {
+  controller: WorkspaceEngine;
+  onClose: () => void;
+}) {
+  const [activeTab, setActiveTab] = useState<string>("ai");
+  const mode = controller.useState((s) => s.mode);
 
   let content = <></>;
 
@@ -64,20 +72,34 @@ export function ControlPanel({ controller }: { controller: WorkspaceEngine }) {
 
   return (
     <div
-      className="h-full flex flex-col bg-background-100 rounded-xl border"
+      className="h-full flex flex-col"
       onClick={(e) => {
         e.stopPropagation();
       }}
     >
-      <div className="flex gap-2 p-4">
-        {tabs.map((t) => (
-          <Tab
-            key={t.id}
-            isActive={activeTab === t.id}
-            onClick={() => setActiveTab(t.id)}
-            icon={t.icon}
-          />
-        ))}
+      <div className="flex justify-between items-center p-4">
+        <div className="flex gap-2">
+          {tabs.map((t) => (
+            <Tab
+              key={t.id}
+              isActive={activeTab === t.id}
+              onClick={() => setActiveTab(t.id)}
+              icon={t.icon}
+            />
+          ))}
+        </div>
+        <div className="flex gap-2">
+          <Button
+            size="icon"
+            variant="ghost"
+            onClick={() => controller.setMode(mode === "edit" ? "live" : "edit")}
+          >
+            {mode === "edit" ? <Eye size={16} /> : <Pencil size={16} />}
+          </Button>
+          <Button size="icon" onClick={onClose}>
+            <X size={16} />
+          </Button>
+        </div>
       </div>
       <hr />
       <div className="grow overflow-hidden">{content}</div>

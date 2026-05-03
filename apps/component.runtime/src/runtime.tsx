@@ -83,8 +83,14 @@ export function ComponentRuntime() {
   }
 
   return (
-    <div className="component-preview-container p-4">
-      <Component {...props} />
+    <div
+      style={{
+        height: "100vh",
+        width: "100vw",
+        overflow: "hidden",
+      }}
+    >
+      <Component key={code} {...props} />
     </div>
   );
 }

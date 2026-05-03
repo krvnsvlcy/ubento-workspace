@@ -20,7 +20,17 @@ export function Workspace({
 
   return (
     <EngineContext value={engine}>
-      <ServiceProvider>{content}</ServiceProvider>
+      <ServiceProvider>
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            overflow: "auto",
+          }}
+        >
+          {content}
+        </div>
+      </ServiceProvider>
     </EngineContext>
   );
 }

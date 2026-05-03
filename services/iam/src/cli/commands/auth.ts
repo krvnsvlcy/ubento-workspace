@@ -1,5 +1,5 @@
 import { Command } from "commander";
-import { policies } from "../../constants/policies.js";
+import { roles } from "../../constants/roles.js";
 import { authorizer } from "../../lib/authorizer.js";
 
 export function registerAuthCommands(program: Command) {
@@ -72,7 +72,7 @@ export function registerAuthCommands(program: Command) {
     .action(async () => {
       console.log("Syncing policies...");
 
-      const entries = Object.entries(policies);
+      const entries = Object.entries(roles);
       for (const [role, config] of entries) {
         console.log(`Processing role: ${role}`);
 
