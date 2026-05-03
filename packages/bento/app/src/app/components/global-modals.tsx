@@ -1,8 +1,9 @@
 import { useGlobalModals } from "@/contexts/modals";
 import { useSession } from "@/contexts/session";
-import { useUbento } from "@/engine/engine";
+import { useUbento, useUbentoEngine } from "@/engine/engine";
 import { AccountModal } from "@/modals/account/account";
 import { CreateWorkspaceModal } from "@/modals/create_workspace/create_workspace";
+import { ServiceBrowserModal } from "@/modals/service_browser/service_browser";
 import { TeamModal } from "@/modals/team/team_modal";
 import { useState } from "react";
 
@@ -10,6 +11,9 @@ export function GlobalModals() {
   const { activeModal, closeModal } = useGlobalModals();
   const session = useSession();
   const ubento = useUbento();
+  const engine = useUbentoEngine();
+  const activeWorkspaceEngine = engine.useState((s) => s.activeWorkspaceEngine);
+
   const { mutateAsync: createWorkspace } =
     ubento.workspace.useCreateWorkspace();
   const [isCreating, setIsCreating] = useState(false);
@@ -29,6 +33,18 @@ export function GlobalModals() {
     } finally {
       setIsCreating(false);
     }
+  };
+
+  const handleAddService = async (moduleId: string, name: string) => {
+    if (!activeWorkspaceEngine) return;
+
+    const module = await ubento.module.getModule(moduleId);
+    activeWorkspaceEngine.installService(name, {
+      scope: "private",
+      id: module.id,
+      versionId: module.latest_version_id,
+    });
+    closeModal();
   };
 
   const { data: team } = ubento.iam.useTeam(session?.teamId || "", {
@@ -54,6 +70,12 @@ export function GlobalModals() {
         isOpen={activeModal === "account"}
         onClose={closeModal}
         user={session}
+      />
+
+      <ServiceBrowserModal
+        isOpen={activeModal === "services"}
+        onClose={closeModal}
+        onAdd={handleAddService}
       />
     </>
   );

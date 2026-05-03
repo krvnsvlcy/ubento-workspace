@@ -1,0 +1,13 @@
+{
+  "name": "@ubento/data-transfer",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "clean": "scripts clean",
+    "build": "scripts build",
+    "watch": "scripts watch",
+    "lint": "scripts lint"
+  }
+}

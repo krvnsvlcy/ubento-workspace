@@ -8,6 +8,7 @@ import {
   BoardData,
   BoardStyle,
   ModuleData,
+  ModuleReference,
   StableModuleReference,
   WorkspaceData,
 } from "../engine/models.js";
@@ -40,6 +41,17 @@ export type BentoEngineHostRpcInterface = {
   boardChanged: (payload: { boardId: string; board: BoardData }) => void;
 };
 
+export type DropRect = {
+  id: string;
+  rect: { x: number; y: number; width: number; height: number };
+};
+
+export type ModuleDropContent = {
+  type: "module";
+  ref: ModuleReference;
+};
+export type DropContent = ModuleDropContent;
+
 export type BentoEngineRuntimeRpcInterface = {
   // connection
   init: (payload: {
@@ -64,4 +76,8 @@ export type BentoEngineRuntimeRpcInterface = {
     moduleId: string;
     module: Partial<ModuleData>;
   }) => void;
+
+  // Drag and Drop
+  getDropRects: (payload: {}) => Promise<DropRect[]>;
+  drop: (payload: { targetId: string; content: DropContent[] }) => void;
 };

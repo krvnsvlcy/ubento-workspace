@@ -114,4 +114,6 @@ export const workspaceDataSchema = z.object({
   homeBoardId: z.string().optional(),
   services: z.record(z.string(), serviceDataSchema).default({}),
 });
-export type WorkspaceData = z.infer<typeof workspaceDataSchema>;
+export type WorkspaceData = z.infer<typeof workspaceDataSchema> & {
+  services: Record<string, z.infer<typeof serviceDataSchema>>;
+};

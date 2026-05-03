@@ -1,0 +1,34 @@
+{
+  "name": "@ubento/services-finance",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./stripe": {
+      "import": "./build/stripe/index.js",
+      "types": "./build/stripe/index.d.ts"
+    },
+    "./lemonsqueezy": {
+      "import": "./build/lemonsqueezy/index.js",
+      "types": "./build/lemonsqueezy/index.d.ts"
+    },
+    "./wise": {
+      "import": "./build/wise/index.js",
+      "types": "./build/wise/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "scripts build",
+    "watch": "scripts watch",
+    "dev": "scripts dev"
+  },
+  "dependencies": {
+    "@lemonsqueezy/lemonsqueezy.js": "^3.3.0",
+    "@ubento/registry-proxy": "workspace:*",
+    "stripe": "^17.4.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0"
+  }
+}

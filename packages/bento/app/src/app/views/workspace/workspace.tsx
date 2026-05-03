@@ -1,7 +1,7 @@
 import { useUbentoEngine } from "@/engine/engine";
 import { ErrorView, PendingView } from "@ubento/bento-primitives";
 import { workspaceClient } from "@ubento/sdk";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { WorkspaceContent } from "./content";
 import { createWorkspaceEngine } from "./engine/engine";
 import { WorkspaceControl } from "./interactor/control";
@@ -21,6 +21,13 @@ function WorkspaceCanvas({
       }),
     [workspace],
   );
+
+  useEffect(() => {
+    engine.setActiveWorkspaceEngine(workspaceEngine);
+    return () => {
+      engine.clearActiveWorkspaceEngine(workspaceEngine);
+    };
+  }, [engine, workspaceEngine]);
 
   return (
     <div className="relative w-full h-full">

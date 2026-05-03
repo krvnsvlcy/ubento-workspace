@@ -1,8 +1,8 @@
 import { ErrorView, PendingView } from "@ubento/bento-primitives";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext } from "react";
 import { useBentoEngine } from "../../engine/engine";
 import { BlockData } from "../../engine/models";
-import { ParentContext, StackContext } from "../core/context";
+import { StackContext } from "../core/context";
 import { BoxHandle } from "../handles/box-handle";
 import { BaseElement, getBaseStyle } from "./base_element";
 
@@ -14,7 +14,6 @@ export function Block({
   data: BlockData;
 }): React.JSX.Element {
   const stackContext = useContext(StackContext);
-  const parentId = useContext(ParentContext);
   const engine = useBentoEngine();
   const isEditMode = engine.useState((s) => s.mode === "edit");
 
@@ -24,7 +23,8 @@ export function Block({
     value: moduleValue,
   } = engine.moduleManager.useModuleValue(data.module);
 
-  if (status === "pending") return <PendingView message="Loading component..." />;
+  if (status === "pending")
+    return <PendingView message="Loading component..." />;
   if (status === "error")
     return <ErrorView message={`Failed to load component: ${moduleError}`} />;
   if (!moduleValue) return <ErrorView message="Component not found" />;
@@ -40,6 +40,9 @@ export function Block({
       style={getBaseStyle(data.style || {}, {
         flex: stackContext.flex,
       })}
+      onDoubleClick={(e) => {
+        e.stopPropagation();
+      }}
     >
       {isEditMode && <BoxHandle id={id} element={data} isEmpty={false} />}
       <Component {...data.props} />

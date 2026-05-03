@@ -6,12 +6,14 @@ import { createStore as createZustandStore } from "zustand";
 import {
   BentoEngineHostRpcInterface,
   BentoEngineRuntimeRpcInterface,
+  DropRect,
 } from "../rpc/bento.js";
 import {
   BaseStyle,
   BoardData,
   BoardStyle,
   ElementData,
+  ModuleReference,
   WorkspaceData,
 } from "./models.js";
 import { createModuleManager } from "./module_manager.js";
@@ -37,6 +39,15 @@ export type BentoEngineState = BentoLocalState & {
   workspace: WorkspaceData;
   location?: BentoLocation;
 };
+
+function makeElementGlobalId(boardId: string, elementId: string) {
+  return `${boardId}/${elementId}`;
+}
+
+function parseElementGlobalId(globalId: string) {
+  const [boardId, elementId] = globalId.split("/");
+  return { boardId, elementId };
+}
 
 export function createBentoEngine({
   rpc,
@@ -384,31 +395,36 @@ export function createBentoEngine({
     },
     setBlockModule: (
       boardId: string,
-      id: string,
-      moduleId: string,
-      moduleVersionId: string,
+      elementId: string,
+      ref: ModuleReference,
     ) => {
       boardStore.update(boardId, (board) => {
-        const el = board.elements[id];
+        const el = board.elements[elementId];
         if (el.type !== "block") return board;
         return {
           elements: {
             ...board.elements,
-            [id]: { ...el, moduleId, moduleVersionId },
+            [elementId]: { ...el, module: ref },
           },
         };
       });
     },
 
     // DOM & helpers
-    setHtmlElement: (id: string, element?: HTMLElement) => {
+    setHtmlElement: (
+      boardId: string,
+      elementId: string,
+      element?: HTMLElement,
+    ) => {
+      const id = makeElementGlobalId(boardId, elementId);
       if (element) {
         htmlElements.set(id, element);
       } else {
         htmlElements.delete(id);
       }
     },
-    getHtmlElement: (id: string) => {
+    getHtmlElement: (boardId: string, elementId: string) => {
+      const id = makeElementGlobalId(boardId, elementId);
       return htmlElements.get(id);
     },
     convertElementSizeUnit: (
@@ -417,7 +433,7 @@ export function createBentoEngine({
       dimension: "width" | "height",
       targetUnit: "px" | "%" | "fr",
     ) => {
-      const el = htmlElements.get(elementId);
+      const el = htmlElements.get(makeElementGlobalId(boardId, elementId));
       if (!el) return;
 
       const rect = el.getBoundingClientRect();
@@ -489,6 +505,92 @@ export function createBentoEngine({
     },
     updateModule: ({ moduleId, module }) => {
       moduleManager.moduleStore.update(moduleId, module);
+    },
+    getDropRects: async ({}) => {
+      const state = store.getState();
+      if (!state.location) {
+        return [];
+      }
+
+      const board = boardStore.getCached(state.location.boardId);
+      if (!board) {
+        return [];
+      }
+
+      const elements = (board.elements ?? {}) as Record<string, ElementData>;
+      const dropRects: DropRect[] = [];
+
+      for (const [id, el] of Object.entries(elements)) {
+        if (el.type === "block") {
+          const gid = makeElementGlobalId(board.id, id);
+          const domEl = htmlElements.get(gid);
+          if (domEl) {
+            const rect = domEl.getBoundingClientRect();
+            dropRects.push({
+              id: gid,
+              rect: {
+                x: rect.left,
+                y: rect.top,
+                width: rect.width,
+                height: rect.height,
+              },
+            });
+          }
+        } else if (el.type === "stack" && el.content.length === 0) {
+          const gid = makeElementGlobalId(board.id, id);
+          const domEl = htmlElements.get(gid);
+          if (domEl) {
+            const rect = domEl.getBoundingClientRect();
+            dropRects.push({
+              id: gid,
+              rect: {
+                x: rect.left,
+                y: rect.top,
+                width: rect.width,
+                height: rect.height,
+              },
+            });
+          }
+        }
+      }
+
+      return dropRects;
+    },
+    drop: async ({ targetId, content }) => {
+      const parsed = parseElementGlobalId(targetId);
+      const board = boardStore.getCached(parsed.boardId);
+      if (!board) {
+        console.warn("Board not found", parsed.boardId);
+        return;
+      }
+
+      const targetElement = board.elements[parsed.elementId];
+      if (!targetElement) {
+        console.warn("Element not found", parsed.elementId);
+        return;
+      }
+
+      if (targetElement.type === "block") {
+        for (const item of content) {
+          if (item.type === "module") {
+            engine.setBlockModule(board.id, parsed.elementId, item.ref);
+          }
+        }
+      } else if (targetElement.type === "stack") {
+        for (const item of content) {
+          if (item.type === "module") {
+            engine.replaceElement(board.id, parsed.elementId, {
+              type: "block",
+              module: item.ref,
+              style: targetElement.style,
+            });
+            console.log(
+              "Board after replacement:",
+              boardStore.getCached(board.id),
+            );
+          }
+        }
+      }
     },
   });
 

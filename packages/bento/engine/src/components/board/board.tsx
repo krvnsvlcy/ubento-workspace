@@ -35,6 +35,7 @@ function getBoardStyle(style: BoardStyle): React.CSSProperties {
           ? "100%"
           : "fit-content"
         : "100%",
+    minHeight: "100vh",
     display: "flex",
     alignContent: "start",
     flexDirection: style.direction || "row",

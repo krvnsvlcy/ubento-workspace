@@ -8,6 +8,11 @@ import {
   BoardData,
   boardDataSchema,
   BoardStyle,
+  DropContent,
+  DropRect,
+  ModuleReference,
+  ServiceData,
+  WorkspaceData,
   workspaceDataSchema,
 } from "@ubento/engine";
 import {
@@ -28,12 +33,16 @@ export type WorkspaceState = {
   // local state
   mode: BentoMode;
   location: UbentoLocation;
+  workspaceData?: WorkspaceData;
 
   // synced from runtime
   boards: Record<string, BoardData>;
   selectionScope?: string;
   selection: string[];
   hover?: string;
+
+  // drag and drop
+  dropRects: DropRect[];
 };
 
 export function createWorkspaceEngine({
@@ -57,13 +66,19 @@ export function createWorkspaceEngine({
     location: engine.getState().location,
     boards: {},
     selection: [],
+    dropRects: [],
   }));
 
   const controller = createZustandStateController(store);
   const workspacePromise = workspaceService
     .getWorkspace(workspaceId)
     .then((w) => {
-      store.setState({ workspaceStatus: "loaded" });
+      const workspaceData = workspaceDataSchema.parse({
+        ...(w.data as any),
+        id: w.id,
+        name: w.name,
+      });
+      store.setState({ workspaceData, workspaceStatus: "loaded" });
       return w;
     })
     .catch((err) => {
@@ -76,17 +91,11 @@ export function createWorkspaceEngine({
 
     init: async (target: Window) => {
       async function initRuntime() {
-        const workspaceEntityData = await workspacePromise;
-        if (!workspaceEntityData) {
+        const workspaceData = await workspacePromise;
+        if (!workspaceData) {
           // error already handled in promise
           return;
         }
-
-        const workspaceData = workspaceDataSchema.parse({
-          ...(workspaceEntityData.data as any),
-          id: workspaceEntityData.id,
-          name: workspaceEntityData.name,
-        });
 
         rpc?.egress.init({
           publicModuleUrlTemplate: "/engine-module/{artifactId}",
@@ -223,11 +232,11 @@ export function createWorkspaceEngine({
             };
           },
           readModule: async (ref) => {
-            return "";
-            // return await moduleService.readModuleArtifact(
-            //   ref.id,
-            //   ref.versionId,
-            // );
+            return await moduleService.readModuleVersionFile(
+              ref.id,
+              ref.versionId,
+              "index.js",
+            );
           },
           listModules: async (params) => {
             return [];
@@ -277,6 +286,46 @@ export function createWorkspaceEngine({
     setBoardName: (boardId: string, name: string) => {
       rpc?.egress.updateBoard({ boardId, board: { name } });
     },
+
+    refreshDropRects: async () => {
+      if (rpc) {
+        const dropRects = await rpc.egress.getDropRects({});
+        store.setState({ dropRects });
+      }
+    },
+
+    performDrop: (targetId: string, content: DropContent[]) => {
+      rpc?.egress.drop({ targetId, content });
+    },
+
+    installService: (serviceName: string, ref: ModuleReference) => {
+      store.setState((state) => {
+        const currentWorkspace = state.workspaceData;
+        if (!currentWorkspace) {
+          return state;
+        }
+
+        const nextServices = { ...currentWorkspace.services } as Record<
+          string,
+          ServiceData
+        >;
+        let finalName = serviceName;
+        let i = 1;
+        while (finalName in nextServices) {
+          finalName = `${serviceName}${i}`;
+          i++;
+        }
+        nextServices[finalName] = {
+          module: ref,
+        };
+
+        const nextState = {
+          ...state,
+          workspaceData: { ...currentWorkspace, services: nextServices },
+        };
+        return nextState;
+      });
+    },
   };
 
   // sync host location
@@ -284,6 +333,10 @@ export function createWorkspaceEngine({
   engine.subscribe((curr: UbentoEngineState, prev: UbentoEngineState) => {
     if (curr.location !== prev.location) {
       store.setState({ location: curr.location });
+    }
+
+    if (curr.dragActive && !prev.dragActive) {
+      workspaceEngine.refreshDropRects();
     }
 
     if (

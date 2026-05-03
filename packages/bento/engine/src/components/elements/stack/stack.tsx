@@ -1,10 +1,10 @@
-import { CSSProperties, useContext, useState } from "react";
+import { CSSProperties, useContext } from "react";
 import { spacingBaseUnit } from "../../../constants";
 import { useBentoEngine } from "../../../engine/engine";
 import { StackData } from "../../../engine/models";
 import { BaseElement, getBaseStyle } from "../base_element";
 
-import { BoardContext, ParentContext, StackContext } from "../../core/context";
+import { ParentContext, StackContext } from "../../core/context";
 import { BoxHandle } from "../../handles/box-handle";
 import { Initializer } from "../../handles/initializer";
 import { Element } from "../element";
@@ -12,7 +12,6 @@ import { Element } from "../element";
 export function Stack({ id, data }: { id: string; data: StackData }) {
   const stackContext = useContext(StackContext);
   const engine = useBentoEngine();
-  const boardId = useContext(BoardContext);
   const isEditMode = engine.useState((s) => s.mode === "edit");
 
   const style = data.style;

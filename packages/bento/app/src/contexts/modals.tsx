@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState } from "react";
 
-type ModalType = "account" | "team" | "create" | null;
+type ModalType = "account" | "team" | "create" | "services" | null;
 
 interface ModalContextType {
   activeModal: ModalType;

@@ -1,6 +1,12 @@
 import { ErrorView } from "@/app/components/error.js";
 import { useUbentoEngine } from "@/engine/engine";
 import { PendingView } from "@ubento/bento-primitives";
+import {
+  BrowserDataTransferStore,
+  DataTransferPayload,
+} from "@ubento/data-transfer";
+import { useState } from "react";
+import { bentoModuleType } from "@/app/dnd";
 import { WorkspaceEngine } from "./engine/engine.js";
 
 function WorkspaceOverlay({ engine }: { engine: WorkspaceEngine }) {
@@ -33,9 +39,80 @@ function WorkspaceOverlay({ engine }: { engine: WorkspaceEngine }) {
   );
 }
 
+function DropZone({
+  id,
+  rect,
+  engine,
+}: {
+  id: string;
+  rect: any;
+  engine: WorkspaceEngine;
+}) {
+  const [isOver, setIsOver] = useState(false);
+
+  return (
+    <div
+      onDragOver={(e) => {
+        e.preventDefault();
+        setIsOver(true);
+      }}
+      onDragLeave={() => setIsOver(false)}
+      onDrop={(e) => {
+        e.preventDefault();
+        setIsOver(false);
+        const payload = new DataTransferPayload(
+          new BrowserDataTransferStore(e.dataTransfer),
+        );
+        const data = payload.getData(bentoModuleType);
+        if (data) {
+          engine.performDrop(id, [{ type: "module", ref: data.ref }]);
+        }
+      }}
+      style={{
+        position: "absolute",
+        left: rect.x,
+        top: rect.y,
+        width: rect.width,
+        height: rect.height,
+        backgroundColor: isOver
+          ? "rgba(59, 130, 246, 0.2)"
+          : "rgba(59, 130, 246, 0.1)",
+        border: isOver
+          ? "2px solid rgba(59, 130, 246, 0.8)"
+          : "2px dashed rgba(59, 130, 246, 0.4)",
+        borderRadius: "4px",
+        transition: "all 0.2s ease",
+        pointerEvents: "auto",
+      }}
+    />
+  );
+}
+
+function DropGlass({ engine }: { engine: WorkspaceEngine }) {
+  const ubento = useUbentoEngine();
+  const dragActive = ubento.useState((s) => s.dragActive);
+  const dropRects = engine.useState((s) => s.dropRects);
+
+  if (!dragActive) return null;
+
+  return (
+    <div
+      style={{
+        position: "absolute",
+        inset: 0,
+        zIndex: 500,
+        pointerEvents: "none",
+      }}
+    >
+      {dropRects.map((dr) => (
+        <DropZone key={dr.id} id={dr.id} rect={dr.rect} engine={engine} />
+      ))}
+    </div>
+  );
+}
+
 export function WorkspaceContent({ engine }: { engine: WorkspaceEngine }) {
   const ubentoEngine = useUbentoEngine();
-
   return (
     <div className="h-full w-full relative overflow-hidden">
       <iframe
@@ -54,6 +131,7 @@ export function WorkspaceContent({ engine }: { engine: WorkspaceEngine }) {
       />
 
       <WorkspaceOverlay engine={engine} />
+      <DropGlass engine={engine} />
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import { WorkspaceEngine } from "@/app/views/workspace/engine/engine";
 import { createUbentoService, UbentoService } from "@/services/ubento/ubento";
 import {
   createZustandStateController,
@@ -15,21 +16,22 @@ export type UbentoEngineState = {
   location: UbentoLocation;
   leftPanelOpen: boolean;
   leftPanelWidth: number;
+  dragActive: boolean;
+  activeWorkspaceEngine?: WorkspaceEngine;
 };
 
 export type UbentoEngine = StateController<UbentoEngineState> & {
-  // modules
-  copilot: UbentoCopilot;
   ubento: UbentoService;
-
-  // configs
+  copilot: UbentoCopilot;
   workspaceRuntimeUrl: string;
   componentRuntimeUrl: string;
   moduleUrlTemplate: string;
 
-  // commands
   goToLocation: (location: Partial<UbentoLocation>) => void;
   openWorkspace: (slug: string) => void;
+  setDragActive: (active: boolean) => void;
+  setActiveWorkspaceEngine: (engine: WorkspaceEngine) => void;
+  clearActiveWorkspaceEngine: (engine: WorkspaceEngine) => void;
 };
 
 export function createUbentoEngine({
@@ -44,13 +46,14 @@ export function createUbentoEngine({
   moduleUrlTemplate: string;
   ubentoApi: UbentoSDK;
   session?: UbentoSession;
-}): UbentoEngine {
+}) {
   const initialLocation = parseLocation();
   const store = createStore<UbentoEngineState>()(() => ({
     session,
     location: initialLocation,
     leftPanelOpen: true,
     leftPanelWidth: 240,
+    dragActive: false,
   }));
   const stateController = createZustandStateController(store);
 
@@ -70,6 +73,14 @@ export function createUbentoEngine({
       ...state,
       location: parseLocation(),
     }));
+  });
+
+  // Global drag state
+  window.addEventListener("dragstart", () => {
+    stateController.setState((state) => ({ ...state, dragActive: true }));
+  });
+  window.addEventListener("dragend", () => {
+    stateController.setState((state) => ({ ...state, dragActive: false }));
   });
 
   const ubento = createUbentoService({ ubentoSdk: ubentoApi });
@@ -98,6 +109,27 @@ export function createUbentoEngine({
           workspace: slug,
           tab: "workspace",
         },
+      }));
+    },
+    setDragActive(active: boolean) {
+      stateController.setState((state) => ({
+        ...state,
+        dragActive: active,
+      }));
+    },
+    setActiveWorkspaceEngine(engine: WorkspaceEngine) {
+      stateController.setState((state) => ({
+        ...state,
+        activeWorkspaceEngine: engine,
+      }));
+    },
+    clearActiveWorkspaceEngine(engine: WorkspaceEngine) {
+      stateController.setState((state) => ({
+        ...state,
+        activeWorkspaceEngine:
+          state.activeWorkspaceEngine === engine
+            ? undefined
+            : state.activeWorkspaceEngine,
       }));
     },
   };

@@ -1,7 +1,8 @@
-import React, { createContext, JSX } from "react";
+import React, { createContext, JSX, useContext } from "react";
 import { baseLengthConstraintsUnit, baseLengthUnit } from "../../constants";
 import { useBentoEngine } from "../../engine/engine";
 import { BaseStyle, ElementData, Length } from "../../engine/models";
+import { BoardContext } from "../core/context";
 
 export type ElementRegistry = {
   [key: string]: ElementData;
@@ -78,7 +79,7 @@ export function getBaseStyle(
           : "fit-content",
 
     // Prioritize the explicit fr unit, fallback to explicit flex property
-    flex: mainAxisFlex !== undefined ? mainAxisFlex : style.flex,
+    flex: mainAxisFlex !== undefined ? mainAxisFlex : undefined,
 
     minWidth: style.minWidth
       ? `${style.minWidth * baseLengthConstraintsUnit}px`
@@ -104,17 +105,18 @@ export function BaseElement({
   id: string;
   data: ElementData;
 } & JSX.IntrinsicElements["div"]): React.JSX.Element {
+  const boardId = useContext(BoardContext);
   const engine = useBentoEngine();
   const ref = React.useRef<HTMLDivElement>(null);
 
   React.useLayoutEffect(() => {
-    if (ref.current) {
-      engine.setHtmlElement(id, ref.current);
+    if (boardId && ref.current) {
+      engine.setHtmlElement(boardId, id, ref.current);
+      return () => {
+        engine.setHtmlElement(boardId, id, undefined);
+      };
     }
-    return () => {
-      engine.setHtmlElement(id, undefined);
-    };
-  }, [id, engine]);
+  }, [boardId, id, engine]);
 
   return (
     <div ref={ref} {...props}>
