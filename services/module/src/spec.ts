@@ -9,35 +9,22 @@ export const spec: OpenAPIV3.Document = {
     version: "1.0.0",
   },
   paths: {
-
     "/modules": {
       get: {
         summary: "List Modules",
         parameters: [
-          {
-            name: "team_id",
-            in: "query",
-            schema: { type: "string" },
-          },
-          {
-            name: "limit",
-            in: "query",
-            schema: { type: "integer" },
-          },
-          {
-            name: "cursor",
-            in: "query",
-            schema: { type: "string" },
-          },
+          { name: "team_id", in: "query", schema: { type: "string" } },
+          { name: "type", in: "query", schema: { type: "string" } },
+          { name: "scope", in: "query", schema: { type: "string", enum: ["private", "public"] } },
+          { name: "limit", in: "query", schema: { type: "integer" } },
+          { name: "cursor", in: "query", schema: { type: "string" } },
         ],
         responses: {
           "200": {
             description: "A list of modules",
             content: {
               "application/json": {
-                schema: makeCursorPageResponseSchema({
-                  $ref: "#/components/schemas/Module",
-                }),
+                schema: makeCursorPageResponseSchema({ $ref: "#/components/schemas/Module" }),
               },
             },
           },
@@ -57,6 +44,7 @@ export const spec: OpenAPIV3.Document = {
                   source: { type: "string" },
                   scope: { type: "string", enum: ["private", "public"] },
                   type: { type: "string" },
+                  summary: { type: "string" },
                 },
                 required: ["name", "team_id", "source", "scope", "type"],
               },
@@ -75,53 +63,56 @@ export const spec: OpenAPIV3.Document = {
         },
       },
     },
-    "/modules/{module_id}": {
+    "/modules/search": {
       get: {
-        summary: "Get Module",
+        summary: "Marketplace Search",
+        description: "High-performance fuzzy search for modules via MongoDB Atlas.",
         parameters: [
-          {
-            name: "module_id",
-            in: "path",
-            required: true,
-            schema: { type: "string" },
-          },
+          { name: "query", in: "query", schema: { type: "string" } },
+          { name: "types", in: "query", schema: { type: "array", items: { type: "string" } } },
+          { name: "scope", in: "query", schema: { type: "string", enum: ["private", "public"] } },
+          { name: "page", in: "query", schema: { type: "integer" } },
+          { name: "limit", in: "query", schema: { type: "integer" } },
         ],
         responses: {
           "200": {
-            description: "Module details",
+            description: "Search results",
             content: {
               "application/json": {
-                schema: { $ref: "#/components/schemas/Module" },
-              },
-            },
-          },
-        },
-      },
-      patch: {
-        summary: "Update Module",
-        parameters: [
-          {
-            name: "module_id",
-            in: "path",
-            required: true,
-            schema: { type: "string" },
-          },
-        ],
-        requestBody: {
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  name: { type: "string" },
+                schema: {
+                  type: "object",
+                  properties: {
+                    data: {
+                      type: "object",
+                      properties: {
+                        data: { type: "array", items: { $ref: "#/components/schemas/Module" } },
+                        pagination: {
+                          type: "object",
+                          properties: {
+                            currentPage: { type: "integer" },
+                            hasNextPage: { type: "boolean" },
+                            nextPage: { type: "integer", nullable: true },
+                          },
+                        },
+                      },
+                    },
+                  },
                 },
               },
             },
           },
         },
+      },
+    },
+    "/modules/{module_id}": {
+      get: {
+        summary: "Get Module",
+        parameters: [
+          { name: "module_id", in: "path", required: true, schema: { type: "string" } },
+        ],
         responses: {
           "200": {
-            description: "Module updated",
+            description: "Module metadata",
             content: {
               "application/json": {
                 schema: { $ref: "#/components/schemas/Module" },
@@ -133,12 +124,7 @@ export const spec: OpenAPIV3.Document = {
       delete: {
         summary: "Delete Module",
         parameters: [
-          {
-            name: "module_id",
-            in: "path",
-            required: true,
-            schema: { type: "string" },
-          },
+          { name: "module_id", in: "path", required: true, schema: { type: "string" } },
         ],
         responses: {
           "200": {
@@ -159,43 +145,26 @@ export const spec: OpenAPIV3.Document = {
       get: {
         summary: "List Module Versions",
         parameters: [
-          {
-            name: "module_id",
-            in: "path",
-            required: true,
-            schema: { type: "string" },
-          },
+          { name: "module_id", in: "path", required: true, schema: { type: "string" } },
+          { name: "limit", in: "query", schema: { type: "integer" } },
+          { name: "cursor", in: "query", schema: { type: "string" } },
         ],
         responses: {
           "200": {
-            description: "A list of module versions",
+            description: "Version history",
             content: {
               "application/json": {
-                schema: makeCursorPageResponseSchema({
-                  $ref: "#/components/schemas/ModuleVersion",
-                }),
+                schema: makeCursorPageResponseSchema({ $ref: "#/components/schemas/ModuleVersion" }),
               },
             },
           },
         },
       },
-    },
-    "/modules/{module_id}/files/{filename}": {
-      put: {
-        summary: "Update Module File",
+      post: {
+        summary: "Save Draft Version",
+        description: "Creates a new private version of the module source code.",
         parameters: [
-          {
-            name: "module_id",
-            in: "path",
-            required: true,
-            schema: { type: "string" },
-          },
-          {
-            name: "filename",
-            in: "path",
-            required: true,
-            schema: { type: "string" },
-          },
+          { name: "module_id", in: "path", required: true, schema: { type: "string" } },
         ],
         requestBody: {
           required: true,
@@ -204,8 +173,7 @@ export const spec: OpenAPIV3.Document = {
               schema: {
                 type: "object",
                 properties: {
-                  content: { type: "string" },
-                  autoTranspile: { type: "boolean" },
+                  content: { type: "string", description: "The module source code" },
                 },
                 required: ["content"],
               },
@@ -214,59 +182,10 @@ export const spec: OpenAPIV3.Document = {
         },
         responses: {
           "200": {
-            description: "File updated",
+            description: "Draft saved",
             content: {
               "application/json": {
-                schema: {
-                  type: "object",
-                  additionalProperties: { type: "string" },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-    "/modules/{module_id}/files/{filename}/restore": {
-      post: {
-        summary: "Restore Module File",
-        parameters: [
-          {
-            name: "module_id",
-            in: "path",
-            required: true,
-            schema: { type: "string" },
-          },
-          {
-            name: "filename",
-            in: "path",
-            required: true,
-            schema: { type: "string" },
-          },
-        ],
-        requestBody: {
-          required: true,
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  hash: { type: "string" },
-                },
-                required: ["hash"],
-              },
-            },
-          },
-        },
-        responses: {
-          "200": {
-            description: "File restored",
-            content: {
-              "application/json": {
-                schema: {
-                  type: "object",
-                  properties: { success: { type: "boolean" } },
-                },
+                schema: { $ref: "#/components/schemas/Module" },
               },
             },
           },
@@ -275,21 +194,17 @@ export const spec: OpenAPIV3.Document = {
     },
     "/modules/{module_id}/publish": {
       post: {
-        summary: "Publish Module Version",
+        summary: "Publish Current Draft",
+        description: "Promotes the current private draft to be the public version.",
         parameters: [
-          {
-            name: "module_id",
-            in: "path",
-            required: true,
-            schema: { type: "string" },
-          },
+          { name: "module_id", in: "path", required: true, schema: { type: "string" } },
         ],
         responses: {
-          "201": {
-            description: "Version published",
+          "200": {
+            description: "Module published",
             content: {
               "application/json": {
-                schema: { $ref: "#/components/schemas/ModuleVersion" },
+                schema: { $ref: "#/components/schemas/Module" },
               },
             },
           },
@@ -300,22 +215,12 @@ export const spec: OpenAPIV3.Document = {
       get: {
         summary: "Get Module Version",
         parameters: [
-          {
-            name: "module_id",
-            in: "path",
-            required: true,
-            schema: { type: "string" },
-          },
-          {
-            name: "version_id",
-            in: "path",
-            required: true,
-            schema: { type: "string" },
-          },
+          { name: "module_id", in: "path", required: true, schema: { type: "string" } },
+          { name: "version_id", in: "path", required: true, schema: { type: "string" } },
         ],
         responses: {
           "200": {
-            description: "Module version details",
+            description: "Module version metadata",
             content: {
               "application/json": {
                 schema: { $ref: "#/components/schemas/ModuleVersion" },
@@ -325,81 +230,26 @@ export const spec: OpenAPIV3.Document = {
         },
       },
     },
-    "/modules/{module_id}/versions/{version_id}/source": {
+    "/modules/{module_id}/versions/{version_id}/{filename}": {
       get: {
-        summary: "Get Module Version Source",
+        summary: "Read Version File",
+        description: "Fetches the raw content of a specific file within a module version.",
         parameters: [
-          {
-            name: "module_id",
-            in: "path",
-            required: true,
-            schema: { type: "string" },
-          },
-          {
-            name: "version_id",
-            in: "path",
-            required: true,
-            schema: { type: "string" },
-          },
+          { name: "module_id", in: "path", required: true, schema: { type: "string" } },
+          { name: "version_id", in: "path", required: true, schema: { type: "string" } },
+          { name: "filename", in: "path", required: true, schema: { type: "string" } },
         ],
         responses: {
           "200": {
-            description: "Module version source code (TSX)",
+            description: "File content",
             content: {
               "application/json": {
                 schema: {
                   type: "object",
                   properties: {
-                    data: {
-                      type: "object",
-                      properties: {
-                        source: { type: "string" },
-                      },
-                      required: ["source"],
-                    },
+                    content: { type: "string" },
                   },
-                  required: ["data"],
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-    "/modules/{module_id}/versions/{version_id}/artifact": {
-      get: {
-        summary: "Get Module Version Artifact",
-        parameters: [
-          {
-            name: "module_id",
-            in: "path",
-            required: true,
-            schema: { type: "string" },
-          },
-          {
-            name: "version_id",
-            in: "path",
-            required: true,
-            schema: { type: "string" },
-          },
-        ],
-        responses: {
-          "200": {
-            description: "Module version transpiled artifact (JS)",
-            content: {
-              "application/json": {
-                schema: {
-                  type: "object",
-                  properties: {
-                    data: {
-                      type: "object",
-                      properties: {
-                        artifact: { type: "string" },
-                      },
-                      required: ["artifact"],
-                    },
-                  },
-                  required: ["data"],
+                  required: ["content"],
                 },
               },
             },

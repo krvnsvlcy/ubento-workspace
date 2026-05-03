@@ -8,6 +8,7 @@ import {
   createWindowPort,
   DuplexRpc,
 } from "@ubento/rpc-utils";
+import { engineStateChanged } from "@ubento/rpc-utils/build/types";
 import { createStore, StoreApi } from "zustand/vanilla";
 
 export type BuilderState = {
@@ -83,9 +84,10 @@ export function createBuilderController({
       set({ loading: true });
       try {
         const module = await ubento.module.getModule(moduleId);
-        const source = await ubento.module.getModuleVersionSource(
+        const source = await ubento.module.readModuleVersionFile(
           moduleId,
           module.latest_version_id || "",
+          "index.tsx",
         );
         set({
           code: source,
@@ -112,7 +114,7 @@ export function createBuilderController({
 
     save: async () => {
       const current = get();
-      await ubento.module.publishModuleVersion(moduleId);
+      await ubento.module.saveModuleVersion(moduleId, current.code);
     },
   }));
 }

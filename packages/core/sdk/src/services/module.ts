@@ -26,11 +26,31 @@ export class ModuleService {
   }
 
   // ===== Modules =====
+  async searchModules(query: {
+    query?: string;
+    types?: string[];
+    scope?: "public" | "private";
+    page?: number;
+    limit?: number;
+  }) {
+    const result = await this.moduleClient.get("/modules/search", {
+      params: {
+        query,
+      },
+    });
+    return extractResponseData(result, true);
+  }
 
-  async listModules({ team_id }: { team_id?: string } = {}) {
+  async listModules(query: {
+    team_id?: string;
+    type?: string;
+    scope?: "public" | "private";
+    limit?: number;
+    cursor?: string;
+  } = {}) {
     const result = await this.moduleClient.get("/modules", {
       params: {
-        query: { team_id },
+        query,
       },
     });
     return extractResponseData(result, true);
@@ -51,18 +71,9 @@ export class ModuleService {
     source: string;
     scope: "public" | "private";
     type: string;
+    summary?: string;
   }) {
     const result = await this.moduleClient.post("/modules", {
-      body: data,
-    });
-    return extractResponseData(result, true) as Module;
-  }
-
-  async updateModule(moduleId: string, data: { name?: string }) {
-    const result = await this.moduleClient.patch("/modules/{module_id}", {
-      params: {
-        path: { module_id: moduleId },
-      },
       body: data,
     });
     return extractResponseData(result, true) as Module;
@@ -79,19 +90,36 @@ export class ModuleService {
 
   // ===== Versions =====
 
-  async listModuleVersions(moduleId: string) {
+  async listModuleVersions(moduleId: string, query: {
+    limit?: number;
+    cursor?: string;
+  } = {}) {
     const result = await this.moduleClient.get(
       "/modules/{module_id}/versions",
       {
         params: {
           path: { module_id: moduleId },
+          query,
         },
       },
     );
     return extractResponseData(result, true);
   }
 
-  async publishModuleVersion(moduleId: string) {
+  async saveModuleVersion(moduleId: string, content: string) {
+    const result = await this.moduleClient.post(
+      "/modules/{module_id}/versions",
+      {
+        params: {
+          path: { module_id: moduleId },
+        },
+        body: { content },
+      },
+    );
+    return extractResponseData(result, true) as Module;
+  }
+
+  async publishModule(moduleId: string) {
     const result = await this.moduleClient.post(
       "/modules/{module_id}/publish",
       {
@@ -100,7 +128,7 @@ export class ModuleService {
         },
       },
     );
-    return extractResponseData(result, true) as ModuleVersion;
+    return extractResponseData(result, true) as Module;
   }
 
   async getModuleVersion(moduleId: string, versionId: string) {
@@ -115,29 +143,16 @@ export class ModuleService {
     return extractResponseData(result, true) as ModuleVersion;
   }
 
-  async getModuleVersionSource(moduleId: string, versionId: string) {
+  async readModuleVersionFile(moduleId: string, versionId: string, filename: string) {
     const result = await this.moduleClient.get(
-      "/modules/{module_id}/versions/{version_id}/source",
+      "/modules/{module_id}/versions/{version_id}/{filename}",
       {
         params: {
-          path: { module_id: moduleId, version_id: versionId },
+          path: { module_id: moduleId, version_id: versionId, filename },
         },
       },
     );
-    const data = extractResponseData(result, true) as any;
-    return data.source as string;
-  }
-
-  async getModuleVersionArtifact(moduleId: string, versionId: string) {
-    const result = await this.moduleClient.get(
-      "/modules/{module_id}/versions/{version_id}/artifact",
-      {
-        params: {
-          path: { module_id: moduleId, version_id: versionId },
-        },
-      },
-    );
-    const data = extractResponseData(result, true) as any;
-    return data.artifact as string;
+    const data = extractResponseData(result, true) as { content: string };
+    return data.content;
   }
 }

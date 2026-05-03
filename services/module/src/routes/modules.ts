@@ -19,7 +19,11 @@ import {
   searchModules,
   writeModule,
 } from "../entities/module.js";
-import { listModuleVersions } from "../entities/version.js";
+import {
+  getModuleVersion,
+  listModuleVersions,
+  readModuleVersionFile,
+} from "../entities/version.js";
 
 const modulesRouter: Router = Router();
 
@@ -246,6 +250,78 @@ modulesRouter.delete(
     async (req, res) => {
       await deleteModule(req.params.module_id);
       res.json(dataResponse({ success: true }));
+    },
+  ),
+);
+
+/**
+ * GET /modules/:module_id/versions/:version_id
+ * Fetches details for a specific module version.
+ */
+modulesRouter.get(
+  "/:module_id/versions/:version_id",
+  chain(
+    validate({
+      params: z.object({
+        module_id: z.string(),
+        version_id: z.string(),
+      }),
+    }),
+    enforce({
+      permissions: [ubentoAuth.actions.module.read],
+      scope: async (req) => {
+        const module = await getModule(req.params.module_id as string);
+        if (!module) throw new NotFoundError("Module not found");
+        return module.scope === ModuleScope.private
+          ? ubentoAuth.scopes.team({ team_id: module.team_id })
+          : ubentoAuth.scopes.public;
+      },
+    }),
+    async (req, res) => {
+      const version = await getModuleVersion(req.params.version_id);
+      if (!version || version.module_id !== req.params.module_id) {
+        throw new NotFoundError("Version not found");
+      }
+      res.json(dataResponse(version));
+    },
+  ),
+);
+
+/**
+ * GET /modules/:module_id/versions/:version_id/:filename
+ * Reads a specific file from a module version.
+ */
+modulesRouter.get(
+  "/:module_id/versions/:version_id/:filename",
+  chain(
+    validate({
+      params: z.object({
+        module_id: z.string(),
+        version_id: z.string(),
+        filename: z.string(),
+      }),
+    }),
+    enforce({
+      permissions: [ubentoAuth.actions.module.read],
+      scope: async (req) => {
+        const module = await getModule(req.params.module_id as string);
+        if (!module) throw new NotFoundError("Module not found");
+        return module.scope === ModuleScope.private
+          ? ubentoAuth.scopes.team({ team_id: module.team_id })
+          : ubentoAuth.scopes.public;
+      },
+    }),
+    async (req, res) => {
+      const content = await readModuleVersionFile({
+        versionId: req.params.version_id,
+        filename: req.params.filename,
+      });
+
+      if (content === null) {
+        throw new NotFoundError("File not found");
+      }
+
+      res.json(dataResponse({ content }));
     },
   ),
 );

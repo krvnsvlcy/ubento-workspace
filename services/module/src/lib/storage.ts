@@ -57,7 +57,7 @@ export async function persistModuleArtifact(artifact: ModuleArtifact) {
       uploadedHashes.add(hash);
 
       const content = artifact.contents[hash];
-      if (!content) {
+      if (content === undefined) {
         throw new Error(`Content not found for hash: ${hash}`);
       }
 

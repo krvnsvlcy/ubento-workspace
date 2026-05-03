@@ -67,9 +67,10 @@ export function createComponentEngine({
   const initPromise = (async () => {
     try {
       const module = await ubento.module.getModule(componentId);
-      const source = await ubento.module.getModuleVersionSource(
+      const source = await ubento.module.readModuleVersionFile(
         componentId,
         module.latest_version_id || "",
+        "index.tsx",
       );
 
       store.setState({
@@ -152,6 +153,11 @@ export function createComponentEngine({
       if (store.getState().isReady) {
         rpc?.egress.updateCode({ code: source });
       }
+    },
+
+    save: async () => {
+      const current = store.getState();
+      await ubento.module.saveModuleVersion(componentId, current.source);
     },
 
     clearLogs: () => {

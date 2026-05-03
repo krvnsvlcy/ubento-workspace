@@ -7,7 +7,7 @@ import {
 import { prismaListWithCursor } from "@ubento/service-toolkit";
 import { buildModule } from "../lib/builder/builder.js";
 import prisma from "../lib/prisma.js";
-import { persistModuleArtifact } from "../lib/storage.js";
+import { persistModuleArtifact, readFromCAS } from "../lib/storage.js";
 
 export async function createModuleVersion({
   moduleId,
@@ -67,4 +67,21 @@ export async function getModuleVersion(id: string) {
   return await prisma.moduleVersion.findUnique({
     where: { id },
   });
+}
+
+export async function readModuleVersionFile({
+  versionId,
+  filename,
+}: {
+  versionId: string;
+  filename: string;
+}) {
+  const version = await getModuleVersion(versionId);
+  if (!version) return null;
+
+  const files = version.files as Record<string, string>;
+  const hash = files[filename];
+  if (!hash) return null;
+
+  return await readFromCAS({ hash });
 }

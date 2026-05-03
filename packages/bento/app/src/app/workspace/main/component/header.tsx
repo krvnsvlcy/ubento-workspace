@@ -1,5 +1,5 @@
-import { Code, Play, Eye, Columns } from "lucide-react";
-import { ComponentEngine, ViewMode } from "./engine";
+import { Code, Columns, Eye, Save } from "lucide-react";
+import { ComponentEngine } from "./engine";
 
 interface ComponentEditorHeaderProps {
   engine: ComponentEngine;
@@ -62,9 +62,12 @@ export function ComponentEditorHeader({
       </div>
 
       <div className="flex items-center gap-2">
-        <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-accent text-accent-contrast text-[11px] font-bold uppercase tracking-wider hover:opacity-90 transition-all">
-          <Play size={12} fill="currentColor" />
-          Publish
+        <button
+          onClick={() => engine.save()}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-accent text-accent-contrast text-[11px] font-bold uppercase tracking-wider hover:opacity-90 transition-all"
+        >
+          <Save size={12} fill="currentColor" />
+          Save
         </button>
       </div>
     </div>

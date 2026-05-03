@@ -11,6 +11,8 @@ export interface paths {
             parameters: {
                 query?: {
                     team_id?: string;
+                    type?: string;
+                    scope?: "private" | "public";
                     limit?: number;
                     cursor?: string;
                 };
@@ -56,6 +58,7 @@ export interface paths {
                         /** @enum {string} */
                         scope: "private" | "public";
                         type: string;
+                        summary?: string;
                     };
                 };
             };
@@ -71,6 +74,60 @@ export interface paths {
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/modules/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Marketplace Search
+         * @description High-performance fuzzy search for modules via MongoDB Atlas.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    query?: string;
+                    types?: string[];
+                    scope?: "private" | "public";
+                    page?: number;
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Search results */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data?: {
+                                data?: components["schemas"]["Module"][];
+                                pagination?: {
+                                    currentPage?: number;
+                                    hasNextPage?: boolean;
+                                    nextPage?: number | null;
+                                };
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -96,7 +153,7 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description Module details */
+                /** @description Module metadata */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -136,35 +193,7 @@ export interface paths {
         };
         options?: never;
         head?: never;
-        /** Update Module */
-        patch: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    module_id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: {
-                content: {
-                    "application/json": {
-                        name?: string;
-                    };
-                };
-            };
-            responses: {
-                /** @description Module updated */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Module"];
-                    };
-                };
-            };
-        };
+        patch?: never;
         trace?: never;
     };
     "/modules/{module_id}/versions": {
@@ -177,7 +206,10 @@ export interface paths {
         /** List Module Versions */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    limit?: number;
+                    cursor?: string;
+                };
                 header?: never;
                 path: {
                     module_id: string;
@@ -186,7 +218,7 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description A list of module versions */
+                /** @description Version history */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -205,98 +237,35 @@ export interface paths {
             };
         };
         put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/modules/{module_id}/files/{filename}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /** Update Module File */
-        put: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    module_id: string;
-                    filename: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": {
-                        content: string;
-                        autoTranspile?: boolean;
-                    };
-                };
-            };
-            responses: {
-                /** @description File updated */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            [key: string]: string;
-                        };
-                    };
-                };
-            };
-        };
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/modules/{module_id}/files/{filename}/restore": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Restore Module File */
+        /**
+         * Save Draft Version
+         * @description Creates a new private version of the module source code.
+         */
         post: {
             parameters: {
                 query?: never;
                 header?: never;
                 path: {
                     module_id: string;
-                    filename: string;
                 };
                 cookie?: never;
             };
             requestBody: {
                 content: {
                     "application/json": {
-                        hash: string;
+                        /** @description The module source code */
+                        content: string;
                     };
                 };
             };
             responses: {
-                /** @description File restored */
+                /** @description Draft saved */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": {
-                            success?: boolean;
-                        };
+                        "application/json": components["schemas"]["Module"];
                     };
                 };
             };
@@ -316,7 +285,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Publish Module Version */
+        /**
+         * Publish Current Draft
+         * @description Promotes the current private draft to be the public version.
+         */
         post: {
             parameters: {
                 query?: never;
@@ -328,13 +300,13 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description Version published */
-                201: {
+                /** @description Module published */
+                200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ModuleVersion"];
+                        "application/json": components["schemas"]["Module"];
                     };
                 };
             };
@@ -365,7 +337,7 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description Module version details */
+                /** @description Module version metadata */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -384,14 +356,17 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/modules/{module_id}/versions/{version_id}/source": {
+    "/modules/{module_id}/versions/{version_id}/{filename}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get Module Version Source */
+        /**
+         * Read Version File
+         * @description Fetches the raw content of a specific file within a module version.
+         */
         get: {
             parameters: {
                 query?: never;
@@ -399,64 +374,20 @@ export interface paths {
                 path: {
                     module_id: string;
                     version_id: string;
+                    filename: string;
                 };
                 cookie?: never;
             };
             requestBody?: never;
             responses: {
-                /** @description Module version source code (TSX) */
+                /** @description File content */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
                         "application/json": {
-                            data: {
-                                source: string;
-                            };
-                        };
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/modules/{module_id}/versions/{version_id}/artifact": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Module Version Artifact */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    module_id: string;
-                    version_id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Module version transpiled artifact (JS) */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            data: {
-                                artifact: string;
-                            };
+                            content: string;
                         };
                     };
                 };
@@ -481,11 +412,12 @@ export interface components {
             team_id: string;
             name: string;
             type: string;
-            summary: string;
-            latest_version_id?: string;
+            summary?: string;
+            latest_version_id: string;
+            private_version_id: string;
+            public_version_id?: string;
             /** @enum {string} */
             scope: "public" | "private";
-            files: Record<string, never>;
             /** @default 1 */
             version: number;
             /** Format: date-time */
@@ -500,6 +432,9 @@ export interface components {
             /** @default module_version */
             entity: string;
             module_id: string;
+            author_id: string;
+            /** @enum {string} */
+            scope: "public" | "private";
             files: Record<string, never>;
             /** @default 1 */
             version: number;
