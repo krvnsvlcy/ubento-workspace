@@ -50,9 +50,7 @@ export interface FetchManyOptions<J, P> extends FetchOptions {
 
 // --- INTERNAL UTILITIES ---
 
-export function getEntityProjectionQueryKey<J extends Record<string, unknown>>(
-  params?: J,
-) {
+export function getEntityProjectionQueryKey<J>(params?: J) {
   if (!params) return "list:all";
   const sortedKeys = Object.keys(params).sort();
   const normalizedObj = sortedKeys.reduce((acc, key) => {
@@ -68,11 +66,7 @@ export function getEntityQueryKey(key: string) {
 
 // --- CORE FACTORY ---
 
-export function createStore<
-  TData,
-  TParams extends Record<string, unknown> = {},
-  TPage extends Record<string, unknown> = {},
->({
+export function createStore<TData, TParams = {}, TPage = {}>({
   namespace,
   getKey,
   fetchOne,
@@ -406,8 +400,6 @@ export function createStore<
   };
 }
 
-export type Store<
-  TData,
-  TParams extends Record<string, unknown> = {},
-  TPage extends Record<string, unknown> = {},
-> = ReturnType<typeof createStore<TData, TParams, TPage>>;
+export type Store<TData, TParams = {}, TPage = {}> = ReturnType<
+  typeof createStore<TData, TParams, TPage>
+>;

@@ -39,6 +39,7 @@ export default defineConfig({
         "../engine/src/**/*.{ts,tsx}",
         "../app/src/**/*.{ts,tsx}",
         "../../../apps/theme-builder/src/**/*.{ts,tsx}",
+        "../../../apps/bento.playground/src/**/*.{ts,tsx}",
         "../primitives/src/**/*.{ts,tsx}",
       ],
       outFile: "./dist/uno.css",

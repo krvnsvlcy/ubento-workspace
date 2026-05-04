@@ -10,11 +10,11 @@ export type UseStoreOptions = FetchOptions & {
  * Subscribes to a single entity.
  * Exposes a TanStack Query-compatible API.
  */
-export function useStoreEntity<
-  D,
-  J extends Record<string, unknown> = {},
-  P extends Record<string, unknown> = {},
->(store: Store<D, J, P>, key: string, options: UseStoreOptions = {}) {
+export function useStoreEntity<D, J, P>(
+  store: Store<D, J, P>,
+  key: string,
+  options: UseStoreOptions = {},
+) {
   const { enabled = true, fetchPolicy = "cache-first" } = options;
   const cacheKey = `item:${key}`;
 
@@ -62,11 +62,11 @@ export function useStoreEntity<
  * Subscribes to a projected list of entities.
  * Exposes a TanStack Query-compatible API.
  */
-export function useStoreEntities<
-  D,
-  J extends Record<string, unknown> = {},
-  P extends Record<string, unknown> = {},
->(store: Store<D, J, P>, params?: J, options: UseStoreOptions = {}) {
+export function useStoreEntities<D, J, P>(
+  store: Store<D, J, P>,
+  params?: J,
+  options: UseStoreOptions = {},
+) {
   const { enabled = true, fetchPolicy = "cache-first" } = options;
   const queryKey = useMemo(() => getEntityProjectionQueryKey(params), [params]);
 

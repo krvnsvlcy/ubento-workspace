@@ -9,8 +9,8 @@
       "types": "./build/stripe/index.d.ts"
     },
     "./lemonsqueezy": {
-      "import": "./build/lemonsqueezy/index.js",
-      "types": "./build/lemonsqueezy/index.d.ts"
+      "import": "./build/lemonsqueezy/lemonsqueezy.js",
+      "types": "./build/lemonsqueezy/lemonsqueezy.d.ts"
     },
     "./wise": {
       "import": "./build/wise/index.js",
@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@lemonsqueezy/lemonsqueezy.js": "^3.3.0",
-    "@ubento/registry-proxy": "workspace:*",
+    "@ubento/fabric": "workspace:*",
     "stripe": "^17.4.0",
     "zod": "^3.23.8"
   },
