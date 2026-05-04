@@ -30,11 +30,11 @@ function getHeadingStyle(
   };
 }
 
-export function Heading({ props, children }: ComponentProps<HeadingProps>) {
+export function Heading({ ref, props, children }: ComponentProps<HeadingProps>) {
   const layoutContext = useLayoutContext();
   const Tag = props.level as any;
   return (
-    <Tag style={getHeadingStyle(props, layoutContext)}>
+    <Tag ref={ref} style={getHeadingStyle(props, layoutContext)}>
       {props.text || children}
     </Tag>
   );

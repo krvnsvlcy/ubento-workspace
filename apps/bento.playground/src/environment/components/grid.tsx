@@ -41,11 +41,11 @@ function getGridStyle(
   };
 }
 
-export function Grid({ props, children }: ComponentProps<GridProps>) {
+export function Grid({ ref, props, children }: ComponentProps<GridProps>) {
   const layoutContext = useLayoutContext();
   return (
-    <LayoutContext.Provider value="grid">
-      <div style={getGridStyle(props, layoutContext)}>{children}</div>
-    </LayoutContext.Provider>
+    <div ref={ref} style={getGridStyle(props, layoutContext)}>
+      <LayoutContext.Provider value="grid">{children}</LayoutContext.Provider>
+    </div>
   );
 }

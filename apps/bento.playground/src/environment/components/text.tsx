@@ -34,10 +34,10 @@ function getTextStyle(
   };
 }
 
-export function Text({ props, children }: ComponentProps<TextProps>) {
+export function Text({ ref, props, children }: ComponentProps<TextProps>) {
   const layoutContext = useLayoutContext();
   return (
-    <div style={getTextStyle(props, layoutContext)}>
+    <div ref={ref} style={getTextStyle(props, layoutContext)}>
       {props.text || children}
     </div>
   );

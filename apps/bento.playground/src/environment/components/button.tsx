@@ -41,10 +41,11 @@ function getButtonStyle(
   };
 }
 
-export function Button({ props, children }: ComponentProps<ButtonProps>) {
+export function Button({ ref, props, children }: ComponentProps<ButtonProps>) {
   const layoutContext = useLayoutContext();
   return (
     <button
+      ref={ref}
       style={getButtonStyle(props, layoutContext)}
       disabled={props.disabled}
     >

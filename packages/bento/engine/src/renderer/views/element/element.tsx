@@ -23,11 +23,11 @@ export function ElementView({ id }: { id: string }) {
 
   function handleRef(dom: HTMLElement | null) {
     if (!dom) {
-      environment.domStore.clear(id);
+      environment.domManager.remove(id);
     } else {
-      environment.domStore.set(id, dom);
+      environment.domManager.add(id, dom);
     }
-    return () => environment.domStore.clear(id);
+    return () => environment.domManager.remove(id);
   }
 
   if (!Component) {

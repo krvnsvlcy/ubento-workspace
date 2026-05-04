@@ -45,10 +45,10 @@ function getStackStyle(
   };
 }
 
-export function Stack({ props, children }: ComponentProps<StackProps>) {
+export function Stack({ ref, props, children }: ComponentProps<StackProps>) {
   const parentLayoutContext = useLayoutContext();
   return (
-    <div style={getStackStyle(props, parentLayoutContext)}>
+    <div ref={ref} style={getStackStyle(props, parentLayoutContext)}>
       <LayoutContext.Provider value={props.direction || "row"}>
         {children}
       </LayoutContext.Provider>

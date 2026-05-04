@@ -1,18 +1,16 @@
-import { type Environment } from "@ubento/engine";
-import { createDomStore } from "../../../../packages/bento/engine/build/environment/dom";
+import { createEnvironment, type Environment } from "@ubento/engine";
 import { Button } from "./components/button";
 import { Grid } from "./components/grid";
 import { Heading } from "./components/heading";
 import { Stack } from "./components/stack";
 import { Text } from "./components/text";
 
-export const environment: Environment = {
-  domStore: createDomStore(),
+export const environment: Environment = createEnvironment({
   components: {
     Stack,
     Grid,
-    Heading,
     Text,
+    Heading,
     Button,
   },
-};
+});
