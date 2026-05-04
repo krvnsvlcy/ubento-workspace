@@ -21,6 +21,7 @@
     "@ubento/engine": "workspace:*",
     "@ubento/rpc-utils": "workspace:*",
     "wouter": "^3.6.0",
+    "zod": "^4.4.3",
     "zustand": "^5.0.12"
   },
   "devDependencies": {

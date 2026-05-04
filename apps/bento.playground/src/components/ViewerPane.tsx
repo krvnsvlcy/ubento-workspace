@@ -1,4 +1,6 @@
-import { Board, EnvironmentContext, type BoardSpec } from "@ubento/engine";
+import { BoardView, EnvironmentContext, type BoardSpec } from "@ubento/engine";
+import { environment } from "../environment/environment";
+import { LayoutContext } from "../environment/style";
 
 interface ViewerPaneProps {
   spec: BoardSpec;
@@ -76,7 +78,9 @@ export function ViewerPane({ spec, error }: ViewerPaneProps) {
 function BoardPreview({ spec }: { spec: BoardSpec }) {
   return (
     <EnvironmentContext value={environment}>
-      <Board spec={spec} />
+      <LayoutContext.Provider value={spec.style?.direction || "column"}>
+        <BoardView spec={spec} />
+      </LayoutContext.Provider>
     </EnvironmentContext>
   );
 }
