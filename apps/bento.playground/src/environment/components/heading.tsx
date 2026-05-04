@@ -1,3 +1,4 @@
+import { type ComponentProps } from "@ubento/engine";
 import { z } from "zod";
 import {
   getLayoutElementStyle,
@@ -5,7 +6,6 @@ import {
   useLayoutContext,
   type LayoutContextType,
 } from "../style";
-import { type ComponentProps } from "@ubento/engine";
 
 export const headingPropsSchema = layoutElementStyleSchema.extend({
   text: z.string().optional(),
@@ -25,7 +25,6 @@ function getHeadingStyle(
     ...getLayoutElementStyle(props, layoutContext),
     fontSize: props.size ? `${props.size}px` : undefined,
     fontWeight: props.weight,
-    color: props.color,
     textAlign: props.align,
     margin: 0,
   };

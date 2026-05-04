@@ -3,7 +3,7 @@ import { Component, Environment } from "../../environment/environment";
 
 export const EnvironmentContext = createContext<Environment | null>(null);
 
-export function useEnvironmentContext() {
+export function useEnvironment() {
   const context = useContext(EnvironmentContext);
   if (!context) {
     throw new Error(
@@ -14,10 +14,14 @@ export function useEnvironmentContext() {
 }
 
 export function useEnvironmentComponent(name: string): Component | undefined {
-  const context = useEnvironmentContext();
+  const context = useEnvironment();
   return context.components?.[name];
 }
 export function useEnvironmentFallBackComponent(): Component | undefined {
-  const context = useEnvironmentContext();
+  const context = useEnvironment();
   return context.fallBackComponent;
+}
+export function useEnvironmentErrorComponent(): Component | undefined {
+  const context = useEnvironment();
+  return context.errorComponent;
 }

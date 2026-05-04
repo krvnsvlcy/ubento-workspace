@@ -2,9 +2,9 @@ import { edgesSpec, type ComponentProps } from "@ubento/engine";
 import { z } from "zod";
 import {
   getLayoutElementStyle,
+  LayoutContext,
   layoutElementStyleSchema,
   useLayoutContext,
-  LayoutContext,
   type LayoutContextType,
 } from "../style";
 
@@ -48,8 +48,10 @@ function getStackStyle(
 export function Stack({ props, children }: ComponentProps<StackProps>) {
   const parentLayoutContext = useLayoutContext();
   return (
-    <LayoutContext.Provider value={props.direction}>
-      <div style={getStackStyle(props, parentLayoutContext)}>{children}</div>
-    </LayoutContext.Provider>
+    <div style={getStackStyle(props, parentLayoutContext)}>
+      <LayoutContext.Provider value={props.direction || "row"}>
+        {children}
+      </LayoutContext.Provider>
+    </div>
   );
 }

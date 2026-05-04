@@ -1,6 +1,7 @@
+import { PropsWithChildren } from "react";
 import { BoardSpec, BoardStyle } from "../../spec/board";
 import { BoardContext } from "../states/board";
-import { ElementView } from "./element";
+import { ElementView } from "./element/element";
 
 function paddingStyle(padding: BoardStyle["padding"]) {
   const sidePadding = (value?: number) => `${value || 0}px`;
@@ -50,7 +51,10 @@ function getBoardStyle(style: BoardStyle): React.CSSProperties {
   };
 }
 
-export function BoardView({ spec }: { spec: BoardSpec }) {
+export function BoardView({
+  spec,
+  children,
+}: PropsWithChildren<{ spec: BoardSpec }>) {
   const content =
     spec.children?.map((child) => {
       return <ElementView key={child} id={child} />;
@@ -58,7 +62,10 @@ export function BoardView({ spec }: { spec: BoardSpec }) {
 
   return (
     <BoardContext value={spec}>
-      <div style={getBoardStyle(spec.style || {})}>{content}</div>
+      <div style={getBoardStyle(spec.style || {})}>
+        {content}
+        {children}
+      </div>
     </BoardContext>
   );
 }

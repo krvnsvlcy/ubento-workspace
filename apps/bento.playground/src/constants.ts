@@ -44,7 +44,7 @@ export const DEFAULT_SPEC: BoardSpec = {
         level: "h1",
         size: 48,
         weight: 800,
-        color: "#fff",
+        color: "#0f172a",
       },
     },
     hero_description: {
@@ -53,7 +53,7 @@ export const DEFAULT_SPEC: BoardSpec = {
         text: "Experiment with the bento renderer by editing the JSON on the left. The preview updates in real-time as you type.",
         size: 18,
         weight: 400,
-        color: "rgba(255, 255, 255, 0.5)",
+        color: "#64748b",
         width: { value: 600, unit: "px" },
       },
     },
@@ -83,7 +83,7 @@ export const DEFAULT_SPEC: BoardSpec = {
       props: {
         text: "Define your UI using a robust, typed schema.",
         size: 14,
-        color: "rgba(255, 255, 255, 0.6)",
+        color: "#64748b",
       },
     },
     card_2: {
@@ -104,7 +104,7 @@ export const DEFAULT_SPEC: BoardSpec = {
       props: {
         text: "Instant feedback as you modify your UI structure.",
         size: 14,
-        color: "rgba(255, 255, 255, 0.6)",
+        color: "#64748b",
       },
     },
     card_3: {
@@ -125,7 +125,7 @@ export const DEFAULT_SPEC: BoardSpec = {
       props: {
         text: "Encapsulated components for maximum reusability.",
         size: 14,
-        color: "rgba(255, 255, 255, 0.6)",
+        color: "#64748b",
       },
     },
     card_4: {
@@ -146,7 +146,7 @@ export const DEFAULT_SPEC: BoardSpec = {
       props: {
         text: "Flex and Grid systems integrated directly into the spec.",
         size: 14,
-        color: "rgba(255, 255, 255, 0.6)",
+        color: "#64748b",
       },
     },
     footer: {
@@ -164,7 +164,7 @@ export const DEFAULT_SPEC: BoardSpec = {
         text: "Ready to build?",
         size: 14,
         weight: 500,
-        color: "rgba(255, 255, 255, 0.4)",
+        color: "#94a3b8",
       },
     },
     footer_right: {
