@@ -77,7 +77,7 @@ export function Playground() {
     setGenerationError(null);
 
     try {
-      const fullPrompt = `${SYSTEM_INSTRUCTION}\n\nCURRENT SPEC:\n${JSON.stringify(activeGeneration.spec, null, 2)}\n\nUSER REQUEST:\n${currentPrompt}`;
+      const fullPrompt = `${SYSTEM_INSTRUCTION}\n\nUSER REQUEST:\n${currentPrompt}`;
 
       const response = await fetch("http://localhost:8900/api/generate", {
         method: "POST",

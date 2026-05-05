@@ -1,8 +1,13 @@
 import { createZustandStateController } from "@ubento/bento-primitives";
 import { createStore as createZustandStore } from "zustand";
 
+export type DomElement = {
+  dom: HTMLElement;
+  parents: string[];
+};
+
 export type DomManagerState = {
-  elements: Record<string, HTMLElement>;
+  elements: Record<string, DomElement>;
   rects: Record<string, DOMRect>;
 };
 
@@ -20,8 +25,8 @@ export function createDomManager() {
       const nextRects: Record<string, DOMRect> = {};
       let changed = false;
 
-      for (const [id, element] of Object.entries(state.elements)) {
-        const nextRect = element.getBoundingClientRect();
+      for (const [id, elementEntry] of Object.entries(state.elements)) {
+        const nextRect = elementEntry.dom.getBoundingClientRect();
         const prevRect = state.rects[id];
 
         if (
@@ -49,15 +54,18 @@ export function createDomManager() {
 
   // Listen for scroll and resize to track position changes
   if (typeof window !== "undefined") {
-    window.addEventListener("scroll", updateAllRects, { capture: true, passive: true });
+    window.addEventListener("scroll", updateAllRects, {
+      capture: true,
+      passive: true,
+    });
     window.addEventListener("resize", updateAllRects, { passive: true });
   }
 
   return {
     ...controller,
-    add: (id: string, element: HTMLElement) => {
-      elementToId.set(element, id);
-      observer.observe(element);
+    add: (id: string, element: DomElement) => {
+      elementToId.set(element.dom, id);
+      observer.observe(element.dom);
 
       controller.setState((state) => ({
         ...state,
@@ -67,16 +75,16 @@ export function createDomManager() {
         },
         rects: {
           ...state.rects,
-          [id]: element.getBoundingClientRect(),
+          [id]: element.dom.getBoundingClientRect(),
         },
       }));
     },
     remove: (id: string) => {
       controller.setState((state) => {
-        const element = state.elements[id];
-        if (element) {
-          observer.unobserve(element);
-          elementToId.delete(element);
+        const elementEntry = state.elements[id];
+        if (elementEntry) {
+          observer.unobserve(elementEntry.dom);
+          elementToId.delete(elementEntry.dom);
         }
 
         const nextElements = { ...state.elements };
@@ -98,7 +106,7 @@ export function createDomManager() {
         window.removeEventListener("scroll", updateAllRects, { capture: true });
         window.removeEventListener("resize", updateAllRects);
       }
-    }
+    },
   };
 }
 

@@ -1,4 +1,8 @@
-import { lengthSchema, type LengthSpec } from "@ubento/engine";
+import {
+  lengthSchema,
+  type LengthSpec,
+  type EdgesSpec,
+} from "@ubento/engine";
 import { createContext, useContext } from "react";
 import z from "zod";
 
@@ -14,12 +18,26 @@ function lengthToCSS(length?: LengthSpec, flexAxis?: "main" | "cross") {
   return `${length.value}${length.unit}`;
 }
 
+export function getEdgesStyle(
+  edges?: EdgesSpec<number>,
+  type: "padding" | "margin" = "padding",
+) {
+  if (!edges) return {};
+  return {
+    [`${type}Top`]: edges.top !== undefined ? `${edges.top}px` : undefined,
+    [`${type}Right`]: edges.right !== undefined ? `${edges.right}px` : undefined,
+    [`${type}Bottom`]:
+      edges.bottom !== undefined ? `${edges.bottom}px` : undefined,
+    [`${type}Left`]: edges.left !== undefined ? `${edges.left}px` : undefined,
+  };
+}
+
 export const layoutElementStyleSchema = z.object({
   width: lengthSchema.optional(),
   height: lengthSchema.optional(),
-  minWidth: z.number().default(64),
+  minWidth: z.number().default(0),
   maxWidth: z.number().optional(),
-  minHeight: z.number().default(64),
+  minHeight: z.number().default(0),
   maxHeight: z.number().optional(),
 });
 export type LayoutElementStyle = z.infer<typeof layoutElementStyleSchema>;
@@ -56,13 +74,13 @@ export function getLayoutElementStyle(
         ? widthVal
         : layoutContext === "row" && mainAxisFlex
           ? undefined
-          : "fit-content",
+          : undefined,
     height:
       heightVal !== undefined
         ? heightVal
         : layoutContext === "column" && mainAxisFlex
           ? undefined
-          : "fit-content",
+          : undefined,
 
     // Prioritize the explicit fr unit, fallback to explicit flex property
     flex: mainAxisFlex !== undefined ? mainAxisFlex : undefined,

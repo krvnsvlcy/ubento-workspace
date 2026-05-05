@@ -8,6 +8,12 @@ export function edgesSpec<S extends z.ZodTypeAny>(schema: S) {
     bottom: schema,
   });
 }
+export type EdgesSpec<S> = {
+  top: S;
+  left: S;
+  right: S;
+  bottom: S;
+};
 
 export const lengthSchema = z.object({
   value: z.number(),

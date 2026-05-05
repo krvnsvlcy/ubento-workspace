@@ -31,7 +31,7 @@ function getBoardStyle(style: BoardStyle): React.CSSProperties {
         : "100%",
     minHeight: "100vh",
     display: "flex",
-    alignContent: "start",
+    alignItems: "stretch",
     flexDirection: style.direction || "row",
     gap: style.gap ? `${style.gap || 0}px` : undefined,
     overflowX:

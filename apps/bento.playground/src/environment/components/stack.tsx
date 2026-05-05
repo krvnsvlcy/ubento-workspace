@@ -39,7 +39,7 @@ function getStackStyle(
     display: "flex",
     flexWrap: props.wrap ? "wrap" : "nowrap",
     flexDirection: props.direction,
-    alignContent: props.align,
+    alignItems: props.align,
     justifyContent: props.justify,
     overflow: props.overflow,
   };

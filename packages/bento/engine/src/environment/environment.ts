@@ -1,9 +1,11 @@
 import { Component, ComponentStore, createComponentStore } from "./component";
 import { createDomManager, DomManager } from "./dom";
+import { createInteractionManager, InteractionManager } from "./interaction";
 
 export type Environment = {
   componentStore: ComponentStore;
   domManager: DomManager;
+  interactionManager: InteractionManager;
 };
 
 export function createEnvironment({
@@ -22,8 +24,10 @@ export function createEnvironment({
       errorComponent,
     }),
     domManager: createDomManager(),
+    interactionManager: createInteractionManager(),
   };
 }
 
 export * from "./component";
 export * from "./dom";
+export * from "./interaction";

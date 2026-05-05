@@ -1,4 +1,4 @@
-export * from "./helpers/debug_overlay";
+export * from "./interactor/interactor";
 export * from "./states/board";
 export * from "./states/environment";
 export * from "./views/board";

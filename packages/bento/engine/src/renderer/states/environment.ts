@@ -33,3 +33,7 @@ export function useComponentStore() {
   const context = useEnvironment();
   return context.componentStore;
 }
+export function useInteractionManager() {
+  const context = useEnvironment();
+  return context.interactionManager;
+}

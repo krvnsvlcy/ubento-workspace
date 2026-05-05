@@ -1,5 +1,6 @@
 import { createEnvironment, type Environment } from "@ubento/engine";
 import { Button } from "./components/button";
+import { Card } from "./components/card";
 import { Grid } from "./components/grid";
 import { Heading } from "./components/heading";
 import { Stack } from "./components/stack";
@@ -12,5 +13,6 @@ export const environment: Environment = createEnvironment({
     Text,
     Heading,
     Button,
+    Card,
   },
 });
