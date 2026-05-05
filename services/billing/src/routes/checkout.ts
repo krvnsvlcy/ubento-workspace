@@ -5,7 +5,7 @@ import {
   parseStringQuery,
   toSerializable,
   validate,
-} from "@ubento/service-toolkit";
+} from "@ubento/services.toolkit";
 import { Router } from "express";
 import { z } from "zod";
 import {

@@ -1,10 +1,10 @@
-import { ModuleVersionScope } from "@ubento/database/module";
+import { ModuleVersionScope } from "@ubento/services.database/module";
 import {
   generateBareId,
   makeEntityId,
   ubentoEntities,
-} from "@ubento/primitives";
-import { prismaListWithCursor } from "@ubento/service-toolkit";
+} from "@ubento/services.primitives";
+import { prismaListWithCursor } from "@ubento/services.toolkit";
 import { buildModule } from "../lib/builder/builder.js";
 import prisma from "../lib/prisma.js";
 import { persistModuleArtifact, readFromCAS } from "../lib/storage.js";

@@ -2,7 +2,7 @@ import {
   autoIncrementOnUpdate,
   mongoDbUrlWithDatabase,
   standardizeJsonSchemaOutput,
-} from "@ubento/service-toolkit";
+} from "@ubento/services.toolkit";
 import { Prisma, PrismaClient } from "../prisma/generated/integration/index.js";
 import rawPrismaSchemas from "./schemas/integration/json-schema.json" with { type: "json" };
 import { cleanUpJsonSchema } from "./schemas/utils.js";
@@ -14,7 +14,9 @@ export function createIntegrationClient(databaseUrl: string) {
   }).$extends(autoIncrementOnUpdate(Prisma.defineExtension));
 }
 
-export type IntegrationPrismaClient = ReturnType<typeof createIntegrationClient>;
+export type IntegrationPrismaClient = ReturnType<
+  typeof createIntegrationClient
+>;
 
 export const integrationSchemas = cleanUpJsonSchema(
   standardizeJsonSchemaOutput(rawPrismaSchemas as any),

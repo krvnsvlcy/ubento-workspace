@@ -1,14 +1,17 @@
 import {
-  ubentoEntities,
+  Connection,
+  ConnectionProvider,
+} from "@ubento/services.database/integration";
+import {
   generateBareId,
   makeEntityId,
-} from "@ubento/primitives";
+  ubentoEntities,
+} from "@ubento/services.primitives";
 import {
   NotFoundError,
   ValidationError,
   prismaListWithCursor,
-} from "@ubento/service-toolkit";
-import { Connection, ConnectionProvider } from "@ubento/database/integration";
+} from "@ubento/services.toolkit";
 import z from "zod";
 import { cryptoUtils } from "../lib/crypto.js";
 import prisma from "../lib/prisma.js";

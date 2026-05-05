@@ -13,10 +13,10 @@
     "deploy": "pnpm vercel:build && pnpm vercel:deploy"
   },
   "dependencies": {
-    "@ubento/bento-app": "workspace:*",
-    "@ubento/bento-style": "workspace:*",
-    "@ubento/engine": "workspace:*",
-    "@ubento/sdk": "workspace:*",
+    "@ubento/workspace.app": "workspace:*",
+    "@ubento/bento.style": "workspace:*",
+    "@ubento/bento.engine": "workspace:*",
+    "@ubento/services.sdk": "workspace:*",
     "react": "^19.2.5",
     "react-dom": "^19.2.5"
   },

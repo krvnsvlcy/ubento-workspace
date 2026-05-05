@@ -3,7 +3,7 @@ import {
   makeCursorPageResponse,
   toSerializable,
   validate,
-} from "@ubento/service-toolkit";
+} from "@ubento/services.toolkit";
 import { Router } from "express";
 import multer from "multer";
 import z from "zod";
@@ -42,8 +42,8 @@ threadRouter.get(
         sort: req.query.sort as any,
       });
       res.json(toSerializable(makeCursorPageResponse(result)));
-    }
-  )
+    },
+  ),
 );
 
 threadRouter.post(
@@ -62,8 +62,8 @@ threadRouter.post(
         workspace_id,
       });
       res.status(201).json(newThread);
-    }
-  )
+    },
+  ),
 );
 
 threadRouter.get(
@@ -82,8 +82,8 @@ threadRouter.get(
         return;
       }
       res.json(toSerializable(thread));
-    }
-  )
+    },
+  ),
 );
 
 threadRouter.patch(
@@ -108,8 +108,8 @@ threadRouter.patch(
         context,
       });
       res.json(toSerializable(updatedThread));
-    }
-  )
+    },
+  ),
 );
 
 threadRouter.post(
@@ -124,8 +124,8 @@ threadRouter.post(
       const { thread_id } = req.params;
       const updatedThread = await generateThreadTitle(thread_id);
       res.json(toSerializable(updatedThread));
-    }
-  )
+    },
+  ),
 );
 
 threadRouter.delete(
@@ -140,8 +140,8 @@ threadRouter.delete(
       const { thread_id } = req.params;
       await deleteThread(thread_id);
       res.status(204).send();
-    }
-  )
+    },
+  ),
 );
 
 // Message
@@ -167,8 +167,8 @@ threadRouter.get(
         sort: req.query.sort as any,
       });
       res.json(toSerializable(makeCursorPageResponse(result)));
-    }
-  )
+    },
+  ),
 );
 
 threadRouter.post(
@@ -198,8 +198,8 @@ threadRouter.post(
       });
 
       res.status(201).json(newMessage);
-    }
-  )
+    },
+  ),
 );
 
 export default threadRouter;

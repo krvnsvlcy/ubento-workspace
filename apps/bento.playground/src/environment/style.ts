@@ -1,8 +1,8 @@
 import {
   lengthSchema,
-  type LengthSpec,
   type EdgesSpec,
-} from "@ubento/engine";
+  type LengthSpec,
+} from "@ubento/bento.engine";
 import { createContext, useContext } from "react";
 import z from "zod";
 
@@ -25,7 +25,8 @@ export function getEdgesStyle(
   if (!edges) return {};
   return {
     [`${type}Top`]: edges.top !== undefined ? `${edges.top}px` : undefined,
-    [`${type}Right`]: edges.right !== undefined ? `${edges.right}px` : undefined,
+    [`${type}Right`]:
+      edges.right !== undefined ? `${edges.right}px` : undefined,
     [`${type}Bottom`]:
       edges.bottom !== undefined ? `${edges.bottom}px` : undefined,
     [`${type}Left`]: edges.left !== undefined ? `${edges.left}px` : undefined,

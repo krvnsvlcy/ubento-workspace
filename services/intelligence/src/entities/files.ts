@@ -1,10 +1,10 @@
+import { File } from "@ubento/services.database/intelligence";
 import {
-  ubentoEntities,
   generateBareId,
   makeEntityId,
-} from "@ubento/primitives";
-import { File } from "@ubento/database/intelligence";
-import { prismaListWithCursor } from "@ubento/service-toolkit";
+  ubentoEntities,
+} from "@ubento/services.primitives";
+import { prismaListWithCursor } from "@ubento/services.toolkit";
 import sharp from "sharp";
 import { intelligenceBucket, storagePaths } from "../lib/storage.js";
 import prisma from "../prisma.js";

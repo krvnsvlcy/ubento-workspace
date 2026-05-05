@@ -1,5 +1,5 @@
-import { workspaceSchemas } from "@ubento/database/workspace";
-import { makeCursorPageResponseSchema } from "@ubento/service-toolkit";
+import { workspaceSchemas } from "@ubento/services.database/workspace";
+import { makeCursorPageResponseSchema } from "@ubento/services.toolkit";
 import { OpenAPIV3 } from "openapi-types";
 
 export const spec: OpenAPIV3.Document = {
@@ -566,7 +566,8 @@ export const spec: OpenAPIV3.Document = {
     schemas: {
       Workspace: workspaceSchemas.definitions.Workspace as any,
       Board: workspaceSchemas.definitions.Board as any,
-      WorkspaceMembership: workspaceSchemas.definitions.WorkspaceMembership as any,
+      WorkspaceMembership: workspaceSchemas.definitions
+        .WorkspaceMembership as any,
       WorkspaceInvite: workspaceSchemas.definitions.WorkspaceInvite as any,
       Error: {
         type: "object",

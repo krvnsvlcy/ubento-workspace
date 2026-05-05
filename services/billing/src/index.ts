@@ -1,5 +1,5 @@
-import { createService } from "@ubento/service-toolkit";
 import { lemonSqueezySetup } from "@lemonsqueezy/lemonsqueezy.js";
+import { createService } from "@ubento/services.toolkit";
 import { json } from "express";
 import { env } from "./env.js";
 import { logger } from "./logger.js";

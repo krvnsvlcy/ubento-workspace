@@ -1,9 +1,9 @@
+import { JwtKeyStatus } from "@ubento/services.database/iam";
 import {
-  ubentoEntities,
   generateBareId,
   makeEntityId,
-} from "@ubento/primitives";
-import { JwtKeyStatus } from "@ubento/database/iam";
+  ubentoEntities,
+} from "@ubento/services.primitives";
 import * as jose from "jose";
 import { env } from "../../env.js";
 import prisma from "../../lib/prisma.js";
@@ -51,7 +51,7 @@ export async function getSigningKey() {
 
 export async function signAccessToken(
   payload: jose.JWTPayload,
-  { expiresIn }: { expiresIn?: string }
+  { expiresIn }: { expiresIn?: string },
 ) {
   const keyRecord = await getSigningKey();
   const privateJwk = JSON.parse(keyRecord.private_jwk_encrypted!);

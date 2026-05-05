@@ -1,5 +1,5 @@
-import { ubentoEntities } from "@ubento/primitives";
-import { chain, validate, ValidationError } from "@ubento/service-toolkit";
+import { ubentoEntities } from "@ubento/services.primitives";
+import { chain, validate, ValidationError } from "@ubento/services.toolkit";
 import { GenericServerException } from "@workos-inc/node";
 import { Response, Router } from "express";
 import crypto from "node:crypto";

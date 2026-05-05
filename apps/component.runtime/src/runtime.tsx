@@ -1,4 +1,4 @@
-import { ErrorView, PendingView } from "@ubento/bento-primitives";
+import { ErrorView, PendingView } from "@ubento/workspace.primitives";
 import React, { useEffect, useState } from "react";
 import { transform } from "sucrase";
 import { useStore } from "zustand";

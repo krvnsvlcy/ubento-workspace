@@ -1,5 +1,5 @@
-import { iamSchemas } from "@ubento/database/iam";
-import { makeCursorPageResponseSchema } from "@ubento/service-toolkit";
+import { iamSchemas } from "@ubento/services.database/iam";
+import { makeCursorPageResponseSchema } from "@ubento/services.toolkit";
 import { OpenAPIV3 } from "openapi-types";
 
 export const spec: OpenAPIV3.Document = {

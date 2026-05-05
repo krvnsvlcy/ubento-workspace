@@ -1,9 +1,3 @@
-import {
-  ubentoEntities,
-  generateBareId,
-  makeEntityId,
-} from "@ubento/primitives";
-import { prismaListWithCursor } from "@ubento/service-toolkit";
 import type {
   Offer,
   Product,
@@ -11,7 +5,13 @@ import type {
   ProviderEntity,
   ProviderLink,
   ResourceType,
-} from "@ubento/database/billing";
+} from "@ubento/services.database/billing";
+import {
+  generateBareId,
+  makeEntityId,
+  ubentoEntities,
+} from "@ubento/services.primitives";
+import { prismaListWithCursor } from "@ubento/services.toolkit";
 import { eventPublisher } from "../event.js";
 import prisma from "../lib/prisma.js";
 import { Entitlement } from "./entitlements/entitlements.js";

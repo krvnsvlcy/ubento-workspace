@@ -1,5 +1,5 @@
-import { integrationSchemas as prismaSchemas } from "@ubento/database/integration";
-import { makeCursorPageResponseSchema } from "@ubento/service-toolkit";
+import { integrationSchemas as prismaSchemas } from "@ubento/services.database/integration";
+import { makeCursorPageResponseSchema } from "@ubento/services.toolkit";
 
 export const spec = {
   openapi: "3.0.0",

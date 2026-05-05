@@ -2,7 +2,7 @@ import {
   makeCursorPageResponse,
   parseCursorQuery,
   toSerializable,
-} from "@ubento/service-toolkit";
+} from "@ubento/services.toolkit";
 import { Router } from "express";
 import {
   getProduct,

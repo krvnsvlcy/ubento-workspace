@@ -12,9 +12,9 @@
     "deploy": "scripts containerize integration && scripts deploy integration"
   },
   "dependencies": {
-    "@ubento/database": "workspace:*",
-    "@ubento/primitives": "workspace:*",
-    "@ubento/service-toolkit": "workspace:*",
+    "@ubento/services.database": "workspace:*",
+    "@ubento/services.primitives": "workspace:*",
+    "@ubento/services.toolkit": "workspace:*",
     "@google-cloud/storage": "^7.19.0",
     "body-parser": "^2.2.0",
     "dotenv": "^16.3.1",

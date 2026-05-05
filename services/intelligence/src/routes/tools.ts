@@ -1,4 +1,4 @@
-import { chain, toSerializable, validate } from "@ubento/service-toolkit";
+import { chain, toSerializable, validate } from "@ubento/services.toolkit";
 import { Router } from "express";
 import z from "zod";
 import { readWebpage } from "../entities/tools.js";

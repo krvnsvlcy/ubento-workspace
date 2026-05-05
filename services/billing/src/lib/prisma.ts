@@ -1,4 +1,4 @@
-import { createBillingClient } from "@ubento/database/billing";
+import { createBillingClient } from "@ubento/services.database/billing";
 import { env } from "../env.js";
 
 const prisma = createBillingClient(env.DATABASE_URL);

@@ -15,7 +15,6 @@
     "dev": "scripts dev"
   },
   "dependencies": {
-    "intercom-client": "latest",
-    "@ubento/registry-proxy": "workspace:*"
+    "intercom-client": "latest"
   }
 }

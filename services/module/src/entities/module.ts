@@ -1,14 +1,17 @@
-import { ModuleScope, ModuleVersionScope } from "@ubento/database/module";
+import {
+  ModuleScope,
+  ModuleVersionScope,
+} from "@ubento/services.database/module";
 import {
   generateBareId,
   makeEntityId,
   ubentoEntities,
-} from "@ubento/primitives";
+} from "@ubento/services.primitives";
 import {
   NotFoundError,
   prismaListWithCursor,
   ValidationError,
-} from "@ubento/service-toolkit";
+} from "@ubento/services.toolkit";
 import prisma from "../lib/prisma.js";
 import { createModuleVersion } from "./version.js";
 

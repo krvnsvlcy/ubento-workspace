@@ -15,7 +15,6 @@
     "dev": "scripts dev"
   },
   "dependencies": {
-    "@hubspot/api-client": "latest",
-    "@ubento/registry-proxy": "workspace:*"
+    "@hubspot/api-client": "latest"
   }
 }

@@ -2,8 +2,8 @@ import {
   generateBareId,
   makeEntityId,
   ubentoEntities,
-} from "@ubento/primitives";
-import { prismaListWithCursor } from "@ubento/service-toolkit";
+} from "@ubento/services.primitives";
+import { prismaListWithCursor } from "@ubento/services.toolkit";
 import prisma from "../lib/prisma.js";
 
 export async function getBoard(id: string) {

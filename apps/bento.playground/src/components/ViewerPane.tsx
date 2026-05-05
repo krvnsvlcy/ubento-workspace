@@ -4,7 +4,7 @@ import {
   Interactor,
   useInteractionManager,
   type BoardSpec,
-} from "@ubento/engine";
+} from "@ubento/bento.engine";
 import { environment } from "../environment/environment";
 import { LayoutContext } from "../environment/style";
 

@@ -15,7 +15,6 @@
     "dev": "scripts dev"
   },
   "dependencies": {
-    "@vercel/client": "latest",
-    "@ubento/registry-proxy": "workspace:*"
+    "@vercel/client": "latest"
   }
 }

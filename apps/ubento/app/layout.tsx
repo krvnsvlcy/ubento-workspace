@@ -1,6 +1,6 @@
 import { SessionProvider } from "@/components/session";
 import { getSession } from "@/lib/auth";
-import "@ubento/bento-style/dist/uno.css";
+import "@ubento/bento.style/dist/uno.css";
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import "./globals.css";

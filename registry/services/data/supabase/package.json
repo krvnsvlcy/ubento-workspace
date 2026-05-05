@@ -15,7 +15,6 @@
     "dev": "scripts dev"
   },
   "dependencies": {
-    "@supabase/supabase-js": "latest",
-    "@ubento/registry-proxy": "workspace:*"
+    "@supabase/supabase-js": "latest"
   }
 }

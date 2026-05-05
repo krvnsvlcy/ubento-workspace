@@ -1,5 +1,5 @@
 {
-  "name": "@ubento/database",
+  "name": "@ubento/services.database",
   "version": "1.0.0",
   "private": true,
   "type": "module",
@@ -49,7 +49,7 @@
   },
   "dependencies": {
     "@prisma/client": "5.18.0",
-    "@ubento/service-toolkit": "workspace:*"
+    "@ubento/services.toolkit": "workspace:*"
   },
   "devDependencies": {
     "prisma": "5.22.0"

@@ -15,7 +15,6 @@
     "dev": "scripts dev"
   },
   "dependencies": {
-    "googleapis": "latest",
-    "@ubento/registry-proxy": "workspace:*"
+    "googleapis": "latest"
   }
 }

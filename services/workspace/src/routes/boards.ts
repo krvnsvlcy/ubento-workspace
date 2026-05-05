@@ -1,4 +1,4 @@
-import { ubentoAuth } from "@ubento/primitives";
+import { ubentoAuth } from "@ubento/services.primitives";
 import {
   chain,
   dataResponse,
@@ -6,10 +6,9 @@ import {
   makeCursorPageResponse,
   NotFoundError,
   validate,
-} from "@ubento/service-toolkit";
+} from "@ubento/services.toolkit";
 import { Router } from "express";
 import z from "zod";
-import { getWorkspace } from "../entities/workspace/workspace.js";
 import {
   createBoard,
   deleteBoard,
@@ -17,6 +16,7 @@ import {
   listBoards,
   updateBoard,
 } from "../entities/board.js";
+import { getWorkspace } from "../entities/workspace/workspace.js";
 
 const boardsRouter: Router = Router();
 

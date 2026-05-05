@@ -1,5 +1,5 @@
 import { openai } from "@ai-sdk/openai";
-import { chain, toSerializable, validate } from "@ubento/service-toolkit";
+import { chain, toSerializable, validate } from "@ubento/services.toolkit";
 import type { LanguageModel } from "ai";
 import { generateObject, generateText } from "ai";
 import { Router } from "express";
@@ -62,8 +62,8 @@ queryRouter.post(
         });
         res.json(toSerializable({ response: result.text }));
       }
-    }
-  )
+    },
+  ),
 );
 
 export default queryRouter;

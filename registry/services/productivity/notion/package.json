@@ -15,7 +15,6 @@
     "dev": "scripts dev"
   },
   "dependencies": {
-    "@notionhq/client": "latest",
-    "@ubento/registry-proxy": "workspace:*"
+    "@notionhq/client": "latest"
   }
 }

@@ -1,4 +1,4 @@
-import { chain, validate } from "@ubento/service-toolkit";
+import { chain, validate } from "@ubento/services.toolkit";
 import { Request, Response, Router } from "express";
 import { z } from "zod";
 import { getAuthUrl, handleOAuthCallback } from "../entities/auth.js";

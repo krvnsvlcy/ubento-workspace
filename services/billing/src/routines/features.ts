@@ -1,4 +1,4 @@
-import { ubentoFeatures, Feature } from "@ubento/primitives";
+import { Feature, ubentoFeatures } from "@ubento/services.primitives";
 
 /* ========================================================================
    1. Feature Catalog Extraction (Module Singleton)

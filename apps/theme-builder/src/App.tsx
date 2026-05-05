@@ -1,4 +1,4 @@
-import type { BentoTheme, ColorTheme } from "@ubento/bento-primitives";
+import type { BentoTheme, ColorTheme } from "@ubento/workspace.primitives";
 import {
   applyTheme,
   Badge,
@@ -15,7 +15,7 @@ import {
   Input,
   skyTheme,
   sunsetTheme,
-} from "@ubento/bento-primitives";
+} from "@ubento/workspace.primitives";
 import { Box, Download, Moon, Palette, Settings2, Sun } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { MultiColorPicker } from "./components/MultiColorPicker";

@@ -60,18 +60,18 @@ importers:
 
   apps/bento.app:
     dependencies:
-      '@ubento/bento-app':
-        specifier: workspace:*
-        version: link:../../packages/bento/app
-      '@ubento/bento-style':
-        specifier: workspace:*
-        version: link:../../packages/bento/style
-      '@ubento/engine':
+      '@ubento/bento.engine':
         specifier: workspace:*
         version: link:../../packages/bento/engine
-      '@ubento/sdk':
+      '@ubento/bento.style':
         specifier: workspace:*
-        version: link:../../packages/core/sdk
+        version: link:../../packages/bento/style
+      '@ubento/services.sdk':
+        specifier: workspace:*
+        version: link:../../packages/services/sdk
+      '@ubento/workspace.app':
+        specifier: workspace:*
+        version: link:../../packages/workspace/app
       react:
         specifier: ^19.2.5
         version: 19.2.5
@@ -148,18 +148,18 @@ importers:
       '@types/express':
         specifier: ^5.0.6
         version: 5.0.6
-      '@ubento/bento-primitives':
-        specifier: workspace:*
-        version: link:../../packages/bento/primitives
-      '@ubento/bento-style':
-        specifier: workspace:*
-        version: link:../../packages/bento/style
-      '@ubento/engine':
+      '@ubento/bento.engine':
         specifier: workspace:*
         version: link:../../packages/bento/engine
-      '@ubento/rpc-utils':
+      '@ubento/bento.style':
         specifier: workspace:*
-        version: link:../../packages/core/rpc
+        version: link:../../packages/bento/style
+      '@ubento/rpc':
+        specifier: workspace:*
+        version: link:../../packages/utils/rpc
+      '@ubento/workspace.primitives':
+        specifier: workspace:*
+        version: link:../../packages/workspace/primitives
       ai:
         specifier: ^6.0.175
         version: 6.0.175(zod@4.4.3)
@@ -236,18 +236,18 @@ importers:
 
   apps/bento.runtime:
     dependencies:
-      '@ubento/bento-primitives':
-        specifier: workspace:*
-        version: link:../../packages/bento/primitives
-      '@ubento/bento-style':
-        specifier: workspace:*
-        version: link:../../packages/bento/style
-      '@ubento/engine':
+      '@ubento/bento.engine':
         specifier: workspace:*
         version: link:../../packages/bento/engine
-      '@ubento/rpc-utils':
+      '@ubento/bento.style':
         specifier: workspace:*
-        version: link:../../packages/core/rpc
+        version: link:../../packages/bento/style
+      '@ubento/rpc':
+        specifier: workspace:*
+        version: link:../../packages/utils/rpc
+      '@ubento/workspace.primitives':
+        specifier: workspace:*
+        version: link:../../packages/workspace/primitives
       wouter:
         specifier: ^3.6.0
         version: 3.9.0(react@19.2.5)
@@ -306,18 +306,18 @@ importers:
 
   apps/component.runtime:
     dependencies:
-      '@ubento/bento-primitives':
-        specifier: workspace:*
-        version: link:../../packages/bento/primitives
-      '@ubento/bento-style':
-        specifier: workspace:*
-        version: link:../../packages/bento/style
-      '@ubento/engine':
+      '@ubento/bento.engine':
         specifier: workspace:*
         version: link:../../packages/bento/engine
-      '@ubento/rpc-utils':
+      '@ubento/bento.style':
         specifier: workspace:*
-        version: link:../../packages/core/rpc
+        version: link:../../packages/bento/style
+      '@ubento/rpc':
+        specifier: workspace:*
+        version: link:../../packages/utils/rpc
+      '@ubento/workspace.primitives':
+        specifier: workspace:*
+        version: link:../../packages/workspace/primitives
       react:
         specifier: ^19.0.0
         version: 19.2.5
@@ -382,12 +382,12 @@ importers:
 
   apps/theme-builder:
     dependencies:
-      '@ubento/bento-primitives':
-        specifier: workspace:*
-        version: link:../../packages/bento/primitives
-      '@ubento/bento-style':
+      '@ubento/bento.style':
         specifier: workspace:*
         version: link:../../packages/bento/style
+      '@ubento/workspace.primitives':
+        specifier: workspace:*
+        version: link:../../packages/workspace/primitives
       colord:
         specifier: ^2.9.3
         version: 2.9.3
@@ -446,15 +446,15 @@ importers:
 
   apps/ubento:
     dependencies:
-      '@ubento/bento-app':
-        specifier: workspace:*
-        version: link:../../packages/bento/app
-      '@ubento/bento-style':
+      '@ubento/bento.style':
         specifier: workspace:*
         version: link:../../packages/bento/style
-      '@ubento/sdk':
+      '@ubento/services.sdk':
         specifier: workspace:*
-        version: link:../../packages/core/sdk
+        version: link:../../packages/services/sdk
+      '@ubento/workspace.app':
+        specifier: workspace:*
+        version: link:../../packages/workspace/app
       axios:
         specifier: ^1.15.2
         version: 1.16.0
@@ -508,88 +508,6 @@ importers:
         specifier: ^5
         version: 5.9.3
 
-  packages/bento/app:
-    dependencies:
-      '@ai-sdk/open-responses':
-        specifier: ^1.0.11
-        version: 1.0.14(zod@4.4.3)
-      '@ai-sdk/provider':
-        specifier: ^3.0.8
-        version: 3.0.10
-      '@dnd-kit/core':
-        specifier: ^6.3.1
-        version: 6.3.1(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
-      '@dnd-kit/modifiers':
-        specifier: ^9.0.0
-        version: 9.0.0(@dnd-kit/core@6.3.1(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(react@19.2.5)
-      '@dnd-kit/utilities':
-        specifier: ^3.2.2
-        version: 3.2.2(react@19.2.5)
-      '@monaco-editor/react':
-        specifier: ^4.7.0
-        version: 4.7.0(monaco-editor@0.55.1)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
-      '@ubento/bento-primitives':
-        specifier: workspace:*
-        version: link:../primitives
-      '@ubento/data-transfer':
-        specifier: workspace:*
-        version: link:../../core/data-transfer
-      '@ubento/engine':
-        specifier: workspace:*
-        version: link:../engine
-      '@ubento/fabric':
-        specifier: workspace:*
-        version: link:../../core/fabric
-      '@ubento/primitives':
-        specifier: workspace:*
-        version: link:../../core/primitives
-      '@ubento/rpc-utils':
-        specifier: workspace:*
-        version: link:../../core/rpc
-      '@ubento/sdk':
-        specifier: workspace:*
-        version: link:../../core/sdk
-      ai:
-        specifier: ^6.0.168
-        version: 6.0.174(zod@4.4.3)
-      clsx:
-        specifier: ^2.1.1
-        version: 2.1.1
-      dequal:
-        specifier: ^2.0.3
-        version: 2.0.3
-      lucide-react:
-        specifier: ^0.468.0
-        version: 0.468.0(react@19.2.5)
-      motion:
-        specifier: ^12.38.0
-        version: 12.38.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
-      react:
-        specifier: ^19.0.0
-        version: 19.2.5
-      react-dom:
-        specifier: ^19.0.0
-        version: 19.2.5(react@19.2.5)
-      react-textarea-autosize:
-        specifier: ^8.5.9
-        version: 8.5.9(@types/react@19.2.14)(react@19.2.5)
-      yaml:
-        specifier: ^2.8.3
-        version: 2.8.4
-      zod:
-        specifier: ^4.3.6
-        version: 4.4.3
-    devDependencies:
-      '@types/react':
-        specifier: ^19.0.0
-        version: 19.2.14
-      '@types/react-dom':
-        specifier: ^19.0.0
-        version: 19.2.3(@types/react@19.2.14)
-      typescript:
-        specifier: ^5.0.0
-        version: 5.9.3
-
   packages/bento/engine:
     dependencies:
       '@dnd-kit/core':
@@ -607,18 +525,18 @@ importers:
       '@json-render/react':
         specifier: ^0.18.0
         version: 0.18.0(react@19.2.5)(zod@4.4.3)
-      '@ubento/bento-primitives':
-        specifier: workspace:*
-        version: link:../primitives
       '@ubento/fabric':
         specifier: workspace:*
-        version: link:../../core/fabric
-      '@ubento/primitives':
+        version: link:../../utils/fabric
+      '@ubento/rpc':
         specifier: workspace:*
-        version: link:../../core/primitives
-      '@ubento/rpc-utils':
+        version: link:../../utils/rpc
+      '@ubento/services.primitives':
         specifier: workspace:*
-        version: link:../../core/rpc
+        version: link:../../services/primitives
+      '@ubento/workspace.primitives':
+        specifier: workspace:*
+        version: link:../../workspace/primitives
       motion:
         specifier: ^12.38.0
         version: 12.38.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
@@ -636,27 +554,48 @@ importers:
         specifier: ^5.0.0
         version: 5.9.3
 
-  packages/bento/primitives:
+  packages/bento/service:
     dependencies:
-      class-variance-authority:
-        specifier: ^0.7.1
-        version: 0.7.1
-      react:
-        specifier: ^19.0.0
-        version: 19.2.5
-      react-dom:
-        specifier: ^19.0.0
-        version: 19.2.5(react@19.2.5)
+      '@dnd-kit/core':
+        specifier: ^6.3.1
+        version: 6.3.1(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      '@dnd-kit/sortable':
+        specifier: ^10.0.0
+        version: 10.0.0(@dnd-kit/core@6.3.1(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(react@19.2.5)
+      '@dnd-kit/utilities':
+        specifier: ^3.2.2
+        version: 3.2.2(react@19.2.5)
+      '@json-render/core':
+        specifier: ^0.18.0
+        version: 0.18.0(zod@4.4.3)
+      '@json-render/react':
+        specifier: ^0.18.0
+        version: 0.18.0(react@19.2.5)(zod@4.4.3)
+      '@ubento/fabric':
+        specifier: workspace:*
+        version: link:../../utils/fabric
+      '@ubento/rpc':
+        specifier: workspace:*
+        version: link:../../utils/rpc
+      '@ubento/services.primitives':
+        specifier: workspace:*
+        version: link:../../services/primitives
+      '@ubento/workspace.primitives':
+        specifier: workspace:*
+        version: link:../../workspace/primitives
+      motion:
+        specifier: ^12.38.0
+        version: 12.38.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      wouter:
+        specifier: ^3.6.0
+        version: 3.9.0(react@19.2.5)
+      zod:
+        specifier: ^4.3.6
+        version: 4.4.3
       zustand:
         specifier: ^5.0.12
         version: 5.0.12(@types/react@19.2.14)(react@19.2.5)(use-sync-external-store@1.6.0(react@19.2.5))
     devDependencies:
-      '@types/react':
-        specifier: ^19.0.0
-        version: 19.2.14
-      '@types/react-dom':
-        specifier: ^19.0.0
-        version: 19.2.3(@types/react@19.2.14)
       typescript:
         specifier: ^5.0.0
         version: 5.9.3
@@ -670,39 +609,38 @@ importers:
         specifier: ^66.6.8
         version: 66.6.8(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.4))
 
-  packages/core/data-transfer: {}
-
-  packages/core/fabric:
+  packages/services/database:
     dependencies:
-      '@ubento/bento-primitives':
+      '@prisma/client':
+        specifier: 5.18.0
+        version: 5.18.0(prisma@5.22.0)
+      '@ubento/services.toolkit':
         specifier: workspace:*
-        version: link:../../bento/primitives
-      rxjs:
-        specifier: ^7.8.1
-        version: 7.8.2
-      zustand:
-        specifier: ^4.5.2
-        version: 4.5.7(@types/react@19.2.14)(react@19.2.5)
+        version: link:../toolkit
     devDependencies:
-      '@types/react':
-        specifier: ^19.0.0
-        version: 19.2.14
-      '@types/react-dom':
-        specifier: ^19.0.0
-        version: 19.2.3(@types/react@19.2.14)
-      typescript:
-        specifier: ^5.0.0
-        version: 5.9.3
+      prisma:
+        specifier: 5.22.0
+        version: 5.22.0
 
-  packages/core/primitives:
+  packages/services/database/prisma/generated/billing: {}
+
+  packages/services/database/prisma/generated/iam: {}
+
+  packages/services/database/prisma/generated/integration: {}
+
+  packages/services/database/prisma/generated/intelligence: {}
+
+  packages/services/database/prisma/generated/module: {}
+
+  packages/services/database/prisma/generated/workspace: {}
+
+  packages/services/primitives:
     dependencies:
       '@noble/hashes':
         specifier: ^1.8.0
         version: 1.8.0
 
-  packages/core/rpc: {}
-
-  packages/core/sdk:
+  packages/services/sdk:
     dependencies:
       axios:
         specifier: ^1.11.0
@@ -727,38 +665,7 @@ importers:
         specifier: ^5.0.0
         version: 5.9.3
 
-  packages/services/database:
-    dependencies:
-      '@prisma/client':
-        specifier: 5.18.0
-        version: 5.18.0(prisma@5.22.0)
-      '@ubento/service-toolkit':
-        specifier: workspace:*
-        version: link:../service-toolkit
-    devDependencies:
-      prisma:
-        specifier: 5.22.0
-        version: 5.22.0
-
-  packages/services/database/prisma/generated/billing: {}
-
-  packages/services/database/prisma/generated/iam: {}
-
-  packages/services/database/prisma/generated/integration: {}
-
-  packages/services/database/prisma/generated/intelligence: {}
-
-  packages/services/database/prisma/generated/module: {}
-
-  packages/services/database/prisma/generated/workspace: {}
-
-  packages/services/registry-proxy:
-    devDependencies:
-      typescript:
-        specifier: ^5.3.3
-        version: 5.9.3
-
-  packages/services/service-toolkit:
+  packages/services/toolkit:
     dependencies:
       '@google-cloud/logging-winston':
         specifier: ^6.0.0
@@ -766,9 +673,9 @@ importers:
       '@google-cloud/pubsub':
         specifier: ^4.5.0
         version: 4.11.0
-      '@ubento/primitives':
+      '@ubento/services.primitives':
         specifier: workspace:*
-        version: link:../../core/primitives
+        version: link:../primitives
       '@workos-inc/node':
         specifier: ^7.77.0
         version: 7.82.0(express@5.2.1)(next@16.2.4(@opentelemetry/api@1.9.1)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))
@@ -825,29 +732,153 @@ importers:
         specifier: ^5.0.0
         version: 5.9.3
 
+  packages/utils/data-transfer: {}
+
+  packages/utils/fabric:
+    dependencies:
+      '@ubento/workspace.primitives':
+        specifier: workspace:*
+        version: link:../../workspace/primitives
+      rxjs:
+        specifier: ^7.8.1
+        version: 7.8.2
+      zustand:
+        specifier: ^4.5.2
+        version: 4.5.7(@types/react@19.2.14)(react@19.2.5)
+    devDependencies:
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19.0.0
+        version: 19.2.3(@types/react@19.2.14)
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
+
+  packages/utils/rpc: {}
+
+  packages/workspace/app:
+    dependencies:
+      '@ai-sdk/open-responses':
+        specifier: ^1.0.11
+        version: 1.0.14(zod@4.4.3)
+      '@ai-sdk/provider':
+        specifier: ^3.0.8
+        version: 3.0.10
+      '@dnd-kit/core':
+        specifier: ^6.3.1
+        version: 6.3.1(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      '@dnd-kit/modifiers':
+        specifier: ^9.0.0
+        version: 9.0.0(@dnd-kit/core@6.3.1(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(react@19.2.5)
+      '@dnd-kit/utilities':
+        specifier: ^3.2.2
+        version: 3.2.2(react@19.2.5)
+      '@monaco-editor/react':
+        specifier: ^4.7.0
+        version: 4.7.0(monaco-editor@0.55.1)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      '@ubento/bento.engine':
+        specifier: workspace:*
+        version: link:../../bento/engine
+      '@ubento/data-transfer':
+        specifier: workspace:*
+        version: link:../../utils/data-transfer
+      '@ubento/fabric':
+        specifier: workspace:*
+        version: link:../../utils/fabric
+      '@ubento/rpc':
+        specifier: workspace:*
+        version: link:../../utils/rpc
+      '@ubento/services.primitives':
+        specifier: workspace:*
+        version: link:../../services/primitives
+      '@ubento/services.sdk':
+        specifier: workspace:*
+        version: link:../../services/sdk
+      '@ubento/workspace.primitives':
+        specifier: workspace:*
+        version: link:../primitives
+      ai:
+        specifier: ^6.0.168
+        version: 6.0.175(zod@4.4.3)
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
+      dequal:
+        specifier: ^2.0.3
+        version: 2.0.3
+      lucide-react:
+        specifier: ^0.468.0
+        version: 0.468.0(react@19.2.5)
+      motion:
+        specifier: ^12.38.0
+        version: 12.38.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      react:
+        specifier: ^19.0.0
+        version: 19.2.5
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.5(react@19.2.5)
+      react-textarea-autosize:
+        specifier: ^8.5.9
+        version: 8.5.9(@types/react@19.2.14)(react@19.2.5)
+      yaml:
+        specifier: ^2.8.3
+        version: 2.8.4
+      zod:
+        specifier: ^4.3.6
+        version: 4.4.3
+    devDependencies:
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19.0.0
+        version: 19.2.3(@types/react@19.2.14)
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
+
+  packages/workspace/primitives:
+    dependencies:
+      class-variance-authority:
+        specifier: ^0.7.1
+        version: 0.7.1
+      react:
+        specifier: ^19.0.0
+        version: 19.2.5
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.5(react@19.2.5)
+      zustand:
+        specifier: ^5.0.12
+        version: 5.0.12(@types/react@19.2.14)(react@19.2.5)(use-sync-external-store@1.6.0(react@19.2.5))
+    devDependencies:
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19.0.0
+        version: 19.2.3(@types/react@19.2.14)
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
+
   registry/services/analytics/plausible:
     dependencies:
-      '@ubento/registry-proxy':
-        specifier: workspace:*
-        version: link:../../../../packages/services/registry-proxy
       plausible-api:
         specifier: latest
         version: 1.0.1
 
   registry/services/analytics/posthog:
     dependencies:
-      '@ubento/registry-proxy':
-        specifier: workspace:*
-        version: link:../../../../packages/services/registry-proxy
       posthog-node:
         specifier: latest
         version: 5.33.2(rxjs@7.8.2)
 
   registry/services/data/airtable:
     dependencies:
-      '@ubento/registry-proxy':
-        specifier: workspace:*
-        version: link:../../../../packages/services/registry-proxy
       airtable:
         specifier: latest
         version: 0.12.2
@@ -857,15 +888,9 @@ importers:
       '@supabase/supabase-js':
         specifier: latest
         version: 2.105.3
-      '@ubento/registry-proxy':
-        specifier: workspace:*
-        version: link:../../../../packages/services/registry-proxy
 
   registry/services/engineering/github:
     dependencies:
-      '@ubento/registry-proxy':
-        specifier: workspace:*
-        version: link:../../../../packages/services/registry-proxy
       octokit:
         specifier: latest
         version: 5.0.5
@@ -875,15 +900,9 @@ importers:
       '@linear/sdk':
         specifier: latest
         version: 83.0.0(graphql@16.13.2)
-      '@ubento/registry-proxy':
-        specifier: workspace:*
-        version: link:../../../../packages/services/registry-proxy
 
   registry/services/engineering/vercel:
     dependencies:
-      '@ubento/registry-proxy':
-        specifier: workspace:*
-        version: link:../../../../packages/services/registry-proxy
       '@vercel/client':
         specifier: latest
         version: 17.4.0(next@16.2.4(@opentelemetry/api@1.9.1)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.4))
@@ -893,9 +912,12 @@ importers:
       '@lemonsqueezy/lemonsqueezy.js':
         specifier: ^3.3.0
         version: 3.3.1
+      '@ubento/bento.service':
+        specifier: workspace:*
+        version: link:../../../packages/bento/service
       '@ubento/fabric':
         specifier: workspace:*
-        version: link:../../../packages/core/fabric
+        version: link:../../../packages/utils/fabric
       stripe:
         specifier: ^17.4.0
         version: 17.7.0
@@ -909,153 +931,102 @@ importers:
 
   registry/services/infra/aws:
     dependencies:
-      '@ubento/registry-proxy':
-        specifier: workspace:*
-        version: link:../../../../packages/services/registry-proxy
       aws-sdk:
         specifier: latest
         version: 2.1693.0
 
   registry/services/infra/betterstack:
     dependencies:
-      '@ubento/registry-proxy':
-        specifier: workspace:*
-        version: link:../../../../packages/services/registry-proxy
       axios:
         specifier: latest
         version: 1.16.0
 
   registry/services/infra/cloudflare:
     dependencies:
-      '@ubento/registry-proxy':
-        specifier: workspace:*
-        version: link:../../../../packages/services/registry-proxy
       cloudflare:
         specifier: latest
         version: 6.0.0
 
   registry/services/infra/sentry:
     dependencies:
-      '@ubento/registry-proxy':
-        specifier: workspace:*
-        version: link:../../../../packages/services/registry-proxy
       axios:
         specifier: latest
         version: 1.16.0
 
   registry/services/marketing/apollo:
     dependencies:
-      '@ubento/registry-proxy':
-        specifier: workspace:*
-        version: link:../../../../packages/services/registry-proxy
       axios:
         specifier: latest
         version: 1.16.0
 
   registry/services/marketing/reddit:
     dependencies:
-      '@ubento/registry-proxy':
-        specifier: workspace:*
-        version: link:../../../../packages/services/registry-proxy
       snoowrap:
         specifier: latest
         version: 1.23.0
 
   registry/services/marketing/resend:
     dependencies:
-      '@ubento/registry-proxy':
-        specifier: workspace:*
-        version: link:../../../../packages/services/registry-proxy
       resend:
         specifier: latest
         version: 6.12.2
 
   registry/services/marketing/x:
     dependencies:
-      '@ubento/registry-proxy':
-        specifier: workspace:*
-        version: link:../../../../packages/services/registry-proxy
       twitter-api-v2:
         specifier: latest
         version: 1.29.0
 
   registry/services/operation/deel:
     dependencies:
-      '@ubento/registry-proxy':
-        specifier: workspace:*
-        version: link:../../../../packages/services/registry-proxy
       axios:
         specifier: latest
         version: 1.16.0
 
   registry/services/operation/digitalocean:
     dependencies:
-      '@ubento/registry-proxy':
-        specifier: workspace:*
-        version: link:../../../../packages/services/registry-proxy
       digitalocean:
         specifier: latest
         version: 1.2.1
 
   registry/services/operation/railway:
     dependencies:
-      '@ubento/registry-proxy':
-        specifier: workspace:*
-        version: link:../../../../packages/services/registry-proxy
       axios:
         specifier: latest
         version: 1.16.0
 
   registry/services/personal/coinbase:
     dependencies:
-      '@ubento/registry-proxy':
-        specifier: workspace:*
-        version: link:../../../../packages/services/registry-proxy
       coinbase-node:
         specifier: latest
         version: 0.2.1
 
   registry/services/personal/google:
     dependencies:
-      '@ubento/registry-proxy':
-        specifier: workspace:*
-        version: link:../../../../packages/services/registry-proxy
       googleapis:
         specifier: latest
         version: 171.4.0
 
   registry/services/personal/hue:
     dependencies:
-      '@ubento/registry-proxy':
-        specifier: workspace:*
-        version: link:../../../../packages/services/registry-proxy
       node-hue-api:
         specifier: latest
         version: 5.0.0-beta.16
 
   registry/services/personal/oura:
     dependencies:
-      '@ubento/registry-proxy':
-        specifier: workspace:*
-        version: link:../../../../packages/services/registry-proxy
       axios:
         specifier: latest
         version: 1.16.0
 
   registry/services/personal/plaid:
     dependencies:
-      '@ubento/registry-proxy':
-        specifier: workspace:*
-        version: link:../../../../packages/services/registry-proxy
       plaid:
         specifier: latest
         version: 42.2.0
 
   registry/services/personal/spotify:
     dependencies:
-      '@ubento/registry-proxy':
-        specifier: workspace:*
-        version: link:../../../../packages/services/registry-proxy
       spotify-web-api-node:
         specifier: latest
         version: 5.0.2
@@ -1065,15 +1036,9 @@ importers:
       '@doist/todoist-api-typescript':
         specifier: latest
         version: 7.10.0(type-fest@4.41.0)
-      '@ubento/registry-proxy':
-        specifier: workspace:*
-        version: link:../../../../packages/services/registry-proxy
 
   registry/services/productivity/figma:
     dependencies:
-      '@ubento/registry-proxy':
-        specifier: workspace:*
-        version: link:../../../../packages/services/registry-proxy
       axios:
         specifier: latest
         version: 1.16.0
@@ -1083,24 +1048,15 @@ importers:
       '@notionhq/client':
         specifier: latest
         version: 5.20.0
-      '@ubento/registry-proxy':
-        specifier: workspace:*
-        version: link:../../../../packages/services/registry-proxy
 
   registry/services/support/hubspot:
     dependencies:
       '@hubspot/api-client':
         specifier: latest
         version: 13.5.0
-      '@ubento/registry-proxy':
-        specifier: workspace:*
-        version: link:../../../../packages/services/registry-proxy
 
   registry/services/support/intercom:
     dependencies:
-      '@ubento/registry-proxy':
-        specifier: workspace:*
-        version: link:../../../../packages/services/registry-proxy
       intercom-client:
         specifier: latest
         version: 7.0.3
@@ -1109,7 +1065,7 @@ importers:
     dependencies:
       '@hey-api/openapi-ts':
         specifier: ^0.77.0
-        version: 0.77.0(typescript@5.9.3)
+        version: 0.77.0(typescript@6.0.3)
       '@microsoft/api-extractor':
         specifier: ^7.53.1
         version: 7.58.7(@types/node@25.6.0)
@@ -1142,7 +1098,7 @@ importers:
         version: 4.2.0
       openapi-typescript:
         specifier: ^7.9.1
-        version: 7.13.0(typescript@5.9.3)
+        version: 7.13.0(typescript@6.0.3)
       pacote:
         specifier: ^21.0.1
         version: 21.5.0
@@ -1171,15 +1127,15 @@ importers:
       '@lemonsqueezy/lemonsqueezy.js':
         specifier: ^4.0.0
         version: 4.0.0
-      '@ubento/database':
+      '@ubento/services.database':
         specifier: workspace:*
         version: link:../../packages/services/database
-      '@ubento/primitives':
+      '@ubento/services.primitives':
         specifier: workspace:*
-        version: link:../../packages/core/primitives
-      '@ubento/service-toolkit':
+        version: link:../../packages/services/primitives
+      '@ubento/services.toolkit':
         specifier: workspace:*
-        version: link:../../packages/services/service-toolkit
+        version: link:../../packages/services/toolkit
       commander:
         specifier: ^14.0.2
         version: 14.0.3
@@ -1223,15 +1179,15 @@ importers:
 
   services/iam:
     dependencies:
-      '@ubento/database':
+      '@ubento/services.database':
         specifier: workspace:*
         version: link:../../packages/services/database
-      '@ubento/primitives':
+      '@ubento/services.primitives':
         specifier: workspace:*
-        version: link:../../packages/core/primitives
-      '@ubento/service-toolkit':
+        version: link:../../packages/services/primitives
+      '@ubento/services.toolkit':
         specifier: workspace:*
-        version: link:../../packages/services/service-toolkit
+        version: link:../../packages/services/toolkit
       '@workos-inc/node':
         specifier: ^8.0.0
         version: 8.13.0
@@ -1275,15 +1231,15 @@ importers:
       '@google-cloud/storage':
         specifier: ^7.19.0
         version: 7.19.0
-      '@ubento/database':
+      '@ubento/services.database':
         specifier: workspace:*
         version: link:../../packages/services/database
-      '@ubento/primitives':
+      '@ubento/services.primitives':
         specifier: workspace:*
-        version: link:../../packages/core/primitives
-      '@ubento/service-toolkit':
+        version: link:../../packages/services/primitives
+      '@ubento/services.toolkit':
         specifier: workspace:*
-        version: link:../../packages/services/service-toolkit
+        version: link:../../packages/services/toolkit
       body-parser:
         specifier: ^2.2.0
         version: 2.2.2
@@ -1333,18 +1289,18 @@ importers:
       '@google-cloud/storage':
         specifier: ^7.19.0
         version: 7.19.0
-      '@ubento/database':
+      '@ubento/services.database':
         specifier: workspace:*
         version: link:../../packages/services/database
-      '@ubento/primitives':
+      '@ubento/services.primitives':
         specifier: workspace:*
-        version: link:../../packages/core/primitives
-      '@ubento/sdk':
+        version: link:../../packages/services/primitives
+      '@ubento/services.sdk':
         specifier: workspace:*
-        version: link:../../packages/core/sdk
-      '@ubento/service-toolkit':
+        version: link:../../packages/services/sdk
+      '@ubento/services.toolkit':
         specifier: workspace:*
-        version: link:../../packages/services/service-toolkit
+        version: link:../../packages/services/toolkit
       ai:
         specifier: ^6.0.111
         version: 6.0.174(zod@4.4.3)
@@ -1415,15 +1371,15 @@ importers:
       '@types/mime-types':
         specifier: ^3.0.1
         version: 3.0.1
-      '@ubento/database':
+      '@ubento/services.database':
         specifier: workspace:*
         version: link:../../packages/services/database
-      '@ubento/primitives':
+      '@ubento/services.primitives':
         specifier: workspace:*
-        version: link:../../packages/core/primitives
-      '@ubento/service-toolkit':
+        version: link:../../packages/services/primitives
+      '@ubento/services.toolkit':
         specifier: workspace:*
-        version: link:../../packages/services/service-toolkit
+        version: link:../../packages/services/toolkit
       dotenv:
         specifier: ^16.3.1
         version: 16.6.1
@@ -1461,15 +1417,15 @@ importers:
       '@prisma/client':
         specifier: 5.18.0
         version: 5.18.0(prisma@5.22.0)
-      '@ubento/database':
+      '@ubento/services.database':
         specifier: workspace:*
         version: link:../../packages/services/database
-      '@ubento/primitives':
+      '@ubento/services.primitives':
         specifier: workspace:*
-        version: link:../../packages/core/primitives
-      '@ubento/service-toolkit':
+        version: link:../../packages/services/primitives
+      '@ubento/services.toolkit':
         specifier: workspace:*
-        version: link:../../packages/services/service-toolkit
+        version: link:../../packages/services/toolkit
       commander:
         specifier: ^14.0.2
         version: 14.0.3
@@ -9731,7 +9687,7 @@ snapshots:
       js-yaml: 4.1.1
       lodash: 4.18.1
 
-  '@hey-api/openapi-ts@0.77.0(typescript@5.9.3)':
+  '@hey-api/openapi-ts@0.77.0(typescript@6.0.3)':
     dependencies:
       '@hey-api/json-schema-ref-parser': 1.0.6
       ansi-colors: 4.1.3
@@ -9740,7 +9696,7 @@ snapshots:
       commander: 13.0.0
       handlebars: 4.7.8
       open: 10.1.2
-      typescript: 5.9.3
+      typescript: 6.0.3
     transitivePeerDependencies:
       - magicast
 
@@ -12363,7 +12319,7 @@ snapshots:
   buffer@4.9.2:
     dependencies:
       base64-js: 1.5.1
-      ieee754: 1.1.13
+      ieee754: 1.2.1
       isarray: 1.0.0
 
   buffer@6.0.3:
@@ -13167,7 +13123,7 @@ snapshots:
       eslint: 9.39.4(jiti@2.6.1)
       eslint-import-resolver-node: 0.3.10
       eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0(eslint@9.39.4(jiti@2.6.1)))(eslint@9.39.4(jiti@2.6.1))
-      eslint-plugin-import: 2.32.0(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4(jiti@2.6.1))
+      eslint-plugin-import: 2.32.0(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(eslint@9.39.4(jiti@2.6.1)))(eslint@9.39.4(jiti@2.6.1)))(eslint@9.39.4(jiti@2.6.1))
       eslint-plugin-jsx-a11y: 6.10.2(eslint@9.39.4(jiti@2.6.1))
       eslint-plugin-react: 7.37.5(eslint@9.39.4(jiti@2.6.1))
       eslint-plugin-react-hooks: 7.1.1(eslint@9.39.4(jiti@2.6.1))
@@ -13200,7 +13156,7 @@ snapshots:
       tinyglobby: 0.2.16
       unrs-resolver: 1.11.1
     optionalDependencies:
-      eslint-plugin-import: 2.32.0(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4(jiti@2.6.1))
+      eslint-plugin-import: 2.32.0(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(eslint@9.39.4(jiti@2.6.1)))(eslint@9.39.4(jiti@2.6.1)))(eslint@9.39.4(jiti@2.6.1))
     transitivePeerDependencies:
       - supports-color
 
@@ -13214,7 +13170,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-import@2.32.0(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4(jiti@2.6.1)):
+  eslint-plugin-import@2.32.0(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(eslint@9.39.4(jiti@2.6.1)))(eslint@9.39.4(jiti@2.6.1)))(eslint@9.39.4(jiti@2.6.1)):
     dependencies:
       '@rtsao/scc': 1.1.0
       array-includes: 3.1.9
@@ -15311,6 +15267,16 @@ snapshots:
       parse-json: 8.3.0
       supports-color: 10.2.2
       typescript: 5.9.3
+      yargs-parser: 21.1.1
+
+  openapi-typescript@7.13.0(typescript@6.0.3):
+    dependencies:
+      '@redocly/openapi-core': 1.34.14(supports-color@10.2.2)
+      ansi-colors: 4.1.3
+      change-case: 5.4.4
+      parse-json: 8.3.0
+      supports-color: 10.2.2
+      typescript: 6.0.3
       yargs-parser: 21.1.1
 
   optionator@0.9.4:

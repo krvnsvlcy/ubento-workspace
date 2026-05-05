@@ -15,7 +15,6 @@
     "dev": "scripts dev"
   },
   "dependencies": {
-    "resend": "latest",
-    "@ubento/registry-proxy": "workspace:*"
+    "resend": "latest"
   }
 }

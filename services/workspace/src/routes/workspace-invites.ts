@@ -1,19 +1,19 @@
-import { ubentoAuth } from "@ubento/primitives";
+import { ubentoAuth } from "@ubento/services.primitives";
 import {
   chain,
   dataResponse,
   enforce,
   makeCursorPageResponse,
   validate,
-} from "@ubento/service-toolkit";
+} from "@ubento/services.toolkit";
 import { Router } from "express";
 import z from "zod";
-import { getWorkspace } from "../entities/workspace/workspace.js";
 import {
   acceptWorkspaceInvite,
   createWorkspaceInvite,
   listWorkspaceInvites,
 } from "../entities/workspace/workspace-invites.js";
+import { getWorkspace } from "../entities/workspace/workspace.js";
 
 const workspaceInvitesRouter: Router = Router();
 

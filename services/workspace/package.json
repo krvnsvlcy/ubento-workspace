@@ -17,9 +17,9 @@
   },
   "dependencies": {
     "@prisma/client": "5.18.0",
-    "@ubento/database": "workspace:*",
-    "@ubento/primitives": "workspace:*",
-    "@ubento/service-toolkit": "workspace:*",
+    "@ubento/services.database": "workspace:*",
+    "@ubento/services.primitives": "workspace:*",
+    "@ubento/services.toolkit": "workspace:*",
     "commander": "^14.0.2",
     "cookie-parser": "^1.4.7",
     "dotenv": "^16.3.1",

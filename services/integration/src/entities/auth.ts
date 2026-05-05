@@ -1,4 +1,4 @@
-import { ValidationError } from "@ubento/service-toolkit";
+import { ValidationError } from "@ubento/services.toolkit";
 import get from "lodash.get";
 import z from "zod";
 import prisma from "../lib/prisma.js";

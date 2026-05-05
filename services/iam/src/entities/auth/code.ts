@@ -1,4 +1,4 @@
-import { AuthCode } from "@ubento/database/iam";
+import { AuthCode } from "@ubento/services.database/iam";
 import crypto from "crypto";
 import prisma from "../../lib/prisma.js";
 

@@ -1,4 +1,4 @@
-import { type ComponentProps } from "@ubento/engine";
+import { type ComponentProps } from "@ubento/bento.engine";
 import { z } from "zod";
 import {
   getLayoutElementStyle,
@@ -30,7 +30,11 @@ function getHeadingStyle(
   };
 }
 
-export function Heading({ ref, props, children }: ComponentProps<HeadingProps>) {
+export function Heading({
+  ref,
+  props,
+  children,
+}: ComponentProps<HeadingProps>) {
   const layoutContext = useLayoutContext();
   const Tag = props.level as any;
   return (

@@ -1,3 +1,4 @@
+import { type ComponentProps } from "@ubento/bento.engine";
 import { z } from "zod";
 import {
   getLayoutElementStyle,
@@ -5,7 +6,6 @@ import {
   useLayoutContext,
   type LayoutContextType,
 } from "../style";
-import { type ComponentProps } from "@ubento/engine";
 
 export const buttonPropsSchema = layoutElementStyleSchema.extend({
   label: z.string().optional(),

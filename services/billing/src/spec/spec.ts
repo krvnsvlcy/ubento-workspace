@@ -1,5 +1,5 @@
-import { billingSchemas } from "@ubento/database/billing";
-import { makeCursorPageResponseSchema } from "@ubento/service-toolkit";
+import { billingSchemas } from "@ubento/services.database/billing";
+import { makeCursorPageResponseSchema } from "@ubento/services.toolkit";
 import { OpenAPIV3 } from "openapi-types";
 
 export const spec: OpenAPIV3.Document = {

@@ -15,7 +15,6 @@
     "dev": "scripts dev"
   },
   "dependencies": {
-    "node-hue-api": "latest",
-    "@ubento/registry-proxy": "workspace:*"
+    "node-hue-api": "latest"
   }
 }

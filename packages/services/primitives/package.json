@@ -1,0 +1,17 @@
+{
+  "name": "@ubento/services.primitives",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "build": "scripts build",
+    "packup": "scripts packup",
+    "pub": "scripts publish",
+    "watch": "scripts watch"
+  },
+  "dependencies": {
+    "@noble/hashes": "^1.8.0"
+  }
+}

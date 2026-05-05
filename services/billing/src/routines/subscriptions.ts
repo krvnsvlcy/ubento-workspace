@@ -1,4 +1,3 @@
-import { prismaListWithCursor } from "@ubento/service-toolkit";
 import {
   cancelSubscription as lsCancelSubscription,
   updateSubscription as lsUpdateSubscription,
@@ -10,7 +9,8 @@ import {
   Subscription,
   SubscriptionInvoice,
   SubscriptionStatus,
-} from "@ubento/database/billing";
+} from "@ubento/services.database/billing";
+import { prismaListWithCursor } from "@ubento/services.toolkit";
 import { eventPublisher } from "../event.js";
 import prisma from "../lib/prisma.js";
 
@@ -25,7 +25,7 @@ type LsSubscriptionStatus =
   | "expired"
   | "cancelled";
 function lsSubscriptionStatusToSubscriptionStatus(
-  status: LsSubscriptionStatus
+  status: LsSubscriptionStatus,
 ): SubscriptionStatus {
   switch (status) {
     case "on_trial":
@@ -51,7 +51,7 @@ function lsSubscriptionStatusToSubscriptionStatus(
 
 export async function getActiveSubscription(
   organization_id: string,
-  product_code: string
+  product_code: string,
 ): Promise<Subscription | null> {
   const subscription = await prisma.subscription.findFirst({
     where: {
@@ -81,7 +81,7 @@ export async function getActiveSubscription(
 }
 
 export async function getSubscription(
-  id: string
+  id: string,
 ): Promise<Subscription | null> {
   const subscription = await prisma.subscription.findUnique({
     where: { id },
@@ -91,7 +91,7 @@ export async function getSubscription(
 
 export async function getSubscriptionByProvider(
   provider: Provider,
-  provider_id: string
+  provider_id: string,
 ): Promise<Subscription | null> {
   const subscription = await prisma.subscription.findUnique({
     where: {
@@ -130,7 +130,7 @@ export async function listSubscriptions(filters?: {
 
 async function cancelProviderSubscription(
   provider: Provider,
-  provider_id: string
+  provider_id: string,
 ): Promise<{
   ends_at: Date | null;
   data: any;
@@ -140,7 +140,7 @@ async function cancelProviderSubscription(
 
     if (lsResponse.error) {
       throw new Error(
-        `Failed to cancel subscription: ${lsResponse.error.message}`
+        `Failed to cancel subscription: ${lsResponse.error.message}`,
       );
     }
 
@@ -164,7 +164,7 @@ export async function cancelSubscription(id: string): Promise<Subscription> {
 
   const { ends_at, data } = await cancelProviderSubscription(
     subscription.provider,
-    subscription.provider_id
+    subscription.provider_id,
   );
 
   // Update local database
@@ -183,7 +183,7 @@ export async function cancelSubscription(id: string): Promise<Subscription> {
 
 async function resumeProviderSubscription(
   provider: Provider,
-  provider_id: string
+  provider_id: string,
 ): Promise<{
   ends_at: Date | null;
   data: any;
@@ -196,7 +196,7 @@ async function resumeProviderSubscription(
 
     if (lsResponse.error) {
       throw new Error(
-        `Failed to resume subscription: ${lsResponse.error.message}`
+        `Failed to resume subscription: ${lsResponse.error.message}`,
       );
     }
 
@@ -206,7 +206,7 @@ async function resumeProviderSubscription(
         : null,
       data: lsResponse.data?.data.attributes,
       status: lsSubscriptionStatusToSubscriptionStatus(
-        lsResponse.data?.data.attributes.status
+        lsResponse.data?.data.attributes.status,
       ),
     };
   } else {
@@ -223,7 +223,7 @@ export async function resumeSubscription(id: string): Promise<Subscription> {
 
   const { ends_at, status, data } = await resumeProviderSubscription(
     subscription.provider,
-    subscription.provider_id
+    subscription.provider_id,
   );
 
   // Update local database
@@ -243,7 +243,7 @@ export async function resumeSubscription(id: string): Promise<Subscription> {
 async function updateProviderSubscription(
   provider: Provider,
   subscriptionData: any,
-  updates: { quantity?: number }
+  updates: { quantity?: number },
 ): Promise<any> {
   if (provider === Provider.LEMON_SQUEEZY) {
     const subscriptionItemId =
@@ -261,7 +261,7 @@ async function updateProviderSubscription(
 
       if (lsResponse.error) {
         throw new Error(
-          `Failed to update subscription item: ${lsResponse.error.message}`
+          `Failed to update subscription item: ${lsResponse.error.message}`,
         );
       }
 
@@ -276,7 +276,7 @@ async function updateProviderSubscription(
 
 export async function updateSubscription(
   id: string,
-  updates: { quantity?: number }
+  updates: { quantity?: number },
 ): Promise<Subscription> {
   const subscription = await getSubscription(id);
 
@@ -287,7 +287,7 @@ export async function updateSubscription(
   await updateProviderSubscription(
     subscription.provider,
     subscription.data,
-    updates
+    updates,
   );
 
   // We can optimistically update local quantity.
@@ -310,7 +310,7 @@ export async function updateSubscription(
 // ==================== Invoices ====================
 
 export async function getInvoice(
-  id: string
+  id: string,
 ): Promise<SubscriptionInvoice | null> {
   const invoice = await prisma.subscriptionInvoice.findUnique({
     where: { id },
@@ -320,7 +320,7 @@ export async function getInvoice(
 
 export async function getInvoiceByProvider(
   provider: Provider,
-  provider_id: string
+  provider_id: string,
 ): Promise<SubscriptionInvoice | null> {
   const invoice = await prisma.subscriptionInvoice.findUnique({
     where: {

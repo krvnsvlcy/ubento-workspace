@@ -1,16 +1,16 @@
-import { Broker, Prisma, TeamMembership } from "@ubento/database/iam";
+import { Broker, Prisma, TeamMembership } from "@ubento/services.database/iam";
 import {
   generateBareId,
   makeEntityId,
   ubentoAuth,
   ubentoEntities,
-} from "@ubento/primitives";
+} from "@ubento/services.primitives";
 import {
   isPrismaConstraintError,
   NotFoundError,
   prismaListWithCursor,
   ValidationError,
-} from "@ubento/service-toolkit";
+} from "@ubento/services.toolkit";
 import { OrganizationMembership as WOOrganizationMembership } from "@workos-inc/node";
 import { authorizer } from "../../../lib/authorizer.js";
 import prisma from "../../../lib/prisma.js";

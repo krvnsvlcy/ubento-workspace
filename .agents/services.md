@@ -6,7 +6,7 @@ This guide outlines the patterns and best practices for agents working with back
 
 Services are located in `services/` (e.g., `services/iam`). Shared code is in `packages/` (e.g., `packages/primitives`, `packages/service-toolkit`).
 
-- **Base Architecture**: Most services use Express with the `@ubento/service-toolkit`.
+- **Base Architecture**: Most services use Express with the `@ubento/services.toolkit`.
 - **Primary Data Store**: MongoDB via Prisma.
 
 ## 2. Refactoring & Entity Management
@@ -14,7 +14,7 @@ Services are located in `services/` (e.g., `services/iam`). Shared code is in `p
 When modifying or refactoring core entities (e.g., renaming "Organization" to "Team"):
 
 1.  **Schema**: Update `prisma/schema.prisma`.
-2.  **Primitives**: Update `@ubento/primitives/src/entities/entities.ts` (entity codes) and `src/api.ts` (permission strings).
+2.  **Primitives**: Update `@ubento/services.primitives/src/entities/entities.ts` (entity codes) and `src/api.ts` (permission strings).
 3.  **Entities Logic**: Update `src/entities/management/[entity]/`.
 4.  **Routes**: Update `src/routes/management/` and mount them in `src/index.ts`.
 5.  **CLI**: Update `src/cli/commands/` to reflect the new terminology.

@@ -15,7 +15,6 @@
     "dev": "scripts dev"
   },
   "dependencies": {
-    "posthog-node": "latest",
-    "@ubento/registry-proxy": "workspace:*"
+    "posthog-node": "latest"
   }
 }

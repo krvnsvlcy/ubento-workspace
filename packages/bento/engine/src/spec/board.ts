@@ -9,8 +9,8 @@ export const boardParameterSourceSchema = z.discriminatedUnion("type", [
     value: z.array(z.union([z.string(), z.number(), z.boolean()])),
   }),
   z.object({
-    type: z.literal("generator"),
-    generator: z.string(),
+    type: z.literal("entity"),
+    entity: z.string(),
   }),
 ]);
 

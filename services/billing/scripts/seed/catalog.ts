@@ -1,4 +1,4 @@
-import { ubentoFeatures, ubentoProducts } from "@ubento/primitives";
+import { ubentoFeatures, ubentoProducts } from "@ubento/services.primitives";
 import { env } from "../../src/env.js";
 import { Entitlement } from "../../src/routines/entitlements/entitlements.js";
 

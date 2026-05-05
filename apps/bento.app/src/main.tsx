@@ -1,10 +1,10 @@
-import { Ubento, createUbentoEngine } from "@ubento/bento-app";
-import "@ubento/bento-style/dist/uno.css";
-import { UbentoSDK } from "@ubento/sdk";
+import "@ubento/bento.style/dist/uno.css";
+import { UbentoSDK } from "@ubento/services.sdk";
+import { Ubento, createUbentoEngine } from "@ubento/workspace.app";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
-import "@ubento/bento-style/css/themes.css";
+import "@ubento/bento.style/css/themes.css";
 
 const user = {
   id: "usr_9pgl4ey9quh9875nay09u0gu",

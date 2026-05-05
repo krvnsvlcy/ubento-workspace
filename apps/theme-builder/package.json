@@ -10,8 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@ubento/bento-primitives": "workspace:*",
-    "@ubento/bento-style": "workspace:*",
+    "@ubento/workspace.primitives": "workspace:*",
+    "@ubento/bento.style": "workspace:*",
     "colord": "^2.9.3",
     "culori": "^4.0.2",
     "lucide-react": "^0.468.0",

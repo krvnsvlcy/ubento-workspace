@@ -15,7 +15,6 @@
     "dev": "scripts dev"
   },
   "dependencies": {
-    "@linear/sdk": "latest",
-    "@ubento/registry-proxy": "workspace:*"
+    "@linear/sdk": "latest"
   }
 }

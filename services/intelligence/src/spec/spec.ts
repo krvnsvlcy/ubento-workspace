@@ -1,7 +1,7 @@
 import {
   makeCursorPageResponseSchema,
   standardizeJsonSchemaOutput,
-} from "@ubento/service-toolkit";
+} from "@ubento/services.toolkit";
 import { OpenAPIV3 } from "openapi-types";
 import rawPrismaSchemas from "./prisma/json-schema.json" with { type: "json" };
 const prismaSchemas = standardizeJsonSchemaOutput(rawPrismaSchemas);

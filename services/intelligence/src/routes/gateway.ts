@@ -1,10 +1,7 @@
-import { ubentoFeatures } from "@ubento/primitives";
-import { TooManyRequestsError } from "@ubento/service-toolkit";
 import crypto from "crypto";
 import express, { Request, Response } from "express";
 import https from "https";
 import { env } from "../env.js";
-import { bento } from "../libs/bento.js";
 
 const models: Record<
   string,
@@ -79,7 +76,7 @@ gatewayRouter.use(async (req, res, next) => {
     //     console.log(result.message);
     //     next(new TooManyRequestsError(`AI usage exeeded`));
     //   }
-      next();
+    next();
     // } catch (error) {
     //   console.error("Failed to reserve usage:", error);
     //   next(new TooManyRequestsError(`AI usage exeeded`));

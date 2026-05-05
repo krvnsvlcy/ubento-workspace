@@ -1,10 +1,10 @@
+import { Prisma } from "@ubento/services.database/integration";
 import {
-  ubentoEntities,
   generateBareId,
   makeEntityId,
-} from "@ubento/primitives";
-import { prismaListWithCursor } from "@ubento/service-toolkit";
-import { Prisma } from "@ubento/database/integration";
+  ubentoEntities,
+} from "@ubento/services.primitives";
+import { prismaListWithCursor } from "@ubento/services.toolkit";
 import { z } from "zod";
 import prisma from "../lib/prisma.js";
 

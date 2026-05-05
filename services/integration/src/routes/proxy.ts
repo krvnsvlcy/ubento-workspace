@@ -2,7 +2,7 @@ import {
   AuthorizationError,
   NotFoundError,
   ValidationError,
-} from "@ubento/service-toolkit";
+} from "@ubento/services.toolkit";
 import { Request, Response, Router } from "express";
 import { IncomingHttpHeaders } from "node:http";
 import { pipeline } from "node:stream/promises";

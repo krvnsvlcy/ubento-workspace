@@ -1,4 +1,4 @@
-import { ubentoAuth } from "@ubento/primitives";
+import { ubentoAuth } from "@ubento/services.primitives";
 
 export const roles = {
   // Root level

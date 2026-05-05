@@ -1,4 +1,4 @@
-import type { BoardSpec } from "@ubento/engine";
+import type { BoardSpec } from "@ubento/bento.engine";
 
 export const DEFAULT_SPEC: BoardSpec = {
   title: "Bento Playground",
@@ -7,7 +7,8 @@ export const DEFAULT_SPEC: BoardSpec = {
     title: { type: "string", value: "Modern UI Builder" },
     description: {
       type: "string",
-      value: "A high-performance, schema-driven UI engine for building stunning interfaces.",
+      value:
+        "A high-performance, schema-driven UI engine for building stunning interfaces.",
     },
   },
   style: {

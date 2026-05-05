@@ -15,7 +15,6 @@
     "dev": "scripts dev"
   },
   "dependencies": {
-    "coinbase-node": "latest",
-    "@ubento/registry-proxy": "workspace:*"
+    "coinbase-node": "latest"
   }
 }

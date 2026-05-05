@@ -2,10 +2,10 @@ import {
   autoIncrementOnUpdate,
   mongoDbUrlWithDatabase,
   standardizeJsonSchemaOutput,
-} from "@ubento/service-toolkit";
+} from "@ubento/services.toolkit";
 import { Prisma, PrismaClient } from "../prisma/generated/workspace/index.js";
-import rawPrismaSchemas from "./schemas/workspace/json-schema.json" with { type: "json" };
 import { cleanUpJsonSchema } from "./schemas/utils.js";
+import rawPrismaSchemas from "./schemas/workspace/json-schema.json" with { type: "json" };
 export * from "../prisma/generated/workspace/index.js";
 
 export function createWorkspaceClient(databaseUrl: string) {

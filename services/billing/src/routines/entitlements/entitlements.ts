@@ -1,4 +1,4 @@
-import { SubscriptionStatus } from "@ubento/database/billing";
+import { SubscriptionStatus } from "@ubento/services.database/billing";
 import { z } from "zod";
 import prisma from "../../lib/prisma.js";
 import { getUbentoFeatureMap } from "../features.js";

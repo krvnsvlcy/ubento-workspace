@@ -1,4 +1,4 @@
-import type { BentoEngine } from "@ubento/engine";
+import type { BentoEngine } from "@ubento/bento.engine";
 import { useEffect } from "react";
 
 export function useKeyboardController({ engine }: { engine: BentoEngine }) {

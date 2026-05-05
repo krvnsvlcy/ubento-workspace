@@ -4,7 +4,7 @@ import {
   getVariant,
   lemonSqueezySetup,
 } from "@lemonsqueezy/lemonsqueezy.js";
-import { ResourceType } from "@ubento/database/billing";
+import { ResourceType } from "@ubento/services.database/billing";
 import { env } from "../../src/env.js";
 import prisma from "../../src/lib/prisma.js";
 import {

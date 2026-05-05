@@ -1,5 +1,5 @@
-import { moduleSchemas } from "@ubento/database/module";
-import { makeCursorPageResponseSchema } from "@ubento/service-toolkit";
+import { moduleSchemas } from "@ubento/services.database/module";
+import { makeCursorPageResponseSchema } from "@ubento/services.toolkit";
 import { OpenAPIV3 } from "openapi-types";
 
 export const spec: OpenAPIV3.Document = {
@@ -15,7 +15,11 @@ export const spec: OpenAPIV3.Document = {
         parameters: [
           { name: "team_id", in: "query", schema: { type: "string" } },
           { name: "type", in: "query", schema: { type: "string" } },
-          { name: "scope", in: "query", schema: { type: "string", enum: ["private", "public"] } },
+          {
+            name: "scope",
+            in: "query",
+            schema: { type: "string", enum: ["private", "public"] },
+          },
           { name: "limit", in: "query", schema: { type: "integer" } },
           { name: "cursor", in: "query", schema: { type: "string" } },
         ],
@@ -24,7 +28,9 @@ export const spec: OpenAPIV3.Document = {
             description: "A list of modules",
             content: {
               "application/json": {
-                schema: makeCursorPageResponseSchema({ $ref: "#/components/schemas/Module" }),
+                schema: makeCursorPageResponseSchema({
+                  $ref: "#/components/schemas/Module",
+                }),
               },
             },
           },
@@ -66,11 +72,20 @@ export const spec: OpenAPIV3.Document = {
     "/modules/search": {
       get: {
         summary: "Marketplace Search",
-        description: "High-performance fuzzy search for modules via MongoDB Atlas.",
+        description:
+          "High-performance fuzzy search for modules via MongoDB Atlas.",
         parameters: [
           { name: "query", in: "query", schema: { type: "string" } },
-          { name: "types", in: "query", schema: { type: "array", items: { type: "string" } } },
-          { name: "scope", in: "query", schema: { type: "string", enum: ["private", "public"] } },
+          {
+            name: "types",
+            in: "query",
+            schema: { type: "array", items: { type: "string" } },
+          },
+          {
+            name: "scope",
+            in: "query",
+            schema: { type: "string", enum: ["private", "public"] },
+          },
           { name: "page", in: "query", schema: { type: "integer" } },
           { name: "limit", in: "query", schema: { type: "integer" } },
         ],
@@ -85,7 +100,10 @@ export const spec: OpenAPIV3.Document = {
                     data: {
                       type: "object",
                       properties: {
-                        data: { type: "array", items: { $ref: "#/components/schemas/Module" } },
+                        data: {
+                          type: "array",
+                          items: { $ref: "#/components/schemas/Module" },
+                        },
                         pagination: {
                           type: "object",
                           properties: {
@@ -108,7 +126,12 @@ export const spec: OpenAPIV3.Document = {
       get: {
         summary: "Get Module",
         parameters: [
-          { name: "module_id", in: "path", required: true, schema: { type: "string" } },
+          {
+            name: "module_id",
+            in: "path",
+            required: true,
+            schema: { type: "string" },
+          },
         ],
         responses: {
           "200": {
@@ -124,7 +147,12 @@ export const spec: OpenAPIV3.Document = {
       delete: {
         summary: "Delete Module",
         parameters: [
-          { name: "module_id", in: "path", required: true, schema: { type: "string" } },
+          {
+            name: "module_id",
+            in: "path",
+            required: true,
+            schema: { type: "string" },
+          },
         ],
         responses: {
           "200": {
@@ -145,7 +173,12 @@ export const spec: OpenAPIV3.Document = {
       get: {
         summary: "List Module Versions",
         parameters: [
-          { name: "module_id", in: "path", required: true, schema: { type: "string" } },
+          {
+            name: "module_id",
+            in: "path",
+            required: true,
+            schema: { type: "string" },
+          },
           { name: "limit", in: "query", schema: { type: "integer" } },
           { name: "cursor", in: "query", schema: { type: "string" } },
         ],
@@ -154,7 +187,9 @@ export const spec: OpenAPIV3.Document = {
             description: "Version history",
             content: {
               "application/json": {
-                schema: makeCursorPageResponseSchema({ $ref: "#/components/schemas/ModuleVersion" }),
+                schema: makeCursorPageResponseSchema({
+                  $ref: "#/components/schemas/ModuleVersion",
+                }),
               },
             },
           },
@@ -164,7 +199,12 @@ export const spec: OpenAPIV3.Document = {
         summary: "Save Draft Version",
         description: "Creates a new private version of the module source code.",
         parameters: [
-          { name: "module_id", in: "path", required: true, schema: { type: "string" } },
+          {
+            name: "module_id",
+            in: "path",
+            required: true,
+            schema: { type: "string" },
+          },
         ],
         requestBody: {
           required: true,
@@ -173,7 +213,10 @@ export const spec: OpenAPIV3.Document = {
               schema: {
                 type: "object",
                 properties: {
-                  content: { type: "string", description: "The module source code" },
+                  content: {
+                    type: "string",
+                    description: "The module source code",
+                  },
                 },
                 required: ["content"],
               },
@@ -195,9 +238,15 @@ export const spec: OpenAPIV3.Document = {
     "/modules/{module_id}/publish": {
       post: {
         summary: "Publish Current Draft",
-        description: "Promotes the current private draft to be the public version.",
+        description:
+          "Promotes the current private draft to be the public version.",
         parameters: [
-          { name: "module_id", in: "path", required: true, schema: { type: "string" } },
+          {
+            name: "module_id",
+            in: "path",
+            required: true,
+            schema: { type: "string" },
+          },
         ],
         responses: {
           "200": {
@@ -215,8 +264,18 @@ export const spec: OpenAPIV3.Document = {
       get: {
         summary: "Get Module Version",
         parameters: [
-          { name: "module_id", in: "path", required: true, schema: { type: "string" } },
-          { name: "version_id", in: "path", required: true, schema: { type: "string" } },
+          {
+            name: "module_id",
+            in: "path",
+            required: true,
+            schema: { type: "string" },
+          },
+          {
+            name: "version_id",
+            in: "path",
+            required: true,
+            schema: { type: "string" },
+          },
         ],
         responses: {
           "200": {
@@ -233,11 +292,27 @@ export const spec: OpenAPIV3.Document = {
     "/modules/{module_id}/versions/{version_id}/{filename}": {
       get: {
         summary: "Read Version File",
-        description: "Fetches the raw content of a specific file within a module version.",
+        description:
+          "Fetches the raw content of a specific file within a module version.",
         parameters: [
-          { name: "module_id", in: "path", required: true, schema: { type: "string" } },
-          { name: "version_id", in: "path", required: true, schema: { type: "string" } },
-          { name: "filename", in: "path", required: true, schema: { type: "string" } },
+          {
+            name: "module_id",
+            in: "path",
+            required: true,
+            schema: { type: "string" },
+          },
+          {
+            name: "version_id",
+            in: "path",
+            required: true,
+            schema: { type: "string" },
+          },
+          {
+            name: "filename",
+            in: "path",
+            required: true,
+            schema: { type: "string" },
+          },
         ],
         responses: {
           "200": {

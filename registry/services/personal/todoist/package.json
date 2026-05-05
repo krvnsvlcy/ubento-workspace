@@ -15,7 +15,6 @@
     "dev": "scripts dev"
   },
   "dependencies": {
-    "@doist/todoist-api-typescript": "latest",
-    "@ubento/registry-proxy": "workspace:*"
+    "@doist/todoist-api-typescript": "latest"
   }
 }

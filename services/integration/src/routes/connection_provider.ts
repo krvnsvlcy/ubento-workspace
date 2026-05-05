@@ -6,7 +6,7 @@ import {
   parseStringQuery,
   toSerializable,
   validate,
-} from "@ubento/service-toolkit";
+} from "@ubento/services.toolkit";
 import { Request, Response, Router } from "express";
 import { z } from "zod";
 import {
@@ -29,7 +29,9 @@ router.get(
       }),
     }),
     async (req: Request, res: Response) => {
-      const provider = await getConnectionProvider(req.params.provider_id as string);
+      const provider = await getConnectionProvider(
+        req.params.provider_id as string,
+      );
       if (!provider) {
         throw new NotFoundError(
           `connection_provider ${req.params.provider_id}`,

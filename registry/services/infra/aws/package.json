@@ -15,7 +15,6 @@
     "dev": "scripts dev"
   },
   "dependencies": {
-    "aws-sdk": "latest",
-    "@ubento/registry-proxy": "workspace:*"
+    "aws-sdk": "latest"
   }
 }

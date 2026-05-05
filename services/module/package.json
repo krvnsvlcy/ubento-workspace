@@ -14,9 +14,9 @@
   "dependencies": {
     "@google-cloud/storage": "^7.11.2",
     "@types/mime-types": "^3.0.1",
-    "@ubento/database": "workspace:*",
-    "@ubento/primitives": "workspace:*",
-    "@ubento/service-toolkit": "workspace:*",
+    "@ubento/services.database": "workspace:*",
+    "@ubento/services.primitives": "workspace:*",
+    "@ubento/services.toolkit": "workspace:*",
     "dotenv": "^16.3.1",
     "esbuild": "^0.25.12",
     "express": "^5.2.1",

@@ -11,9 +11,9 @@
     "deploy": "pnpm build && pnpm deploy:only"
   },
   "dependencies": {
-    "@ubento/bento-app": "workspace:*",
-    "@ubento/bento-style": "workspace:*",
-    "@ubento/sdk": "workspace:*",
+    "@ubento/workspace.app": "workspace:*",
+    "@ubento/bento.style": "workspace:*",
+    "@ubento/services.sdk": "workspace:*",
     "axios": "^1.15.2",
     "jose": "^6.2.2",
     "js-cookie": "^3.0.5",

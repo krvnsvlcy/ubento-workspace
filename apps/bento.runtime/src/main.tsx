@@ -1,11 +1,11 @@
-import "@ubento/bento-style/dist/uno.css";
+import "@ubento/bento.style/dist/uno.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./modules.js";
 import { GuestWorkspace } from "./workspace.js";
 
-import "@ubento/bento-style/css/themes.css";
-import { createBentoEngine, engineFlags } from "@ubento/engine";
+import { createBentoEngine, engineFlags } from "@ubento/bento.engine";
+import "@ubento/bento.style/css/themes.css";
 import { rpc } from "./rpc.js";
 
 engineFlags.DEV_MODE = !!import.meta.env.DEV_MODE;

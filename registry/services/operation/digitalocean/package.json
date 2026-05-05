@@ -15,7 +15,6 @@
     "dev": "scripts dev"
   },
   "dependencies": {
-    "digitalocean": "latest",
-    "@ubento/registry-proxy": "workspace:*"
+    "digitalocean": "latest"
   }
 }

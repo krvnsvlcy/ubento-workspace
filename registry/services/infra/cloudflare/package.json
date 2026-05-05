@@ -15,7 +15,6 @@
     "dev": "scripts dev"
   },
   "dependencies": {
-    "cloudflare": "latest",
-    "@ubento/registry-proxy": "workspace:*"
+    "cloudflare": "latest"
   }
 }

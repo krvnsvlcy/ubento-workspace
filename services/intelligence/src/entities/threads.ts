@@ -1,14 +1,14 @@
+import { Prisma, Thread } from "@ubento/services.database/intelligence";
 import {
-  ubentoEntities,
   generateBareId,
   makeEntityId,
-} from "@ubento/primitives";
+  ubentoEntities,
+} from "@ubento/services.primitives";
 import {
   NotFoundError,
   prismaListWithCursor,
   ValidationError,
-} from "@ubento/service-toolkit";
-import { Prisma, Thread } from "@ubento/database/intelligence";
+} from "@ubento/services.toolkit";
 import { generateText, Output } from "ai";
 import z from "zod";
 import { eventPublisher } from "../event.js";
@@ -96,7 +96,7 @@ export async function updateThread(
     metadata?: Record<string, any>;
     context?: any;
     last_message_at?: Date;
-  }
+  },
 ): Promise<Thread> {
   const updatedThread = await prisma.thread.update({
     where: { id: thread_id },
@@ -159,7 +159,7 @@ export async function activateThread(thread_id: string): Promise<Thread> {
       err.code === "P2025"
     ) {
       throw new ValidationError(
-        `Thread with ID ${thread_id} is not in IDLE or PAUSED status or does not exist.`
+        `Thread with ID ${thread_id} is not in IDLE or PAUSED status or does not exist.`,
       );
     } else {
       throw err; // Re-throw other errors

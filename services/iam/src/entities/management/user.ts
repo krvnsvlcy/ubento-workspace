@@ -1,11 +1,14 @@
-import { Broker } from "@ubento/database/iam";
+import { Broker } from "@ubento/services.database/iam";
 import {
   generateBareId,
   makeEntityId,
   ubentoAuth,
   ubentoEntities,
-} from "@ubento/primitives";
-import { prismaListWithCursor, ValidationError } from "@ubento/service-toolkit";
+} from "@ubento/services.primitives";
+import {
+  prismaListWithCursor,
+  ValidationError,
+} from "@ubento/services.toolkit";
 import { User as WorkOSUser } from "@workos-inc/node";
 import prisma from "../../lib/prisma.js";
 import { workos } from "../../lib/workos.js";
@@ -31,7 +34,9 @@ export async function listUsers({
   email?: string;
 }) {
   return await prismaListWithCursor(prisma.user, {
-    where: email ? { email: { contains: email, mode: "insensitive" } } : undefined,
+    where: email
+      ? { email: { contains: email, mode: "insensitive" } }
+      : undefined,
     limit,
     cursor,
     orderBy: [{ created_at: "desc" }, { id: "desc" }],

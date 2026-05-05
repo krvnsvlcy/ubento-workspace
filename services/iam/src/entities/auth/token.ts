@@ -1,5 +1,5 @@
-import { ubentoAuth } from "@ubento/primitives";
-import { AuthorizationError, ValidationError } from "@ubento/service-toolkit";
+import { ubentoAuth } from "@ubento/services.primitives";
+import { AuthorizationError, ValidationError } from "@ubento/services.toolkit";
 import { GenericServerException } from "@workos-inc/node";
 import { env } from "../../env.js";
 import { workos } from "../../lib/workos.js";

@@ -1,10 +1,10 @@
+import { Message } from "@ubento/services.database/intelligence";
 import {
-  ubentoEntities,
   generateBareId,
   makeEntityId,
-} from "@ubento/primitives";
-import { prismaListWithCursor } from "@ubento/service-toolkit";
-import { Message } from "@ubento/database/intelligence";
+  ubentoEntities,
+} from "@ubento/services.primitives";
+import { prismaListWithCursor } from "@ubento/services.toolkit";
 import { eventPublisher } from "../event.js";
 import prisma from "../prisma.js";
 import { updateThread } from "./threads.js";
@@ -87,7 +87,7 @@ export async function updateMessage(
   updates: {
     data?: any;
     error?: string;
-  }
+  },
 ): Promise<Message> {
   const message = await prisma.message.update({
     where: { id: messageId },
@@ -108,7 +108,7 @@ export async function deleteMessage(messageId: string): Promise<Message> {
 }
 
 export async function deleteMultipleMessages(
-  messageIds: string[]
+  messageIds: string[],
 ): Promise<number> {
   const { count } = await prisma.message.deleteMany({
     where: {

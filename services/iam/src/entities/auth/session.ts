@@ -1,10 +1,10 @@
-import { Prisma, Session, SessionStatus } from "@ubento/database/iam";
+import { Prisma, Session, SessionStatus } from "@ubento/services.database/iam";
 import {
   generateBareId,
   makeEntityId,
   ubentoEntities,
-} from "@ubento/primitives";
-import { NotFoundError, prismaListWithCursor } from "@ubento/service-toolkit";
+} from "@ubento/services.primitives";
+import { NotFoundError, prismaListWithCursor } from "@ubento/services.toolkit";
 import crypto from "crypto";
 import prisma from "../../lib/prisma.js";
 

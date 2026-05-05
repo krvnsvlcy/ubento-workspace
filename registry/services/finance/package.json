@@ -5,16 +5,16 @@
   "type": "module",
   "exports": {
     "./stripe": {
-      "import": "./build/stripe/index.js",
-      "types": "./build/stripe/index.d.ts"
+      "import": "./build/stripe/service.js",
+      "types": "./build/stripe/service.d.ts"
     },
     "./lemonsqueezy": {
-      "import": "./build/lemonsqueezy/lemonsqueezy.js",
-      "types": "./build/lemonsqueezy/lemonsqueezy.d.ts"
+      "import": "./build/lemonsqueezy/service.js",
+      "types": "./build/lemonsqueezy/service.d.ts"
     },
     "./wise": {
-      "import": "./build/wise/index.js",
-      "types": "./build/wise/index.d.ts"
+      "import": "./build/wise/service.js",
+      "types": "./build/wise/service.d.ts"
     }
   },
   "scripts": {
@@ -25,6 +25,7 @@
   "dependencies": {
     "@lemonsqueezy/lemonsqueezy.js": "^3.3.0",
     "@ubento/fabric": "workspace:*",
+    "@ubento/bento.service": "workspace:*",
     "stripe": "^17.4.0",
     "zod": "^3.23.8"
   },

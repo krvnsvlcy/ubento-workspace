@@ -1,4 +1,4 @@
-import { createService } from "@ubento/service-toolkit";
+import { createService } from "@ubento/services.toolkit";
 import express from "express";
 import { env } from "./env.js";
 import fileRouter from "./routes/files.js";

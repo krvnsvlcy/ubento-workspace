@@ -1,9 +1,9 @@
-import { createService } from "@ubento/service-toolkit";
+import { createService } from "@ubento/services.toolkit";
 import { env } from "./env.js";
+import boardsRouter from "./routes/boards.js";
 import workspaceInvitesRouter from "./routes/workspace-invites.js";
 import workspaceMembershipsRouter from "./routes/workspace-memberships.js";
 import workspacesRouter from "./routes/workspaces.js";
-import boardsRouter from "./routes/boards.js";
 import { spec } from "./spec.js";
 
 export const service = createService({

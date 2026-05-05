@@ -1,4 +1,4 @@
-import { auth, createService } from "@ubento/service-toolkit";
+import { auth, createService } from "@ubento/services.toolkit";
 import cookieParser from "cookie-parser";
 import { env } from "./env.js";
 import authRouter from "./routes/auth.js";

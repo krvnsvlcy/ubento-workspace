@@ -3,7 +3,7 @@ import {
   makeCursorPageResponse,
   toSerializable,
   validate,
-} from "@ubento/service-toolkit";
+} from "@ubento/services.toolkit";
 import { Router } from "express";
 import multer from "multer";
 import z from "zod";
@@ -63,8 +63,8 @@ fileRouter.post(
       });
 
       res.status(201).json(toSerializable(file));
-    }
-  )
+    },
+  ),
 );
 
 fileRouter.get(
@@ -85,8 +85,8 @@ fileRouter.get(
       }
 
       res.json(toSerializable(file));
-    }
-  )
+    },
+  ),
 );
 
 fileRouter.get(
@@ -109,8 +109,8 @@ fileRouter.get(
           res.status(500).send(e.message);
         }
       }
-    }
-  )
+    },
+  ),
 );
 
 export default fileRouter;
