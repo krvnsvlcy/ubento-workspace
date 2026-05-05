@@ -72,7 +72,7 @@ export function enforce<T extends Request>(
     }
 
     const scope = getScope ? await getScope(req) : undefined;
-    if (scope) {
+    if (scope && !auth.scope.includes("*")) {
       const authorizer = req.authorizer;
       if (!authorizer) {
         req.context.logger.error("No authorizer found in enforce middleware", {

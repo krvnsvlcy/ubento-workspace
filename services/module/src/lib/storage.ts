@@ -12,10 +12,12 @@ const moduleBucket = storage.bucket(env.GCS_MODULE_BUCKET);
 export async function storeInCAS({
   hash,
   content,
+  filePath,
   contentType,
 }: {
   hash: string;
-  content: string | Buffer;
+  content?: string | Buffer;
+  filePath?: string;
   contentType: string;
 }) {
   // 1. Global CAS Path - uncoupled from moduleId for deduplication
@@ -26,14 +28,29 @@ export async function storeInCAS({
   const [exists] = await file.exists();
   if (exists) return;
 
-  await file.save(content, {
-    contentType,
-    resumable: false,
-    metadata: {
-      // 3. The CAS Superpower: Cache forever, it is mathematically immutable
-      cacheControl: "public, max-age=31536000, immutable",
-    },
-  });
+  const metadata = {
+    // 3. The CAS Superpower: Cache forever, it is mathematically immutable
+    cacheControl: "public, max-age=31536000, immutable",
+  };
+
+  if (filePath) {
+    await moduleBucket.upload(filePath, {
+      destination: path,
+      resumable: false,
+      contentType,
+      metadata,
+    });
+  } else if (content !== undefined) {
+    await file.save(content, {
+      contentType,
+      resumable: false,
+      metadata,
+    });
+  } else {
+    throw new Error(
+      "Either content or filePath must be provided to storeInCAS",
+    );
+  }
 }
 
 /**

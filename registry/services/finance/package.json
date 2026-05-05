@@ -19,17 +19,22 @@
   },
   "scripts": {
     "build": "scripts build",
+    "deploy": "tsx scripts/deploy.ts deploy",
     "watch": "scripts watch",
     "dev": "scripts dev"
   },
   "dependencies": {
     "@lemonsqueezy/lemonsqueezy.js": "^3.3.0",
-    "@ubento/fabric": "workspace:*",
     "@ubento/bento.service": "workspace:*",
+    "@ubento/fabric": "workspace:*",
+    "@ubento/services.sdk": "workspace:*",
     "stripe": "^17.4.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@types/node": "^22.9.0"
+    "@microsoft/api-extractor": "^7.53.1",
+    "@types/mime-types": "^3.0.1",
+    "@types/node": "^22.9.0",
+    "mime-types": "^3.0.2"
   }
 }

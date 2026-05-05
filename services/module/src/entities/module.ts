@@ -62,7 +62,8 @@ export async function createModule(data: {
 export async function writeModule(args: {
   moduleId: string;
   authorId: string;
-  source: string;
+  source?: string;
+  files?: Record<string, string>;
 }) {
   const module = await prisma.module.findUnique({
     where: { id: args.moduleId },
@@ -77,6 +78,7 @@ export async function writeModule(args: {
   const version = await createModuleVersion({
     moduleId: module.id,
     source: args.source,
+    files: args.files,
     type: module.type,
     authorId: args.authorId,
     scope: "private",

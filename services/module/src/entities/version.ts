@@ -12,12 +12,14 @@ import { persistModuleArtifact, readFromCAS } from "../lib/storage.js";
 export async function createModuleVersion({
   moduleId,
   source,
+  files,
   type,
   authorId,
   scope,
 }: {
   moduleId: string;
-  source: string;
+  source?: string;
+  files?: Record<string, string>;
   type: string;
   authorId: string;
   scope: ModuleVersionScope;
@@ -27,14 +29,25 @@ export async function createModuleVersion({
     bareId: generateBareId(),
   });
 
-  const artifact = await buildModule({ source, type });
-  await persistModuleArtifact(artifact);
+  let versionFiles: Record<string, string>;
+
+  if (files) {
+    versionFiles = files;
+  } else if (source) {
+    const artifact = await buildModule({ source, type });
+    await persistModuleArtifact(artifact);
+    versionFiles = artifact.files;
+  } else {
+    throw new Error(
+      "Either source or files must be provided to createModuleVersion",
+    );
+  }
 
   const version = await prisma.moduleVersion.create({
     data: {
       id: versionId,
       module_id: moduleId,
-      files: artifact.files,
+      files: versionFiles,
       author_id: authorId,
       scope: scope,
     },

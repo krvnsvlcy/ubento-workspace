@@ -1,5 +1,4 @@
 import { useUbentoEngine } from "../../../engine/engine";
-import { Workspace } from "../../views/workspace/workspace";
 import { ComponentMain } from "./component/component-main";
 
 export function Main() {
@@ -17,7 +16,7 @@ export function Main() {
             pointerEvents: location.component ? "none" : undefined,
           }}
         >
-          <Workspace key={location.workspace} slug={location.workspace} />
+          {/* <Workspace key={location.workspace} slug={location.workspace} /> */}
         </div>
       )}
 

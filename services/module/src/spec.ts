@@ -69,6 +69,43 @@ export const spec: OpenAPIV3.Document = {
         },
       },
     },
+    "/modules/upload": {
+      post: {
+        summary: "Upload Raw File",
+        description:
+          "Streams a raw binary file directly to the Content Addressable Storage (CAS) and returns its SHA-256 hash.",
+        requestBody: {
+          required: true,
+          content: {
+            "application/octet-stream": {
+              schema: {
+                type: "string",
+                format: "binary",
+              },
+            },
+          },
+        },
+        responses: {
+          "200": {
+            description: "File uploaded successfully",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    hash: {
+                      type: "string",
+                      description: "The calculated SHA-256 hash of the file.",
+                    },
+                  },
+                  required: ["hash"],
+                },
+              },
+            },
+          },
+        },
+      },
+    },
     "/modules/search": {
       get: {
         summary: "Marketplace Search",
@@ -215,10 +252,16 @@ export const spec: OpenAPIV3.Document = {
                 properties: {
                   content: {
                     type: "string",
-                    description: "The module source code",
+                    description: "The module source code (triggers a build)",
+                  },
+                  files: {
+                    type: "object",
+                    additionalProperties: { type: "string" },
+                    description:
+                      "A map of filenames to CAS hashes (skips build)",
                   },
                 },
-                required: ["content"],
+                minProperties: 1,
               },
             },
           },

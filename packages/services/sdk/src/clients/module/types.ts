@@ -80,6 +80,52 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/modules/upload": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Upload Raw File
+         * @description Streams a raw binary file directly to the Content Addressable Storage (CAS) and returns its SHA-256 hash.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/octet-stream": string;
+                };
+            };
+            responses: {
+                /** @description File uploaded successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description The calculated SHA-256 hash of the file. */
+                            hash: string;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/modules/search": {
         parameters: {
             query?: never;
@@ -253,8 +299,12 @@ export interface paths {
             requestBody: {
                 content: {
                     "application/json": {
-                        /** @description The module source code */
-                        content: string;
+                        /** @description The module source code (triggers a build) */
+                        content?: string;
+                        /** @description A map of filenames to CAS hashes (skips build) */
+                        files?: {
+                            [key: string]: string;
+                        };
                     };
                 };
             };

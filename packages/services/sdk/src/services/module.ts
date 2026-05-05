@@ -106,14 +106,33 @@ export class ModuleService {
     return extractResponseData(result, true);
   }
 
-  async saveModuleVersion(moduleId: string, content: string) {
+  async uploadFile(
+    file: Buffer | Uint8Array,
+    contentType: string = "application/octet-stream",
+  ) {
+    const result = await this.moduleClient.post("/modules/upload", {
+      body: file as any,
+      headers: {
+        "content-type": contentType,
+      },
+      // Ensure we don't try to JSON stringify the binary body
+      bodySerializer: (body) => body,
+    });
+    return extractResponseData(result, true) as { hash: string };
+  }
+
+  async saveModuleVersion(
+    moduleId: string,
+    options: string | { content?: string; files?: Record<string, string> },
+  ) {
+    const body = typeof options === "string" ? { content: options } : options;
     const result = await this.moduleClient.post(
       "/modules/{module_id}/versions",
       {
         params: {
           path: { module_id: moduleId },
         },
-        body: { content },
+        body: body as any,
       },
     );
     return extractResponseData(result, true) as Module;

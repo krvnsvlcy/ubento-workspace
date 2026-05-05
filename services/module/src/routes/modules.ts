@@ -119,7 +119,14 @@ modulesRouter.post(
   chain(
     validate({
       params: z.object({ module_id: z.string() }),
-      body: z.object({ content: z.string() }),
+      body: z
+        .object({
+          content: z.string().optional(),
+          files: z.record(z.string(), z.string()).optional(),
+        })
+        .refine((data) => data.content || data.files, {
+          message: "Either content or files must be provided",
+        }),
     }),
     enforce({
       permissions: [ubentoAuth.actions.module.update],
@@ -134,6 +141,7 @@ modulesRouter.post(
         moduleId: req.params.module_id,
         authorId: req.auth!.subject,
         source: req.body.content,
+        files: req.body.files,
       });
       res.json(dataResponse(updatedModule));
     },

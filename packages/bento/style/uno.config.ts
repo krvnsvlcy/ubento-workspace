@@ -37,10 +37,10 @@ export default defineConfig({
     entry: {
       patterns: [
         "../engine/src/**/*.{ts,tsx}",
-        "../app/src/**/*.{ts,tsx}",
+        "../../workspace/app/src/**/*.{ts,tsx}",
+        "../../workspace/primitives/src/**/*.{ts,tsx}",
         "../../../apps/theme-builder/src/**/*.{ts,tsx}",
         "../../../apps/bento.playground/src/**/*.{ts,tsx}",
-        "../primitives/src/**/*.{ts,tsx}",
       ],
       outFile: "./dist/uno.css",
     },

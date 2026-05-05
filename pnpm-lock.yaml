@@ -918,6 +918,9 @@ importers:
       '@ubento/fabric':
         specifier: workspace:*
         version: link:../../../packages/utils/fabric
+      '@ubento/services.sdk':
+        specifier: workspace:*
+        version: link:../../../packages/services/sdk
       stripe:
         specifier: ^17.4.0
         version: 17.7.0
@@ -925,9 +928,18 @@ importers:
         specifier: ^3.23.8
         version: 3.25.76
     devDependencies:
+      '@microsoft/api-extractor':
+        specifier: ^7.53.1
+        version: 7.58.7(@types/node@22.19.17)
+      '@types/mime-types':
+        specifier: ^3.0.1
+        version: 3.0.1
       '@types/node':
         specifier: ^22.9.0
         version: 22.19.17
+      mime-types:
+        specifier: ^3.0.2
+        version: 3.0.2
 
   registry/services/infra/aws:
     dependencies:
@@ -1065,7 +1077,7 @@ importers:
     dependencies:
       '@hey-api/openapi-ts':
         specifier: ^0.77.0
-        version: 0.77.0(typescript@6.0.3)
+        version: 0.77.0(typescript@5.9.3)
       '@microsoft/api-extractor':
         specifier: ^7.53.1
         version: 7.58.7(@types/node@25.6.0)
@@ -1098,7 +1110,7 @@ importers:
         version: 4.2.0
       openapi-typescript:
         specifier: ^7.9.1
-        version: 7.13.0(typescript@6.0.3)
+        version: 7.13.0(typescript@5.9.3)
       pacote:
         specifier: ^21.0.1
         version: 21.5.0
@@ -9687,7 +9699,7 @@ snapshots:
       js-yaml: 4.1.1
       lodash: 4.18.1
 
-  '@hey-api/openapi-ts@0.77.0(typescript@6.0.3)':
+  '@hey-api/openapi-ts@0.77.0(typescript@5.9.3)':
     dependencies:
       '@hey-api/json-schema-ref-parser': 1.0.6
       ansi-colors: 4.1.3
@@ -9696,7 +9708,7 @@ snapshots:
       commander: 13.0.0
       handlebars: 4.7.8
       open: 10.1.2
-      typescript: 6.0.3
+      typescript: 5.9.3
     transitivePeerDependencies:
       - magicast
 
@@ -9914,11 +9926,37 @@ snapshots:
       - encoding
       - supports-color
 
+  '@microsoft/api-extractor-model@7.33.8(@types/node@22.19.17)':
+    dependencies:
+      '@microsoft/tsdoc': 0.16.0
+      '@microsoft/tsdoc-config': 0.18.1
+      '@rushstack/node-core-library': 5.23.1(@types/node@22.19.17)
+    transitivePeerDependencies:
+      - '@types/node'
+
   '@microsoft/api-extractor-model@7.33.8(@types/node@25.6.0)':
     dependencies:
       '@microsoft/tsdoc': 0.16.0
       '@microsoft/tsdoc-config': 0.18.1
       '@rushstack/node-core-library': 5.23.1(@types/node@25.6.0)
+    transitivePeerDependencies:
+      - '@types/node'
+
+  '@microsoft/api-extractor@7.58.7(@types/node@22.19.17)':
+    dependencies:
+      '@microsoft/api-extractor-model': 7.33.8(@types/node@22.19.17)
+      '@microsoft/tsdoc': 0.16.0
+      '@microsoft/tsdoc-config': 0.18.1
+      '@rushstack/node-core-library': 5.23.1(@types/node@22.19.17)
+      '@rushstack/rig-package': 0.7.3
+      '@rushstack/terminal': 0.24.0(@types/node@22.19.17)
+      '@rushstack/ts-command-line': 5.3.9(@types/node@22.19.17)
+      diff: 8.0.4
+      minimatch: 10.2.3
+      resolve: 1.22.12
+      semver: 7.7.4
+      source-map: 0.6.1
+      typescript: 5.9.3
     transitivePeerDependencies:
       - '@types/node'
 
@@ -10632,6 +10670,19 @@ snapshots:
 
   '@rtsao/scc@1.1.0': {}
 
+  '@rushstack/node-core-library@5.23.1(@types/node@22.19.17)':
+    dependencies:
+      ajv: 8.18.0
+      ajv-draft-04: 1.0.0(ajv@8.18.0)
+      ajv-formats: 3.0.1(ajv@8.18.0)
+      fs-extra: 11.3.4
+      import-lazy: 4.0.0
+      jju: 1.4.0
+      resolve: 1.22.12
+      semver: 7.7.4
+    optionalDependencies:
+      '@types/node': 22.19.17
+
   '@rushstack/node-core-library@5.23.1(@types/node@25.6.0)':
     dependencies:
       ajv: 8.18.0
@@ -10645,6 +10696,10 @@ snapshots:
     optionalDependencies:
       '@types/node': 25.6.0
 
+  '@rushstack/problem-matcher@0.2.1(@types/node@22.19.17)':
+    optionalDependencies:
+      '@types/node': 22.19.17
+
   '@rushstack/problem-matcher@0.2.1(@types/node@25.6.0)':
     optionalDependencies:
       '@types/node': 25.6.0
@@ -10654,6 +10709,14 @@ snapshots:
       jju: 1.4.0
       resolve: 1.22.12
 
+  '@rushstack/terminal@0.24.0(@types/node@22.19.17)':
+    dependencies:
+      '@rushstack/node-core-library': 5.23.1(@types/node@22.19.17)
+      '@rushstack/problem-matcher': 0.2.1(@types/node@22.19.17)
+      supports-color: 8.1.1
+    optionalDependencies:
+      '@types/node': 22.19.17
+
   '@rushstack/terminal@0.24.0(@types/node@25.6.0)':
     dependencies:
       '@rushstack/node-core-library': 5.23.1(@types/node@25.6.0)
@@ -10661,6 +10724,15 @@ snapshots:
       supports-color: 8.1.1
     optionalDependencies:
       '@types/node': 25.6.0
+
+  '@rushstack/ts-command-line@5.3.9(@types/node@22.19.17)':
+    dependencies:
+      '@rushstack/terminal': 0.24.0(@types/node@22.19.17)
+      '@types/argparse': 1.0.38
+      argparse: 1.0.10
+      string-argv: 0.3.2
+    transitivePeerDependencies:
+      - '@types/node'
 
   '@rushstack/ts-command-line@5.3.9(@types/node@25.6.0)':
     dependencies:
@@ -13123,7 +13195,7 @@ snapshots:
       eslint: 9.39.4(jiti@2.6.1)
       eslint-import-resolver-node: 0.3.10
       eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0(eslint@9.39.4(jiti@2.6.1)))(eslint@9.39.4(jiti@2.6.1))
-      eslint-plugin-import: 2.32.0(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(eslint@9.39.4(jiti@2.6.1)))(eslint@9.39.4(jiti@2.6.1)))(eslint@9.39.4(jiti@2.6.1))
+      eslint-plugin-import: 2.32.0(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4(jiti@2.6.1))
       eslint-plugin-jsx-a11y: 6.10.2(eslint@9.39.4(jiti@2.6.1))
       eslint-plugin-react: 7.37.5(eslint@9.39.4(jiti@2.6.1))
       eslint-plugin-react-hooks: 7.1.1(eslint@9.39.4(jiti@2.6.1))
@@ -13156,7 +13228,7 @@ snapshots:
       tinyglobby: 0.2.16
       unrs-resolver: 1.11.1
     optionalDependencies:
-      eslint-plugin-import: 2.32.0(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(eslint@9.39.4(jiti@2.6.1)))(eslint@9.39.4(jiti@2.6.1)))(eslint@9.39.4(jiti@2.6.1))
+      eslint-plugin-import: 2.32.0(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4(jiti@2.6.1))
     transitivePeerDependencies:
       - supports-color
 
@@ -13170,7 +13242,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-import@2.32.0(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(eslint@9.39.4(jiti@2.6.1)))(eslint@9.39.4(jiti@2.6.1)))(eslint@9.39.4(jiti@2.6.1)):
+  eslint-plugin-import@2.32.0(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4(jiti@2.6.1)):
     dependencies:
       '@rtsao/scc': 1.1.0
       array-includes: 3.1.9
@@ -15267,16 +15339,6 @@ snapshots:
       parse-json: 8.3.0
       supports-color: 10.2.2
       typescript: 5.9.3
-      yargs-parser: 21.1.1
-
-  openapi-typescript@7.13.0(typescript@6.0.3):
-    dependencies:
-      '@redocly/openapi-core': 1.34.14(supports-color@10.2.2)
-      ansi-colors: 4.1.3
-      change-case: 5.4.4
-      parse-json: 8.3.0
-      supports-color: 10.2.2
-      typescript: 6.0.3
       yargs-parser: 21.1.1
 
   optionator@0.9.4:
