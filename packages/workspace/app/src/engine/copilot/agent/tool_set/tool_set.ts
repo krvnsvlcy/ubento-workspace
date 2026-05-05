@@ -10,9 +10,9 @@ export interface ToolSet {
   readonly description?: string;
   readonly enabled: boolean;
 
-  listTools(): engineStateChanged<ToolSummary[]>;
-  searchTools(query: string): engineStateChanged<ToolSummary[]>;
-  getTool(name: string): engineStateChanged<Tool | undefined>;
+  listTools(): Promise<ToolSummary[]>;
+  searchTools(query: string): Promise<ToolSummary[]>;
+  getTool(name: string): Promise<Tool | undefined>;
 
   enable(): void;
   disable(): void;
@@ -21,9 +21,9 @@ export interface ToolSet {
 export interface ToolSetConfig {
   name: string;
   description?: string;
-  listTools: () => engineStateChanged<ToolSummary[]>;
-  getTool: (name: string) => engineStateChanged<Tool | undefined>;
-  searchTools?: (query: string) => engineStateChanged<ToolSummary[]>;
+  listTools: () => Promise<ToolSummary[]>;
+  getTool: (name: string) => Promise<Tool | undefined>;
+  searchTools?: (query: string) => Promise<ToolSummary[]>;
 }
 
 export function createToolSet(config: ToolSetConfig): ToolSet {

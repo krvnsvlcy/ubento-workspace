@@ -59,10 +59,14 @@ export function stringifyLocation(location: UbentoLocation): string {
     );
   }
   if (location.workspaceTab) {
-    queryParts.push(`workspaceTab=${encodeURIComponent(location.workspaceTab)}`);
+    queryParts.push(
+      `workspaceTab=${encodeURIComponent(location.workspaceTab)}`,
+    );
   }
   if (location.componentTab) {
-    queryParts.push(`componentTab=${encodeURIComponent(location.componentTab)}`);
+    queryParts.push(
+      `componentTab=${encodeURIComponent(location.componentTab)}`,
+    );
   }
   if (location.component) {
     queryParts.push(`component=${encodeURIComponent(location.component)}`);

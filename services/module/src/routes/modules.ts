@@ -4,7 +4,6 @@ import {
   chain,
   dataResponse,
   enforce,
-  makeCursorPageResponse,
   NotFoundError,
   validate,
 } from "@ubento/services.toolkit";
@@ -53,7 +52,7 @@ modulesRouter.get(
     }),
     async (req, res) => {
       const result = await listModules(req.query as any);
-      res.json(makeCursorPageResponse(result));
+      res.json(result);
     },
   ),
 );
@@ -203,7 +202,7 @@ modulesRouter.get(
         module_id: req.params.module_id as string,
         ...req.query,
       });
-      res.json(makeCursorPageResponse(result));
+      res.json(result);
     },
   ),
 );

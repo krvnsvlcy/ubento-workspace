@@ -94,7 +94,7 @@ export function createComponentEngine({
         port: createWindowPort(window, target),
         channel: "component",
         handlers: {
-          connect: () => {
+          connect: async () => {
             console.log("[ComponentEngine] Connected");
           },
           ready: async () => {
@@ -106,7 +106,7 @@ export function createComponentEngine({
               code: source || dummyComponentCode,
             });
           },
-          log: ({ type, args }) => {
+          log: async ({ type, args }: { type: LogEntry["type"]; args: any[] }) => {
             const entry: LogEntry = {
               id: Math.random().toString(36).substring(7),
               type,

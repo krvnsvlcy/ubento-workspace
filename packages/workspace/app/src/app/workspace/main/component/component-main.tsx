@@ -1,4 +1,4 @@
-import { SplitView } from "@/app/views/workspace/components/split-view";
+import { SplitView } from "@/app/workspace/main/workspace/components/split-view";
 import { useEffect, useMemo } from "react";
 import { useUbento } from "../../../../engine/engine";
 import { ComponentCodeEditor } from "./editor";

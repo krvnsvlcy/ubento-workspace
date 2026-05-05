@@ -1,5 +1,4 @@
 export * from "./components";
-export * from "./components/icon-button";
 export * from "./loader";
 export * from "./state";
 export * from "./theme";

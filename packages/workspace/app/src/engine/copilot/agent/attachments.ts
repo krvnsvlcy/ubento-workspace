@@ -9,9 +9,9 @@ export type AttachmentType<InputData, MessageData> = {
   match: (event: CopilotAttachmentInputEvent) => boolean;
   handle: (
     event: CopilotAttachmentInputEvent,
-  ) => NonNullable<InputData | (() => engineStateChanged<InputData>)>[];
+  ) => NonNullable<InputData | (() => Promise<InputData>)>[];
   toMessageAttachment: (data: InputData, agent: Agent) => MessageData;
-  format: (data: MessageData) => engineStateChanged<MessageItem | undefined>;
+  format: (data: MessageData) => Promise<MessageItem | undefined>;
   icon: (data: MessageData, agent: Agent) => string;
   label: (data: MessageData, agent: Agent) => string;
 };

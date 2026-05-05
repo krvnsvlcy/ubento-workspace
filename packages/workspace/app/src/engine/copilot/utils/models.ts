@@ -19,7 +19,7 @@ function createGatewayProxy({
   teamId,
 }: {
   baseUrl: string;
-  getToken: () => engineStateChanged<string>;
+  getToken: () => Promise<string>;
   teamId: string;
 }) {
   const openResponses = createOpenResponses({
@@ -49,7 +49,7 @@ export function getModel(
   }: {
     teamId: string;
     baseUrl: string;
-    getToken: () => engineStateChanged<string>;
+    getToken: () => Promise<string>;
   },
   modelId: string,
 ): LanguageModel {
@@ -88,9 +88,7 @@ type ModelData = {
 };
 let modelData: Record<string, ModelData> | null = null;
 
-export async function getModelData(
-  modelId: string,
-): engineStateChanged<ModelData> {
+export async function getModelData(modelId: string): Promise<ModelData> {
   if (!modelData) {
     const response = await fetch(modelDataUrl);
     const data = (await response.json()) as ModelApiData;

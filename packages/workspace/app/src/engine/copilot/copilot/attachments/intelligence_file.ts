@@ -49,7 +49,7 @@ export function intelligenceFileCopilotInputAttachmentType(): AttachmentType<
         id: data.intelligenceFile.id,
       };
     },
-    format: async (data): engineStateChanged<MessageItem | undefined> => {
+    format: async (data): Promise<MessageItem | undefined> => {
       // Shim for formatting
       return {
         type: "file",

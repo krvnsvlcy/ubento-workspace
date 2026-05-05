@@ -31,9 +31,12 @@ export interface paths {
                         "application/json": {
                             data: components["schemas"]["Module"][];
                             nextPage?: {
-                                /** @enum {string} */
-                                type: "cursor";
-                                nextCursor?: string | null;
+                                cursor: string;
+                                limit: number;
+                            };
+                            previousPage?: {
+                                cursor: string;
+                                limit: number;
                             };
                         };
                     };
@@ -273,9 +276,12 @@ export interface paths {
                         "application/json": {
                             data: components["schemas"]["ModuleVersion"][];
                             nextPage?: {
-                                /** @enum {string} */
-                                type: "cursor";
-                                nextCursor?: string | null;
+                                cursor: string;
+                                limit: number;
+                            };
+                            previousPage?: {
+                                cursor: string;
+                                limit: number;
                             };
                         };
                     };

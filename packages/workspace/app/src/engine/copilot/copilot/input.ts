@@ -6,7 +6,7 @@ export type CopilotInputAttachment<T extends string = string, D = unknown> = {
   type: T;
   status: "pending" | "ready" | "errored";
   data?: D;
-  getData?: () => engineStateChanged<D>;
+  getData?: () => Promise<D>;
 };
 
 export type CopilotAttachmentInputEvent = {

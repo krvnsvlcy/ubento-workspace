@@ -3,7 +3,7 @@ import { useSession } from "@/contexts/session";
 import { useUbento, useUbentoEngine } from "@/engine/engine";
 import { AccountModal } from "@/modals/account/account";
 import { CreateWorkspaceModal } from "@/modals/create_workspace/create_workspace";
-import { ServiceBrowserModal } from "@/modals/service_browser/service_browser";
+import { ServiceBrowserModal } from "@/modals/service_browser/services";
 import { TeamModal } from "@/modals/team/team_modal";
 import { useState } from "react";
 

@@ -23,28 +23,28 @@ export type AgentThread = StateController<AgentThreadState> & {
     message: UserMessageData;
     model: LanguageModel;
     abortController?: AbortController;
-  }) => engineStateChanged<AgentExecution>;
-  pushUserMessage: (message: UserMessageData) => engineStateChanged<void>;
+  }) => Promise<AgentExecution>;
+  pushUserMessage: (message: UserMessageData) => Promise<void>;
 
-  getContext: () => engineStateChanged<AgentContext>;
-  setContext: (context: AgentContext) => engineStateChanged<void>;
-  getContextStats: (modelId: string) => engineStateChanged<AgentContextStats>;
-  summarizeContext: (model: LanguageModel) => engineStateChanged<void>;
-  save: () => engineStateChanged<void>;
+  getContext: () => Promise<AgentContext>;
+  setContext: (context: AgentContext) => Promise<void>;
+  getContextStats: (modelId: string) => Promise<AgentContextStats>;
+  summarizeContext: (model: LanguageModel) => Promise<void>;
+  save: () => Promise<void>;
   startAgentMessage: (
     execution: AgentExecution,
-  ) => engineStateChanged<AgentMessageInstance>;
-  listMessages: () => engineStateChanged<IntelligenceMessageData[]>;
-  generateTitle: () => engineStateChanged<void>;
+  ) => Promise<AgentMessageInstance>;
+  listMessages: () => Promise<IntelligenceMessageData[]>;
+  generateTitle: () => Promise<void>;
 
   // Resource helpers
   setResource: (params: {
     type: string;
     key: string;
     data: any;
-  }) => engineStateChanged<void>;
-  getResource: <T = any>(url: string) => engineStateChanged<T | undefined>;
-  deleteResource: (url: string) => engineStateChanged<void>;
+  }) => Promise<void>;
+  getResource: <T = any>(url: string) => Promise<T | undefined>;
+  deleteResource: (url: string) => Promise<void>;
 };
 
 export function createAgentThread(config: {
@@ -53,17 +53,17 @@ export function createAgentThread(config: {
   initialContext?: AgentContext;
 
   // Implementation hooks for storage/logic
-  getContext: () => engineStateChanged<AgentContext>;
-  setContext: (context: AgentContext) => engineStateChanged<void>;
-  getContextStats: (modelId: string) => engineStateChanged<AgentContextStats>;
-  summarizeContext: (model: LanguageModel) => engineStateChanged<void>;
-  save: () => engineStateChanged<void>;
-  pushUserMessage: (message: UserMessageData) => engineStateChanged<void>;
+  getContext: () => Promise<AgentContext>;
+  setContext: (context: AgentContext) => Promise<void>;
+  getContextStats: (modelId: string) => Promise<AgentContextStats>;
+  summarizeContext: (model: LanguageModel) => Promise<void>;
+  save: () => Promise<void>;
+  pushUserMessage: (message: UserMessageData) => Promise<void>;
   startAgentMessage: (
     execution: AgentExecution,
-  ) => engineStateChanged<AgentMessageInstance>;
-  listMessages: () => engineStateChanged<IntelligenceMessageData[]>;
-  generateTitle: () => engineStateChanged<void>;
+  ) => Promise<AgentMessageInstance>;
+  listMessages: () => Promise<IntelligenceMessageData[]>;
+  generateTitle: () => Promise<void>;
 }): AgentThread {
   const store = createStore<AgentThreadState>()(() => ({
     id: config.id,

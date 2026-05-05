@@ -14,7 +14,7 @@ export enum ExtensionStatus {
   Errored = "errored",
 }
 
-export type TokenProvider = () => string | engineStateChanged<string>;
+export type TokenProvider = () => string | Promise<string>;
 
 export type AgentExtensionToolDef = {
   name: string;
@@ -37,8 +37,8 @@ export interface McpToolSetConfig {
 
 export interface McpToolSet extends ToolSet {
   status: ExtensionStatus;
-  connect(): engineStateChanged<void>;
-  disconnect(): engineStateChanged<void>;
+  connect(): Promise<void>;
+  disconnect(): Promise<void>;
 }
 
 export function createMcpToolSet(config: McpToolSetConfig): McpToolSet {
@@ -89,9 +89,7 @@ export function createMcpToolSet(config: McpToolSetConfig): McpToolSet {
     },
   });
 
-  async function getToolMap(): engineStateChanged<
-    Record<string, AgentExtensionToolDef>
-  > {
+  async function getToolMap(): Promise<Record<string, AgentExtensionToolDef>> {
     if (_toolMap) return _toolMap;
     await awaitConnected();
     const result = await client.listTools();

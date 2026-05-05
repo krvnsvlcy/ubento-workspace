@@ -44,29 +44,14 @@ export function parseCursorQuery(
 }
 
 // --- STANDARDIZED RESPONSE ENVELOPE ---
-
-export interface CursorPageResponse<T> {
+export type CursorPage = {
+  cursor: string;
+  limit: number;
+};
+export interface CursorPagedResponse<T> {
   data: T[];
-  nextPage: {
-    type: "cursor";
-    nextCursor?: string;
-  };
-}
-
-export function makeCursorPageResponse<T>({
-  items,
-  nextCursor,
-}: {
-  items: T[];
-  nextCursor?: EncodedCursor;
-}): CursorPageResponse<T> {
-  return {
-    data: items,
-    nextPage: {
-      type: "cursor",
-      nextCursor,
-    },
-  };
+  nextPage?: CursorPage;
+  previousPage?: CursorPage;
 }
 
 export function makeCursorPageResponseSchema(
@@ -82,12 +67,20 @@ export function makeCursorPageResponseSchema(
       nextPage: {
         type: "object",
         properties: {
-          type: { type: "string", enum: ["cursor"] },
-          nextCursor: { type: "string", nullable: true },
+          cursor: { type: "string" },
+          limit: { type: "number" },
         },
-        required: ["type"],
+        required: ["cursor", "limit"],
+      },
+      previousPage: {
+        type: "object",
+        properties: {
+          cursor: { type: "string" },
+          limit: { type: "number" },
+        },
+        required: ["cursor", "limit"],
       },
     },
-    required: ["data", "page"],
+    required: ["data"],
   };
 }

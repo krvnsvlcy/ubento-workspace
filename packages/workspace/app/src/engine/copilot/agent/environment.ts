@@ -8,7 +8,7 @@ export type AgentEnvironment = {
   readWebpage(
     url: string,
     options?: { format: "raw" | "json" | "markdown" },
-  ): engineStateChanged<string>;
+  ): Promise<string>;
 
   toolSets: Record<string, ToolSet>;
   resourceTypes: Record<string, ResourceType>;
@@ -26,5 +26,5 @@ export type AgentEnvironment = {
   createThread: (params: {
     title: string;
     agent: Agent;
-  }) => engineStateChanged<AgentThread>;
+  }) => Promise<AgentThread>;
 };

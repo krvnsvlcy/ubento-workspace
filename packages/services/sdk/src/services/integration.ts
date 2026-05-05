@@ -44,9 +44,7 @@ export class IntegrationService {
     return extractResponseData(result, true);
   }
 
-  async getConnectionProvider(
-    providerId: string,
-  ): engineStateChanged<ConnectionProvider> {
+  async getConnectionProvider(providerId: string): Promise<ConnectionProvider> {
     const result = await this.integrationClient.get(
       "/integration/connection-providers/{provider_id}",
       {
@@ -74,7 +72,7 @@ export class IntegrationService {
     return extractResponseData(result, true);
   }
 
-  async getConnection(connectionId: string): engineStateChanged<Connection> {
+  async getConnection(connectionId: string): Promise<Connection> {
     const result = await this.integrationClient.get(
       "/integration/connections/{connection_id}",
       {
@@ -88,7 +86,7 @@ export class IntegrationService {
     organization_id: string;
     provider_id: string;
     auth?: Record<string, any>;
-  }): engineStateChanged<Connection> {
+  }): Promise<Connection> {
     const result = await this.integrationClient.post(
       "/integration/connections",
       {

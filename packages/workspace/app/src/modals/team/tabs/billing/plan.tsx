@@ -1,7 +1,7 @@
-import { FC } from "react";
-import { Zap } from "lucide-react";
-import { useUbento } from "@/engine/engine";
 import { useSession } from "@/contexts/session";
+import { useUbento } from "@/engine/engine";
+import { Zap } from "lucide-react";
+import { FC } from "react";
 
 export const PlanTab: FC = () => {
   const ubento = useUbento();
@@ -16,10 +16,10 @@ export const PlanTab: FC = () => {
 
   const subscription = subscriptions[0];
   const { data: product } = ubento.billing.useProduct(
-    subscription?.product_id as string,
+    subscription?.product_code as string,
     {
-      enabled: !!subscription?.product_id,
-    }
+      enabled: !!subscription?.product_code,
+    },
   );
 
   const { mutate: cancelSubscription, isPending: isCancelling } =
@@ -69,7 +69,9 @@ export const PlanTab: FC = () => {
                 Current Plan
               </p>
               <h3 className="text-3xl font-black text-neutral-content">
-                {product?.name || subscription.product_code || "Pro Professional"}
+                {product?.name ||
+                  subscription.product_code ||
+                  "Pro Professional"}
               </h3>
             </div>
             <span className="px-3 py-1 rounded-full bg-accent-surface text-accent text-[10px] font-black uppercase tracking-wider border border-accent-border">
@@ -77,11 +79,9 @@ export const PlanTab: FC = () => {
             </span>
           </div>
           <div className="flex items-baseline gap-1 mb-8">
-            <span className="text-4xl font-black">
-              ${subscription.amount || "29"}
-            </span>
+            <span className="text-4xl font-black">${"29"}</span>
             <span className="text-neutral-content-muted font-medium text-sm">
-              /{subscription.interval || "month"}
+              /{"month"}
             </span>
           </div>
           <div className="grid grid-cols-2 gap-4 pt-6 border-t border-neutral-border">

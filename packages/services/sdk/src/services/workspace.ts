@@ -120,7 +120,7 @@ export class WorkspaceService {
     workspace_id: string;
     limit?: number;
     cursor?: string;
-    parent_id?: string;
+    parent_id?: string | null;
   }) {
     const result = await this.workspaceClient.get("/boards", {
       params: {
@@ -129,7 +129,7 @@ export class WorkspaceService {
           limit,
           cursor,
           parent_id,
-        },
+        } as any,
       },
     });
     return extractResponseData(result, true);

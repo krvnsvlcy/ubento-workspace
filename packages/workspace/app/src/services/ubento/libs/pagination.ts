@@ -1,6 +1,6 @@
 export type UbentoApiPage = {
-  cursor?: string;
-  limit?: number;
+  cursor: string;
+  limit: number;
 };
 export type UbentoApiPagedResponse<T = unknown> = {
   data: T[];

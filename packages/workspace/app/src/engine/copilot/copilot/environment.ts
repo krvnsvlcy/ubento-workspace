@@ -96,7 +96,7 @@ export function createUbentoAgentEnvironment({
         },
         getContextStats: async (
           modelId: string,
-        ): engineStateChanged<AgentContextStats> => {
+        ): Promise<AgentContextStats> => {
           return {
             usage: 0,
             budget: 100000,

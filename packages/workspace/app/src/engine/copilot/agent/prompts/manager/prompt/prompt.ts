@@ -13,7 +13,7 @@ export type MessagePart = TextPart | ImagePart | FilePart;
 export async function formatUserMessage(
   message: UserMessageData,
   agent: Agent,
-): engineStateChanged<MessagePart[]> {
+): Promise<MessagePart[]> {
   const parts: MessagePart[] = [];
 
   if (message.text) {
@@ -23,7 +23,7 @@ export async function formatUserMessage(
     });
   }
 
-  const attachments = await engineStateChanged.all(
+  const attachments = await Promise.all(
     message.attachments?.map((attachment) => {
       const attachmentType = agent.environment.attachmentTypes[attachment.type];
       if (!attachmentType) {
@@ -159,7 +159,7 @@ export const buildAgentManagerPrompt = async ({
 }: {
   context: AgentContext;
   agent: Agent;
-}): engineStateChanged<MessagePart[]> => {
+}): Promise<MessagePart[]> => {
   const history = [...(context.history || [])];
   let lastUserMessage: UserMessageData | undefined;
   const currentProgress: AgentHistoryEntry[] = [];

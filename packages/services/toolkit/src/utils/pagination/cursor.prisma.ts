@@ -1,4 +1,9 @@
-import { decodeCursor, encodeCursor, EncodedCursor } from "./pagination.js";
+import {
+  CursorPagedResponse,
+  decodeCursor,
+  encodeCursor,
+  EncodedCursor,
+} from "./pagination.js";
 
 /* ---------- Minimal Prisma delegate type (no dependency) ---------- */
 export type PrismaDelegate = {
@@ -10,11 +15,8 @@ type FindManyArgs<D extends PrismaDelegate> = Parameters<D["findMany"]>[0];
 type FindManyResult<D extends PrismaDelegate> = Awaited<
   ReturnType<D["findMany"]>
 >;
-type FindManyItem<D extends PrismaDelegate> = FindManyResult<D> extends Array<
-  infer U
->
-  ? U
-  : never;
+type FindManyItem<D extends PrismaDelegate> =
+  FindManyResult<D> extends Array<infer U> ? U : never;
 type PrismaCursorPayload<D extends PrismaDelegate> = NonNullable<
   FindManyArgs<D>["cursor"]
 >;
@@ -39,8 +41,8 @@ export async function prismaListWithCursor<D extends PrismaDelegate>(
     select?: FindManyArgs<D>["select"];
     include?: FindManyArgs<D>["include"];
     resolveCursor: (item: FindManyItem<D>) => PrismaCursorPayload<D>;
-  }
-): Promise<{ items: FindManyItem<D>[]; nextCursor?: EncodedCursor }> {
+  },
+): Promise<CursorPagedResponse<FindManyItem<D>>> {
   const decoded = decodeCursor<PrismaCursorPayload<D>>(cursor);
 
   // Build args with accurate shape, but keep flexible for different models.
@@ -74,5 +76,8 @@ export async function prismaListWithCursor<D extends PrismaDelegate>(
     nextCursor = encodeCursor(cursorObj);
   }
 
-  return { items, nextCursor };
+  return {
+    data: items,
+    nextPage: nextCursor ? { cursor: nextCursor, limit } : undefined,
+  };
 }

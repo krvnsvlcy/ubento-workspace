@@ -1,4 +1,4 @@
-import { WorkspaceEngine } from "@/app/views/workspace/engine/engine";
+import { WorkspaceEngine } from "@/app/workspace/main/workspace/engine/engine";
 import { createUbentoService, UbentoService } from "@/services/ubento/ubento";
 import type { UbentoSDK } from "@ubento/services.sdk";
 import {

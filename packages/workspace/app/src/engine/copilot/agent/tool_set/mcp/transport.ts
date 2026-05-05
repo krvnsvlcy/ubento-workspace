@@ -150,7 +150,7 @@ export interface StreamableHTTPReconnectionOptions {
  * The implementer handles all caching, refreshing, and storage logic.
  */
 export interface TokenManager {
-  getToken(): string | engineStateChanged<string>;
+  getToken(): string | Promise<string>;
 }
 
 export class HttpTransport implements Transport {
@@ -188,7 +188,7 @@ export class HttpTransport implements Transport {
       opts?.reconnectionOptions ?? DEFAULT_STREAMABLE_HTTP_RECONNECTION_OPTIONS;
   }
 
-  private async _commonHeaders(): engineStateChanged<Headers> {
+  private async _commonHeaders(): Promise<Headers> {
     const headers: Record<string, string> = {};
 
     // Fetch and inject the token right before the request
@@ -214,7 +214,7 @@ export class HttpTransport implements Transport {
     });
   }
 
-  private async _startSse(options: StartSSEOptions): engineStateChanged<void> {
+  private async _startSse(options: StartSSEOptions): Promise<void> {
     const { resumptionToken } = options;
 
     try {
@@ -403,7 +403,7 @@ export class HttpTransport implements Transport {
     this._abortController = new AbortController();
   }
 
-  async close(): engineStateChanged<void> {
+  async close(): Promise<void> {
     if (this._reconnectionTimeout) {
       clearTimeout(this._reconnectionTimeout);
       this._reconnectionTimeout = undefined;
@@ -418,7 +418,7 @@ export class HttpTransport implements Transport {
       resumptionToken?: string;
       onresumptiontoken?: (token: string) => void;
     },
-  ): engineStateChanged<void> {
+  ): Promise<void> {
     try {
       const { resumptionToken, onresumptiontoken } = options || {};
 
@@ -510,7 +510,7 @@ export class HttpTransport implements Transport {
     return this._sessionId;
   }
 
-  async terminateSession(): engineStateChanged<void> {
+  async terminateSession(): Promise<void> {
     if (!this._sessionId) return;
 
     try {
@@ -553,7 +553,7 @@ export class HttpTransport implements Transport {
   async resumeStream(
     lastEventId: string,
     options?: { onresumptiontoken?: (token: string) => void },
-  ): engineStateChanged<void> {
+  ): Promise<void> {
     await this._startSse({
       resumptionToken: lastEventId,
       onresumptiontoken: options?.onresumptiontoken,

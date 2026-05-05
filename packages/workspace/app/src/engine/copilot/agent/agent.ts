@@ -32,25 +32,23 @@ export type Agent = {
   removeAgent: (name: string) => void;
 
   // Logic actions
-  getInstructions: () => engineStateChanged<string>;
-  getPrompt: (context: AgentContext) => engineStateChanged<any>;
-  resolveTool: (toolRef: string) => engineStateChanged<Tool | undefined>;
+  getInstructions: () => Promise<string>;
+  getPrompt: (context: AgentContext) => Promise<any>;
+  resolveTool: (toolRef: string) => Promise<Tool | undefined>;
 
   // Thread actions
-  createThread: (params: { title: string }) => engineStateChanged<any>;
+  createThread: (params: { title: string }) => Promise<any>;
   sendMessage: (
     content: string,
     params: { threadId?: string; attachments?: any[] },
-  ) => engineStateChanged<void>;
+  ) => Promise<void>;
 };
 
 export interface AgentConfig {
   name: string;
   description: string;
   toolkit: AgentEnvironment;
-  getAgentInstructions: () =>
-    | AgentInstructions
-    | engineStateChanged<AgentInstructions>;
+  getAgentInstructions: () => AgentInstructions | Promise<AgentInstructions>;
 }
 
 export function createAgent(config: AgentConfig): Agent {

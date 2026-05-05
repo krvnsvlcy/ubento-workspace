@@ -7,11 +7,12 @@ export const UsageTab: FC = () => {
   const session = useSession();
   const teamId = session.teamId;
 
-  const { data: usageResponse, loading } = ubento.billing.useUsageCounters({
-    organization_id: teamId,
-  });
+  const { data: usageCounters = [], isFetching } =
+    ubento.billing.useUsageCounters({
+      organization_id: teamId,
+    });
 
-  const usageItems = (usageResponse?.data || []).map((counter: any) => ({
+  const usageItems = usageCounters.map((counter: any) => ({
     label: counter.name || counter.code,
     used: counter.current_value,
     total: counter.limit,

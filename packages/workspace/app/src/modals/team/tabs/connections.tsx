@@ -1,20 +1,23 @@
-import { FC } from "react";
-import { Globe, Plus, Settings, Zap, Trash2 } from "lucide-react";
-import { useUbento } from "@/engine/engine";
 import { useSession } from "@/contexts/session";
+import { useUbento } from "@/engine/engine";
+import { Globe, Plus, Settings, Trash2, Zap } from "lucide-react";
+import { FC } from "react";
 
 interface ConnectionsTabProps {
   team?: any;
 }
 
-export const ConnectionsTab: FC<ConnectionsTabProps> = ({ team: initialTeam }) => {
+export const ConnectionsTab: FC<ConnectionsTabProps> = ({
+  team: initialTeam,
+}) => {
   const ubento = useUbento();
   const session = useSession();
   const teamId = initialTeam?.id || session.teamId;
 
-  const { data: connections = [], isFetching } = ubento.integration.useConnections({
-    organization_id: teamId,
-  });
+  const { data: connections = [], isFetching } =
+    ubento.integration.useConnections({
+      organization_id: teamId,
+    });
   const { data: providers = [] } = ubento.integration.useConnectionProviders();
   const { mutate: deleteConnection } = ubento.integration.useDeleteConnection();
 
@@ -64,7 +67,7 @@ export const ConnectionsTab: FC<ConnectionsTabProps> = ({ team: initialTeam }) =
                       {provider?.name || conn.provider_id}
                     </p>
                     <p className="text-[10px] text-neutral-content-muted font-bold uppercase">
-                      {conn.account_id || "Active"}
+                      {"Active"}
                     </p>
                   </div>
                 </div>

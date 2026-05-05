@@ -3,7 +3,6 @@ import {
   chain,
   dataResponse,
   enforce,
-  makeCursorPageResponse,
   NotFoundError,
   validate,
 } from "@ubento/services.toolkit";
@@ -34,11 +33,11 @@ boardsRouter.get(
     }),
     enforce({
       permissions: [ubentoAuth.actions.board.list],
-      resource: async (req) => {
+      scope: async (req) => {
         const workspace_id = req.query.workspace_id as string;
         const workspace = await getWorkspace(workspace_id);
-        if (!workspace) throw new NotFoundError("Workspace not found");
-        return ubentoAuth.scopes.workspaceOrHigher({
+        if (!workspace) return ubentoAuth.scopes.root;
+        return ubentoAuth.scopes.workspace({
           team_id: workspace.team_id,
           workspace_id: workspace.id,
         });
@@ -51,7 +50,7 @@ boardsRouter.get(
         limit: req.query.limit ? Number(req.query.limit) : undefined,
         cursor: req.query.cursor as string | undefined,
       });
-      res.json(makeCursorPageResponse(result));
+      res.json(result);
     },
   ),
 );
@@ -67,13 +66,13 @@ boardsRouter.get(
     }),
     enforce({
       permissions: [ubentoAuth.actions.board.read],
-      resource: async (req) => {
+      scope: async (req) => {
         const board_id = req.params.board_id as string;
         const board = await getBoard(board_id);
         if (!board) throw new NotFoundError("Board not found");
         const workspace = await getWorkspace(board.workspace_id);
         if (!workspace) throw new NotFoundError("Workspace not found");
-        return ubentoAuth.scopes.workspaceOrHigher({
+        return ubentoAuth.scopes.workspace({
           team_id: workspace.team_id,
           workspace_id: workspace.id,
         });
@@ -103,10 +102,10 @@ boardsRouter.post(
     }),
     enforce({
       permissions: [ubentoAuth.actions.board.create],
-      resource: async (req) => {
+      scope: async (req) => {
         const workspace = await getWorkspace(req.body.workspace_id);
         if (!workspace) throw new NotFoundError("Workspace not found");
-        return ubentoAuth.scopes.workspaceOrHigher({
+        return ubentoAuth.scopes.workspace({
           team_id: workspace.team_id,
           workspace_id: workspace.id,
         });
@@ -136,13 +135,13 @@ boardsRouter.patch(
     }),
     enforce({
       permissions: [ubentoAuth.actions.board.update],
-      resource: async (req) => {
+      scope: async (req) => {
         const board_id = req.params.board_id as string;
         const board = await getBoard(board_id);
         if (!board) throw new NotFoundError("Board not found");
         const workspace = await getWorkspace(board.workspace_id);
         if (!workspace) throw new NotFoundError("Workspace not found");
-        return ubentoAuth.scopes.workspaceOrHigher({
+        return ubentoAuth.scopes.workspace({
           team_id: workspace.team_id,
           workspace_id: workspace.id,
         });
@@ -166,13 +165,13 @@ boardsRouter.delete(
     }),
     enforce({
       permissions: [ubentoAuth.actions.board.delete],
-      resource: async (req) => {
+      scope: async (req) => {
         const board_id = req.params.board_id as string;
         const board = await getBoard(board_id);
         if (!board) throw new NotFoundError("Board not found");
         const workspace = await getWorkspace(board.workspace_id);
         if (!workspace) throw new NotFoundError("Workspace not found");
-        return ubentoAuth.scopes.workspaceOrHigher({
+        return ubentoAuth.scopes.workspace({
           team_id: workspace.team_id,
           workspace_id: workspace.id,
         });

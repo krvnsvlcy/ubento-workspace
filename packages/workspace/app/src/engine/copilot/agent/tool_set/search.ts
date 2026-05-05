@@ -14,7 +14,7 @@ export async function searchTools({
   tools: ToolSummary[];
   model: LanguageModel;
   limit?: number;
-}): engineStateChanged<ToolSummary[]> {
+}): Promise<ToolSummary[]> {
   // 1. Clear system instructions enforcing the YAML output format
   const system = `
 You are an intelligent tool routing assistant. Your task is to help other agents find the most relevant tools to fulfill their query. 

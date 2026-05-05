@@ -54,24 +54,21 @@ export async function listWorkspaceInvites({
   limit?: number;
   cursor?: string;
 }) {
-  const { items, ...rest } = await prismaListWithCursor(
-    prisma.workspaceInvite,
-    {
-      limit,
-      cursor,
-      orderBy: { created_at: "desc" },
-      where: {
-        workspace_id,
-        ...(statuses && { status: { in: statuses } }),
-        ...(email && { email: { contains: email, mode: "insensitive" } }),
-      },
-      resolveCursor: (item) => ({ id: item.id }),
+  const { data, ...rest } = await prismaListWithCursor(prisma.workspaceInvite, {
+    limit,
+    cursor,
+    orderBy: { created_at: "desc" },
+    where: {
+      workspace_id,
+      ...(statuses && { status: { in: statuses } }),
+      ...(email && { email: { contains: email, mode: "insensitive" } }),
     },
-  );
+    resolveCursor: (item) => ({ id: item.id }),
+  });
 
   return {
     ...rest,
-    items: items.map(sanitizeInvite),
+    data: data.map(sanitizeInvite),
   };
 }
 

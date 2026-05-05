@@ -3,7 +3,6 @@ import {
   chain,
   dataResponse,
   enforce,
-  makeCursorPageResponse,
   NotFoundError,
   validate,
 } from "@ubento/services.toolkit";
@@ -31,13 +30,11 @@ workspacesRouter.get(
     }),
     enforce({
       permissions: [ubentoAuth.actions.workspace.read],
-      resource: async (req) => {
+      scope: async (req) => {
         const workspace = await getWorkspaceBySlug(req.params.slug as string);
         if (!workspace) throw new NotFoundError("Workspace not found");
-
-        // Cache the workspace on the request to avoid a double DB query
         (req as any).resolvedWorkspace = workspace;
-        return ubentoAuth.scopes.workspaceOrHigher({
+        return ubentoAuth.scopes.workspace({
           team_id: workspace.team_id,
           workspace_id: workspace.id,
         });
@@ -64,10 +61,14 @@ workspacesRouter.get(
     }),
     enforce({
       permissions: [ubentoAuth.actions.workspace.list],
-      resource: (req) =>
-        ubentoAuth.scopes.teamOrHigher({
-          team_id: req.query.team_id as string | undefined,
-        }),
+      scope: (req) => {
+        if (req.query.team_id) {
+          return ubentoAuth.scopes.team({
+            team_id: req.query.team_id as string,
+          });
+        }
+        return ubentoAuth.scopes.root;
+      },
     }),
     async (req, res) => {
       const result = await listWorkspaces({
@@ -75,7 +76,7 @@ workspacesRouter.get(
         limit: req.query.limit ? Number(req.query.limit) : undefined,
         cursor: req.query.cursor as string | undefined,
       });
-      res.json(makeCursorPageResponse(result));
+      res.json(result);
     },
   ),
 );
@@ -91,13 +92,13 @@ workspacesRouter.get(
     }),
     enforce({
       permissions: [ubentoAuth.actions.workspace.read],
-      resource: async (req) => {
+      scope: async (req) => {
         const workspace = await getWorkspace(req.params.workspace_id as string);
         if (!workspace) throw new NotFoundError("Workspace not found");
 
         // Cache the workspace on the request to avoid a double DB query
         (req as any).resolvedWorkspace = workspace;
-        return ubentoAuth.scopes.workspaceOrHigher({
+        return ubentoAuth.scopes.workspace({
           team_id: workspace.team_id,
           workspace_id: workspace.id,
         });
@@ -126,8 +127,8 @@ workspacesRouter.post(
     }),
     enforce({
       permissions: [ubentoAuth.actions.workspace.create],
-      resource: (req) =>
-        ubentoAuth.scopes.teamOrHigher({
+      scope: (req) =>
+        ubentoAuth.scopes.team({
           team_id: req.body.team_id as string,
         }),
     }),
@@ -155,11 +156,11 @@ workspacesRouter.patch(
     }),
     enforce({
       permissions: [ubentoAuth.actions.workspace.update],
-      resource: async (req) => {
+      scope: async (req) => {
         const workspace = await getWorkspace(req.params.workspace_id as string);
         if (!workspace) throw new NotFoundError("Workspace not found");
 
-        return ubentoAuth.scopes.workspaceOrHigher({
+        return ubentoAuth.scopes.workspace({
           team_id: workspace.team_id,
           workspace_id: workspace.id,
         });
@@ -186,11 +187,11 @@ workspacesRouter.delete(
     }),
     enforce({
       permissions: [ubentoAuth.actions.workspace.delete],
-      resource: async (req) => {
+      scope: async (req) => {
         const workspace = await getWorkspace(req.params.workspace_id as string);
         if (!workspace) throw new NotFoundError("Workspace not found");
 
-        return ubentoAuth.scopes.workspaceOrHigher({
+        return ubentoAuth.scopes.workspace({
           team_id: workspace.team_id,
           workspace_id: workspace.id,
         });

@@ -21,7 +21,7 @@ export async function summarize({
   agent: Agent;
   model: LanguageModel;
   maxLength?: number;
-}): engineStateChanged<AgentContext> {
+}): Promise<AgentContext> {
   const history = context.history || [];
   if (history.length <= 1) return context;
 

@@ -4,6 +4,7 @@ import {
   Offer,
   Product,
   Subscription,
+  UsageCounter,
 } from "~/clients/billing/client.js";
 import { extractResponseData } from "~/lib/client.js";
 import { TokenManager } from "~/lib/token_manager.js";
@@ -36,14 +37,14 @@ export class BillingService {
     return extractResponseData(result, true);
   }
 
-  async getProduct(id: string): engineStateChanged<Product> {
+  async getProduct(id: string): Promise<Product> {
     const result = await this.billingClient.get("/billing/products/{id}", {
       params: { path: { id } },
     });
     return extractResponseData(result, true);
   }
 
-  async getProductByCode(code: string): engineStateChanged<Product> {
+  async getProductByCode(code: string): Promise<Product> {
     const result = await this.billingClient.get(
       "/billing/products/by-code/{code}",
       {
@@ -67,21 +68,21 @@ export class BillingService {
     return extractResponseData(result, true);
   }
 
-  async createOffer(data: any): engineStateChanged<Offer> {
+  async createOffer(data: any): Promise<Offer> {
     const result = await this.billingClient.post("/billing/offers", {
       body: data,
     });
     return extractResponseData(result, true);
   }
 
-  async getOffer(id: string): engineStateChanged<Offer> {
+  async getOffer(id: string): Promise<Offer> {
     const result = await this.billingClient.get("/billing/offers/{id}", {
       params: { path: { id } },
     });
     return extractResponseData(result, true);
   }
 
-  async updateOffer(id: string, data: any): engineStateChanged<Offer> {
+  async updateOffer(id: string, data: any): Promise<Offer> {
     const result = await this.billingClient.patch("/billing/offers/{id}", {
       params: { path: { id } },
       body: data,
@@ -107,14 +108,14 @@ export class BillingService {
     return extractResponseData(result, true);
   }
 
-  async getSubscription(id: string): engineStateChanged<Subscription> {
+  async getSubscription(id: string): Promise<Subscription> {
     const result = await this.billingClient.get("/billing/subscriptions/{id}", {
       params: { path: { id } },
     });
     return extractResponseData(result, true);
   }
 
-  async cancelSubscription(id: string): engineStateChanged<Subscription> {
+  async cancelSubscription(id: string): Promise<Subscription> {
     const result = await this.billingClient.post(
       "/billing/subscriptions/{id}/cancel",
       {
@@ -158,6 +159,13 @@ export class BillingService {
     return extractResponseData(result, true);
   }
 
+  async getUsageCounter(id: string): Promise<UsageCounter> {
+    const result = await this.billingClient.get("/billing/usage/counters/{id}", {
+      params: { path: { id } },
+    });
+    return extractResponseData(result, true);
+  }
+
   async reportUsage(data: {
     organization_id: string;
     code: string;
@@ -194,7 +202,7 @@ export class BillingService {
     redirect_url: string;
     duration?: number;
     metadata?: Record<string, any>;
-  }): engineStateChanged<Checkout> {
+  }): Promise<Checkout> {
     const result = await this.billingClient.post("/billing/checkout", {
       body: {
         organization_id: data.organization_id,

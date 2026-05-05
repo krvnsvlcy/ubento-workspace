@@ -150,7 +150,7 @@ export function createUbentoIntelligenceService({
       threadStore.push(thread);
       return thread;
     },
-    listMes8sages: async (params: {
+    listMessages: async (params: {
       thread_id: string;
       limit?: number;
       cursor?: string;

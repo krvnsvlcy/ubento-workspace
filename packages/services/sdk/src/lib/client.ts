@@ -15,7 +15,7 @@ export type UbentoClient<Paths extends {}> = {
   options: ClientMethod<Paths, "options", `${string}/${string}`>;
   trace: ClientMethod<Paths, "trace", `${string}/${string}`>;
 
-  fetch: (request: Request) => engineStateChanged<Response>;
+  fetch: (request: Request) => Promise<Response>;
 };
 
 export function createClientFactory<Paths extends {}>() {

@@ -36,20 +36,20 @@ export const HistoryTab: FC = () => {
             <div>
               <p className="text-sm font-bold">{inv.created_at || "Recent"}</p>
               <p className="text-[10px] text-neutral-content-muted font-bold uppercase">
-                Invoice #{inv.number || `INV-00${i + 1}`}
+                Invoice #{(inv as any).number || `INV-00${i + 1}`}
               </p>
             </div>
           </div>
           <div className="flex items-center gap-6">
             <div className="text-right">
-              <p className="text-sm font-black">${inv.amount || "0.00"}</p>
+              <p className="text-sm font-black">${(inv.total / 100).toFixed(2)}</p>
               <p className="text-[10px] text-accent font-bold uppercase">
                 {inv.status}
               </p>
             </div>
-            {inv.pdf_url && (
+            {(inv as any).pdf_url && (
               <a
-                href={inv.pdf_url}
+                href={(inv as any).pdf_url}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="opacity-0 group-hover:opacity-100 p-2 rounded-lg bg-neutral-surface-hover transition-all"

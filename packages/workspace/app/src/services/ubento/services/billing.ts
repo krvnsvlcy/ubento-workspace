@@ -152,6 +152,45 @@ export function createUbentoBillingService({
     },
   });
 
+  const usageCounterStore = createStore<
+    billingClient.UsageCounter,
+    { organization_id?: string; feature_code?: string; group?: string },
+    UbentoApiPage
+  >({
+    namespace: ubentoEntities.billingUsageCounter.name,
+    getKey: (uc) => uc.id,
+    fetchOne: async (id) => {
+      return await ubentoSdk.billing.getUsageCounter(id);
+    },
+    fetchMany: async ({ page, params }) => {
+      if (!params?.organization_id) {
+        return { data: [] };
+      }
+      return ubentoToFabricPagedResponse(
+        await ubentoSdk.billing.listUsageCounters({
+          cursor: page?.cursor,
+          limit: page?.limit,
+          organization_id: params.organization_id,
+          code: params.feature_code,
+          group: params.group,
+        }),
+      );
+    },
+    project: (entities, params) => {
+      return [...entities].filter((uc) => {
+        if (
+          params?.organization_id &&
+          uc.organization_id !== params.organization_id
+        )
+          return false;
+        if (params?.feature_code && uc.feature_code !== params.feature_code)
+          return false;
+        if (params?.group && uc.group !== params.group) return false;
+        return true;
+      });
+    },
+  });
+
   // --- Hooks ---
 
   const hooks = {
@@ -254,31 +293,18 @@ export function createUbentoBillingService({
     },
 
     // Usage
-    useUsageCounters: (params: {
-      organization_id: string;
-      code?: string;
-      group?: string;
-    }) => {
-      const [loading, setLoading] = useState(false);
-      const [data, setData] = useState<any>(null);
-
-      useEffect(() => {
-        if (!params.organization_id) return;
-
-        const load = async () => {
-          setLoading(true);
-          try {
-            const res = await ubentoSdk.billing.listUsageCounters(params);
-            setData(res);
-          } finally {
-            setLoading(false);
-          }
-        };
-
-        load();
-      }, [params.organization_id, params.code, params.group]);
-
-      return { data, loading };
+    useUsageCounter: (id: string, options?: UseStoreOptions) => {
+      return useStoreEntity(usageCounterStore, id, options);
+    },
+    useUsageCounters: (
+      params: {
+        organization_id: string;
+        code?: string;
+        group?: string;
+      },
+      options?: UseStoreOptions,
+    ) => {
+      return useStoreEntities(usageCounterStore, params, options);
     },
     useReportUsage: () => {
       return useMutation({
@@ -342,6 +368,22 @@ export function createUbentoBillingService({
     },
     reportUsage: async (data: any) => {
       return await ubentoSdk.billing.reportUsage(data);
+    },
+    getUsageCounters: async (params: {
+      organization_id: string;
+      code?: string;
+      group?: string;
+      limit?: number;
+      cursor?: string;
+    }) => {
+      const res = await ubentoSdk.billing.listUsageCounters(params);
+      usageCounterStore.pushMany(res.data);
+      return res;
+    },
+    getUsageCounter: async (id: string) => {
+      const uc = await ubentoSdk.billing.getUsageCounter(id);
+      usageCounterStore.push(uc);
+      return uc;
     },
   };
 

@@ -1,4 +1,3 @@
-import { X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import React from "react";
 
@@ -9,7 +8,7 @@ interface ModalProps {
   children: React.ReactNode;
 }
 
-export function Modal({ isOpen, onClose, title, children }: ModalProps) {
+export function Modal({ isOpen, onClose, children }: ModalProps) {
   return (
     <AnimatePresence>
       {isOpen && (
@@ -32,23 +31,7 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
             className="relative w-full max-w-5xl overflow-hidden rounded-3xl bg-background shadow-2xl aspect-[3/2]"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex h-full flex-col">
-              {/* Header */}
-              <div className="flex items-center justify-between px-8 py-6">
-                <h2 className="text-xl font-semibold tracking-tight text-neutral-content">
-                  {title}
-                </h2>
-                <button
-                  onClick={onClose}
-                  className="group flex h-8 w-8 cursor-pointer items-center justify-center rounded-full transition-colors hover:bg-neutral-surface"
-                >
-                  <X className="h-5 w-5 text-neutral-content-subtle group-hover:text-neutral-content" />
-                </button>
-              </div>
-
-              {/* Content */}
-              <div className="flex-1 overflow-y-auto px-8 pb-8">{children}</div>
-            </div>
+            {children}
           </motion.div>
         </div>
       )}

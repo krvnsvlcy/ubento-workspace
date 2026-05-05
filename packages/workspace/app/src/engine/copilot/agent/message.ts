@@ -9,9 +9,9 @@ import { Tool } from "./tool.js";
 // Local interface to replace dependency on @elllphnt/backend
 export interface IntelligenceMessage {
   id: string;
-  getData(): engineStateChanged<any>;
-  update(data: any): engineStateChanged<void>;
-  save(): engineStateChanged<void>;
+  getData(): Promise<any>;
+  update(data: any): Promise<void>;
+  save(): Promise<void>;
 }
 
 export interface AgentMessageInstance {
@@ -21,41 +21,38 @@ export interface AgentMessageInstance {
   startAction<T extends Tool>(params: {
     toolRef: string;
     tool: T;
-  }): engineStateChanged<AgentActionInstance<T>>;
-  logError(error: AgentError): engineStateChanged<void>;
-  logReasoning(reasoning: string): engineStateChanged<void>;
-  complete(params?: { error?: AgentMessageError }): engineStateChanged<void>;
-  getActionData(index: number): engineStateChanged<AgentActionData>;
-  updateAction(
-    index: number,
-    updates: Partial<AgentActionData>,
-  ): engineStateChanged<void>;
+  }): Promise<AgentActionInstance<T>>;
+  logError(error: AgentError): Promise<void>;
+  logReasoning(reasoning: string): Promise<void>;
+  complete(params?: { error?: AgentMessageError }): Promise<void>;
+  getActionData(index: number): Promise<AgentActionData>;
+  updateAction(index: number, updates: Partial<AgentActionData>): Promise<void>;
 }
 
 export interface AgentActionInstance<T extends Tool = Tool> {
   index: number;
   message: AgentMessageInstance;
   tool: T;
-  start(): engineStateChanged<void>;
-  complete(): engineStateChanged<void>;
-  fail(): engineStateChanged<void>;
-  abort(): engineStateChanged<void>;
-  getInput(): engineStateChanged<z.infer<T["args"]>>;
-  setInput(input: z.infer<T["args"]>): engineStateChanged<void>;
-  updateInput(input: Partial<z.infer<T["args"]>>): engineStateChanged<void>;
-  getOutput(): engineStateChanged<any>;
-  setOutput(output: LLMContent): engineStateChanged<void>;
-  getStructuredOutput(): engineStateChanged<any>;
-  setStructuredOutput(output: any): engineStateChanged<void>;
-  run(): engineStateChanged<boolean>;
+  start(): Promise<void>;
+  complete(): Promise<void>;
+  fail(): Promise<void>;
+  abort(): Promise<void>;
+  getInput(): Promise<z.infer<T["args"]>>;
+  setInput(input: z.infer<T["args"]>): Promise<void>;
+  updateInput(input: Partial<z.infer<T["args"]>>): Promise<void>;
+  getOutput(): Promise<any>;
+  setOutput(output: LLMContent): Promise<void>;
+  getStructuredOutput(): Promise<any>;
+  setStructuredOutput(output: any): Promise<void>;
+  run(): Promise<boolean>;
 }
 
 export function createAgentMessage(params: {
   message: IntelligenceMessage;
   execution: AgentExecution;
-  getData: () => engineStateChanged<AgentMessageData>;
-  setData: (data: AgentMessageData) => engineStateChanged<void>;
-  save: () => engineStateChanged<void>;
+  getData: () => Promise<AgentMessageData>;
+  setData: (data: AgentMessageData) => Promise<void>;
+  save: () => Promise<void>;
 }): AgentMessageInstance {
   let _data: AgentMessageData | undefined;
 

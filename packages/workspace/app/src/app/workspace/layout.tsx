@@ -1,6 +1,6 @@
 import { useUbentoEngine } from "../../engine/engine";
-import { SideSplitView } from "../views/workspace/components/split-view";
 import { Main } from "./main/main";
+import { SideSplitView } from "./main/workspace/components/split-view";
 import { Side } from "./side/side";
 
 export function Layout() {
@@ -10,7 +10,7 @@ export function Layout() {
 
   return (
     <div
-      className="bg-background"
+      className="bg-background relative z-0"
       style={{
         height: "100vh",
         width: "100vw",

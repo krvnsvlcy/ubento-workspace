@@ -24,8 +24,8 @@ export interface Tool<
   run(
     args: z.infer<I>,
     action: AgentActionInstance,
-  ): engineStateChanged<ToolCallResult<O>>;
-  play?(args: z.infer<I>): engineStateChanged<ToolCallResult<O>>;
+  ): Promise<ToolCallResult<O>>;
+  play?(args: z.infer<I>): Promise<ToolCallResult<O>>;
 }
 
 export type ToolInputType<T extends Tool> =

@@ -28,7 +28,7 @@ export const AddonsTab: FC = () => {
     );
   }
 
-  const addons = products.filter((p) => p.type === "ADDON" || p.metadata?.is_addon);
+  const addons = products.filter((p: any) => p.type === "ADDON" || p.metadata?.is_addon);
 
   return (
     <div className="space-y-4 animate-in fade-in duration-300">
@@ -57,7 +57,7 @@ export const AddonsTab: FC = () => {
             onClick={() => handleBuy(addon)}
             className="px-4 py-2 rounded-xl bg-neutral-content text-neutral-contrast text-xs font-black uppercase tracking-wider"
           >
-            Add ${addon.price || "0"}
+            Add ${(addon as any).price || "0"}
           </button>
         </div>
       ))}
