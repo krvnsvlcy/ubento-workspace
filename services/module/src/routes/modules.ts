@@ -5,6 +5,7 @@ import {
   dataResponse,
   enforce,
   NotFoundError,
+  parseNumberQuery,
   validate,
 } from "@ubento/services.toolkit";
 import { Router } from "express";
@@ -51,7 +52,13 @@ modulesRouter.get(
       },
     }),
     async (req, res) => {
-      const result = await listModules(req.query as any);
+      const result = await listModules({
+        team_id: req.query.team_id as string,
+        limit: parseNumberQuery(req, "limit"),
+        cursor: req.query.cursor as string,
+        type: req.query.type as string,
+        scope: req.query.scope as ModuleScope,
+      });
       res.json(result);
     },
   ),

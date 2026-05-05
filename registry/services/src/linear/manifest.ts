@@ -1,0 +1,60 @@
+import { ServiceManifest } from "@ubento/bento.service";
+
+export const linearServiceManifest: ServiceManifest = {
+  name: "@ubento/linear-service",
+  version: "1.0.0",
+  schemas: {
+    issue: {
+      type: "object",
+      properties: {
+        id: { type: "string" },
+        title: { type: "string" },
+        description: { type: "string" },
+        identifier: { type: "string" },
+        priority: { type: "number" },
+        status: { type: "object" },
+      },
+      required: ["id", "title", "identifier"],
+    },
+    project: {
+      type: "object",
+      properties: {
+        id: { type: "string" },
+        name: { type: "string" },
+        description: { type: "string" },
+        state: { type: "string" },
+      },
+      required: ["id", "name"],
+    },
+    team: {
+      type: "object",
+      properties: {
+        id: { type: "string" },
+        name: { type: "string" },
+        key: { type: "string" },
+      },
+      required: ["id", "name", "key"],
+    },
+  },
+  entities: {
+    issue: {
+      name: "Issue",
+      primaryKey: "id",
+      schema: { type: "ref", ref: "issue" },
+    },
+    project: {
+      name: "Project",
+      primaryKey: "id",
+      schema: { type: "ref", ref: "project" },
+    },
+    team: {
+      name: "Team",
+      primaryKey: "id",
+      schema: { type: "ref", ref: "team" },
+    },
+  },
+  queries: {},
+  actions: {},
+};
+
+export default linearServiceManifest;

@@ -1,0 +1,192 @@
+import { WorkspaceEngine } from "@/app/workspace/main/workspace/engine/engine";
+import { useSession } from "@/contexts/session";
+import { useUbento } from "@/engine/engine";
+import {
+  Content,
+  ContentBody,
+  ContentHeader,
+  Heading,
+  RailLayout,
+  RailLayoutMain,
+  RailLayoutSide,
+  Text,
+} from "@ubento/workspace.primitives";
+import {
+  Briefcase,
+  Code2,
+  Cpu,
+  LayoutGrid,
+  Search,
+  Server,
+  Sparkles,
+  Wrench,
+} from "lucide-react";
+import { useState } from "react";
+
+const CATEGORIES = [
+  { id: "all", name: "All Services", icon: LayoutGrid },
+  { id: "ai", name: "AI & Intelligence", icon: Sparkles },
+  { id: "infra", name: "Infrastructure", icon: Cpu },
+  { id: "dev", name: "Developer Tools", icon: Code2 },
+  { id: "biz", name: "Business", icon: Briefcase },
+  { id: "util", name: "Utilities", icon: Wrench },
+];
+
+function ServiceCard({
+  service,
+  isInstalled,
+  onSelect,
+}: {
+  service: any;
+  isInstalled: boolean;
+  onSelect: (id: string) => void;
+}) {
+  return (
+    <div
+      onClick={() => onSelect(service.id)}
+      className={`group relative flex flex-row items-center gap-3 p-3 rounded-2xl transition-all hover:bg-neutral-surface/50 cursor-pointer ${
+        isInstalled ? "opacity-50" : ""
+      }`}
+    >
+      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-neutral-surface-hover border border-neutral-border text-neutral-content-muted group-hover:text-accent group-hover:border-accent/30 transition-colors">
+        <Server size={24} />
+      </div>
+
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center justify-between gap-2 mb-0.5">
+          <h3 className="text-[14px] font-bold text-neutral-content truncate group-hover:text-accent transition-colors">
+            {service.name}
+          </h3>
+          {isInstalled && (
+            <div className="px-2 py-0.5 rounded-full bg-success/10 border border-success/20 text-success text-[9px] font-bold uppercase tracking-wider shrink-0">
+              Installed
+            </div>
+          )}
+        </div>
+        <p className="text-[12px] text-neutral-content-muted line-clamp-1 leading-relaxed">
+          {service.summary ||
+            "Powerful integration to enhance your workspace productivity."}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+export function ServiceBrowser({
+  onSelectService,
+  activeWorkspaceEngine,
+}: {
+  onSelectService: (id: string) => void;
+  activeWorkspaceEngine: WorkspaceEngine;
+}) {
+  const ubento = useUbento();
+  const session = useSession();
+  const installedServices =
+    activeWorkspaceEngine?.useState((s) => s.workspaceData?.services || {}) ||
+    {};
+
+  const [query, setQuery] = useState("");
+  const [activeCategory, setActiveCategory] = useState("all");
+
+  const { data: services, isLoading } = ubento.module.useModules({
+    team_id: session.teamId,
+    type: "service",
+    limit: 100,
+  });
+
+  const filtered = services?.filter((s) => {
+    const matchesQuery =
+      s.name.toLowerCase().includes(query.toLowerCase()) ||
+      s.summary?.toLowerCase().includes(query.toLowerCase());
+    const matchesCategory = activeCategory === "all";
+    return matchesQuery && matchesCategory;
+  });
+
+  return (
+    <RailLayout>
+      <RailLayoutSide>
+        <Content>
+          <ContentHeader>
+            <Heading>Services</Heading>
+            <Text tone="subtle">Add services to your workspace.</Text>
+          </ContentHeader>
+          <ContentBody>
+            <div className="flex flex-col gap-2">
+              {CATEGORIES.map((cat) => {
+                const Icon = cat.icon;
+                const isActive = activeCategory === cat.id;
+                return (
+                  <button
+                    key={cat.id}
+                    onClick={() => setActiveCategory(cat.id)}
+                    className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-[13px] font-medium transition-all ${
+                      isActive
+                        ? "bg-accent/10 text-accent"
+                        : "text-neutral-content-muted hover:bg-neutral-surface hover:text-neutral-content"
+                    }`}
+                  >
+                    <Icon size={16} />
+                    {cat.name}
+                  </button>
+                );
+              })}
+            </div>
+          </ContentBody>
+        </Content>
+      </RailLayoutSide>
+      <RailLayoutMain>
+        <Content>
+          <ContentHeader>
+            <div className="relative">
+              <Search
+                size={18}
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-content-muted"
+              />
+              <input
+                autoFocus
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search for services, integrations, and tools..."
+                className="w-full rounded-2xl border border-neutral-border bg-neutral-surface-hover pl-12 pr-4 py-3.5 text-[14px] text-neutral-content placeholder:text-neutral-content-muted focus:border-accent/50 focus:bg-background focus:ring-4 focus:ring-accent/5 focus:outline-none transition-all"
+              />
+            </div>
+          </ContentHeader>
+          <ContentBody className="overflow-auto">
+            {isLoading ? (
+              <div className="flex flex-col items-center justify-center h-full gap-4 text-neutral-content-muted">
+                <div className="w-8 h-8 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
+                <p className="text-[13px]">Loading marketplace...</p>
+              </div>
+            ) : filtered?.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-full py-12 text-center">
+                <div className="w-16 h-16 rounded-full bg-neutral-surface flex items-center justify-center mb-4 text-neutral-content-muted">
+                  <Search size={32} />
+                </div>
+                <h3 className="text-[16px] font-semibold text-neutral-content mb-1">
+                  No services found
+                </h3>
+                <p className="text-[13px] text-neutral-content-muted max-w-[280px]">
+                  We couldn't find any services matching "{query}". Try
+                  searching for something else.
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-3 pb-6">
+                {filtered?.map((service) => (
+                  <ServiceCard
+                    key={service.id}
+                    service={service}
+                    isInstalled={Object.values(installedServices).some(
+                      (s: any) => s.module.id === service.id,
+                    )}
+                    onSelect={onSelectService}
+                  />
+                ))}
+              </div>
+            )}
+          </ContentBody>
+        </Content>
+      </RailLayoutMain>
+    </RailLayout>
+  );
+}

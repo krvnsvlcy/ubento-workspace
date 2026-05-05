@@ -1,0 +1,179 @@
+{
+  "name": "@ubento/services-finance",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./airtable": {
+      "import": "./build/airtable/service.js",
+      "types": "./build/airtable/service.d.ts"
+    },
+    "./apollo": {
+      "import": "./build/apollo/service.js",
+      "types": "./build/apollo/service.d.ts"
+    },
+    "./aws": {
+      "import": "./build/aws/service.js",
+      "types": "./build/aws/service.d.ts"
+    },
+    "./betterstack": {
+      "import": "./build/betterstack/service.js",
+      "types": "./build/betterstack/service.d.ts"
+    },
+    "./cloudflare": {
+      "import": "./build/cloudflare/service.js",
+      "types": "./build/cloudflare/service.d.ts"
+    },
+    "./coinbase": {
+      "import": "./build/coinbase/service.js",
+      "types": "./build/coinbase/service.d.ts"
+    },
+    "./deel": {
+      "import": "./build/deel/service.js",
+      "types": "./build/deel/service.d.ts"
+    },
+    "./digitalocean": {
+      "import": "./build/digitalocean/service.js",
+      "types": "./build/digitalocean/service.d.ts"
+    },
+    "./figma": {
+      "import": "./build/figma/service.js",
+      "types": "./build/figma/service.d.ts"
+    },
+    "./github": {
+      "import": "./build/github/service.js",
+      "types": "./build/github/service.d.ts"
+    },
+    "./google": {
+      "import": "./build/google/service.js",
+      "types": "./build/google/service.d.ts"
+    },
+    "./hubspot": {
+      "import": "./build/hubspot/service.js",
+      "types": "./build/hubspot/service.d.ts"
+    },
+    "./hue": {
+      "import": "./build/hue/service.js",
+      "types": "./build/hue/service.d.ts"
+    },
+    "./intercom": {
+      "import": "./build/intercom/service.js",
+      "types": "./build/intercom/service.d.ts"
+    },
+    "./lemonsqueezy": {
+      "import": "./build/lemonsqueezy/service.js",
+      "types": "./build/lemonsqueezy/service.d.ts"
+    },
+    "./linear": {
+      "import": "./build/linear/service.js",
+      "types": "./build/linear/service.d.ts"
+    },
+    "./notion": {
+      "import": "./build/notion/service.js",
+      "types": "./build/notion/service.d.ts"
+    },
+    "./oura": {
+      "import": "./build/oura/service.js",
+      "types": "./build/oura/service.d.ts"
+    },
+    "./plaid": {
+      "import": "./build/plaid/service.js",
+      "types": "./build/plaid/service.d.ts"
+    },
+    "./plausible": {
+      "import": "./build/plausible/service.js",
+      "types": "./build/plausible/service.d.ts"
+    },
+    "./posthog": {
+      "import": "./build/posthog/service.js",
+      "types": "./build/posthog/service.d.ts"
+    },
+    "./railway": {
+      "import": "./build/railway/service.js",
+      "types": "./build/railway/service.d.ts"
+    },
+    "./reddit": {
+      "import": "./build/reddit/service.js",
+      "types": "./build/reddit/service.d.ts"
+    },
+    "./resend": {
+      "import": "./build/resend/service.js",
+      "types": "./build/resend/service.d.ts"
+    },
+    "./sentry": {
+      "import": "./build/sentry/service.js",
+      "types": "./build/sentry/service.d.ts"
+    },
+    "./spotify": {
+      "import": "./build/spotify/service.js",
+      "types": "./build/spotify/service.d.ts"
+    },
+    "./stripe": {
+      "import": "./build/stripe/service.js",
+      "types": "./build/stripe/service.d.ts"
+    },
+    "./supabase": {
+      "import": "./build/supabase/service.js",
+      "types": "./build/supabase/service.d.ts"
+    },
+    "./todoist": {
+      "import": "./build/todoist/service.js",
+      "types": "./build/todoist/service.d.ts"
+    },
+    "./vercel": {
+      "import": "./build/vercel/service.js",
+      "types": "./build/vercel/service.d.ts"
+    },
+    "./wise": {
+      "import": "./build/wise/service.js",
+      "types": "./build/wise/service.d.ts"
+    },
+    "./x": {
+      "import": "./build/x/service.js",
+      "types": "./build/x/service.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsx scripts/build.ts build --all",
+    "deploy": "tsx scripts/deploy.ts deploy --all",
+    "watch": "scripts watch",
+    "dev": "scripts dev"
+  },
+  "dependencies": {
+    "@doist/todoist-api-typescript": "^2.1.2",
+    "@hubspot/api-client": "^13.5.0",
+    "@lemonsqueezy/lemonsqueezy.js": "^3.3.0",
+    "@linear/sdk": "^30.0.0",
+    "@notionhq/client": "^2.2.15",
+    "@supabase/supabase-js": "^2.46.1",
+    "@ubento/bento.service": "workspace:*",
+    "@ubento/fabric": "workspace:*",
+    "@ubento/services.sdk": "workspace:*",
+    "@vercel/client": "^17.4.0",
+    "airtable": "^0.12.2",
+    "aws-sdk": "^2.1691.0",
+    "axios": "^1.7.7",
+    "cloudflare": "^4.0.0",
+    "coinbase-node": "^0.2.1",
+    "digitalocean": "^1.2.1",
+    "googleapis": "^144.0.0",
+    "intercom-client": "^6.1.1",
+    "node-hue-api": "^5.0.0-beta.10",
+    "octokit": "^4.0.2",
+    "plaid": "^28.0.0",
+    "plausible-api": "^1.0.1",
+    "posthog-node": "^4.2.1",
+    "resend": "^4.0.1",
+    "snoowrap": "^1.23.0",
+    "spotify-web-api-node": "^5.0.2",
+    "stripe": "^17.4.0",
+    "twitter-api-v2": "^1.18.1",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@microsoft/api-extractor": "^7.53.1",
+    "@types/mime-types": "^3.0.1",
+    "@types/node": "^22.9.0",
+    "mime-types": "^3.0.2"
+  }
+}

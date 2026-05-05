@@ -1,4 +1,3 @@
-import { Workspace, type BentoEngine } from "@ubento/bento.engine";
 import { PendingView } from "@ubento/workspace.primitives";
 
 export function GuestWorkspace({ engine }: { engine: BentoEngine }) {

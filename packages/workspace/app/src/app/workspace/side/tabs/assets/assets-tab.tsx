@@ -4,7 +4,7 @@ import {
   BrowserDataTransferStore,
   DataTransferPayload,
 } from "@ubento/data-transfer";
-import { Box, Plus, Search, Server } from "lucide-react";
+import { Box, Plus, Search } from "lucide-react";
 import { useState } from "react";
 import { TabDefinition } from "../../types";
 import { bentoModuleType } from "@/app/dnd";
@@ -12,7 +12,7 @@ import { bentoModuleType } from "@/app/dnd";
 export function AssetItem({ module }: { module: any }) {
   const ubento = useUbentoEngine();
   const location = ubento.useState((s) => s.location);
-  const Icon = module.type === "service" ? Server : Box;
+  const Icon = Box;
 
   return (
     <div
@@ -59,7 +59,7 @@ function AssetSection({
   query,
 }: {
   title: string;
-  type: "component" | "service";
+  type: "component";
   query: string;
 }) {
   const ubento = useUbento();
@@ -140,7 +140,6 @@ export function AssetsTab() {
 
       <div className="flex-1 overflow-y-auto px-1 pb-8">
         <AssetSection title="Components" type="component" query={query} />
-        <AssetSection title="Services" type="service" query={query} />
       </div>
     </div>
   );
