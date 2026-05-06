@@ -18,7 +18,7 @@ export function createUbentoIntelligenceService({
 
   const threadStore = createStore<
     intelligenceClient.Thread,
-    { workspace_id: string },
+    { workspace_id?: string; team_id?: string },
     UbentoApiPage
   >({
     namespace: ubentoEntities.intelligenceThread.name,
@@ -27,12 +27,10 @@ export function createUbentoIntelligenceService({
       return await ubentoSdk.intelligence.getThread(key);
     },
     fetchMany: async ({ page, params }) => {
-      if (!params?.workspace_id) {
-        throw new Error("workspace_id is required to list threads");
-      }
       return ubentoToFabricPagedResponse(
         await ubentoSdk.intelligence.listThreads({
-          workspace_id: params.workspace_id,
+          workspace_id: params?.workspace_id,
+          team_id: params?.team_id,
           cursor: page?.cursor,
           limit: page?.limit,
         }),
@@ -43,6 +41,7 @@ export function createUbentoIntelligenceService({
         .filter((t) => {
           if (params?.workspace_id && t.workspace_id !== params.workspace_id)
             return false;
+          if (params?.team_id && t.team_id !== params.team_id) return false;
           return true;
         })
         .sort((a, b) => b.created_at.localeCompare(a.created_at));
@@ -90,14 +89,18 @@ export function createUbentoIntelligenceService({
       return useStoreEntity(threadStore, threadId, options);
     },
     useThreads: (
-      params: { workspace_id: string },
+      params: { workspace_id?: string; team_id?: string } = {},
       options?: UseStoreOptions,
     ) => {
       return useStoreEntities(threadStore, params, options);
     },
     useCreateThread: () => {
       return useMutation({
-        mutationFn: async (data: { workspace_id: string; title?: string }) => {
+        mutationFn: async (data: {
+          workspace_id?: string;
+          team_id?: string;
+          title?: string;
+        }) => {
           return await ubentoSdk.intelligence.createThread(data);
         },
         onSuccess: (thread) => {
@@ -137,7 +140,8 @@ export function createUbentoIntelligenceService({
       return thread;
     },
     getThreads: async (params: {
-      workspace_id: string;
+      workspace_id?: string;
+      team_id?: string;
       limit?: number;
       cursor?: string;
     }) => {

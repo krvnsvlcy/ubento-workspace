@@ -68,6 +68,7 @@ const engine = createUbentoEngine({
     },
     serviceBaseUrls: {
       module: "http://localhost:28888",
+      intelligence: "http://localhost:44513",
     },
   }),
   workspaceRuntimeUrl:

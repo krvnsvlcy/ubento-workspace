@@ -1,9 +1,9 @@
 import { RpcPort } from "~/ports/port.js";
 import {
-  engineStateChanged,
   HandlerMap,
   HandlerMapProxy,
   ReqOf,
+  ResOf,
   RpcInterfaceDefinition,
   RpcMethod,
 } from "../types.js";
@@ -32,7 +32,7 @@ type ResOkMsg<
   id: string;
   method: K;
   ok: true;
-  payload: engineStateChanged<T[K]>;
+  payload: Promise<T[K]>;
 };
 
 type ResErrMsg = {
@@ -61,7 +61,7 @@ type CallFn<T extends RpcInterfaceDefinition> = <K extends RpcMethod<T>>(
   method: K,
   request: ReqOf<T[K]>,
   options?: { timeout?: number; transfer?: Transferable[] },
-) => Promise<engineStateChanged<T[K]>>;
+) => Promise<ResOf<T[K]>>;
 
 export type RpcEvent = {
   id: string;

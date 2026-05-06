@@ -1,10 +1,11 @@
 @import "./themes/default.css";
+@import "./scrollbar.css";
 
 *,
 ::after,
 ::before,
 ::backdrop,
 ::file-selector-button {
-  scrollbar-width: none;
+  /* scrollbar-width: none; */
   border-color: var(--color-neutral-border);
 }

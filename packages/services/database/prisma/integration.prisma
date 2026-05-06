@@ -18,9 +18,9 @@ datasource db {
 }
 
 model ConnectionProvider {
-    id              String @id @map("_id")
-    entity          String @default("connection_provider")
-    organization_id String
+    id      String @id @map("_id")
+    entity  String @default("connection_provider")
+    team_id String
 
     name         String
     display_name String
@@ -34,14 +34,14 @@ model ConnectionProvider {
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt
 
-    @@unique([name, organization_id])
+    @@unique([name, team_id])
     @@map("connection_providers")
 }
 
 model Connection {
-    id              String @id @map("_id")
-    entity          String @default("connection")
-    organization_id String
+    id      String @id @map("_id")
+    entity  String @default("connection")
+    team_id String
 
     provider_id   String
     provider      ConnectionProvider @relation(fields: [provider_id], references: [id])
@@ -52,7 +52,7 @@ model Connection {
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt
 
-    @@unique([provider_id, organization_id])
+    @@unique([provider_id, team_id])
     @@map("connections")
 }
 
@@ -63,10 +63,10 @@ type EncryptedData {
 }
 
 model OAuthConnectionState {
-    id              String @id @default(uuid()) @map("_id")
-    entity          String @default("oauth_connection_state")
-    organization_id String
-    provider_id     String
+    id          String @id @default(uuid()) @map("_id")
+    entity      String @default("oauth_connection_state")
+    team_id     String
+    provider_id String
 
     state        String?
     redirect_uri String?
@@ -78,5 +78,3 @@ model OAuthConnectionState {
 
     @@map("oauth_connection_states")
 }
-
-

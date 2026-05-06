@@ -1,4 +1,4 @@
-import type { BoardSpec } from "@ubento/bento.engine";
+import type { BoardSpec } from "@ubento/bento.runtime";
 
 export const DEFAULT_SPEC: BoardSpec = {
   title: "Bento Playground",

@@ -4,15 +4,17 @@ import { env } from "../env.js";
 export const storage = new Storage();
 
 export const intelligenceBucket = storage.bucket(
-  env.GCP_INTELLIGENCE_BUCKET_NAME
+  env.GCP_INTELLIGENCE_BUCKET_NAME,
 );
 
 export const storagePaths = {
   file: ({
+    team_id,
     workspace_id,
     file_id,
   }: {
-    workspace_id: string;
+    team_id: string;
+    workspace_id?: string;
     file_id: string;
-  }) => `files/${workspace_id}/${file_id}`,
+  }) => ["files", team_id, workspace_id, file_id].filter(Boolean).join("/"),
 };

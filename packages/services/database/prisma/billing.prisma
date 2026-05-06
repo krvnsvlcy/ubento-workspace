@@ -1,20 +1,20 @@
 generator client {
-    provider      = "prisma-client-js"
-    binaryTargets = ["native", "debian-openssl-3.0.x"]
-    output        = "./generated/billing"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+  output        = "./generated/billing"
 }
 
 generator jsonSchema {
-    provider                 = "prisma-json-schema-generator"
-    output                   = "../src/schemas/billing"
-    keepRelationFields       = "false"
-    keepRelationScalarFields = "true"
-    includeRequiredFields    = "true"
+  provider                 = "prisma-json-schema-generator"
+  output                   = "../src/schemas/billing"
+  keepRelationFields       = "false"
+  keepRelationScalarFields = "true"
+  includeRequiredFields    = "true"
 }
 
 datasource db {
-    provider = "mongodb"
-    url      = env("BILLING_DATABASE_URL")
+  provider = "mongodb"
+  url      = env("BILLING_DATABASE_URL")
 }
 
 //----------------------------- Enums -----------------------------//
@@ -153,9 +153,9 @@ model ProviderLink {
 //---------------------------- Usage ------------------------------//
 
 model UsageCounter {
-  id              String @id @map("_id")
-  entity          String @default("billing_usage_counter")
-  organization_id String
+  id      String @id @map("_id")
+  entity  String @default("billing_usage_counter")
+  team_id String
 
   feature_code String // e.g. "monthly_builds" @map("code")
   group        String // e.g. "2026-01"
@@ -170,18 +170,18 @@ model UsageCounter {
   holds  UsageHold[]
   events UsageEvent[]
 
-  @@unique([organization_id, feature_code, group])
-  @@index([organization_id, feature_code])
+  @@unique([team_id, feature_code, group])
+  @@index([team_id, feature_code])
   @@index([feature_code])
   @@map("usage_counters")
 }
 
 model UsageHold {
-  id              String @id @map("_id")
-  entity          String @default("billing_usage_hold")
-  organization_id String
-  counter_id      String
-  ref             String
+  id         String @id @map("_id")
+  entity     String @default("billing_usage_hold")
+  team_id    String
+  counter_id String
+  ref        String
 
   amount Int
   note   String
@@ -199,17 +199,17 @@ model UsageHold {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  @@unique([organization_id, ref])
-  @@index([organization_id])
+  @@unique([team_id, ref])
+  @@index([team_id])
   @@index([status, expires_at])
   @@map("usage_holds")
 }
 
 model UsageEvent {
-  id              String @id @map("_id")
-  entity          String @default("billing_usage_event")
-  organization_id String
-  counter_id      String
+  id         String @id @map("_id")
+  entity     String @default("billing_usage_event")
+  team_id    String
+  counter_id String
 
   value Int
 
@@ -223,7 +223,7 @@ model UsageEvent {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  @@index([organization_id, created_at])
+  @@index([team_id, created_at])
   @@index([counter_id, created_at])
   @@index([ref])
   @@map("usage_events")
@@ -232,9 +232,9 @@ model UsageEvent {
 //-------------------------- Subscriptions -------------------------//
 
 model Subscription {
-  id              String @id @map("_id")
-  entity          String @default("billing_subscription")
-  organization_id String
+  id      String @id @map("_id")
+  entity  String @default("billing_subscription")
+  team_id String
 
   product_code String
   offer_code   String
@@ -258,16 +258,16 @@ model Subscription {
   invoices SubscriptionInvoice[]
 
   @@unique([provider, provider_id])
-  @@index([organization_id, status])
-  @@index([organization_id])
+  @@index([team_id, status])
+  @@index([team_id])
   @@index([offer_code])
   @@map("subscriptions")
 }
 
 model SubscriptionInvoice {
-  id              String @id @map("_id")
-  entity          String @default("billing_subscription_invoice")
-  organization_id String
+  id      String @id @map("_id")
+  entity  String @default("billing_subscription_invoice")
+  team_id String
 
   provider    Provider
   provider_id String
@@ -293,17 +293,17 @@ model SubscriptionInvoice {
   updated_at DateTime @updatedAt
 
   @@unique([provider, provider_id])
-  @@index([organization_id, created_at])
-  @@index([organization_id, status, created_at])
+  @@index([team_id, created_at])
+  @@index([team_id, status, created_at])
   @@map("invoices")
 }
 
 //--------------------------- Orders --------------------------//
 
 model Order {
-  id              String @id @map("_id")
-  entity          String @default("billing_order")
-  organization_id String
+  id      String @id @map("_id")
+  entity  String @default("billing_order")
+  team_id String
 
   product_code String
   offer_code   String
@@ -325,7 +325,7 @@ model Order {
   updated_at DateTime @updatedAt
 
   @@unique([provider, provider_id])
-  @@index([organization_id, created_at])
+  @@index([team_id, created_at])
   @@map("billing_orders")
 }
 
@@ -343,9 +343,9 @@ type OrderLineItem {
 //--------------------------- Checkout --------------------------//
 
 model Checkout {
-  id              String @id @map("_id")
-  entity          String @default("billing_checkout")
-  organization_id String
+  id      String @id @map("_id")
+  entity  String @default("billing_checkout")
+  team_id String
 
   product_code String
   offer_code   String
@@ -362,7 +362,7 @@ model Checkout {
   updated_at DateTime @updatedAt
 
   @@unique([provider, provider_id])
-  @@index([organization_id, product_code, offer_code])
+  @@index([team_id, product_code, offer_code])
   @@index([created_at])
   @@map("billing_checkouts")
 }
@@ -413,9 +413,9 @@ type WebhookEventAttempt {
 //---------------------- Manual Entitlement -----------------------//
 
 model EntitlementGrant {
-  id              String @id @map("_id")
-  entity          String @default("billing_entitlement_grant")
-  organization_id String
+  id      String @id @map("_id")
+  entity  String @default("billing_entitlement_grant")
+  team_id String
 
   expires_at DateTime
   data       Json
@@ -424,6 +424,6 @@ model EntitlementGrant {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  @@index([organization_id, expires_at])
+  @@index([team_id, expires_at])
   @@map("entitlement_grants")
 }

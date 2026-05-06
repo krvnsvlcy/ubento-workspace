@@ -35,23 +35,14 @@ export type Agent = {
   getInstructions: () => Promise<string>;
   getPrompt: (context: AgentContext) => Promise<any>;
   resolveTool: (toolRef: string) => Promise<Tool | undefined>;
-
-  // Thread actions
-  createThread: (params: { title: string }) => Promise<any>;
-  sendMessage: (
-    content: string,
-    params: { threadId?: string; attachments?: any[] },
-  ) => Promise<void>;
 };
 
-export interface AgentConfig {
+export function createAgent(config: {
   name: string;
   description: string;
-  toolkit: AgentEnvironment;
+  environment: AgentEnvironment;
   getAgentInstructions: () => AgentInstructions | Promise<AgentInstructions>;
-}
-
-export function createAgent(config: AgentConfig): Agent {
+}): Agent {
   const store = createStore<AgentState>()(() => ({
     tools: {},
     agents: {},
@@ -60,7 +51,7 @@ export function createAgent(config: AgentConfig): Agent {
   const instance: Agent = {
     name: config.name,
     description: config.description,
-    environment: config.toolkit,
+    environment: config.environment,
     logger: {
       warn: (m, d) => console.warn(`[${config.name}] ${m}`, d),
       error: (m, d) => console.error(`[${config.name}] ${m}`, d),
@@ -93,7 +84,7 @@ export function createAgent(config: AgentConfig): Agent {
       const state = store.getState();
       const agents = Object.values(state.agents);
       const tools = Object.values(state.tools);
-      const toolSets = Object.values(config.toolkit.toolSets);
+      const toolSets = Object.values(config.environment.toolSets);
 
       return buildAgentManagerInstructions({
         tools,
@@ -111,7 +102,7 @@ export function createAgent(config: AgentConfig): Agent {
       // We pass a shim that looks like the old Agent for compatibility with buildAgentManagerPrompt
       const agentShim = {
         ...state,
-        environment: config.toolkit,
+        environment: config.environment,
         name: config.name,
         description: config.description,
       };
@@ -128,38 +119,10 @@ export function createAgent(config: AgentConfig): Agent {
         return state.tools[parts[0]];
       }
       if (parts.length === 2) {
-        const toolSet = config.toolkit.toolSets[parts[0]];
+        const toolSet = config.environment.toolSets[parts[0]];
         return toolSet?.getTool(parts[1]);
       }
       return undefined;
-    },
-
-    createThread: async (params) => {
-      return config.toolkit.createThread({
-        title: params.title,
-        agent: instance,
-      });
-    },
-
-    sendMessage: async (content, params) => {
-      let thread;
-      if (params.threadId) {
-        // In a real impl, we'd fetch the thread from a registry or environment
-        throw new Error("Thread resolution by ID not implemented in shim");
-      } else {
-        thread = await config.toolkit.createThread({
-          title: content.slice(0, 50),
-          agent: instance,
-        });
-      }
-
-      await thread.run({
-        message: {
-          text: content,
-          attachments: params.attachments,
-        },
-        model: (instance as any).model || { modelId: "default" }, // Shim model
-      });
     },
   };
 

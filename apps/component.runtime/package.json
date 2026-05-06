@@ -12,7 +12,7 @@
   "dependencies": {
     "@ubento/workspace.primitives": "workspace:*",
     "@ubento/bento.style": "workspace:*",
-    "@ubento/bento.engine": "workspace:*",
+    "@ubento/bento.runtime": "workspace:*",
     "@ubento/rpc": "workspace:*",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

@@ -1,16 +1,18 @@
+import { useSession } from "@/contexts/session";
 import { useUbentoEngine } from "@/engine/engine";
 import { workspaceClient } from "@ubento/services.sdk";
 import { ErrorView, PendingView } from "@ubento/workspace.primitives";
 import { useEffect, useMemo } from "react";
 import { WorkspaceContent } from "./content";
+import { WorkspaceControl } from "./control/control";
 import { createWorkspaceEngine } from "./engine/engine";
-import { WorkspaceControl } from "./interactor/control";
 
 function WorkspaceCanvas({
   workspace,
 }: {
   workspace: workspaceClient.Workspace;
 }) {
+  const session = useSession();
   const engine = useUbentoEngine();
 
   const workspaceEngine = useMemo(
@@ -18,6 +20,10 @@ function WorkspaceCanvas({
       createWorkspaceEngine({
         workspace,
         engine,
+        user: {
+          name: session.name,
+          email: session.email,
+        },
       }),
     [workspace],
   );

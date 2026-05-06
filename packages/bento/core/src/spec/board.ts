@@ -49,6 +49,7 @@ export type BoardUiSpec = z.infer<typeof boardUiSpecSchema>;
 
 export const boardSpecSchema = z.object({
   // metadata
+  id: z.string(),
   parentId: z.string().optional(),
   title: z.string(),
   description: z.string().optional(),
@@ -64,8 +65,10 @@ export const boardSpecSchema = z.object({
 });
 export type BoardSpec = z.infer<typeof boardSpecSchema>;
 
-// The Workspace wrapper you defined earlier
-export type WorkspaceSpec = {
-  state: Record<string, any>; // workspace level state
-  boards: Record<string, BoardSpec>;
-};
+export const workspaceSpecSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  description: z.string(),
+  state: stateSpecSchema.optional(),
+});
+export type WorkspaceSpec = z.infer<typeof workspaceSpecSchema>;

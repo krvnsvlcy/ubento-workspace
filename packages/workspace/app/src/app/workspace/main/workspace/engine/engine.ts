@@ -1,24 +1,47 @@
 import { UbentoEngine, UbentoEngineState } from "@/engine/engine";
-import { UbentoLocation } from "@/engine/location";
+import { BoardStyle, workspaceSpecSchema } from "@ubento/bento.core";
 import {
   BentoEngineHostRpcInterface,
   BentoEngineRuntimeRpcInterface,
+  BentoLocation,
   BentoMode,
+  BentoUserData,
+  BentoWorkspaceData,
   BoardData,
   boardDataSchema,
-  BoardStyle,
   DropContent,
   DropRect,
   ModuleReference,
+  ParsedSpec,
   ServiceData,
   WorkspaceData,
-  workspaceDataSchema,
-} from "@ubento/bento.engine";
+} from "@ubento/bento.runtime";
 import { createDuplexRpc, createWindowPort, DuplexRpc } from "@ubento/rpc";
+import { workspaceClient } from "@ubento/services.sdk";
 import { createZustandStateController } from "@ubento/workspace.primitives";
 import { registerStore } from "@ubento/zustand-devtool";
 import { dequal } from "dequal/lite";
+import z from "zod";
 import { createStore as createZustandStore } from "zustand/vanilla";
+
+function parseSpecData<S extends z.ZodTypeAny>(
+  schema: S,
+  data: unknown,
+): ParsedSpec<z.infer<S>> {
+  const spec = schema.safeParse(data);
+  if (!spec.success) {
+    return {
+      status: "invalid",
+      data: data,
+      errors: [String(spec.error)],
+    };
+  } else {
+    return {
+      status: "valid",
+      data: spec.data,
+    };
+  }
+}
 
 export type WorkspaceState = {
   // status
@@ -27,8 +50,7 @@ export type WorkspaceState = {
 
   // local state
   mode: BentoMode;
-  location: UbentoLocation;
-  workspaceData: WorkspaceData;
+  workspace: BentoWorkspaceData;
 
   // synced from runtime
   boards: Record<string, BoardData>;
@@ -44,8 +66,10 @@ export type WorkspaceState = {
 export function createWorkspaceEngine({
   workspace,
   engine,
+  user,
 }: {
-  workspace: WorkspaceData;
+  workspace: workspaceClient.Workspace;
+  user: BentoUserData;
   engine: UbentoEngine;
 }) {
   let rpc: DuplexRpc<
@@ -63,11 +87,12 @@ export function createWorkspaceEngine({
     selection: [],
     dropRects: [],
     leftPanelOpen: true,
-    workspaceData: workspaceDataSchema.parse({
-      ...workspace,
+    workspace: {
       id: workspace.id,
-      name: workspace.name,
-    }),
+      title: workspace.name,
+      slug: workspace.slug,
+      spec: parseSpecData(workspaceSpecSchema, workspace),
+    },
   }));
 
   const controller = createZustandStateController(store);
@@ -85,6 +110,15 @@ export function createWorkspaceEngine({
         handlers: {
           connect: async () => {
             store.setState({ status: "connected" });
+            const engineState = engine.getState();
+            const state = store.getState();
+            return {
+              initialState: {
+                location: getBentoLocation(engineState),
+                workspace: state.workspace,
+                user,
+              },
+            };
           },
           ready: async () => {
             store.setState({ status: "ready" });
@@ -104,37 +138,30 @@ export function createWorkspaceEngine({
             store.setState({ mode });
           },
           getBoard: async ({ boardId }: { boardId: string }) => {
-            const res = await workspaceService.getBoard(boardId);
-            const board = boardDataSchema.parse({
-              id: res.id,
-              name: res.name,
-              ...(res.data as any),
-            });
-            return board;
+            const data = await workspaceService.getBoard(boardId);
+            return {
+              id: data.id,
+              title: data.name,
+              spec: parseSpecData(boardDataSchema, data.data),
+            };
           },
-          listBoards: async () => {
+          listBoards: async ({}) => {
             const res = await workspaceService.listBoards({
               workspaceId: workspace.id,
             });
             const boards = res.data
               .map((b) => {
-                const safeParseResult = boardDataSchema.safeParse({
+                return {
                   id: b.id,
-                  name: b.name,
-                  ...(b.data as any),
-                });
-                if (!safeParseResult.success) {
-                  console.warn(
-                    "Failed to parse board",
-                    b.id,
-                    safeParseResult.error,
-                  );
-                  return null;
-                }
-                return safeParseResult.data;
+                  title: b.name,
+                  spec: parseSpecData(boardDataSchema, b.data),
+                };
               })
               .filter((b) => !!b);
-            return boards;
+            return {
+              boards,
+              nextCursor: res.nextPage?.cursor,
+            };
           },
           createBoard: async ({ name }: { name?: string }) => {
             const data: Omit<BoardData, "id" | "name"> = {
@@ -297,10 +324,11 @@ export function createWorkspaceEngine({
       store.setState({ workspaceData: updated });
     },
 
-    goTo: (args: {
-      location: { boardId: string; params?: Record<string, any> };
-    }) => {
-      rpc?.egress.setLocation({ location: args.location });
+    goTo: (args: { location?: BentoLocation }) => {
+      engine.goToLocation({
+        board: args.location?.boardId,
+        params: args.location?.params,
+      });
     },
 
     toggleLeftPanel: () => {
@@ -340,7 +368,7 @@ export function createWorkspaceEngine({
 
     installService: (serviceName: string, ref: ModuleReference) => {
       store.setState((state) => {
-        const currentWorkspace = state.workspaceData;
+        const currentWorkspace = state.workspace;
         if (!currentWorkspace) {
           return state;
         }
@@ -368,28 +396,23 @@ export function createWorkspaceEngine({
     },
   };
 
-  // sync host location
+  // sync host location to runtime
 
+  function getBentoLocation(hostState: UbentoEngineState) {
+    const location = hostState.location;
+    return location.board
+      ? {
+          boardId: location.board,
+          params: location.params || {},
+        }
+      : undefined;
+  }
   engine.subscribe((curr: UbentoEngineState, prev: UbentoEngineState) => {
-    if (curr.location !== prev.location) {
-      store.setState({ location: curr.location });
-    }
-
-    if (curr.dragActive && !prev.dragActive) {
-      workspaceEngine.refreshDropRects();
-    }
-
     if (
-      curr.location.board &&
-      (curr.location.board !== prev.location.board ||
-        !dequal(curr.location.params, prev.location.params))
+      curr.location.board !== prev.location.board ||
+      !dequal(curr.location.params, prev.location.params)
     ) {
-      rpc?.egress.setLocation({
-        location: {
-          boardId: curr.location.board,
-          params: curr.location.params || {},
-        },
-      });
+      rpc?.egress.setLocation({ location: getBentoLocation(curr) });
     }
   });
 

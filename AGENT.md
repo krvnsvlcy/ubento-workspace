@@ -9,7 +9,7 @@ For detailed information on specific areas of the platform, refer to the followi
 ### 1. [Engine & Architecture](./docs/agents/ARCHITECTURE.md)
 
 - **Live Editable Paradigm**: Understanding the "Edit-as-you-use" philosophy and mode toggling.
-- **Core Engine (@ubento/bento.engine)**: Flat Map element model, primitives (Stacks/Blocks), and reactive state (Zustand).
+- **Core Engine (@ubento/bento.runtime)**: Flat Map element model, primitives (Stacks/Blocks), and reactive state (Zustand).
 - **The Bridge**: Host-Guest communication via Duplex RPC.
 
 ### 2. [Service Layers](./docs/agents/SERVICES.md)

@@ -105,114 +105,24 @@ export const spec: OpenAPIV3.Document = {
         },
       },
     },
-    "/intelligence/query": {
-      post: {
-        summary: "Query AI model",
-        description:
-          "Send a query to an AI model with custom instructions and receive a response in text or structured JSON format",
-        tags: ["Query"],
-        security: [{ bearerAuth: [] }],
-        requestBody: {
-          required: true,
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                required: ["instructions", "query", "model_id"],
-                properties: {
-                  instructions: {
-                    type: "string",
-                    description:
-                      "System instructions or context for the AI model",
-                    minLength: 1,
-                  },
-                  query: {
-                    type: "string",
-                    description:
-                      "The user query or prompt to send to the model",
-                    minLength: 1,
-                  },
-                  model_id: {
-                    type: "string",
-                    description:
-                      "The model identifier (e.g., 'gpt-4.1', 'gpt-4.1-mini', 'gpt-5')",
-                  },
-                  schema: {
-                    type: "object",
-                    description:
-                      "JSON schema for structured output (used when format is 'json' or when structured output is desired)",
-                  },
-                  format: {
-                    type: "string",
-                    description:
-                      "Response format - 'json' for structured output, omit for text response",
-                    enum: ["json"],
-                  },
-                },
-              },
-            },
-          },
-        },
-        responses: {
-          "200": {
-            description: "Query response from AI model",
-            content: {
-              "application/json": {
-                schema: {
-                  type: "object",
-                  properties: {
-                    response: {
-                      oneOf: [
-                        {
-                          type: "string",
-                          description:
-                            "Text response when format is not specified or is not 'json'",
-                        },
-                        {
-                          type: "object",
-                          description:
-                            "Structured JSON response when format is 'json' or schema is provided",
-                        },
-                      ],
-                    },
-                  },
-                  required: ["response"],
-                },
-              },
-            },
-          },
-          "400": {
-            description: "Bad request - invalid model_id or validation errors",
-            content: {
-              "application/json": {
-                schema: { $ref: "#/components/schemas/Error" },
-              },
-            },
-          },
-          "500": {
-            description: "Internal server error",
-            content: {
-              "application/json": {
-                schema: { $ref: "#/components/schemas/Error" },
-              },
-            },
-          },
-        },
-      },
-    },
     "/intelligence/threads": {
       get: {
         summary: "List threads",
-        description: "Retrieve a paginated list of threads for a workspace",
+        description: "Retrieve a paginated list of threads for a workspace or team",
         tags: ["Threads"],
         security: [{ bearerAuth: [] }],
         parameters: [
           {
             in: "query",
             name: "workspace_id",
-            required: true,
             schema: { type: "string" },
             description: "The workspace ID to filter threads",
+          },
+          {
+            in: "query",
+            name: "team_id",
+            schema: { type: "string" },
+            description: "The team ID to filter threads",
           },
           {
             in: "query",
@@ -276,11 +186,14 @@ export const spec: OpenAPIV3.Document = {
             "application/json": {
               schema: {
                 type: "object",
-                required: ["workspace_id"],
                 properties: {
                   title: {
                     type: "string",
                     description: "Optional thread title",
+                  },
+                  team_id: {
+                    type: "string",
+                    description: "The team ID where the thread belongs",
                   },
                   workspace_id: {
                     type: "string",
@@ -381,10 +294,12 @@ export const spec: OpenAPIV3.Document = {
                   metadata: {
                     type: "object",
                     description: "Optional thread metadata",
+                    additionalProperties: true,
                   },
                   context: {
                     type: "object",
                     description: "Optional thread context",
+                    additionalProperties: true,
                   },
                 },
               },
@@ -725,6 +640,7 @@ export const spec: OpenAPIV3.Document = {
                   data: {
                     type: "object",
                     description: "Updated message data",
+                    additionalProperties: true,
                   },
                   error: {
                     type: "string",
@@ -869,8 +785,13 @@ export const spec: OpenAPIV3.Document = {
         parameters: [
           {
             in: "query",
+            name: "team_id",
+            schema: { type: "string" },
+            description: "The team ID to filter files",
+          },
+          {
+            in: "query",
             name: "workspace_id",
-            required: true,
             schema: { type: "string" },
             description: "The workspace ID to filter files",
           },
@@ -925,11 +846,16 @@ export const spec: OpenAPIV3.Document = {
                     format: "binary",
                     description: "The file to upload",
                   },
+                  team_id: {
+                    type: "string",
+                    description: "The team ID",
+                  },
                   workspace_id: {
                     type: "string",
                     description: "The workspace ID",
                   },
                 },
+                required: ["file", "team_id"],
               },
             },
           },

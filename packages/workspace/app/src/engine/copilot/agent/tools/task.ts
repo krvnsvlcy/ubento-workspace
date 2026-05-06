@@ -69,15 +69,13 @@ export function createTaskTool({
             content: [
               {
                 type: "text",
-                text:
-                  subExecutionState.error?.message || "Execution failed",
+                text: subExecutionState.error?.message || "Execution failed",
               },
             ],
             structuredContent: {
               threadId: thread.getState().id,
               status: "error",
-              error:
-                subExecutionState.error?.message || "Execution failed",
+              error: subExecutionState.error?.message || "Execution failed",
             },
           };
         }
@@ -92,16 +90,13 @@ export function createTaskTool({
             content: [
               {
                 type: "text",
-                text:
-                  subExecutionState.error?.message ||
-                  `Execution ${status}`,
+                text: subExecutionState.error?.message || `Execution ${status}`,
               },
             ],
             structuredContent: {
               threadId: thread.getState().id,
               status: "stopped",
-              error:
-                subExecutionState.error?.message || `Execution ${status}`,
+              error: subExecutionState.error?.message || `Execution ${status}`,
             },
           };
         }

@@ -2,7 +2,7 @@ import { UbentoService } from "@/services/ubento/ubento";
 import {
   ComponentEngineRuntimeHostRpcInterface,
   ComponentEngineRuntimeRpcInterface,
-} from "@ubento/bento.engine";
+} from "@ubento/bento.runtime";
 import { createDuplexRpc, createWindowPort, DuplexRpc } from "@ubento/rpc";
 import { createZustandStateController } from "@ubento/workspace.primitives";
 import { createStore as createZustandStore } from "zustand/vanilla";
@@ -106,7 +106,13 @@ export function createComponentEngine({
               code: source || dummyComponentCode,
             });
           },
-          log: async ({ type, args }: { type: LogEntry["type"]; args: any[] }) => {
+          log: async ({
+            type,
+            args,
+          }: {
+            type: LogEntry["type"];
+            args: any[];
+          }) => {
             const entry: LogEntry = {
               id: Math.random().toString(36).substring(7),
               type,

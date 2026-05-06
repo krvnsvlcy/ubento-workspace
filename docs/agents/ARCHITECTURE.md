@@ -9,7 +9,7 @@ Ubento is built on a high-performance **Server-Driven UI (SDUI)** engine with a 
 - **Edit-as-you-use**: Workspaces are not "deployed"; they are live entities that are shaped during use.
 - **Mode Toggle**: Users switch between **Live** (interact) and **Edit** (shape) modes using a **Double Shift** keyboard shortcut.
 
-### 2. Core Engine Architecture (@ubento/bento.engine)
+### 2. Core Engine Architecture (@ubento/bento.runtime)
 
 The engine uses a "Flat Map" element architecture for efficient real-time manipulation.
 

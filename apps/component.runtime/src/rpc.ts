@@ -1,7 +1,7 @@
 import type {
   ComponentEngineRuntimeHostRpcInterface,
   ComponentEngineRuntimeRpcInterface,
-} from "@ubento/bento.engine";
+} from "@ubento/bento.runtime";
 import { createDuplexRpc, createWindowPort } from "@ubento/rpc";
 
 const port = createWindowPort(window, window.parent);

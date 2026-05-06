@@ -1,6 +1,6 @@
-import { BoardStyle } from "@ubento/bento.engine";
+import { BoardStyle } from "@ubento/bento.runtime";
 import { Layout, Palette, Settings2 } from "lucide-react";
-import { WorkspaceEngine } from "../../engine/engine";
+import { WorkspaceEngine } from "../../../engine/engine";
 import {
   NumberInput,
   PaddingControl,

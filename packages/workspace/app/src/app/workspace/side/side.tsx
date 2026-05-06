@@ -13,9 +13,6 @@ export function Side() {
     content = <WorkspaceSide />;
   }
 
-  return (
-    <div className="h-full bg-neutral-surface border-r border-neutral-border overflow-hidden">
-      {content}
-    </div>
-  );
+  return <div className="h-full overflow-hidden">{content}</div>;
 }
+

@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { boardSpecSchema } from "./spec/board.js";
 
 export type BentoMode = "live" | "edit" | "design" | "preview";
 
@@ -9,12 +8,7 @@ export type ModuleReference = {
   scope?: string;
 };
 
-export const boardDataSchema = boardSpecSchema.extend({
-  id: z.string(),
-  name: z.string(),
-  content: z.array(z.string()).optional(),
-  elements: z.record(z.string(), z.any()).optional(),
-});
+export const boardDataSchema = z.any();
 export type BoardData = z.infer<typeof boardDataSchema>;
 
 export const serviceDataSchema = z.object({
@@ -29,16 +23,6 @@ export const serviceDataSchema = z.object({
     .optional(),
 });
 export type ServiceData = z.infer<typeof serviceDataSchema>;
-
-export const workspaceDataSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  slug: z.string().optional(),
-  teamId: z.string().optional(),
-  homeBoardId: z.string().optional(),
-  services: z.record(z.string(), serviceDataSchema).optional(),
-});
-export type WorkspaceData = z.infer<typeof workspaceDataSchema>;
 
 export type DropContent =
   | { type: "element"; elementId: string; boardId: string }

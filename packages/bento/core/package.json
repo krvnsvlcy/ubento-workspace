@@ -1,5 +1,5 @@
 {
-  "name": "@ubento/bento.engine",
+  "name": "@ubento/bento.core",
   "version": "1.0.0",
   "private": true,
   "type": "module",

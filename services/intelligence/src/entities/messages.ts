@@ -5,7 +5,6 @@ import {
   ubentoEntities,
 } from "@ubento/services.primitives";
 import { prismaListWithCursor } from "@ubento/services.toolkit";
-import { eventPublisher } from "../event.js";
 import prisma from "../prisma.js";
 import { updateThread } from "./threads.js";
 
@@ -45,28 +44,19 @@ export async function createMessage({
   author?: string;
   data: any;
 }): Promise<Message> {
-  const thread = await prisma.thread.findUnique({
-    where: { id: threadId },
-  });
-  if (!thread) {
-    throw new Error(`Thread with id ${threadId} not found`);
-  }
   const message = await prisma.message.create({
     data: {
       id: makeEntityId({
         code: ubentoEntities.intelligenceMessage.code,
         bareId: generateBareId(),
       }),
-      thread_id: thread.id,
-      organization_id: thread.organization_id,
-      workspace_id: thread.workspace_id,
+      thread_id: threadId,
       role,
       author,
       data,
     },
   });
 
-  eventPublisher.publishEntity("created", message);
   updateThread(threadId, {
     last_message_at: new Date(),
   }).catch((e) => {
@@ -94,7 +84,6 @@ export async function updateMessage(
     data: updates,
   });
 
-  eventPublisher.publishEntity("updated", message);
   return message;
 }
 
@@ -103,7 +92,6 @@ export async function deleteMessage(messageId: string): Promise<Message> {
     where: { id: messageId },
   });
 
-  eventPublisher.publishEntity("deleted", message);
   return message;
 }
 
@@ -116,11 +104,6 @@ export async function deleteMultipleMessages(
         in: messageIds,
       },
     },
-  });
-
-  // Publish delete events for each message (we can't get the deleted messages back)
-  messageIds.forEach((id) => {
-    eventPublisher.publishEntity("deleted", { id } as Message);
   });
 
   return count;

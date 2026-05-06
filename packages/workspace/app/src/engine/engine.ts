@@ -13,9 +13,9 @@ import { parseLocation, stringifyLocation, UbentoLocation } from "./location";
 import { UbentoSession } from "./session";
 
 export type UbentoEngineState = {
-  session?: UbentoSession;
+  session: UbentoSession;
   location: UbentoLocation;
-  leftPanelOpen: boolean;
+  leftPanelPinned: boolean;
   leftPanelWidth: number;
   dragActive: boolean;
   activeWorkspaceEngine?: WorkspaceEngine;
@@ -46,13 +46,13 @@ export function createUbentoEngine({
   componentRuntimeUrl: string;
   moduleUrlTemplate: string;
   ubentoApi: UbentoSDK;
-  session?: UbentoSession;
+  session: UbentoSession;
 }) {
   const initialLocation = parseLocation();
   const store = createStore<UbentoEngineState>()(() => ({
     session,
     location: initialLocation,
-    leftPanelOpen: true,
+    leftPanelPinned: true,
     leftPanelWidth: 240,
     dragActive: false,
   }));
@@ -86,7 +86,7 @@ export function createUbentoEngine({
   });
 
   const ubento = createUbentoService({ ubentoSdk: ubentoApi });
-  const copilot = createUbentoCopilot({ ubento });
+  const copilot = createUbentoCopilot({ ubento, session });
 
   return {
     ...stateController,
@@ -109,7 +109,7 @@ export function createUbentoEngine({
         ...state,
         location: {
           workspace: slug,
-          tab: "workspace",
+          workspaceTab: "workspace",
         },
       }));
     },

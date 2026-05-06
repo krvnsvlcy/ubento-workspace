@@ -1,7 +1,7 @@
 import { useSession } from "@/contexts/session";
 import { useUbento, useUbentoEngine } from "@/engine/engine";
 import { Grid, LayoutDashboard, Plus, Trash2 } from "lucide-react";
-import { WorkspaceEngine } from "../engine/engine";
+import { WorkspaceEngine } from "../../engine/engine";
 import { Section } from "./shared";
 
 export function NavigationPanel({
@@ -25,10 +25,10 @@ export function NavigationPanel({
         <div className="flex items-center justify-between px-3 py-2 mb-2">
           <div className="flex items-center gap-2 font-semibold text-sm text-neutral-content">
             <div className="w-5 h-5 rounded bg-accent flex items-center justify-center text-[10px] text-accent-contrast">
-              {state.workspaceData?.name?.charAt(0) || "U"}
+              {state.workspace?.title?.charAt(0) || "U"}
             </div>
             <span className="truncate">
-              {state.workspaceData?.name || "Ubento"}
+              {state.workspace?.title || "Ubento"}
             </span>
           </div>
         </div>
@@ -46,7 +46,7 @@ export function NavigationPanel({
                   })
                 }
                 className={`flex items-center gap-3 w-full rounded-lg px-3 py-1.5 text-[13px] transition-all ${
-                  state.workspaceData?.slug === workspace.slug
+                  state.workspace?.slug === workspace.slug
                     ? "bg-accent/10 text-accent font-medium shadow-sm"
                     : "text-neutral-content-subtle hover:bg-neutral-surface-hover hover:text-neutral-content"
                 }`}
@@ -64,7 +64,9 @@ export function NavigationPanel({
             {boards.map((board) => (
               <div
                 key={board.id}
-                onClick={() => controller.goTo({ location: { boardId: board.id } })}
+                onClick={() =>
+                  controller.goTo({ location: { boardId: board.id } })
+                }
                 className={`group flex items-center justify-between rounded-lg px-3 py-2 text-sm transition-all cursor-pointer ${
                   state.location?.board === board.id
                     ? "bg-accent/10 text-accent font-medium shadow-sm"

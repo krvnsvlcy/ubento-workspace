@@ -4,7 +4,7 @@ import {
   BlockData,
   BoardData,
   ElementData,
-} from "@ubento/bento.engine";
+} from "@ubento/bento.runtime";
 import cx from "clsx";
 import {
   Box,
@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import React, { useEffect, useState } from "react";
-import { WorkspaceEngine } from "../engine/engine";
+import { WorkspaceEngine } from "../../engine/engine";
 
 export function Section({
   title,

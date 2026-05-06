@@ -2,7 +2,7 @@ import { Sparkles } from "lucide-react";
 import { motion } from "motion/react";
 import { useState } from "react";
 import { WorkspaceEngine } from "../engine/engine.js";
-import { ControlPanel } from "../panels/control-panel.js";
+import { ControlPanel } from "./panel/control-panel.js";
 
 const style = `
 @keyframes appear {

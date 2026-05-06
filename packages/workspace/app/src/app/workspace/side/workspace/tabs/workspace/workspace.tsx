@@ -1,17 +1,18 @@
 import { SideSection } from "@/app/components/side/section";
 import { WorkspaceEngine } from "@/app/workspace/main/workspace/engine/engine";
 import { useGlobalModals } from "@/contexts/modals";
-import { ServiceData } from "@ubento/bento.engine";
+import { useUbento, useUbentoEngine } from "@/engine/engine";
+import { ServiceData } from "@ubento/bento.runtime";
 import { workspaceClient } from "@ubento/services.sdk";
 import {
   Box,
   ChevronRight,
   FileText,
+  Home,
   LayoutDashboard,
   Plus,
 } from "lucide-react";
 import { useState } from "react";
-import { useUbento, useUbentoEngine } from "../../../../../../engine/engine";
 import { TabDefinition } from "../../../types";
 
 function BoardTreeItem({
@@ -197,6 +198,29 @@ export function WorkspaceTab() {
 
   return (
     <div className="flex flex-col gap-1 pb-8">
+      <div className="px-2">
+        <div
+          onClick={() => {
+            engine.goToLocation({
+              board: undefined,
+              params: {},
+            });
+          }}
+          className={`flex h-8 items-center gap-2 px-3 rounded-lg cursor-pointer transition-all ${
+            !location.board
+              ? "bg-accent/10 text-accent font-medium"
+              : "text-neutral-content-subtle hover:bg-neutral-surface-hover hover:text-neutral-content"
+          }`}
+        >
+          <Home
+            size={14}
+            className={
+              !location.board ? "text-accent" : "text-neutral-content-muted"
+            }
+          />
+          <span className="text-[13px]">Home</span>
+        </div>
+      </div>
       {workspace && <BoardsSection workspace={workspace} />}
       {activeWorkspaceEngine && (
         <ServicesSection engine={activeWorkspaceEngine} />

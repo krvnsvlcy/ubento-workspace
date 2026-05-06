@@ -1,11 +1,11 @@
-import { ServiceData } from "@ubento/bento.engine";
+import { ServiceData } from "@ubento/bento.runtime";
 import { Globe, Plus, Puzzle, Settings2, Trash2 } from "lucide-react";
-import { WorkspaceEngine } from "../../engine/engine";
+import { WorkspaceEngine } from "../../../engine/engine";
 import { PropertyRow, Section, Select, TextInput } from "../shared";
 
 export function WorkspaceTab({ controller }: { controller: WorkspaceEngine }) {
   const state = controller.useState();
-  const workspace = state.workspaceData;
+  const workspace = state.workspace;
 
   if (!workspace) return null;
 

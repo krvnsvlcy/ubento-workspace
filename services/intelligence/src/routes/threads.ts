@@ -1,9 +1,4 @@
-import {
-  chain,
-  makeCursorPageResponse,
-  toSerializable,
-  validate,
-} from "@ubento/services.toolkit";
+import { chain, validate } from "@ubento/services.toolkit";
 import { Router } from "express";
 import multer from "multer";
 import z from "zod";
@@ -41,7 +36,7 @@ threadRouter.get(
         members: req.query.members ? req.query.members.split(",") : undefined,
         sort: req.query.sort as any,
       });
-      res.json(toSerializable(makeCursorPageResponse(result)));
+      res.json(result);
     },
   ),
 );
@@ -50,15 +45,21 @@ threadRouter.post(
   "/",
   chain(
     validate({
-      body: z.object({
-        title: z.string().optional(),
-        workspace_id: z.string(),
-      }),
+      body: z
+        .object({
+          title: z.string().optional(),
+          team_id: z.string().optional(),
+          workspace_id: z.string().optional(),
+        })
+        .refine((data) => data.team_id || data.workspace_id, {
+          message: "team_id or workspace_id is required",
+        }),
     }),
     async (req, res) => {
-      const { title, workspace_id } = req.body;
+      const { title, workspace_id, team_id } = req.body;
       const newThread = await createThread({
         title,
+        team_id,
         workspace_id,
       });
       res.status(201).json(newThread);
@@ -81,7 +82,7 @@ threadRouter.get(
         res.status(404).send("Thread not found");
         return;
       }
-      res.json(toSerializable(thread));
+      res.json(thread);
     },
   ),
 );
@@ -107,7 +108,7 @@ threadRouter.patch(
         metadata,
         context,
       });
-      res.json(toSerializable(updatedThread));
+      res.json(updatedThread);
     },
   ),
 );
@@ -123,7 +124,7 @@ threadRouter.post(
     async (req, res) => {
       const { thread_id } = req.params;
       const updatedThread = await generateThreadTitle(thread_id);
-      res.json(toSerializable(updatedThread));
+      res.json(updatedThread);
     },
   ),
 );
@@ -166,7 +167,7 @@ threadRouter.get(
         thread_id: req.params.thread_id,
         sort: req.query.sort as any,
       });
-      res.json(toSerializable(makeCursorPageResponse(result)));
+      res.json(result);
     },
   ),
 );

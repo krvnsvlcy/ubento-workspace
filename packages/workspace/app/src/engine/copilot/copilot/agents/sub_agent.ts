@@ -16,7 +16,7 @@ export function createSubAgent({
   const agent = createAgent({
     name,
     description,
-    toolkit: copilot.environment,
+    environment: copilot.environment,
     getAgentInstructions,
   });
 

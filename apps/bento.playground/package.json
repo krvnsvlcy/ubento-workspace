@@ -22,7 +22,7 @@
     "@types/express": "^5.0.6",
     "@ubento/workspace.primitives": "workspace:*",
     "@ubento/bento.style": "workspace:*",
-    "@ubento/bento.engine": "workspace:*",
+    "@ubento/bento.runtime": "workspace:*",
     "@ubento/rpc": "workspace:*",
     "ai": "^6.0.175",
     "cors": "^2.8.6",

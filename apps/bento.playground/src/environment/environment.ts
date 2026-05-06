@@ -1,4 +1,4 @@
-import { createEnvironment, type Environment } from "@ubento/bento.engine";
+import { createEnvironment, type Environment } from "@ubento/bento.runtime";
 import { Button } from "./components/button";
 import { Card } from "./components/card";
 import { Grid } from "./components/grid";

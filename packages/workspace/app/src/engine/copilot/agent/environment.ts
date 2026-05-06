@@ -27,4 +27,5 @@ export type AgentEnvironment = {
     title: string;
     agent: Agent;
   }) => Promise<AgentThread>;
+  getThread: (threadId: string) => Promise<AgentThread | undefined>;
 };

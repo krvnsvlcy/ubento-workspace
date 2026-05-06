@@ -1,80 +1,43 @@
 import { createStore } from "zustand/vanilla";
-import { LanguageModel } from "../utils/models.js";
 import { Agent } from "./agent.js";
-import { AgentMessageInstance } from "./message.js";
-import { IntelligenceMessageData, UserMessageData } from "./message/message.js";
+import { IntelligenceMessageData } from "./message/message.js";
 
-import {
-  createZustandStateController,
-  StateController,
-} from "@ubento/workspace.primitives";
-import { AgentContext, AgentContextStats } from "./context.js";
+import { createZustandStateController } from "@ubento/workspace.primitives";
+import { config } from "process";
+import { AgentContext } from "./context.js";
 import { AgentExecution, createAgentExecution } from "./execution.js";
 
 export interface AgentThreadState {
   id: string;
-  agent: Agent;
   activeExecution: AgentExecution | undefined;
   context: AgentContext;
 }
 
-export type AgentThread = StateController<AgentThreadState> & {
-  run: (params: {
-    message: UserMessageData;
-    model: LanguageModel;
-    abortController?: AbortController;
-  }) => Promise<AgentExecution>;
-  pushUserMessage: (message: UserMessageData) => Promise<void>;
-
-  getContext: () => Promise<AgentContext>;
-  setContext: (context: AgentContext) => Promise<void>;
-  getContextStats: (modelId: string) => Promise<AgentContextStats>;
-  summarizeContext: (model: LanguageModel) => Promise<void>;
-  save: () => Promise<void>;
-  startAgentMessage: (
-    execution: AgentExecution,
-  ) => Promise<AgentMessageInstance>;
-  listMessages: () => Promise<IntelligenceMessageData[]>;
-  generateTitle: () => Promise<void>;
-
-  // Resource helpers
-  setResource: (params: {
-    type: string;
-    key: string;
-    data: any;
-  }) => Promise<void>;
-  getResource: <T = any>(url: string) => Promise<T | undefined>;
-  deleteResource: (url: string) => Promise<void>;
-};
-
-export function createAgentThread(config: {
+export function createAgentThread({
+  id,
+  agent,
+  initialContext,
+  writeContext,
+  writeMessage,
+  listMessages,
+}: {
   id: string;
   agent: Agent;
   initialContext?: AgentContext;
 
-  // Implementation hooks for storage/logic
-  getContext: () => Promise<AgentContext>;
-  setContext: (context: AgentContext) => Promise<void>;
-  getContextStats: (modelId: string) => Promise<AgentContextStats>;
-  summarizeContext: (model: LanguageModel) => Promise<void>;
-  save: () => Promise<void>;
-  pushUserMessage: (message: UserMessageData) => Promise<void>;
-  startAgentMessage: (
-    execution: AgentExecution,
-  ) => Promise<AgentMessageInstance>;
+  writeContext: (context: AgentContext) => Promise<void>;
+  writeMessage: (message: IntelligenceMessageData) => Promise<void>;
   listMessages: () => Promise<IntelligenceMessageData[]>;
-  generateTitle: () => Promise<void>;
-}): AgentThread {
+}) {
   const store = createStore<AgentThreadState>()(() => ({
-    id: config.id,
-    agent: config.agent,
+    id,
     activeExecution: undefined,
-    context: config.initialContext || { resources: [] },
+    context: initialContext || { resources: [] },
   }));
 
   const controller = createZustandStateController(store);
 
-  const thread: AgentThread = {
+  return {
     ...controller,
 
     run: async ({ message, model, abortController }) => {
@@ -112,7 +75,7 @@ export function createAgentThread(config: {
     getContextStats: config.getContextStats,
     summarizeContext: config.summarizeContext,
     save: config.save,
-    pushUserMessage: config.pushUserMessage,
+    pushUserMessage: config.createMessage,
     startAgentMessage: config.startAgentMessage,
     listMessages: config.listMessages,
     generateTitle: config.generateTitle,
@@ -142,6 +105,6 @@ export function createAgentThread(config: {
       });
     },
   };
-
-  return thread;
 }
+
+export type AgentThread = ReturnType<typeof createAgentThread>;

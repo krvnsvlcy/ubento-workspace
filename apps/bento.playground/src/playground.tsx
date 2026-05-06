@@ -1,4 +1,4 @@
-import { type BoardSpec } from "@ubento/bento.engine";
+import { type BoardSpec } from "@ubento/bento.runtime";
 import { useEffect, useState } from "react";
 import { ViewerPane } from "./components/ViewerPane.js";
 import { DEFAULT_SPEC } from "./constants.js";

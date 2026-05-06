@@ -84,7 +84,7 @@ export function getThreadController({
       await thread.setContext(newContext);
     },
     save: () => thread.save(),
-    pushUserMessage: async (data) => {
+    createMessage: async (data) => {
       const message = await thread.createMessage({ role: "user", data });
       const currentData = await thread.getData();
       const prevContext = (currentData?.context as AgentContext) || {

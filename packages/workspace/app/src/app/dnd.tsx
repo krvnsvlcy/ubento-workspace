@@ -1,4 +1,4 @@
-import { ModuleReference } from "@ubento/bento.engine";
+import { ModuleReference } from "@ubento/bento.runtime";
 import { createJsonType } from "@ubento/data-transfer";
 
 export const bentoModuleType = createJsonType<{

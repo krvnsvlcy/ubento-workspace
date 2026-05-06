@@ -15,7 +15,7 @@
   "dependencies": {
     "@ubento/workspace.app": "workspace:*",
     "@ubento/bento.style": "workspace:*",
-    "@ubento/bento.engine": "workspace:*",
+    "@ubento/bento.runtime": "workspace:*",
     "@ubento/services.sdk": "workspace:*",
     "react": "^19.2.5",
     "react-dom": "^19.2.5"

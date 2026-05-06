@@ -1,9 +1,4 @@
-import {
-  chain,
-  makeCursorPageResponse,
-  toSerializable,
-  validate,
-} from "@ubento/services.toolkit";
+import { chain, validate } from "@ubento/services.toolkit";
 import { Router } from "express";
 import multer from "multer";
 import z from "zod";
@@ -34,7 +29,7 @@ fileRouter.get(
         limit: req.query.limit ? Number(req.query.limit) : undefined,
         cursor: req.query.cursor as string | undefined,
       });
-      res.json(toSerializable(makeCursorPageResponse(result)));
+      res.json(result);
     },
   ),
 );
@@ -45,7 +40,8 @@ fileRouter.post(
   chain(
     validate({
       body: z.object({
-        workspace_id: z.string(),
+        team_id: z.string(),
+        workspace_id: z.string().optional(),
       }),
     }),
     async (req: any, res) => {
@@ -54,15 +50,16 @@ fileRouter.post(
         return;
       }
 
-      const { workspace_id } = req.body;
+      const { workspace_id, team_id } = req.body;
       const file = await createFile({
         workspace_id,
+        team_id,
         name: req.file.originalname,
         type: req.file.mimetype,
         buffer: req.file.buffer,
       });
 
-      res.status(201).json(toSerializable(file));
+      res.status(201).json((file));
     },
   ),
 );
@@ -84,7 +81,7 @@ fileRouter.get(
         return;
       }
 
-      res.json(toSerializable(file));
+      res.json((file));
     },
   ),
 );

@@ -12,8 +12,10 @@ export type ReqOf<Entry> = Entry extends (a: infer A) => any
     ? Req
     : unknown;
 
-export type engineStateChanged<Entry> = Entry extends (...a: any[]) => infer R
-  ? R
+export type ResOf<Entry> = Entry extends (...a: any[]) => infer R
+  ? R extends Promise<infer R2>
+    ? R2
+    : R
   : Entry extends { response: infer Res }
     ? Res
     : unknown;
@@ -22,10 +24,10 @@ export type engineStateChanged<Entry> = Entry extends (...a: any[]) => infer R
 export type HandlerMap<Ingress extends RpcInterfaceDefinition> = {
   [K in keyof Ingress]: (
     req: ReqOf<Ingress[K]>,
-  ) => engineStateChanged<Ingress[K]> | Promise<engineStateChanged<Ingress[K]>>;
+  ) => ResOf<Ingress[K]> | Promise<ResOf<Ingress[K]>>;
 };
 export type HandlerMapProxy<Ingress extends RpcInterfaceDefinition> = {
   readonly [K in keyof Ingress]: (
     req: ReqOf<Ingress[K]>,
-  ) => engineStateChanged<Ingress[K]> | Promise<engineStateChanged<Ingress[K]>>;
+  ) => ResOf<Ingress[K]> | Promise<ResOf<Ingress[K]>>;
 };

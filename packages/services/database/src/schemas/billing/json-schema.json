@@ -222,7 +222,7 @@
           "type": "string",
           "default": "billing_usage_counter"
         },
-        "organization_id": {
+        "team_id": {
           "type": "string"
         },
         "feature_code": {
@@ -254,7 +254,7 @@
       },
       "required": [
         "id",
-        "organization_id",
+        "team_id",
         "feature_code",
         "group",
         "updated_at"
@@ -270,7 +270,7 @@
           "type": "string",
           "default": "billing_usage_hold"
         },
-        "organization_id": {
+        "team_id": {
           "type": "string"
         },
         "counter_id": {
@@ -338,7 +338,7 @@
       },
       "required": [
         "id",
-        "organization_id",
+        "team_id",
         "counter_id",
         "ref",
         "amount",
@@ -357,7 +357,7 @@
           "type": "string",
           "default": "billing_usage_event"
         },
-        "organization_id": {
+        "team_id": {
           "type": "string"
         },
         "counter_id": {
@@ -400,7 +400,7 @@
       },
       "required": [
         "id",
-        "organization_id",
+        "team_id",
         "counter_id",
         "value",
         "note",
@@ -417,7 +417,7 @@
           "type": "string",
           "default": "billing_subscription"
         },
-        "organization_id": {
+        "team_id": {
           "type": "string"
         },
         "product_code": {
@@ -489,7 +489,7 @@
       },
       "required": [
         "id",
-        "organization_id",
+        "team_id",
         "product_code",
         "offer_code",
         "quantity",
@@ -509,7 +509,7 @@
           "type": "string",
           "default": "billing_subscription_invoice"
         },
-        "organization_id": {
+        "team_id": {
           "type": "string"
         },
         "provider": {
@@ -594,7 +594,7 @@
       },
       "required": [
         "id",
-        "organization_id",
+        "team_id",
         "provider",
         "provider_id",
         "subscription_id",
@@ -613,7 +613,7 @@
           "type": "string",
           "default": "billing_order"
         },
-        "organization_id": {
+        "team_id": {
           "type": "string"
         },
         "product_code": {
@@ -695,7 +695,7 @@
       },
       "required": [
         "id",
-        "organization_id",
+        "team_id",
         "product_code",
         "offer_code",
         "quantity",
@@ -715,7 +715,7 @@
           "type": "string",
           "default": "billing_checkout"
         },
-        "organization_id": {
+        "team_id": {
           "type": "string"
         },
         "product_code": {
@@ -764,7 +764,7 @@
       },
       "required": [
         "id",
-        "organization_id",
+        "team_id",
         "product_code",
         "offer_code",
         "quantity",
@@ -867,7 +867,7 @@
           "type": "string",
           "default": "billing_entitlement_grant"
         },
-        "organization_id": {
+        "team_id": {
           "type": "string"
         },
         "expires_at": {
@@ -899,7 +899,7 @@
       },
       "required": [
         "id",
-        "organization_id",
+        "team_id",
         "expires_at",
         "data",
         "updated_at"

@@ -36,7 +36,8 @@ export default defineConfig({
   cli: {
     entry: {
       patterns: [
-        "../engine/src/**/*.{ts,tsx}",
+        "../runtime/src/**/*.{ts,tsx}",
+        "../core/src/**/*.{ts,tsx}",
         "../../workspace/app/src/**/*.{ts,tsx}",
         "../../workspace/primitives/src/**/*.{ts,tsx}",
         "../../../apps/theme-builder/src/**/*.{ts,tsx}",

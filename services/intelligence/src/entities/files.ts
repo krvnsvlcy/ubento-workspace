@@ -32,7 +32,8 @@ export async function getFile(file_id: string): Promise<File | null> {
 }
 
 export async function createFile(data: {
-  workspace_id: string;
+  team_id: string;
+  workspace_id?: string;
   name: string;
   type: string;
   buffer: Buffer;
@@ -56,6 +57,7 @@ export async function createFile(data: {
   });
 
   const storagePath = storagePaths.file({
+    team_id: data.team_id,
     workspace_id: data.workspace_id,
     file_id,
   });
@@ -70,6 +72,7 @@ export async function createFile(data: {
   return prisma.file.create({
     data: {
       id: file_id,
+      team_id: data.team_id,
       workspace_id: data.workspace_id,
       name: fileName,
       type: fileType,
@@ -85,7 +88,8 @@ export async function getFileUrl(file_id: string): Promise<string> {
   }
 
   const storagePath = storagePaths.file({
-    workspace_id: file.workspace_id,
+    team_id: file.team_id,
+    workspace_id: file.workspace_id || undefined,
     file_id,
   });
   const storageFile = intelligenceBucket.file(storagePath);

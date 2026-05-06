@@ -9,7 +9,7 @@ import {
   X,
 } from "lucide-react";
 import { useState } from "react";
-import { WorkspaceEngine } from "../engine/engine";
+import { WorkspaceEngine } from "../../engine/engine";
 import { BoardTab } from "./tabs/board";
 import { CopilotTab } from "./tabs/copilot/copilot";
 import { WorkspaceTab } from "./tabs/workspace";
@@ -67,7 +67,7 @@ export function ControlPanel({
 
   switch (activeTab) {
     case "ai":
-      content = <CopilotTab controller={controller} />;
+      content = <CopilotTab />;
       break;
     case "board":
       content = <BoardTab controller={controller} />;
