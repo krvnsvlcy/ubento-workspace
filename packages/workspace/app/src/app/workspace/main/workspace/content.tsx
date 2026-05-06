@@ -10,19 +10,22 @@ import { useState } from "react";
 import { WorkspaceEngine } from "./engine/engine.js";
 
 function WorkspaceOverlay({ engine }: { engine: WorkspaceEngine }) {
-  const runtimeStatus = engine.useState((state) => state.runtimeStatus);
-  const workspaceStatus = engine.useState((state) => state.workspaceStatus);
+  const workspaceName = engine.useState((state) => state.workspaceData.name);
+  const workspaceSlug = engine.useState((state) => state.workspaceData.slug);
+  const runtimeStatus = engine.useState((state) => state.status);
 
-  if (runtimeStatus === "ready" && workspaceStatus === "loaded") {
+  if (runtimeStatus === "ready") {
     return <></>;
   }
 
   let content = <></>;
 
-  if (workspaceStatus === "error") {
+  if (runtimeStatus === "error") {
     content = <ErrorView message="Failed to load workspace" />;
   } else {
-    content = <PendingView message="Loading workspace..." />;
+    content = (
+      <PendingView message={workspaceName || workspaceSlug || "Workspace"} />
+    );
   }
 
   return (

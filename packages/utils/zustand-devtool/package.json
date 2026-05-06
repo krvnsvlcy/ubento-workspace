@@ -1,0 +1,19 @@
+{
+  "name": "@ubento/zustand-devtool",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "peerDependencies": {
+    "zustand": "*"
+  },
+  "devDependencies": {
+    "zustand": "^5.0.8"
+  },
+  "scripts": {
+    "clean": "scripts clean",
+    "build": "scripts build",
+    "watch": "scripts watch",
+    "lint": "scripts lint"
+  }
+}

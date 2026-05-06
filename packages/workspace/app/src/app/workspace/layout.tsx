@@ -10,7 +10,7 @@ export function Layout() {
 
   return (
     <div
-      className="bg-background relative z-0"
+      className="bg-background relative z-0 select-none"
       style={{
         height: "100vh",
         width: "100vw",

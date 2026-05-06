@@ -21,10 +21,12 @@ export const serviceDataSchema = z.object({
   moduleId: z.string().optional(),
   moduleVersionId: z.string().optional(),
   args: z.record(z.string(), z.any()).optional(),
-  module: z.object({
-    id: z.string(),
-    versionId: z.string(),
-  }).optional(),
+  module: z
+    .object({
+      id: z.string(),
+      versionId: z.string(),
+    })
+    .optional(),
 });
 export type ServiceData = z.infer<typeof serviceDataSchema>;
 
@@ -38,7 +40,7 @@ export const workspaceDataSchema = z.object({
 });
 export type WorkspaceData = z.infer<typeof workspaceDataSchema>;
 
-export type DropContent = 
+export type DropContent =
   | { type: "element"; elementId: string; boardId: string }
   | { type: "module"; ref: ModuleReference };
 
@@ -52,44 +54,14 @@ export type DropRect = {
   data: any;
 };
 
-export interface BentoEngineHostRpcInterface {
-  connect: () => Promise<void>;
-  ready: () => Promise<void>;
-  goTo: (args: { location: { boardId: string; params?: Record<string, any> } }) => Promise<void>;
-  setMode: (args: { mode: BentoMode }) => Promise<void>;
-  getBoard: (args: { boardId: string }) => Promise<BoardData>;
-  listBoards: () => Promise<BoardData[]>;
-  createBoard: (args: { name?: string }) => Promise<BoardData>;
-  getModule: (args: { moduleId: string }) => Promise<{ id: string; latestVersionId: string }>;
-  readModule: (ref: ModuleReference) => Promise<string>;
-  listModules: (params: any) => Promise<any[]>;
-  createModule: (args: { name: string }) => Promise<any>;
-  localStateChanged: (state: { selection: string[]; selectionScope?: string; hover?: string }) => Promise<void>;
-  boardChanged: (args: { boardId: string; board: BoardData }) => Promise<void>;
-  openComponentBrowser: () => Promise<void>;
-  [key: string]: (args: any) => any;
-}
-
-export interface BentoEngineRuntimeRpcInterface {
-  init: (args: {
-    publicModuleUrlTemplate: string;
-    state: { mode: BentoMode; workspace: WorkspaceData; selection: string[] };
-  }) => Promise<void>;
-  setMode: (args: { mode: BentoMode }) => Promise<void>;
-  updateBoardStyle: (args: { boardId: string; style: any }) => Promise<void>;
-  updateBoard: (args: { boardId: string; board: any }) => Promise<void>;
-  getDropRects: (args: {}) => Promise<DropRect[]>;
-  drop: (args: { targetId: string; content: DropContent[] }) => Promise<void>;
-  setLocation: (args: { location: { boardId: string; params?: Record<string, any> } }) => Promise<void>;
-  createBoard: (args: { name?: string }) => Promise<BoardData>;
-  [key: string]: (args: any) => any;
-}
-
 // For ComponentEngine
 export interface ComponentEngineRuntimeHostRpcInterface {
   connect: () => Promise<void>;
   ready: () => Promise<void>;
-  log: (args: { type: "log" | "error" | "warn" | "info"; args: any[] }) => Promise<void>;
+  log: (args: {
+    type: "log" | "error" | "warn" | "info";
+    args: any[];
+  }) => Promise<void>;
   [key: string]: (args: any) => any;
 }
 

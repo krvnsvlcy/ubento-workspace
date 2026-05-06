@@ -16,7 +16,7 @@ function WorkspaceCanvas({
   const workspaceEngine = useMemo(
     () =>
       createWorkspaceEngine({
-        workspaceId: workspace.id,
+        workspace,
         engine,
       }),
     [workspace],
@@ -43,7 +43,7 @@ export function Workspace({ slug }: { slug: string }) {
     engine.ubento.workspace.useWorkspaceBySlug({ slug });
 
   if (status === "pending") {
-    return <PendingView message={`Loading workspace ${slug}...`} />;
+    return <PendingView message={slug} />;
   } else if (status === "error") {
     return <ErrorView message={`Failed to load workspace ${slug}...`} />;
   } else if (!workspace) {

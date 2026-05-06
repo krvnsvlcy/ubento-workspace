@@ -18,6 +18,8 @@
     "@ubento/data-transfer": "workspace:*",
     "@ubento/rpc": "workspace:*",
     "@ubento/services.sdk": "workspace:*",
+    "@tanstack/react-query": "^5.89.7",
+    "@ubento/zustand-devtool": "workspace:*",
     "ai": "^6.0.168",
     "clsx": "^2.1.1",
     "dequal": "^2.0.3",

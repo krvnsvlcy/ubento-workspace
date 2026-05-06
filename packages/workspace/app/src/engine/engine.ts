@@ -5,6 +5,7 @@ import {
   createZustandStateController,
   StateController,
 } from "@ubento/workspace.primitives";
+import { registerStore } from "@ubento/zustand-devtool";
 import { createContext, useContext } from "react";
 import { createStore } from "zustand";
 import { createUbentoCopilot, UbentoCopilot } from "./copilot/copilot";
@@ -55,6 +56,7 @@ export function createUbentoEngine({
     leftPanelWidth: 240,
     dragActive: false,
   }));
+  registerStore("ubentoEngine", store);
   const stateController = createZustandStateController(store);
 
   // Sync state to URL

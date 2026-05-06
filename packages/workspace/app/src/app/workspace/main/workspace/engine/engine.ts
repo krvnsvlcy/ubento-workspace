@@ -16,20 +16,19 @@ import {
 } from "@ubento/bento.engine";
 import { createDuplexRpc, createWindowPort, DuplexRpc } from "@ubento/rpc";
 import { createZustandStateController } from "@ubento/workspace.primitives";
+import { registerStore } from "@ubento/zustand-devtool";
 import { dequal } from "dequal/lite";
 import { createStore as createZustandStore } from "zustand/vanilla";
 
 export type WorkspaceState = {
   // status
-  workspaceStatus: "pending" | "loaded" | "error";
-  workspaceError?: any;
-  runtimeStatus: "pending" | "connected" | "ready";
-  runtimeError?: any;
+  status: "pending" | "connected" | "ready" | "error";
+  error?: any;
 
   // local state
   mode: BentoMode;
   location: UbentoLocation;
-  workspaceData?: WorkspaceData;
+  workspaceData: WorkspaceData;
 
   // synced from runtime
   boards: Record<string, BoardData>;
@@ -43,10 +42,10 @@ export type WorkspaceState = {
 };
 
 export function createWorkspaceEngine({
-  workspaceId,
+  workspace,
   engine,
 }: {
-  workspaceId: string;
+  workspace: WorkspaceData;
   engine: UbentoEngine;
 }) {
   let rpc: DuplexRpc<
@@ -57,58 +56,26 @@ export function createWorkspaceEngine({
   const moduleService = engine.ubento.module;
 
   const store = createZustandStore<WorkspaceState>()(() => ({
-    workspaceStatus: "pending",
-    runtimeStatus: "pending",
+    status: "pending",
     mode: "live",
     location: engine.getState().location,
     boards: {},
     selection: [],
     dropRects: [],
     leftPanelOpen: true,
+    workspaceData: workspaceDataSchema.parse({
+      ...workspace,
+      id: workspace.id,
+      name: workspace.name,
+    }),
   }));
 
   const controller = createZustandStateController(store);
-  const workspacePromise = workspaceService
-    .getWorkspace(workspaceId)
-    .then((w) => {
-      const workspaceData = workspaceDataSchema.parse({
-        ...(w.data as any),
-        id: w.id,
-        name: w.name,
-      });
-      store.setState({ workspaceData, workspaceStatus: "loaded" });
-      return w;
-    })
-    .catch((err) => {
-      store.setState({ workspaceStatus: "error", workspaceError: err });
-      return;
-    });
-
+  registerStore("workspaceEngine", store);
   const workspaceEngine = {
     ...controller,
 
     init: async (target: Window) => {
-      async function initRuntime() {
-        const workspace = store.getState().workspaceData;
-        if (!workspace) {
-          // wait for it
-          await workspacePromise;
-          const workspaceRetry = store.getState().workspaceData;
-          if (!workspaceRetry) return;
-          initRuntime();
-          return;
-        }
-
-        rpc?.egress.init({
-          publicModuleUrlTemplate: "/engine-module/{artifactId}",
-          state: {
-            mode: "live",
-            workspace,
-            selection: [],
-          },
-        });
-      }
-
       rpc = createDuplexRpc<
         BentoEngineHostRpcInterface,
         BentoEngineRuntimeRpcInterface
@@ -117,13 +84,16 @@ export function createWorkspaceEngine({
         channel: "workspace",
         handlers: {
           connect: async () => {
-            store.setState({ runtimeStatus: "connected" });
-            initRuntime();
+            store.setState({ status: "connected" });
           },
           ready: async () => {
-            store.setState({ runtimeStatus: "ready" });
+            store.setState({ status: "ready" });
           },
-          goTo: async ({ location }: { location: { boardId: string; params?: Record<string, any> } }) => {
+          goTo: async ({
+            location,
+          }: {
+            location: { boardId: string; params?: Record<string, any> };
+          }) => {
             engine.goToLocation({
               ...engine.getState().location,
               board: location.boardId,
@@ -144,7 +114,7 @@ export function createWorkspaceEngine({
           },
           listBoards: async () => {
             const res = await workspaceService.listBoards({
-              workspaceId: workspaceId,
+              workspaceId: workspace.id,
             });
             const boards = res.data
               .map((b) => {
@@ -216,7 +186,7 @@ export function createWorkspaceEngine({
               },
             };
             const res = await workspaceService.createBoard({
-              workspace_id: workspaceId,
+              workspace_id: workspace.id,
               name: name || "New Board",
               data,
             });
@@ -247,14 +217,24 @@ export function createWorkspaceEngine({
           createModule: async ({ name }: { name: string }) => {
             throw new Error("not implemented");
           },
-          localStateChanged: async (state: { selection: string[]; selectionScope?: string; hover?: string }) => {
+          localStateChanged: async (state: {
+            selection: string[];
+            selectionScope?: string;
+            hover?: string;
+          }) => {
             store.setState({
               hover: state.hover,
               selection: state.selection,
               selectionScope: state.selectionScope,
             });
           },
-          boardChanged: async ({ boardId, board }: { boardId: string; board: BoardData }) => {
+          boardChanged: async ({
+            boardId,
+            board,
+          }: {
+            boardId: string;
+            board: BoardData;
+          }) => {
             store.setState((s) => ({
               boards: { ...s.boards, [boardId]: board },
             }));
@@ -317,15 +297,21 @@ export function createWorkspaceEngine({
       store.setState({ workspaceData: updated });
     },
 
-    goTo: (args: { location: { boardId: string; params?: Record<string, any> } }) => {
+    goTo: (args: {
+      location: { boardId: string; params?: Record<string, any> };
+    }) => {
       rpc?.egress.setLocation({ location: args.location });
     },
-    
+
     toggleLeftPanel: () => {
       store.setState((s) => ({ leftPanelOpen: !s.leftPanelOpen }));
     },
 
-    setBlockModule: (elementId: string, moduleId: string, versionId: string) => {
+    setBlockModule: (
+      elementId: string,
+      moduleId: string,
+      versionId: string,
+    ) => {
       const boardId = store.getState().location.board;
       if (!boardId) return;
       rpc?.egress.updateBoard({

@@ -7,7 +7,6 @@ import {
   Text,
 } from "@ubento/workspace.primitives";
 import { ArrowLeft, Server, Sparkles } from "lucide-react";
-import { motion } from "motion/react";
 
 export function ServiceDetails({
   serviceId,
@@ -41,7 +40,10 @@ export function ServiceDetails({
           onClick={onBack}
           className="flex items-center gap-2 text-neutral-content-muted hover:text-neutral-content transition-colors text-[13px] font-medium mb-4 group"
         >
-          <ArrowLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
+          <ArrowLeft
+            size={16}
+            className="group-hover:-translate-x-0.5 transition-transform"
+          />
           Back to marketplace
         </button>
         <div className="flex items-center gap-6">
@@ -57,7 +59,9 @@ export function ServiceDetails({
                 </div>
               )}
             </div>
-            <Text tone="subtle">{service.summary || "Powerful integration for your workspace."}</Text>
+            <Text tone="subtle">
+              {service.summary || "Powerful integration for your workspace."}
+            </Text>
           </div>
           {!isInstalled && (
             <button
@@ -73,22 +77,29 @@ export function ServiceDetails({
         <div className="grid grid-cols-3 gap-8">
           <div className="col-span-2 space-y-8">
             <section>
-              <h3 className="text-[16px] font-bold text-neutral-content mb-3">About this service</h3>
+              <h3 className="text-[16px] font-bold text-neutral-content mb-3">
+                About this service
+              </h3>
               <p className="text-[14px] text-neutral-content-muted leading-relaxed">
-                {service.description || "This service provides powerful capabilities to enhance your workspace productivity. It integrates seamlessly with your existing tools and automates complex workflows to save you time and effort."}
+                {service.summary}
               </p>
             </section>
-            
+
             <section>
-              <h3 className="text-[16px] font-bold text-neutral-content mb-3">Key Features</h3>
+              <h3 className="text-[16px] font-bold text-neutral-content mb-3">
+                Key Features
+              </h3>
               <div className="grid grid-cols-2 gap-4">
                 {[
                   "Real-time data synchronization",
                   "Advanced automation workflows",
                   "Deep integration with workspace",
-                  "Secure and private by design"
+                  "Secure and private by design",
                 ].map((feature, i) => (
-                  <div key={i} className="flex items-center gap-3 p-4 rounded-2xl bg-neutral-surface/50 border border-neutral-border/50 text-[13px] text-neutral-content">
+                  <div
+                    key={i}
+                    className="flex items-center gap-3 p-4 rounded-2xl bg-neutral-surface/50 border border-neutral-border/50 text-[13px] text-neutral-content"
+                  >
                     <div className="h-2 w-2 rounded-full bg-accent" />
                     {feature}
                   </div>
@@ -99,19 +110,33 @@ export function ServiceDetails({
 
           <div className="space-y-6">
             <div className="p-6 rounded-2xl bg-neutral-surface/30 border border-neutral-border/50">
-              <h4 className="text-[13px] font-bold text-neutral-content uppercase tracking-wider mb-4">Details</h4>
+              <h4 className="text-[13px] font-bold text-neutral-content uppercase tracking-wider mb-4">
+                Details
+              </h4>
               <div className="space-y-4">
                 <div>
-                  <div className="text-[11px] text-neutral-content-muted uppercase font-bold mb-1">Developer</div>
-                  <div className="text-[13px] text-neutral-content font-medium">Ubento Team</div>
+                  <div className="text-[11px] text-neutral-content-muted uppercase font-bold mb-1">
+                    Developer
+                  </div>
+                  <div className="text-[13px] text-neutral-content font-medium">
+                    Ubento Team
+                  </div>
                 </div>
                 <div>
-                  <div className="text-[11px] text-neutral-content-muted uppercase font-bold mb-1">Version</div>
-                  <div className="text-[13px] text-neutral-content font-medium">1.0.0</div>
+                  <div className="text-[11px] text-neutral-content-muted uppercase font-bold mb-1">
+                    Version
+                  </div>
+                  <div className="text-[13px] text-neutral-content font-medium">
+                    1.0.0
+                  </div>
                 </div>
                 <div>
-                  <div className="text-[11px] text-neutral-content-muted uppercase font-bold mb-1">Last Updated</div>
-                  <div className="text-[13px] text-neutral-content font-medium">Today</div>
+                  <div className="text-[11px] text-neutral-content-muted uppercase font-bold mb-1">
+                    Last Updated
+                  </div>
+                  <div className="text-[13px] text-neutral-content font-medium">
+                    Today
+                  </div>
                 </div>
               </div>
             </div>

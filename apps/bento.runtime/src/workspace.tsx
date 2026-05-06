@@ -1,15 +1,14 @@
-import { PendingView } from "@ubento/workspace.primitives";
+import { LayoutContext } from "@ubento/bento.arlo";
+import {
+  type BoardSpec,
+  BoardView,
+  EnvironmentContext,
+  Interactor,
+} from "@ubento/bento.engine";
+import { environment } from "./environment";
+import { spec } from "./spec";
 
-export function GuestWorkspace({ engine }: { engine: BentoEngine }) {
-  const workspace = engine.useState((s) => s.workspace);
-  let content: React.ReactNode;
-
-  if (!workspace) {
-    content = <PendingView message="Loading Workspace..." />;
-  } else {
-    content = <Workspace engine={engine} />;
-  }
-
+export function GuestWorkspace() {
   return (
     <div
       style={{
@@ -19,7 +18,19 @@ export function GuestWorkspace({ engine }: { engine: BentoEngine }) {
         transition: "padding 0.2s",
       }}
     >
-      {content}
+      <BoardPreview spec={spec} />
     </div>
+  );
+}
+
+function BoardPreview({ spec }: { spec: BoardSpec }) {
+  return (
+    <EnvironmentContext value={environment}>
+      <LayoutContext value={spec.style?.direction || "column"}>
+        <BoardView spec={spec}>
+          <Interactor />
+        </BoardView>
+      </LayoutContext>
+    </EnvironmentContext>
   );
 }

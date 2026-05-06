@@ -18,7 +18,8 @@
     "@ubento/bento.engine": "workspace:*",
     "@ubento/rpc": "workspace:*",
     "wouter": "^3.6.0",
-    "zustand": "^5.0.12"
+    "zustand": "^5.0.12",
+    "@ubento/bento.arlo": "workspace:*"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",

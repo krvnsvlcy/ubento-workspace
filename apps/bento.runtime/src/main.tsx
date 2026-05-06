@@ -1,28 +1,23 @@
+import "@ubento/bento.style/css/themes.css";
 import "@ubento/bento.style/dist/uno.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./modules.js";
+import { rpc } from "./rpc.js";
 import { GuestWorkspace } from "./workspace.js";
 
-import { createBentoEngine, engineFlags } from "@ubento/bento.engine";
-import "@ubento/bento.style/css/themes.css";
-import { rpc } from "./rpc.js";
+rpc.run();
 
-engineFlags.DEV_MODE = !!import.meta.env.DEV_MODE;
-
-rpc.setHandlers({
-  init: ({ state, publicModuleUrlTemplate }) => {
-    const engine = createBentoEngine({ rpc, publicModuleUrlTemplate, state });
-
+let connected = false;
+while (!connected) {
+  rpc.egress.connect({}).then(() => {
+    connected = true;
     createRoot(document.getElementById("root")!).render(
       <StrictMode>
-        <GuestWorkspace engine={engine} />
+        <GuestWorkspace />
       </StrictMode>,
     );
-
     rpc.egress.ready({});
-  },
-});
-
-rpc.run();
-rpc.egress.connect({});
+  });
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+}

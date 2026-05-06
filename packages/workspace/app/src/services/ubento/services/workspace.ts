@@ -1,7 +1,7 @@
+import { useQuery } from "@tanstack/react-query";
 import {
   createStore,
   useMutation,
-  useQuery,
   useStoreEntities,
   useStoreEntity,
   UseStoreOptions,
@@ -164,12 +164,14 @@ export function createUbentoWorkspaceService({
       options?: { enabled?: boolean },
     ) => {
       return useQuery({
+        // gcTime: 1000 * 60 * 60 * 24 * 7,
         queryKey: ["workspace", "slug", slug],
-        queryFn: () => ubentoSdk.workspace.getWorkspaceBySlug(slug),
-        enabled: options?.enabled !== false && Boolean(slug),
-        onSuccess: (ws) => {
+        queryFn: async () => {
+          const ws = await ubentoSdk.workspace.getWorkspaceBySlug(slug);
           workspaceStore.push(ws);
+          return ws;
         },
+        enabled: options?.enabled !== false && Boolean(slug),
       });
     },
     useWorkspaces: (

@@ -236,6 +236,9 @@ importers:
 
   apps/bento.runtime:
     dependencies:
+      '@ubento/bento.arlo':
+        specifier: workspace:*
+        version: link:../../packages/bento/arlo
       '@ubento/bento.engine':
         specifier: workspace:*
         version: link:../../packages/bento/engine
@@ -508,6 +511,19 @@ importers:
         specifier: ^5
         version: 5.9.3
 
+  packages/bento/arlo:
+    dependencies:
+      '@ubento/bento.engine':
+        specifier: workspace:*
+        version: link:../engine
+      zod:
+        specifier: ^4.3.6
+        version: 4.4.3
+    devDependencies:
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
+
   packages/bento/engine:
     dependencies:
       '@dnd-kit/core':
@@ -758,6 +774,12 @@ importers:
 
   packages/utils/rpc: {}
 
+  packages/utils/zustand-devtool:
+    devDependencies:
+      zustand:
+        specifier: ^5.0.8
+        version: 5.0.12(@types/react@19.2.14)(react@19.2.5)(use-sync-external-store@1.6.0(react@19.2.5))
+
   packages/workspace/app:
     dependencies:
       '@ai-sdk/open-responses':
@@ -778,6 +800,9 @@ importers:
       '@monaco-editor/react':
         specifier: ^4.7.0
         version: 4.7.0(monaco-editor@0.55.1)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      '@tanstack/react-query':
+        specifier: ^5.89.7
+        version: 5.100.9(react@19.2.5)
       '@ubento/bento.engine':
         specifier: workspace:*
         version: link:../../bento/engine
@@ -799,6 +824,9 @@ importers:
       '@ubento/workspace.primitives':
         specifier: workspace:*
         version: link:../primitives
+      '@ubento/zustand-devtool':
+        specifier: workspace:*
+        version: link:../../utils/zustand-devtool
       ai:
         specifier: ^6.0.168
         version: 6.0.175(zod@4.4.3)
@@ -4200,6 +4228,14 @@ packages:
     resolution: {integrity: sha512-pCvohwOCspk3ZFn6eJzrrX3g4n2JY73H6MmYC87XfGPyTty4YsCjYTMArRZm/zOI8dIt3+EcrLHAFPe5A4bgtw==}
     peerDependencies:
       vite: ^5.2.0 || ^6 || ^7 || ^8
+
+  '@tanstack/query-core@5.100.9':
+    resolution: {integrity: sha512-SJSFw1S8+kQ0+knv/XGfrbocWoAlT7vDKsSImtLx3ZPQmEcR46hkDjLSvynSy25N8Ms4tIEini1FuBd5k7IscQ==}
+
+  '@tanstack/react-query@5.100.9':
+    resolution: {integrity: sha512-Oa44XkaI3kCNN6ME0KByU3xT3SEUNOMfZpHxL6+wFoTm+OeUFYHKdeYVe0aOXlRDm/f15sgLwEt2HDorIdW8+A==}
+    peerDependencies:
+      react: ^18 || ^19
 
   '@tootallnate/once@2.0.0':
     resolution: {integrity: sha512-XCuKFP5PS55gnMVu3dty8KPatLqUoy/ZYzDzAGCQ8JNFCkLXzmI7vNHCR+XpbZaMWQK/vQubr7PkYq8g470J/A==}
@@ -12362,6 +12398,13 @@ snapshots:
       '@tailwindcss/oxide': 4.2.4
       tailwindcss: 4.2.4
       vite: 8.0.10(@types/node@24.12.2)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.4)
+
+  '@tanstack/query-core@5.100.9': {}
+
+  '@tanstack/react-query@5.100.9(react@19.2.5)':
+    dependencies:
+      '@tanstack/query-core': 5.100.9
+      react: 19.2.5
 
   '@tootallnate/once@2.0.0': {}
 
