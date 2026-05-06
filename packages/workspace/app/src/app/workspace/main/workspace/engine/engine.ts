@@ -14,7 +14,6 @@ import {
   ModuleReference,
   ParsedSpec,
   ServiceData,
-  WorkspaceData,
 } from "@ubento/bento.runtime";
 import { createDuplexRpc, createWindowPort, DuplexRpc } from "@ubento/rpc";
 import { workspaceClient } from "@ubento/services.sdk";

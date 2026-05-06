@@ -1,6 +1,6 @@
 import { Sparkles } from "lucide-react";
 import { motion } from "motion/react";
-import { useState } from "react";
+import { useUbentoEngine } from "@/engine/engine.js";
 import { WorkspaceEngine } from "../engine/engine.js";
 import { ControlPanel } from "./panel/control-panel.js";
 
@@ -22,7 +22,9 @@ const style = `
 `;
 
 export function WorkspaceControl({ engine }: { engine: WorkspaceEngine }) {
-  const [showControls, setShowControls] = useState(false);
+  const ubentoEngine = useUbentoEngine();
+  const showControls = ubentoEngine.useState((s) => s.showControls);
+  const setShowControls = (show: boolean) => ubentoEngine.setShowControls(show);
 
   return (
     <div className="absolute bottom-8 right-8 z-50">

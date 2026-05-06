@@ -3,13 +3,13 @@ import { createZustandStateController } from "@ubento/workspace.primitives";
 import { createStore } from "zustand";
 import { UbentoSession } from "../session.js";
 import { createAgent } from "./agent/agent.js";
-import { createUbentoAgentEnvironment } from "./copilot/environment.js";
 import {
   copilotEnvironmentInstructions,
   copilotRoleInstructions,
 } from "./copilot/instructions.js";
+import { getThreadController } from "./thread/thread_controller.js";
 
-const copilotScope = {
+export const copilotScope = {
   team: "team",
   workspace: (workspaceId: string) => `workspace.${workspaceId}`,
 };
@@ -42,12 +42,9 @@ export function createUbentoCopilot({
   }));
   const controller = createZustandStateController(store);
 
-  const env = createUbentoAgentEnvironment({ ubento, session });
-
   const agent = createAgent({
     name: "ubento-copilot",
     description: "The main AI assistant",
-    environment: env,
     getAgentInstructions: () => ({
       role: copilotRoleInstructions,
       environment: copilotEnvironmentInstructions,
@@ -84,12 +81,16 @@ export function createUbentoCopilot({
       let threadId = state.activeThreadMap[scope];
 
       try {
+        let thread;
         if (!threadId) {
-          const thread = await agent.createThread({
+          thread = await ubento.intelligence.createThread({
             title: content.slice(0, 50),
+            team_id: session.teamId,
           });
           threadId = thread.id;
           setActiveThread({ scope, threadId });
+        } else {
+          thread = await ubento.intelligence.getThread(threadId);
         }
 
         // Clear input immediately for better UX
@@ -97,8 +98,11 @@ export function createUbentoCopilot({
           input: { ...s.input, text: "" },
         }));
 
-        await agent.sendMessage(content, {
-          threadId: threadId,
+        const threadController = getThreadController({ threadId: thread.id, agent, ubento });
+
+        await threadController.run({
+          message: { text: content },
+          model: {} as any, // TODO: Inject correct language model using ubento SDK token manager
         });
       } catch (error) {
         console.error("Failed to send message:", error);

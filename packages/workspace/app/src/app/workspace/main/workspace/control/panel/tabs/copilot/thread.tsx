@@ -2,9 +2,11 @@ import { useUbentoEngine } from "@/engine/engine";
 import { Sparkles } from "lucide-react";
 import { useEffect, useRef } from "react";
 
-export function CopilotThread() {
+export function CopilotThread({ scope }: { scope: string }) {
   const engine = useUbentoEngine();
-  const activeThreadId = engine.copilot.useState((s) => s.activeThreadMap);
+  const activeThreadId = engine.copilot.useState(
+    (s) => s.activeThreadMap[scope],
+  );
   const { data: messages = [] } = engine.ubento.intelligence.useMessages(
     { thread_id: activeThreadId ?? "" },
     { enabled: !!activeThreadId },
@@ -53,13 +55,11 @@ export function CopilotThread() {
           <div
             className={`max-w-[85%] rounded-[20px] px-4 py-3 text-[14px] leading-[1.5] ${
               message.role === "user"
-                ? "bg-primary-500 text-white"
+                ? "bg-neutral-surface"
                 : "border border-white/10 bg-white/5 text-foreground-100 shadow-sm"
             }`}
           >
-            {(message.data as any)?.text ||
-              (message.data as any)?.content ||
-              "..."}
+            {(message.data as any).text}
           </div>
         </div>
       ))}

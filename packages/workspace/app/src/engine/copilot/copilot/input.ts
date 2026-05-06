@@ -76,7 +76,7 @@ export function createCopilotInput({
     setModel: (model) => set({ model }),
 
     inputAttachment: (event) => {
-      const attachmentTypes = agent.environment.attachmentTypes;
+      const attachmentTypes = agent.getState().attachmentTypes;
       for (const typeKey in attachmentTypes) {
         const tp = attachmentTypes[typeKey];
         if (!tp.match(event)) continue;

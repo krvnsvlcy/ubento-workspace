@@ -19,6 +19,7 @@ export type UbentoEngineState = {
   leftPanelWidth: number;
   dragActive: boolean;
   activeWorkspaceEngine?: WorkspaceEngine;
+  showControls: boolean;
 };
 
 export type UbentoEngine = StateController<UbentoEngineState> & {
@@ -33,6 +34,7 @@ export type UbentoEngine = StateController<UbentoEngineState> & {
   setDragActive: (active: boolean) => void;
   setActiveWorkspaceEngine: (engine: WorkspaceEngine) => void;
   clearActiveWorkspaceEngine: (engine: WorkspaceEngine) => void;
+  setShowControls: (show: boolean) => void;
 };
 
 export function createUbentoEngine({
@@ -55,6 +57,7 @@ export function createUbentoEngine({
     leftPanelPinned: true,
     leftPanelWidth: 240,
     dragActive: false,
+    showControls: false,
   }));
   registerStore("ubentoEngine", store);
   const stateController = createZustandStateController(store);
@@ -132,6 +135,12 @@ export function createUbentoEngine({
           state.activeWorkspaceEngine === engine
             ? undefined
             : state.activeWorkspaceEngine,
+      }));
+    },
+    setShowControls(show: boolean) {
+      stateController.setState((state) => ({
+        ...state,
+        showControls: show,
       }));
     },
   };

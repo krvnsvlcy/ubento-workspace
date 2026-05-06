@@ -27,7 +27,7 @@ export const searchTools: Tool<typeof searchToolsSchema, SearchToolsOutput> = {
     const execution = action.message.execution;
     const agent = execution.thread.getState().agent;
     const agentState = agent.getState();
-    const toolSet = agent.environment.toolSets[args.set];
+    const toolSet = agent.getState().toolSets[args.set];
 
     if (!toolSet) {
       return {
@@ -74,7 +74,7 @@ export const listTools: Tool<typeof listToolsSchema, ListToolsOutput> & {
     const execution = action.message.execution;
     const agent = execution.thread.getState().agent;
     const agentState = agent.getState();
-    const toolSet = agent.environment.toolSets[args.set];
+    const toolSet = agent.getState().toolSets[args.set];
 
     if (!toolSet) {
       return {
@@ -122,7 +122,7 @@ export const describeTool: Tool<typeof describeToolSchema, DescribeToolOutput> &
     const execution = action.message.execution;
     const agent = execution.thread.getState().agent;
     const agentState = agent.getState();
-    const toolSet = agent.environment.toolSets[args.set];
+    const toolSet = agent.getState().toolSets[args.set];
 
     if (!toolSet) {
       return {

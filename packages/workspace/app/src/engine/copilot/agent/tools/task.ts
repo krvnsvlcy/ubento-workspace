@@ -29,8 +29,10 @@ export type TaskToolOutput = {
 
 export function createTaskTool({
   agent,
+  createThread,
 }: {
   agent: Agent;
+  createThread: (params: { title: string }) => Promise<any>;
 }): Tool<typeof taskToolSchema, TaskToolOutput> & { toolName: string } {
   const tool: Tool<typeof taskToolSchema, TaskToolOutput> & {
     toolName: string;
@@ -52,7 +54,7 @@ export function createTaskTool({
       }
 
       const execution = action.message.execution;
-      const thread = await subAgent.createThread({ title: args.title });
+      const thread = await createThread({ title: args.title });
 
       const subExecution = await thread.run({
         message: { text: args.message },

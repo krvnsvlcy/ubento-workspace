@@ -16,14 +16,19 @@ export function createSubAgent({
   const agent = createAgent({
     name,
     description,
-    environment: copilot.environment,
     getAgentInstructions,
   });
 
-  // Share the copilot's thread creation logic
-  (agent as any).createThread = async (params: { title: string }) => {
-    return copilot.createThread(params);
-  };
+  const copilotState = copilot.getState();
+  for (const toolSet of Object.values(copilotState.toolSets)) {
+    agent.addToolSet(toolSet);
+  }
+  for (const resourceType of Object.values(copilotState.resourceTypes)) {
+    agent.addResourceType(resourceType);
+  }
+  for (const attachmentType of Object.values(copilotState.attachmentTypes)) {
+    agent.addAttachmentType(attachmentType);
+  }
 
   return agent;
 }

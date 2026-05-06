@@ -25,7 +25,7 @@ export async function formatUserMessage(
 
   const attachments = await Promise.all(
     message.attachments?.map((attachment) => {
-      const attachmentType = agent.environment.attachmentTypes[attachment.type];
+      const attachmentType = agent.getState().attachmentTypes[attachment.type];
       if (!attachmentType) {
         agent.logger?.warn("Unknown attachment type", {
           event: "attachment.unknown-type",
@@ -38,7 +38,7 @@ export async function formatUserMessage(
     }) ?? [],
   );
 
-  const validAttachments = attachments.filter((a) => a !== undefined);
+  const validAttachments = attachments.filter((a): a is MessageItem => a !== undefined);
 
   if (validAttachments.length > 0) {
     parts.push({ type: "text", text: "- Attachments:\n" });
@@ -254,7 +254,7 @@ export const buildAgentManagerPrompt = async ({
     parts.push({ type: "text", text: "\n\n# Context Resources\n" });
 
     for (const resource of context.resources) {
-      const resourceType = agent.environment.resourceTypes[resource.type];
+      const resourceType = agent.getState().resourceTypes[resource.type];
       if (!resourceType) {
         agent.logger?.warn("Unknown resource type", {
           event: "resource.unknown-type",

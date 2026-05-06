@@ -2,12 +2,12 @@ import { useUbentoEngine } from "@/engine/engine";
 import { Button } from "@ubento/workspace.primitives";
 import { ArrowRight, ChevronDown, Plus } from "lucide-react";
 
-export function CopilotInput() {
+export function CopilotInput({ scope }: { scope: string }) {
   const engine = useUbentoEngine();
   const input = engine.copilot.useState((state) => state.input.text);
 
   const handleSend = () => {
-    engine.copilot.sendMessage();
+    engine.copilot.sendMessage(scope);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {

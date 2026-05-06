@@ -1,6 +1,8 @@
 import { createStore } from "zustand/vanilla";
 import { AgentContext } from "./context.js";
-import { AgentEnvironment } from "./environment.js";
+import { AttachmentType } from "./attachments.js";
+import { ResourceType } from "./resource.js";
+import { ToolSet } from "./tool_set/tool_set.js";
 import {
   AgentInstructions,
   buildAgentManagerInstructions,
@@ -11,12 +13,14 @@ import { Tool } from "./tool.js";
 export type AgentState = {
   tools: Record<string, Tool>;
   agents: Record<string, Agent>;
+  toolSets: Record<string, ToolSet>;
+  resourceTypes: Record<string, ResourceType>;
+  attachmentTypes: Record<string, AttachmentType<any, any>>;
 };
 
 export type Agent = {
   name: string;
   description: string;
-  environment: AgentEnvironment;
   logger: {
     warn: (message: string, data?: any) => void;
     error: (message: string, data?: any) => void;
@@ -26,10 +30,17 @@ export type Agent = {
   getState: () => AgentState;
   subscribe: (callback: (state: AgentState) => void) => () => void;
 
+  // Capabilities
   addTool: (tool: Tool) => void;
   removeTool: (name: string) => void;
   addAgent: (agent: Agent) => void;
   removeAgent: (name: string) => void;
+  addToolSet: (toolSet: ToolSet) => void;
+  removeToolSet: (name: string) => void;
+  addResourceType: (resourceType: ResourceType) => void;
+  removeResourceType: (type: string) => void;
+  addAttachmentType: (attachmentType: AttachmentType<any, any>) => void;
+  removeAttachmentType: (type: string) => void;
 
   // Logic actions
   getInstructions: () => Promise<string>;
@@ -40,18 +51,19 @@ export type Agent = {
 export function createAgent(config: {
   name: string;
   description: string;
-  environment: AgentEnvironment;
   getAgentInstructions: () => AgentInstructions | Promise<AgentInstructions>;
 }): Agent {
   const store = createStore<AgentState>()(() => ({
     tools: {},
     agents: {},
+    toolSets: {},
+    resourceTypes: {},
+    attachmentTypes: {},
   }));
 
   const instance: Agent = {
     name: config.name,
     description: config.description,
-    environment: config.environment,
     logger: {
       warn: (m, d) => console.warn(`[${config.name}] ${m}`, d),
       error: (m, d) => console.error(`[${config.name}] ${m}`, d),
@@ -79,12 +91,39 @@ export function createAgent(config: {
         return { agents: rest };
       });
     },
+    addToolSet: (toolSet) => {
+      store.setState((s) => ({ toolSets: { ...s.toolSets, [toolSet.name]: toolSet } }));
+    },
+    removeToolSet: (name) => {
+      store.setState((s) => {
+        const { [name]: _, ...rest } = s.toolSets;
+        return { toolSets: rest };
+      });
+    },
+    addResourceType: (resourceType) => {
+      store.setState((s) => ({ resourceTypes: { ...s.resourceTypes, [resourceType.type]: resourceType } }));
+    },
+    removeResourceType: (type) => {
+      store.setState((s) => {
+        const { [type]: _, ...rest } = s.resourceTypes;
+        return { resourceTypes: rest };
+      });
+    },
+    addAttachmentType: (attachmentType) => {
+      store.setState((s) => ({ attachmentTypes: { ...s.attachmentTypes, [attachmentType.type]: attachmentType } }));
+    },
+    removeAttachmentType: (type) => {
+      store.setState((s) => {
+        const { [type]: _, ...rest } = s.attachmentTypes;
+        return { attachmentTypes: rest };
+      });
+    },
 
     getInstructions: async () => {
       const state = store.getState();
       const agents = Object.values(state.agents);
       const tools = Object.values(state.tools);
-      const toolSets = Object.values(config.environment.toolSets);
+      const toolSets = Object.values(state.toolSets);
 
       return buildAgentManagerInstructions({
         tools,
@@ -102,7 +141,6 @@ export function createAgent(config: {
       // We pass a shim that looks like the old Agent for compatibility with buildAgentManagerPrompt
       const agentShim = {
         ...state,
-        environment: config.environment,
         name: config.name,
         description: config.description,
       };
@@ -119,7 +157,7 @@ export function createAgent(config: {
         return state.tools[parts[0]];
       }
       if (parts.length === 2) {
-        const toolSet = config.environment.toolSets[parts[0]];
+        const toolSet = state.toolSets[parts[0]];
         return toolSet?.getTool(parts[1]);
       }
       return undefined;

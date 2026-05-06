@@ -21,9 +21,8 @@ export const readWebpageTool: Tool<typeof readWebpageSchema> = {
       const agent = execution.thread.getState().agent;
       const thread = execution.thread;
 
-      const content = await agent.environment.readWebpage(args.url, {
-        format: args.format as any,
-      });
+      const res = await fetch(args.url);
+      const content = await res.text();
 
       await thread.setResource({
         type: "web",
@@ -62,9 +61,8 @@ export const fetchTool: Tool<typeof fetchSchema> = {
       const agent = execution.thread.getState().agent;
       const thread = execution.thread;
 
-      const content = await agent.environment.readWebpage(args.url, {
-        format: "json",
-      });
+      const res = await fetch(args.url);
+      const content = await res.text();
 
       await thread.setResource({
         type: "web",
