@@ -1,6 +1,6 @@
-import { AttachmentType } from "@/engine/copilot/agent/attachments.js";
-import { MessageItem } from "@/engine/copilot/agent/message/item.js";
-import { Agent } from "../../agent/agent.js";
+import { AttachmentType } from "@ubento/workspace.agent";
+import { MessageItem } from "@ubento/workspace.agent";
+import { Agent } from "@ubento/workspace.agent";
 import { CopilotAttachmentInputEvent } from "../input.js";
 
 export interface IntelligenceFile {
@@ -44,12 +44,12 @@ export function intelligenceFileCopilotInputAttachmentType(): AttachmentType<
         };
       });
     },
-    toMessageAttachment: (data) => {
+    toMessageAttachment: (data: { file: File; intelligenceFile: IntelligenceFile }) => {
       return {
         id: data.intelligenceFile.id,
       };
     },
-    format: async (data): Promise<MessageItem | undefined> => {
+    format: async (data: { id: string }): Promise<MessageItem | undefined> => {
       // Shim for formatting
       return {
         type: "file",
@@ -58,7 +58,7 @@ export function intelligenceFileCopilotInputAttachmentType(): AttachmentType<
         mediaType: "application/octet-stream",
       };
     },
-    icon: (data, agent: Agent) => "file",
-    label: (data, agent: Agent) => "File",
+    icon: (data: { id: string }, agent: Agent) => "file",
+    label: (data: { id: string }, agent: Agent) => "File",
   };
 }

@@ -10,7 +10,7 @@ export function WorkspaceTab({ controller }: { controller: WorkspaceEngine }) {
   if (!workspace) return null;
 
   const updateWorkspace = (data: Partial<typeof workspace>) => {
-    controller.updateWorkspace(data);
+    controller.updateWorkspace(data as any);
   };
 
   const handleAddService = () => {
@@ -19,19 +19,19 @@ export function WorkspaceTab({ controller }: { controller: WorkspaceEngine }) {
     const moduleId = prompt("Enter module ID:");
     if (!moduleId) return;
 
-    const services = { ...workspace.services };
+    const services = { ...(workspace as any).services };
     services[serviceName] = {
       moduleId,
       moduleVersionId: "latest",
       args: {},
     };
-    updateWorkspace({ services });
+    updateWorkspace({ services } as any);
   };
 
   const handleRemoveService = (name: string) => {
-    const services = { ...workspace.services };
+    const services = { ...(workspace as any).services };
     delete services[name];
-    updateWorkspace({ services });
+    updateWorkspace({ services } as any);
   };
 
   return (
@@ -39,8 +39,8 @@ export function WorkspaceTab({ controller }: { controller: WorkspaceEngine }) {
       <Section title="General" icon={Settings2}>
         <PropertyRow label="Workspace Name">
           <TextInput
-            value={workspace.name}
-            onChange={(v) => updateWorkspace({ name: v })}
+            value={workspace.title}
+            onChange={(v) => updateWorkspace({ title: v } as any)}
           />
         </PropertyRow>
         <PropertyRow label="Slug">
@@ -50,9 +50,9 @@ export function WorkspaceTab({ controller }: { controller: WorkspaceEngine }) {
         </PropertyRow>
         <PropertyRow label="Home Board">
           <Select
-            value={workspace.homeBoardId || ""}
-            options={Object.values(state.boards).map((b) => b.id)}
-            onChange={(v) => updateWorkspace({ homeBoardId: v })}
+            value={(workspace as any).homeBoardId || ""}
+            options={Object.values(state.boards).map((b: any) => b.id)}
+            onChange={(v) => updateWorkspace({ homeBoardId: v } as any)}
           />
         </PropertyRow>
       </Section>
@@ -60,7 +60,7 @@ export function WorkspaceTab({ controller }: { controller: WorkspaceEngine }) {
       <Section title="Services" icon={Puzzle}>
         <div className="px-4 py-2">
           {(
-            Object.entries(workspace.services || {}) as [string, ServiceData][]
+            Object.entries((workspace as any).services || {}) as [string, ServiceData][]
           ).map(([name, data]) => (
             <div key={name} className="mb-2 flex flex-col rounded-md p-2">
               <div className="flex items-center justify-between">
@@ -114,7 +114,7 @@ export function WorkspaceTab({ controller }: { controller: WorkspaceEngine }) {
         </PropertyRow>
         <PropertyRow label="Team ID">
           <span className="font-mono text-[10px] text-neutral-content-subtle">
-            {workspace.teamId}
+            {(workspace as any).teamId}
           </span>
         </PropertyRow>
       </Section>

@@ -10,7 +10,7 @@ export const messageToolSchema = z.object({
     .describe("What to do after this message."),
 });
 
-export const messageTool: AgentTool<typeof messageToolSchema, {}> & {
+export const messageTool: AgentTool<typeof messageToolSchema> & {
   toolName: string;
 } = {
   name: "message",
@@ -18,7 +18,7 @@ export const messageTool: AgentTool<typeof messageToolSchema, {}> & {
   description:
     "Send a message to the user. Use this to provide updates, ask for input, or respond to user queries.",
   args: messageToolSchema,
-  async run(args) {
+  async run({ args }) {
     return {
       content: [{ type: "text", text: `Message sent to user.` }],
       shouldEnd: args.after === "finish" || args.after === "await_response",

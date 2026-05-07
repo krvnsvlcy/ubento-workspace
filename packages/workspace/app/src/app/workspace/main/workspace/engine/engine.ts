@@ -1,5 +1,5 @@
 import { UbentoEngine, UbentoEngineState } from "@/engine/engine";
-import { BoardStyle, workspaceSpecSchema } from "@ubento/bento.core";
+import { workspaceSpecSchema } from "@ubento/bento.core";
 import {
   BentoEngineHostRpcInterface,
   BentoEngineRuntimeRpcInterface,
@@ -9,7 +9,6 @@ import {
   BentoWorkspaceData,
   BoardData,
   boardDataSchema,
-  DropContent,
   DropRect,
   ModuleReference,
   ParsedSpec,
@@ -49,6 +48,7 @@ export type WorkspaceState = {
 
   // local state
   mode: BentoMode;
+  location: BentoLocation;
   workspace: BentoWorkspaceData;
 
   // synced from runtime
@@ -81,7 +81,10 @@ export function createWorkspaceEngine({
   const store = createZustandStore<WorkspaceState>()(() => ({
     status: "pending",
     mode: "live",
-    location: engine.getState().location,
+    location: {
+      boardId: engine.getState().location.board || "",
+      params: engine.getState().location.params || {},
+    },
     boards: {},
     selection: [],
     dropRects: [],
@@ -122,19 +125,14 @@ export function createWorkspaceEngine({
           ready: async () => {
             store.setState({ status: "ready" });
           },
-          goTo: async ({
-            location,
-          }: {
-            location: { boardId: string; params?: Record<string, any> };
-          }) => {
-            engine.goToLocation({
-              ...engine.getState().location,
-              board: location.boardId,
-              params: location.params as Record<string, string>,
-            });
-          },
-          setMode: async ({ mode }: { mode: BentoMode }) => {
-            store.setState({ mode });
+          goTo: async ({ location }: { location?: BentoLocation }) => {
+            if (location) {
+              engine.goToLocation({
+                ...engine.getState().location,
+                board: location.boardId,
+                params: location.params as Record<string, string>,
+              });
+            }
           },
           getBoard: async ({ boardId }: { boardId: string }) => {
             const data = await workspaceService.getBoard(boardId);
@@ -162,112 +160,6 @@ export function createWorkspaceEngine({
               nextCursor: res.nextPage?.cursor,
             };
           },
-          createBoard: async ({ name }: { name?: string }) => {
-            const data: Omit<BoardData, "id" | "name"> = {
-              title: name || "New Board",
-              content: ["root"],
-              elements: {
-                root: {
-                  type: "stack",
-                  content: ["left", "right"],
-                  style: {
-                    width: {
-                      value: 100,
-                      unit: "%",
-                    },
-                    height: {
-                      value: 300,
-                      unit: "px",
-                    },
-                  },
-                },
-                left: {
-                  type: "stack",
-                  content: [],
-                  style: {
-                    width: {
-                      value: 1,
-                      unit: "fr",
-                    },
-                    height: {
-                      value: 1,
-                      unit: "fr",
-                    },
-                  },
-                },
-                right: {
-                  type: "stack",
-                  content: [],
-                  style: {
-                    width: {
-                      value: 1,
-                      unit: "fr",
-                    },
-                    height: {
-                      value: 1,
-                      unit: "fr",
-                    },
-                  },
-                },
-              },
-            };
-            const res = await workspaceService.createBoard({
-              workspace_id: workspace.id,
-              name: name || "New Board",
-              data,
-            });
-            const board = boardDataSchema.parse({
-              id: res.id,
-              name: res.name,
-              ...(res.data as any),
-            });
-            return board;
-          },
-          getModule: async ({ moduleId }: { moduleId: string }) => {
-            const res = await moduleService.getModule(moduleId);
-            return {
-              id: res.id,
-              latestVersionId: res.latest_version_id || "",
-            };
-          },
-          readModule: async (ref: ModuleReference) => {
-            return await moduleService.readModuleVersionFile(
-              ref.id,
-              ref.versionId,
-              "index.js",
-            );
-          },
-          listModules: async (params: any) => {
-            return [];
-          },
-          createModule: async ({ name }: { name: string }) => {
-            throw new Error("not implemented");
-          },
-          localStateChanged: async (state: {
-            selection: string[];
-            selectionScope?: string;
-            hover?: string;
-          }) => {
-            store.setState({
-              hover: state.hover,
-              selection: state.selection,
-              selectionScope: state.selectionScope,
-            });
-          },
-          boardChanged: async ({
-            boardId,
-            board,
-          }: {
-            boardId: string;
-            board: BoardData;
-          }) => {
-            store.setState((s) => ({
-              boards: { ...s.boards, [boardId]: board },
-            }));
-          },
-          openComponentBrowser: async () => {
-            engine.goToLocation({ workspaceTab: "assets" });
-          },
         },
       });
 
@@ -282,45 +174,12 @@ export function createWorkspaceEngine({
       rpc?.dispose();
     },
 
-    // actions
-    setMode: (mode: BentoMode) => {
-      store.setState({ mode });
-      rpc?.egress.setMode({ mode });
-    },
-
-    updateBoardStyle: (boardId: string, style: Partial<BoardStyle>) => {
-      rpc?.egress.updateBoardStyle({ boardId, style });
-    },
-
-    setBoardName: (boardId: string, name: string) => {
-      rpc?.egress.updateBoard({ boardId, board: { name } });
-    },
-
-    deleteBoard: async (boardId: string) => {
-      await workspaceService.deleteBoard(boardId);
-      store.setState((s) => {
-        const boards = { ...s.boards };
-        delete boards[boardId];
-        return { boards };
-      });
-    },
-
-    createBoard: async (args: { name?: string }) => {
-      const board = await rpc?.egress.createBoard(args);
-      if (board) {
-        store.setState((s) => ({
-          boards: { ...s.boards, [board.id]: board },
-        }));
-      }
-      return board;
-    },
-
-    updateWorkspace: async (data: Partial<WorkspaceData>) => {
-      const current = store.getState().workspaceData;
+    updateWorkspace: async (data: Partial<WorkspaceState>) => {
+      const current = store.getState().workspace;
       if (!current) return;
-      const updated = { ...current, ...data };
+      const updated = { ...current, ...data } as any;
       await workspaceService.updateWorkspace(current.id, updated);
-      store.setState({ workspaceData: updated });
+      store.setState({ workspace: updated });
     },
 
     goTo: (args: { location?: BentoLocation }) => {
@@ -330,41 +189,6 @@ export function createWorkspaceEngine({
       });
     },
 
-    toggleLeftPanel: () => {
-      store.setState((s) => ({ leftPanelOpen: !s.leftPanelOpen }));
-    },
-
-    setBlockModule: (
-      elementId: string,
-      moduleId: string,
-      versionId: string,
-    ) => {
-      const boardId = store.getState().location.board;
-      if (!boardId) return;
-      rpc?.egress.updateBoard({
-        boardId,
-        board: {
-          elements: {
-            [elementId]: {
-              moduleId,
-              moduleVersionId: versionId,
-            },
-          } as any,
-        },
-      });
-    },
-
-    refreshDropRects: async () => {
-      if (rpc) {
-        const dropRects = await rpc.egress.getDropRects({});
-        store.setState({ dropRects });
-      }
-    },
-
-    performDrop: (targetId: string, content: DropContent[]) => {
-      rpc?.egress.drop({ targetId, content });
-    },
-
     installService: (serviceName: string, ref: ModuleReference) => {
       store.setState((state) => {
         const currentWorkspace = state.workspace;
@@ -372,10 +196,9 @@ export function createWorkspaceEngine({
           return state;
         }
 
-        const nextServices = { ...currentWorkspace.services } as Record<
-          string,
-          ServiceData
-        >;
+        const nextServices = {
+          ...(currentWorkspace as any).services,
+        } as Record<string, ServiceData>;
         let finalName = serviceName;
         let i = 1;
         while (finalName in nextServices) {
@@ -388,7 +211,7 @@ export function createWorkspaceEngine({
 
         const nextState = {
           ...state,
-          workspaceData: { ...currentWorkspace, services: nextServices },
+          workspace: { ...currentWorkspace, services: nextServices },
         };
         return nextState;
       });
@@ -397,7 +220,9 @@ export function createWorkspaceEngine({
 
   // sync host location to runtime
 
-  function getBentoLocation(hostState: UbentoEngineState) {
+  function getBentoLocation(
+    hostState: UbentoEngineState,
+  ): BentoLocation | undefined {
     const location = hostState.location;
     return location.board
       ? {
@@ -406,6 +231,7 @@ export function createWorkspaceEngine({
         }
       : undefined;
   }
+
   engine.subscribe((curr: UbentoEngineState, prev: UbentoEngineState) => {
     if (
       curr.location.board !== prev.location.board ||

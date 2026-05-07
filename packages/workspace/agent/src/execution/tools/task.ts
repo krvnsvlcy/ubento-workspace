@@ -32,8 +32,8 @@ export function createTaskTool({
 }: {
   agent: Agent;
   createThread: (params: { title: string }) => Promise<any>;
-}): AgentTool<typeof taskToolSchema, TaskToolOutput> & { toolName: string } {
-  const tool: AgentTool<typeof taskToolSchema, TaskToolOutput> & {
+}): AgentTool<typeof taskToolSchema> & { toolName: string } {
+  const tool: AgentTool<typeof taskToolSchema> & {
     toolName: string;
   } = {
     name: "task",
@@ -41,30 +41,18 @@ export function createTaskTool({
     description:
       "Delegate a task to a specialized agent. The agent will execute using its own tools and return a response.",
     args: taskToolSchema,
-    async run(args, action) {
-      const state = agent.getState();
-      const subAgent = state.agents[args.agent];
-
-      if (!subAgent) {
-        return {
-          isError: true,
-          content: [{ type: "text", text: `Agent ${args.agent} not found` }],
-        };
-      }
-
-      const execution = action.message.execution;
+    async run({ args, abortController }) {
       const thread = await createThread({ title: args.title });
 
       const subExecution = await thread.run({
-        message: { text: args.message },
-        model: execution.model,
-        abortController: execution.abortController,
+        message: { text: args.message, modelId: "default" },
+        abortController,
       });
 
       const subExecutionState = subExecution.getState();
 
       switch (subExecutionState.status) {
-        case AgentExecutionStatus.Failed: {
+        case "errored": {
           return {
             isError: true,
             content: [
@@ -74,16 +62,15 @@ export function createTaskTool({
               },
             ],
             structuredContent: {
-              threadId: thread.getState().id,
+              threadId: thread.getState?.()?.id || "unknown",
               status: "error",
               error: subExecutionState.error?.message || "Execution failed",
             },
           };
         }
-        case AgentExecutionStatus.Stopped:
-        case AgentExecutionStatus.MaxIterations: {
+        case "stopped": {
           const status =
-            subExecutionState.status === AgentExecutionStatus.Stopped
+            subExecutionState.stopReason === "aborted"
               ? "stopped"
               : "max_iterations";
           return {
@@ -95,7 +82,7 @@ export function createTaskTool({
               },
             ],
             structuredContent: {
-              threadId: thread.getState().id,
+              threadId: thread.getState?.()?.id || "unknown",
               status: "stopped",
               error: subExecutionState.error?.message || `Execution ${status}`,
             },
@@ -103,10 +90,20 @@ export function createTaskTool({
         }
       }
 
-      const response = await thread.getResource("response");
+      let responseData = "No response";
+      const history = thread.context.getHistory();
+      const lastMessage = history[history.length - 1];
+      if (lastMessage && lastMessage.type === "message" && (lastMessage as any).data?.role === "agent") {
+         const actions = (lastMessage as any).data.actions || [];
+         const responseAction = actions.find((a: any) => a.tool === "response");
+         if (responseAction && responseAction.structuredOutput?.response) {
+            responseData = responseAction.structuredOutput.response;
+         }
+      }
+
       const output: TaskToolOutput = {
-        threadId: thread.getState().id,
-        response: response?.data || "No response",
+        threadId: thread.getState?.()?.id || "unknown",
+        response: responseData,
         status: "success",
       };
 

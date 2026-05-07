@@ -1,4 +1,4 @@
-import { ResourceType } from "@/engine/copilot/agent/resource.js";
+import { ResourceType } from "@ubento/workspace.agent";
 import { UbentoSDK } from "@ubento/services.sdk";
 
 export interface FileResourceData {

@@ -5,7 +5,10 @@ import { AgentTool } from "../../tool.js";
 import { MessageTool } from "../../tools/message.js";
 import { ResponseTool } from "../../tools/response.js";
 import { TaskTool } from "../../tools/task.js";
-import { agentManagerSchema, AgentManagerSchema } from "../manager/schema.js";
+import {
+  agentOrchestratorOutputSchema,
+  AgentOrchestratorOutputSchema as AgentManagerSchema,
+} from "../schema.js";
 
 export function outputFormat(tools: AgentTool[], hasAgents: boolean) {
   const hasMessage = tools.some((t) => t.name === MessageTool.toolName);
@@ -99,7 +102,7 @@ export function outputFormat(tools: AgentTool[], hasAgents: boolean) {
 
 Respond with a YAML object with the following structure:
 
-${renderYaml(cleanJsonSchema(z.toJSONSchema(agentManagerSchema)))}
+${renderYaml(cleanJsonSchema(z.toJSONSchema(agentOrchestratorOutputSchema)))}
 
 Follow the tool JSON schemas precisely;
 Replace args with the schema of the tool you want to use.

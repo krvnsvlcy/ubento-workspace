@@ -149,8 +149,18 @@ export function createUbentoIntelligenceService({
       threadStore.pushMany(res.data);
       return res;
     },
-    createThread: async (data: any) => {
-      const thread = await ubentoSdk.intelligence.createThread(data);
+    createThread: async (
+      init: {
+        teamId?: string;
+        workspaceId?: string;
+        title?: string;
+      } = {},
+    ) => {
+      const thread = await ubentoSdk.intelligence.createThread({
+        team_id: init.teamId,
+        workspace_id: init.workspaceId,
+        title: init.title,
+      });
       threadStore.push(thread);
       return thread;
     },
@@ -167,6 +177,11 @@ export function createUbentoIntelligenceService({
       const message = await ubentoSdk.intelligence.createMessage(data);
       messageStore.push(message);
       return message;
+    },
+    updateThread: async (threadId: string, data: any) => {
+      const thread = await ubentoSdk.intelligence.updateThread(threadId, data);
+      threadStore.push(thread);
+      return thread;
     },
   };
 

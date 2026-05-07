@@ -1,13 +1,12 @@
 import { UbentoService } from "@/services/ubento/ubento.js";
+import { AgentThread } from "@ubento/workspace.agent";
 import { createZustandStateController } from "@ubento/workspace.primitives";
+import { registerStore } from "@ubento/zustand-devtool";
 import { createStore } from "zustand";
 import { UbentoSession } from "../session.js";
-import { createAgent } from "./agent/agent.js";
-import {
-  copilotEnvironmentInstructions,
-  copilotRoleInstructions,
-} from "./copilot/instructions.js";
-import { getThreadController } from "./thread/thread_controller.js";
+import { copilotAgent } from "./copilot/agents/copilot.js";
+import { createCopilotAgentEnvironment } from "./environment.js";
+import { modelIds } from "./utils/models.js";
 
 export const copilotScope = {
   team: "team",
@@ -24,6 +23,7 @@ export type UbentoCopilotInput = {
 export type UbentoCopilotState = {
   input: UbentoCopilotInput;
   activeThreadMap: Record<string, string>; // scope -> threadId
+  activeModelId: string;
 };
 
 export function createUbentoCopilot({
@@ -33,23 +33,19 @@ export function createUbentoCopilot({
   ubento: UbentoService;
   session: UbentoSession;
 }) {
+  const environment = createCopilotAgentEnvironment({ ubento, session });
   const store = createStore<UbentoCopilotState>(() => ({
     activeThreadMap: {},
     input: {
       text: "",
       attachments: [],
     },
+    activeModelId: modelIds.gemini3flash,
   }));
+  registerStore("copilot", store);
   const controller = createZustandStateController(store);
 
-  const agent = createAgent({
-    name: "ubento-copilot",
-    description: "The main AI assistant",
-    getAgentInstructions: () => ({
-      role: copilotRoleInstructions,
-      environment: copilotEnvironmentInstructions,
-    }),
-  });
+  environment.addAgent(copilotAgent);
 
   function setActiveThread({
     scope,
@@ -65,7 +61,6 @@ export function createUbentoCopilot({
 
   return {
     ...controller,
-    agent,
     setInputText: (text: string) => {
       store.setState((s) => ({
         input: { ...s.input, text },
@@ -81,28 +76,27 @@ export function createUbentoCopilot({
       let threadId = state.activeThreadMap[scope];
 
       try {
-        let thread;
-        if (!threadId) {
-          thread = await ubento.intelligence.createThread({
-            title: content.slice(0, 50),
-            team_id: session.teamId,
-          });
-          threadId = thread.id;
-          setActiveThread({ scope, threadId });
-        } else {
-          thread = await ubento.intelligence.getThread(threadId);
-        }
-
         // Clear input immediately for better UX
         store.setState((s) => ({
           input: { ...s.input, text: "" },
         }));
 
-        const threadController = getThreadController({ threadId: thread.id, agent, ubento });
+        let thread: AgentThread;
+        if (threadId) {
+          thread = await environment.getThread({
+            id: threadId,
+            agent: copilotAgent.name,
+          });
+          setActiveThread({ scope, threadId });
+        } else {
+          thread = await environment.createThread({
+            agent: copilotAgent.name,
+            teamId: session.teamId,
+          });
+        }
 
-        await threadController.run({
-          message: { text: content },
-          model: {} as any, // TODO: Inject correct language model using ubento SDK token manager
+        await thread.run({
+          message: { text: content, modelId: state.activeModelId },
         });
       } catch (error) {
         console.error("Failed to send message:", error);

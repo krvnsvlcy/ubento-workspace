@@ -1,7 +1,6 @@
 import { renderYaml } from "../../utils/format.js";
 import { LanguageModel } from "../../utils/models.js";
 import { safeYamlParse } from "../../utils/yaml.js";
-import { generateText } from "ai";
 import { ToolSummary } from "./tool_set.js";
 
 export async function searchTools({
@@ -30,10 +29,9 @@ ${renderYaml(tools)}
 
 User Query: "${query}"`;
 
-  const result = await generateText({
-    model,
+  const result = await model.generateText({
     system,
-    prompt,
+    messages: [{ role: "user", content: prompt }],
   });
 
   const parsedData = safeYamlParse(result.text);

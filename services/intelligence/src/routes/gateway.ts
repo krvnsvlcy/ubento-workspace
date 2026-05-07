@@ -37,9 +37,9 @@ export const gatewayRouter: express.Router = express.Router();
 
 gatewayRouter.use(express.json({ limit: "10mb" }));
 gatewayRouter.use(async (req, res, next) => {
-  const orgId = req.headers["bento-organization-id"] as string;
-  if (!orgId) {
-    res.status(400).json({ error: "Missing bento-organization-id header" });
+  const teamId = req.headers["ubento-team-id"] as string;
+  if (!teamId) {
+    res.status(400).json({ error: "Missing ubento-team-id header" });
     return;
   }
 
@@ -57,9 +57,9 @@ gatewayRouter.use(async (req, res, next) => {
 
   const ref = crypto.randomUUID();
   res.locals.usageRef = ref;
-  res.locals.orgId = orgId;
+  res.locals.orgId = teamId;
 
-  if (bypassOrgs.includes(orgId)) {
+  if (bypassOrgs.includes(teamId)) {
     console.log("Bypassing usage reservation");
     next();
   } else {

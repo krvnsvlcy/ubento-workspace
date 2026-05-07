@@ -1,5 +1,5 @@
 import { createStore, StoreApi } from "zustand/vanilla";
-import { Agent } from "../agent/agent.js";
+import { Agent, AttachmentType } from "@ubento/workspace.agent";
 
 export type CopilotInputAttachment<T extends string = string, D = unknown> = {
   id: string;
@@ -47,8 +47,10 @@ export type CopilotInputInstance = StoreApi<
 
 export function createCopilotInput({
   agent,
+  attachmentTypes = [],
 }: {
   agent: Agent;
+  attachmentTypes?: AttachmentType<any, any>[];
 }): CopilotInputInstance {
   return createStore<CopilotInputState & CopilotInputActions>()((set, get) => ({
     text: "",
@@ -76,9 +78,7 @@ export function createCopilotInput({
     setModel: (model) => set({ model }),
 
     inputAttachment: (event) => {
-      const attachmentTypes = agent.getState().attachmentTypes;
-      for (const typeKey in attachmentTypes) {
-        const tp = attachmentTypes[typeKey];
+      for (const tp of attachmentTypes) {
         if (!tp.match(event)) continue;
         const data = tp.handle(event);
         if (data.length) {

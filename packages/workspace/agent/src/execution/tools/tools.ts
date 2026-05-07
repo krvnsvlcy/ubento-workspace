@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { renderYaml } from "../../utils/format.js";
 import { AgentTool } from "../tool.js";
+import { ToolSet } from "../tool_set/tool_set.js";
 
 export const searchToolsSchema = z.object({
   set: z.string().describe("The name of the set to search in"),
@@ -11,167 +12,119 @@ export const searchToolsSchema = z.object({
     ),
 });
 
-export type SearchToolsOutput = {
-  set: string;
-  tools: {
-    name: string;
-    description?: string;
-  }[];
-};
+export function createSearchToolsTool(
+  toolSets: Record<string, ToolSet>,
+): AgentTool<typeof searchToolsSchema> & { toolName: string } {
+  return {
+    name: "search_tools",
+    toolName: "search_tools",
+    description:
+      "Search for tools in a specific set. Use this tool to find tools that can help you accomplish your task.",
+    args: searchToolsSchema,
+    async run({ args }) {
+      const toolSet = toolSets[args.set];
 
-export const searchTools: AgentTool<
-  typeof searchToolsSchema,
-  SearchToolsOutput
-> = {
-  name: "search_tools",
-  description:
-    "Search for tools in a specific set. Use this tool to find tools that can help you accomplish your task.",
-  args: searchToolsSchema,
-  async run(args, action) {
-    const execution = action.message.execution;
-    const agent = execution.thread.getState().agent;
-    const agentState = agent.getState();
-    const toolSet = agent.getState().toolSets[args.set];
+      if (!toolSet) {
+        return {
+          isError: true,
+          content: [{ type: "text", text: `ToolSet "${args.set}" not found` }],
+        };
+      }
 
-    if (!toolSet) {
+      const toolDefs = await toolSet.searchTools(args.query);
+
+      let text = "";
+      if (!toolDefs.length) {
+        text = `No tools found in extension "${args.set}" matching "${args.query}".`;
+      } else {
+        text = renderYaml(toolDefs);
+      }
+
       return {
-        isError: true,
-        content: [{ type: "text", text: `ToolSet "${args.set}" not found` }],
+        content: [{ type: "text", text }],
       };
-    }
-
-    const toolDefs = await toolSet.searchTools(args.query);
-
-    let text = "";
-    if (!toolDefs.length) {
-      text = `No tools found in extension "${args.set}" matching "${args.query}".`;
-    } else {
-      text = renderYaml(toolDefs);
-    }
-
-    return {
-      content: [{ type: "text", text }],
-    };
-  },
-};
+    },
+  };
+}
 
 export const listToolsSchema = z.object({
   set: z.string().describe("The name of the set to list tools from"),
 });
 
-export type ListToolsOutput = {
-  set: string;
-  tools: {
-    name: string;
-    description?: string;
-  }[];
-};
+export function createListToolsTool(
+  toolSets: Record<string, ToolSet>,
+): AgentTool<typeof listToolsSchema> & { toolName: string } {
+  return {
+    name: "list_tools",
+    toolName: "list_tools",
+    description: "List all tools available in a specific set.",
+    args: listToolsSchema,
+    async run({ args }) {
+      const toolSet = toolSets[args.set];
 
-export const listTools: AgentTool<typeof listToolsSchema, ListToolsOutput> & {
-  toolName: string;
-} = {
-  name: "list_tools",
-  toolName: "list_tools",
-  description: "List all tools available in a specific set.",
-  args: listToolsSchema,
-  async run(args, action) {
-    const execution = action.message.execution;
-    const agent = execution.thread.getState().agent;
-    const agentState = agent.getState();
-    const toolSet = agent.getState().toolSets[args.set];
+      if (!toolSet) {
+        return {
+          isError: true,
+          content: [{ type: "text", text: `ToolSet "${args.set}" not found` }],
+        };
+      }
 
-    if (!toolSet) {
       return {
-        isError: true,
-        content: [{ type: "text", text: `ToolSet "${args.set}" not found` }],
+        content: [
+          {
+            type: "text",
+            text: `Tool set "${args.set}" loaded successfully.`,
+          },
+        ],
       };
-    }
-
-    const thread = execution.thread;
-    await thread.setResource({
-      type: "tool-set",
-      key: args.set,
-      data: { name: args.set },
-    });
-
-    return {
-      content: [
-        {
-          type: "text",
-          text: `Tool set "${args.set}" loaded successfully into the context.`,
-        },
-      ],
-    };
-  },
-};
+    },
+  };
+}
 
 export const describeToolSchema = z.object({
   set: z.string().describe("The name of the set the tool belongs to"),
   tool: z.string().describe("The name of the tool to describe"),
 });
 
-export type DescribeToolOutput = {
-  set: string;
-  tool?: {
-    name: string;
-    description: string;
-    args: any;
-    example?: any;
-  };
-};
+export function createDescribeToolTool(
+  toolSets: Record<string, ToolSet>,
+): AgentTool<typeof describeToolSchema> & { toolName: string } {
+  return {
+    name: "describe_tool",
+    toolName: "describe_tool",
+    description: "Describe a tool in detail.",
+    args: describeToolSchema,
+    async run({ args }) {
+      const toolSet = toolSets[args.set];
 
-export const describeTool: AgentTool<
-  typeof describeToolSchema,
-  DescribeToolOutput
-> & {
-  toolName: string;
-} = {
-  name: "describe_tool",
-  toolName: "describe_tool",
-  description: "Describe a tool in detail.",
-  args: describeToolSchema,
-  async run(args, action) {
-    const execution = action.message.execution;
-    const agent = execution.thread.getState().agent;
-    const agentState = agent.getState();
-    const toolSet = agent.getState().toolSets[args.set];
+      if (!toolSet) {
+        return {
+          isError: true,
+          content: [{ type: "text", text: `ToolSet "${args.set}" not found` }],
+        };
+      }
 
-    if (!toolSet) {
+      const tool = await toolSet.getTool(args.tool);
+      if (!tool) {
+        return {
+          isError: true,
+          content: [
+            {
+              type: "text",
+              text: `Tool "${args.tool}" not found in extension "${args.set}"`,
+            },
+          ],
+        };
+      }
+
       return {
-        isError: true,
-        content: [{ type: "text", text: `ToolSet "${args.set}" not found` }],
-      };
-    }
-
-    const tool = await toolSet.getTool(args.tool);
-    if (!tool) {
-      return {
-        isError: true,
         content: [
           {
             type: "text",
-            text: `Tool "${args.tool}" not found in extension "${args.set}"`,
+            text: `Tool "${args.tool}" loaded successfully from extension "${args.set}"`,
           },
         ],
       };
-    }
-
-    const thread = execution.thread;
-    await thread.setResource({
-      type: "tool",
-      key: `${args.set}:${args.tool}`,
-      data: { set: args.set, tool: args.tool },
-    });
-
-    return {
-      content: [
-        {
-          type: "text",
-          text: `Tool "${args.tool}" loaded successfully from extension "${args.set}"`,
-        },
-      ],
-    };
-  },
-};
-
-export { describeTool as DescribeTool, listTools as ListTools };
+    },
+  };
+}

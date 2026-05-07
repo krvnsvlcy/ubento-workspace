@@ -131,7 +131,7 @@ function BoardsSection({
 
 function ServicesSection({ engine }: { engine: WorkspaceEngine }) {
   const services = engine.useState(
-    (s) => s.workspaceData?.services || {},
+    (s) => (s.workspace as any)?.services || {},
   ) as Record<string, ServiceData>;
   const serviceEntries = Object.entries(services);
   const { openModal } = useGlobalModals();

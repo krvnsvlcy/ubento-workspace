@@ -11,6 +11,7 @@
     "@dnd-kit/modifiers": "^9.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@monaco-editor/react": "^4.7.0",
+    "@ubento/workspace.agent": "workspace:*",
     "@ubento/workspace.primitives": "workspace:*",
     "@ubento/bento.runtime": "workspace:*",
     "@ubento/bento.core": "workspace:*",

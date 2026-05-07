@@ -27,6 +27,7 @@ export type ServiceKey =
 
 export class UbentoSDK {
   public readonly tokenManager: TokenManager;
+
   public readonly iam: IamService;
   public readonly workspace: WorkspaceService;
   public readonly module: ModuleService;

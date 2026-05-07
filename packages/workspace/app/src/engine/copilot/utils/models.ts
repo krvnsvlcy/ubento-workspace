@@ -1,3 +1,5 @@
+import { UbentoSession } from "@/engine/session";
+import { UbentoService } from "@/services/ubento/ubento";
 import { createOpenResponses } from "@ai-sdk/open-responses";
 import { LanguageModelV3 } from "@ai-sdk/provider";
 
@@ -23,12 +25,12 @@ function createGatewayProxy({
   teamId: string;
 }) {
   const openResponses = createOpenResponses({
-    name: "elll-intelligence",
+    name: "ubento-intelligence",
     url: new URL("/intelligence/gateway", baseUrl).toString(),
     fetch: async (url, options) => {
       const headers = new Headers(options?.headers);
       headers.set("authorization", `Bearer ${await getToken()}`);
-      headers.set("elll-organization-id", teamId);
+      headers.set("ubento-team-id", teamId);
       return fetch(url, {
         ...options,
         headers,
@@ -41,23 +43,20 @@ function createGatewayProxy({
 
 let gateway: ReturnType<typeof createGatewayProxy>;
 
-export function getModel(
-  {
-    teamId,
-    baseUrl,
-    getToken,
-  }: {
-    teamId: string;
-    baseUrl: string;
-    getToken: () => Promise<string>;
-  },
-  modelId: string,
-): LanguageModel {
+export function getModel({
+  modelId,
+  ubento,
+  session,
+}: {
+  modelId: string;
+  session: UbentoSession;
+  ubento: UbentoService;
+}): LanguageModel {
   if (!gateway) {
     gateway = createGatewayProxy({
-      teamId,
-      baseUrl,
-      getToken,
+      teamId: session.teamId,
+      baseUrl: ubento.sdk.intelligence.intelligenceClient.baseUrl,
+      getToken: ubento.sdk.tokenManager.getToken,
     });
   }
 

@@ -4,17 +4,6 @@
   "private": true,
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "exports": {
-    ".": "./dist/index.js",
-    "./agent.js": "./dist/agent.js",
-    "./thread/thread.js": "./dist/thread/thread.js",
-    "./thread/context/context.js": "./dist/thread/context/context.js",
-    "./execution/execution.js": "./dist/execution/execution.js",
-    "./execution/prompts/summarizer/summarizer.js": "./dist/execution/prompts/summarizer/summarizer.js",
-    "./message/message.js": "./dist/message/message.js",
-    "./message/types/message.js": "./dist/message/types/message.js",
-    "./utils/*": "./dist/utils/*.js"
-  },
   "dependencies": {
     "@ai-sdk/open-responses": "^1.0.11",
     "@ai-sdk/provider": "^3.0.8",

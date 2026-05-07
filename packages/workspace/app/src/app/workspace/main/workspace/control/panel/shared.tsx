@@ -1,15 +1,8 @@
-import { useUbento, useUbentoEngine } from "@/engine/engine";
-import {
-  BaseStyle,
-  BlockData,
-  BoardData,
-  ElementData,
-} from "@ubento/bento.runtime";
+import { BaseStyle, BoardData, ElementData } from "@ubento/bento.runtime";
 import cx from "clsx";
 import {
   Box,
   ChevronRight,
-  Code2,
   Grid,
   Layers,
   Layout,
@@ -20,7 +13,6 @@ import {
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import React, { useEffect, useState } from "react";
-import { WorkspaceEngine } from "../../engine/engine";
 
 export function Section({
   title,
@@ -498,86 +490,5 @@ export function PanelHeader({
         )}
       </div>
     </div>
-  );
-}
-
-export function ModuleSection({
-  element,
-  selectedId,
-  controller,
-}: {
-  element: BlockData;
-  selectedId: string;
-  controller: WorkspaceEngine;
-}) {
-  const host = useUbentoEngine();
-  const ubento = useUbento();
-  const { data: moduleMetadata, isLoading } = ubento.module.useModule(
-    element.moduleId,
-  );
-
-  return (
-    <Section title="Module" icon={Box}>
-      <PropertyRow label="Module ID">
-        <TextInput
-          value={element.moduleId}
-          onChange={(v) => {
-            controller.setBlockModule(
-              selectedId,
-              v,
-              element.moduleVersionId || "",
-            );
-          }}
-        />
-      </PropertyRow>
-      <PropertyRow label="Version">
-        <div className="flex w-full items-center gap-1">
-          <TextInput
-            value={element.moduleVersionId}
-            onChange={(v) => {
-              controller.setBlockModule(selectedId, element.moduleId, v);
-            }}
-          />
-          {!isLoading &&
-            moduleMetadata &&
-            element.moduleVersionId !== moduleMetadata.latest_version_id && (
-              <button
-                onClick={() => {
-                  controller.setBlockModule(
-                    selectedId,
-                    element.moduleId,
-                    moduleMetadata.latest_version_id || "",
-                  );
-                }}
-                className="shrink-0 rounded-md bg-accent px-2 py-1 text-[8px] font-bold uppercase tracking-tight text-accent-contrast"
-                title={`Update to latest: ${moduleMetadata.latest_version_id}`}
-              >
-                Update
-              </button>
-            )}
-        </div>
-      </PropertyRow>
-      <div className="mt-2 flex flex-col gap-2 px-4">
-        <button
-          onClick={() => {
-            console.log("Editing props for", selectedId);
-          }}
-          className="w-full rounded-md py-1.5 text-center text-[10px] font-bold uppercase tracking-wider text-neutral-content-subtle transition-colors hover:bg-neutral-surface"
-        >
-          Edit Props
-        </button>
-        <button
-          onClick={() => {
-            host.goToLocation({
-              component: element.moduleId,
-            });
-          }}
-          className="flex w-full items-center justify-center gap-2 rounded-md py-2 text-center text-[10px] font-bold uppercase tracking-wider text-accent transition-colors hover:bg-accent-surface"
-        >
-          <Code2 size={12} />
-          Edit Component
-        </button>
-      </div>
-    </Section>
   );
 }

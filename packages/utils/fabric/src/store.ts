@@ -359,15 +359,22 @@ export function createStore<TData, TParams = {}, TPage = {}>({
       state: StoreState<TData, TPage>,
     ): Entity<TData> => {
       const queryKey = getEntityQueryKey(key);
-      const defaultQuery: QueryState = {
+      const unavailableQuery: QueryState = {
         status: "pending",
         fetchStatus: "idle",
         error: undefined,
       };
+      const availableQuery: QueryState = {
+        status: "success",
+        fetchStatus: "idle",
+        error: undefined,
+      };
+      const data = state.data[key];
 
       return {
-        data: state.data[key],
-        query: state.queries[queryKey] || defaultQuery,
+        data,
+        query:
+          state.queries[queryKey] || data ? availableQuery : unavailableQuery,
       };
     },
 

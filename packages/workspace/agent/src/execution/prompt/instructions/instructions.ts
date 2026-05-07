@@ -26,22 +26,26 @@ ${environment}
 export const buildAgentOrchestratorInstructions = ({
   environment,
   agent,
+  tools,
+  toolSets,
+  agents,
 }: {
   environment: AgentEnvironment;
   agent: Agent;
+  tools: any[];
+  toolSets: any[];
+  agents: Agent[];
 }) => {
   const hasAgents = agents && agents.length > 0;
-
-  const tools = allTools;
 
   return metaInstructions
     .replace("<ToolsSection/>", toolsSection({ tools, toolSets }))
     .replace("<SkillsSection/>", "")
     .replace("<AgentsSection/>", agentsSection(agents as any))
-    .replace("<RoleSection/>", roleSection(instructions.role))
+    .replace("<RoleSection/>", roleSection(`Name: ${agent.name}\nDescription: ${agent.description}\n\n${agent.instructions}`))
     .replace(
       "<EnvironmentSection/>",
-      environmentSection(instructions.environment),
+      "",
     )
     .replace("<GuidelinesSection/>", guidelinesSection(tools))
     .replace("<OutputFormat/>", outputFormat(tools, hasAgents));

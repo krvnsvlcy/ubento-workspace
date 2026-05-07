@@ -15,30 +15,16 @@ export const readWebpageTool: AgentTool<typeof readWebpageSchema> = {
   name: "read_webpage",
   description: "Read the content of a web page.",
   args: readWebpageSchema,
-  async run(args, action) {
+  async run({ args, abortController }) {
     try {
-      const execution = action.message.execution;
-      const agent = execution.thread.getState().agent;
-      const thread = execution.thread;
-
-      const res = await fetch(args.url);
+      const res = await fetch(args.url, { signal: abortController.signal });
       const content = await res.text();
-
-      await thread.setResource({
-        type: "web",
-        key: args.url,
-        data: {
-          url: args.url,
-          format: args.format,
-          content,
-        },
-      });
 
       return {
         content: [
           {
             type: "text",
-            text: `Web page content from "${args.url}" loaded successfully into the context.`,
+            text: `Web page content from "${args.url}" loaded:\n\n${content}`,
           },
         ],
         structuredContent: { url: args.url },
@@ -65,30 +51,16 @@ export const fetchTool: AgentTool<typeof fetchSchema> = {
   name: "fetch",
   description: "Fetch JSON from a URL.",
   args: fetchSchema,
-  async run(args, action) {
+  async run({ args, abortController }) {
     try {
-      const execution = action.message.execution;
-      const agent = execution.thread.getState().agent;
-      const thread = execution.thread;
-
-      const res = await fetch(args.url);
+      const res = await fetch(args.url, { signal: abortController.signal });
       const content = await res.text();
-
-      await thread.setResource({
-        type: "web",
-        key: args.url,
-        data: {
-          url: args.url,
-          format: "json",
-          content,
-        },
-      });
 
       return {
         content: [
           {
             type: "text",
-            text: `JSON data from "${args.url}" loaded successfully into the context.`,
+            text: `JSON data from "${args.url}" loaded:\n\n${content}`,
           },
         ],
         structuredContent: { url: args.url },

@@ -8,6 +8,7 @@ import { createUbentoWorkspaceService } from "./services/workspace";
 
 export function createUbentoService({ ubentoSdk }: { ubentoSdk: UbentoSDK }) {
   return {
+    sdk: ubentoSdk,
     iam: createUbentoIamService({ ubentoSdk }),
     module: createUbentoModuleService({ ubentoSdk }),
     workspace: createUbentoWorkspaceService({ ubentoSdk }),

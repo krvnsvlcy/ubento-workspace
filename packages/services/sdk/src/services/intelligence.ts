@@ -3,7 +3,7 @@ import { extractResponseData } from "~/lib/client.js";
 import { TokenManager } from "~/lib/token_manager.js";
 
 export class IntelligenceService {
-  private intelligenceClient: ReturnType<
+  readonly intelligenceClient: ReturnType<
     typeof createIntelligenceServiceClient
   >;
 

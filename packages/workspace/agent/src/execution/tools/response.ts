@@ -7,22 +7,17 @@ export const responseToolSchema = z.object({
     .describe("Final response content to display to the user in Markdown"),
 });
 
-export const responseTool: AgentTool<typeof responseToolSchema, {}> & {
+export const responseTool: AgentTool<typeof responseToolSchema> & {
   toolName: string;
 } = {
   name: "response",
   toolName: "response",
   description: "Submit your final work and results to the user.",
   args: responseToolSchema,
-  async run(args, action) {
-    const thread = action.message.execution.thread;
-    await thread.setResource({
-      key: "response",
-      type: "response",
-      data: args.content,
-    });
+  async run({ args }) {
     return {
       content: [{ type: "text", text: "Response sent to user." }],
+      structuredContent: { response: args.content },
     };
   },
 };

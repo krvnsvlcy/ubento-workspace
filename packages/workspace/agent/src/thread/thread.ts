@@ -4,14 +4,12 @@ import { UserMessageData } from "../message/types.js";
 
 import { createAgentContext } from "@/context/context.js";
 import { AgentEnvironment } from "@/environment/environment.js";
-import { AgentMessage } from "@/message/message.js";
-import { createZustandStateController } from "@ubento/state";
+import { AgentMessage, createAgentMessage } from "@/message/message.js";
 import { AgentContext } from "../context/types.js";
 import {
   AgentExecution,
   createAgentExecution,
 } from "../execution/execution.js";
-import { LanguageModel } from "../utils/models.js";
 
 export interface AgentThreadState {
   activeExecution: AgentExecution | undefined;
@@ -19,33 +17,31 @@ export interface AgentThreadState {
 }
 
 export function createAgentThread({
-  id,
   agent,
+  initialContext,
   environment,
 }: {
-  id: string;
   agent: Agent;
   environment: AgentEnvironment;
+  initialContext?: AgentContext;
 }) {
-  const context = createAgentContext();
+  const context = createAgentContext({ data: initialContext });
   const store = createStore<AgentThreadState>()(() => ({
     activeExecution: undefined,
     context,
   }));
 
-  const controller = createZustandStateController(store);
-
-  return {
+  const threadApi = {
     agent,
     environment,
     context,
     run: async ({
       message,
-      model,
+      maxIterations,
       abortController,
     }: {
-      message: UserMessageData;
-      model: LanguageModel;
+      message: Omit<UserMessageData, "role">;
+      maxIterations?: number;
       abortController?: AbortController;
     }) => {
       const { activeExecution } = store.getState();
@@ -54,34 +50,43 @@ export function createAgentThread({
       }
 
       const execution = createAgentExecution({
-        model,
-        thread: instance as any,
+        thread: threadApi,
         abortController,
       });
 
-      controller.setState({ activeExecution: execution });
+      store.setState({ activeExecution: execution });
 
       // Auto-clear active execution when it finishes
       execution.subscribe((state: any) => {
         if (state.status !== "running" && state.status !== "idle") {
-          controller.setState({ activeExecution: undefined });
+          store.setState({ activeExecution: undefined });
         }
       });
 
       // Start the execution
-      execution.run({ message }).catch(() => {});
+      execution.run({ message, maxIterations }).catch(() => {});
 
       return execution;
     },
     pushUserMessage: async (message: Omit<UserMessageData, "role">) => {
-      controller.getState().context.history.push({
-        type: "message",
-        id: crypto.randomUUID(),
-        data: { ...message, role: "user" },
-      });
+      context.pushMessage({ ...message, role: "user" });
     },
-    startAgentMessage: async (): Promise<AgentMessage> => {},
+    startAgentMessage: async (modelId: string): Promise<AgentMessage> => {
+      let id: string;
+      const message = createAgentMessage({
+        modelId,
+        save: async (data) => {
+          if (id) {
+            context.updateMessage(id, data);
+          }
+        },
+      });
+      id = context.pushMessage(message.getData());
+      return message;
+    },
   };
+
+  return threadApi;
 }
 
 export type AgentThread = ReturnType<typeof createAgentThread>;

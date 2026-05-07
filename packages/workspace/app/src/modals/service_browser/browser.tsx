@@ -82,7 +82,7 @@ export function ServiceBrowser({
   const ubento = useUbento();
   const session = useSession();
   const installedServices =
-    activeWorkspaceEngine?.useState((s) => s.workspace?.services || {}) || {};
+    activeWorkspaceEngine?.useState((s) => (s.workspace as any)?.services || {}) || {};
 
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");

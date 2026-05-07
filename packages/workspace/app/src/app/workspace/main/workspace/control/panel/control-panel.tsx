@@ -1,13 +1,5 @@
-import { Button } from "@ubento/workspace.primitives";
 import cx from "clsx";
-import {
-  AppWindow,
-  Eye,
-  LayoutDashboard,
-  Pencil,
-  Sparkles,
-  X,
-} from "lucide-react";
+import { AppWindow, LayoutDashboard, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { WorkspaceEngine } from "../../engine/engine";
 import { BoardTab } from "./tabs/board";
@@ -95,20 +87,7 @@ export function ControlPanel({
             />
           ))}
         </div>
-        <div className="flex gap-2">
-          <Button
-            size="icon"
-            variant="ghost"
-            onClick={() =>
-              controller.setMode(mode === "edit" ? "live" : "edit")
-            }
-          >
-            {mode === "edit" ? <Eye size={16} /> : <Pencil size={16} />}
-          </Button>
-          <Button size="icon" onClick={onClose}>
-            <X size={16} />
-          </Button>
-        </div>
+        <div className="flex gap-2"></div>
       </div>
       <hr />
       <div className="grow overflow-hidden">{content}</div>

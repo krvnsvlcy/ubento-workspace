@@ -4,7 +4,7 @@ import { renderYaml } from "../../../utils/format.js";
 import { cleanJsonSchema } from "../../../utils/zod.js";
 import { AgentTool } from "../../tool.js";
 import { ToolSet } from "../../tool_set/tool_set.js";
-import { DescribeTool, ListTools } from "../../tools/tools.js";
+
 
 export function toolsSection({
   tools,
@@ -65,8 +65,8 @@ ${renderYaml(toolList)}
 ## External Tools
 
 In addition to the tools above, You can load additional tools from external tool sets to achieve more advanced capabilities. 
-- Use \`${ListTools.toolName}\` with a tool set name to list available tools in that tool set.
-- Use \`${DescribeTool.toolName}\` with a tool set name and tool name to get more information about a tool including its input schema.
+- Use \`list_tools\` with a tool set name to list available tools in that tool set.
+- Use \`describe_tool\` with a tool set name and tool name to get more information about a tool including its input schema.
 - **CRITICAL: To use an external tool, you MUST format the tool name as \`tool-set-name:tool_name\`**
   (e.g., if the tool set is 'postgres' and the tool is 'run_query', call \`postgres:run_query\` as the tool name).
 - Always explore tool sets if you need capabilities not provided by your built-in tools.

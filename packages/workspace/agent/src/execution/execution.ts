@@ -1,15 +1,22 @@
-import { UserMessageData } from "@/data/message/types.js";
+import { AgentMessage } from "@/message/message.js";
+import { AgentError, UserMessageData } from "@/message/types.js";
+import { llmContentToText } from "@/utils/llm.js";
 import z from "zod";
 import { createStore } from "zustand/vanilla";
 import { AgentThread } from "../thread/thread.js";
 import { LanguageModel } from "../utils/models.js";
 import { safeYamlParse } from "../utils/yaml.js";
 import { AgentExecutionError, AgentExecutionErrorCode } from "./error.js";
-import { MessagePart } from "./prompts/manager/prompt/prompt.js";
+import { buildAgentOrchestratorInstructions } from "./prompt/instructions/instructions.js";
 import {
-  agentManagerSchema,
-  fixAgentManagerCommonOutputPitfalls,
-} from "./prompts/manager/schema.js";
+  buildAgentOrchestratorPrompt,
+  MessagePart,
+} from "./prompt/prompt/prompt.js";
+import {
+  agentOrchestratorOutputSchema,
+  fixAgentOrchestratorCommonOutputPitfalls,
+} from "./prompt/schema.js";
+import { AgentTool } from "./tool.js";
 
 export type AgentExecutionStatus =
   | "idle"
@@ -37,7 +44,11 @@ export function createAgentExecution({
   thread: AgentThread;
   abortController?: AbortController;
 }) {
+  const context = thread.context;
+  const agent = thread.agent;
+  const environment = thread.environment;
   const abortController = _abortController || new AbortController();
+
   const store = createStore<AgentExecutionState>(() => ({
     status: "idle",
   }));
@@ -47,23 +58,107 @@ export function createAgentExecution({
   }: {
     model: LanguageModel;
   }): Promise<{ shouldContinue: boolean }> {
-    const context = thread.context;
-    const agent = thread.agent;
-
     const stats = context.getStats();
     if (stats.usage >= stats.budget) {
-      await context.summarize();
+      const summarizeModel = environment.getModel("summarize") || model;
+      await context.summarize({ agent, model: summarizeModel });
       return { shouldContinue: true };
     }
 
     const contextData = context.getData();
-    const instructions = await agent.getInstructions();
-    const prompt = await agent.getPrompt(contextData);
+    const prompt = await buildAgentOrchestratorPrompt({
+      context: contextData,
+      environment,
+      agent,
+    });
+    const tools = (await environment.getTools?.()) ?? [];
+    const toolSets = (await environment.getToolSets?.()) ?? [];
+    const agents = (await environment.getAgents?.()) ?? [];
 
-    return runManager({ model, prompt, instructions });
+    const instructions = buildAgentOrchestratorInstructions({
+      agent,
+      environment,
+      tools,
+      toolSets,
+      agents,
+    });
+
+    return runOrchestrator({ model, prompt, instructions });
   }
 
-  async function runManager({
+  async function runAction({
+    tool,
+    args,
+    message,
+  }: {
+    tool: AgentTool;
+    args: unknown;
+    message: AgentMessage;
+  }): Promise<{
+    error?: AgentError;
+    shouldEnd?: boolean;
+  }> {
+    const argParseResult = tool.args.safeParse(args);
+    if (!argParseResult.success) {
+      return {
+        shouldEnd: true,
+        error: {
+          code: "tool_args_schema_mismatch",
+          message: `Invalid arguments for ${tool.name}`,
+          data: {
+            tool: tool.name,
+            received: args,
+            error:
+              z.treeifyError?.(argParseResult.error) ||
+              argParseResult.error.message,
+          },
+        },
+      };
+    }
+
+    const actionId = await message.createAction({
+      tool: tool.name,
+      input: argParseResult.data,
+    });
+
+    try {
+      await message.startAction(actionId);
+      const result = await tool.run({
+        args: argParseResult.data,
+        abortController,
+      });
+
+      if (result.isError) {
+        const error: AgentError = {
+          code: "tool_execution_failed",
+          message: llmContentToText(result.content),
+          data: result.structuredContent,
+        };
+        await message.failAction(actionId, error);
+        return { shouldEnd: true, error };
+      }
+
+      await message.completeAction(actionId, {
+        output: result.content,
+        structuredOutput: result.structuredContent,
+      });
+
+      return { shouldEnd: result.shouldEnd };
+    } catch (e) {
+      const error: AgentError = {
+        code: "tool_execution_failed",
+        message: String(e),
+        data: {
+          tool: tool.name,
+          input: argParseResult.data,
+        },
+      };
+      await message.failAction(actionId, error);
+      return { shouldEnd: true, error };
+    }
+  }
+
+  async function runOrchestrator({
     model,
     prompt,
     instructions,
@@ -72,73 +167,71 @@ export function createAgentExecution({
     prompt: MessagePart[];
     instructions: string;
   }): Promise<{ shouldContinue: boolean }> {
-    const agentMessage = await thread.startAgentMessage();
+    const agentMessage = await thread.startAgentMessage(model.id);
 
-    try {
-      const result = await model.generateText({
-        system: instructions,
-        messages: [{ role: "user", content: prompt }],
-        abortSignal: abortController.signal,
+    const result = await model.generateText({
+      system: instructions,
+      messages: [{ role: "user", content: prompt }],
+      abortSignal: abortController.signal,
+    });
+
+    const outputData = safeYamlParse(result.text);
+    const [fixedOutputData] =
+      fixAgentOrchestratorCommonOutputPitfalls(outputData);
+
+    const parsed = agentOrchestratorOutputSchema.safeParse(fixedOutputData);
+    if (!parsed.success) {
+      await agentMessage.fail({
+        code: "response_schema_mismatch",
+        message: "Response schema mismatch",
+        data: {
+          error: z.treeifyError?.(parsed.error) || parsed.error.message,
+          input: result.text,
+        },
+      });
+      return { shouldContinue: true };
+    }
+
+    const output = parsed.data;
+
+    // FIX: Yield back to the user instead of looping infinitely if no actions are taken
+    if (!output.actions?.length) {
+      return { shouldContinue: false };
+    }
+
+    let shouldContinue = true;
+    for (const act of output.actions) {
+      if (abortController.signal.aborted) break;
+      if (act.tool === "finish") {
+        shouldContinue = false;
+        break;
+      }
+
+      const tool = await environment.getTool(act.tool);
+      if (!tool) {
+        await agentMessage.fail({
+          code: "tool_not_found",
+          message: `Unknown tool: ${act.tool}`,
+          data: { tool: act.tool },
+        });
+        continue;
+      }
+
+      const result = await runAction({
+        tool,
+        message: agentMessage,
+        args: act.args,
       });
 
-      const outputData = safeYamlParse(result.text);
-      const [fixedOutputData] = fixAgentManagerCommonOutputPitfalls(outputData);
-
-      const parsed = agentManagerSchema.safeParse(fixedOutputData);
-      if (!parsed.success) {
-        await agentMessage.logError({
-          message: "Response schema mismatch",
-          data: {
-            error:
-              (z as any).treeifyError?.(parsed.error) || parsed.error.message,
-            input: result.text,
-          },
-        });
-        return { shouldContinue: true };
+      // FIX: Halt execution if the action dictates it should end
+      if (result.shouldEnd) {
+        shouldContinue = false;
+        break;
       }
-
-      const output = parsed.data;
-      if (!output.actions?.length) {
-        return { shouldContinue: true };
-      }
-
-      let toolFinished = false;
-      for (const act of output.actions) {
-        if (abortController.signal.aborted) break;
-        if (act.tool === "finish") {
-          toolFinished = true;
-          break;
-        }
-
-        const tool = await agent.resolveTool(act.tool);
-        if (!tool) {
-          await agentMessage.logError({ message: `Unknown tool: ${act.tool}` });
-          continue;
-        }
-
-        const argParseResult = tool.args.safeParse(act.args);
-        if (!argParseResult.success) {
-          await agentMessage.logError({
-            message: `Invalid arguments for ${act.tool}`,
-            data: { received: act.args },
-          });
-          continue;
-        }
-
-        const action = await agentMessage.startAction({
-          toolRef: act.tool,
-          tool,
-        });
-        action.setState({ input: argParseResult.data });
-        await action.run();
-      }
-
-      await agentMessage.complete();
-      return { shouldContinue: !toolFinished };
-    } catch (e) {
-      await agentMessage.complete();
-      throw e;
     }
+
+    await agentMessage.complete();
+    return { shouldContinue };
   }
 
   function normalizeError(
@@ -162,6 +255,8 @@ export function createAgentExecution({
 
   return {
     thread,
+    subscribe: store.subscribe,
+    getState: store.getState,
     run: async ({
       message,
       maxIterations = 100,
@@ -169,7 +264,7 @@ export function createAgentExecution({
       message: Omit<UserMessageData, "role">;
       maxIterations?: number;
     }) => {
-      const model = thread.environment.getModel(message.modelId);
+      const model = environment.getModel(message.modelId);
       if (!model) {
         throw new Error(`Model ${message.modelId} not found`);
       }
@@ -228,3 +323,5 @@ export function createAgentExecution({
     },
   };
 }
+
+export type AgentExecution = ReturnType<typeof createAgentExecution>;

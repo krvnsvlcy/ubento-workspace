@@ -9,7 +9,24 @@ import {
 import { indent, renderYaml } from "@/utils/format";
 import { llmContentToText } from "@/utils/llm";
 import { MessageItem } from "@/utils/ui";
-import { Agent, FilePart, ImagePart, TextPart } from "ai";
+import { Agent } from "@/agent/agent.js";
+
+export interface TextPart {
+  type: "text";
+  text: string;
+}
+
+export interface ImagePart {
+  type: "image";
+  image: string | Uint8Array | ArrayBuffer | URL;
+  mediaType?: string;
+}
+
+export interface FilePart {
+  type: "file";
+  data: string | Uint8Array | ArrayBuffer | URL;
+  mediaType?: string;
+}
 
 export type MessagePart = TextPart | ImagePart | FilePart;
 
@@ -26,55 +43,13 @@ export async function formatUserMessage(
     });
   }
 
-  const attachments = await Promise.all(
-    message.attachments?.map((attachment) => {
-      const attachmentType = agent.getState().attachmentTypes[attachment.type];
-      if (!attachmentType) {
-        agent.logger?.warn("Unknown attachment type", {
-          event: "attachment.unknown-type",
-          attachmentType: attachment.type,
-        });
-        return undefined;
-      }
-
-      return attachmentType.format(attachment.data);
-    }) ?? [],
-  );
-
-  const validAttachments = attachments.filter(
-    (a): a is MessageItem => a !== undefined,
-  );
-
-  if (validAttachments.length > 0) {
+  if (message.attachments && message.attachments.length > 0) {
     parts.push({ type: "text", text: "- Attachments:\n" });
-    for (const attachment of validAttachments) {
+    for (const attachment of message.attachments) {
       parts.push({
         type: "text",
-        text: `  - ${attachment.label}:`,
+        text: `  - ${attachment.type}:\n${indent(renderYaml(attachment.data), 4)}\n`,
       });
-      switch (attachment.type) {
-        case "image":
-          parts.push({
-            type: "image",
-            image: attachment.url,
-            mediaType: attachment.mediaType,
-          });
-          break;
-        case "file":
-          parts.push({
-            type: "file",
-            data: attachment.url,
-            mediaType: attachment.mediaType,
-          });
-          break;
-        case "data":
-          parts.push({
-            type: "text",
-            text: "\n" + indent(renderYaml(attachment.data), 4),
-          });
-          break;
-      }
-      parts.push({ type: "text", text: "\n" });
     }
   }
 
@@ -106,17 +81,14 @@ export function formatAgentMessage(
   const lastIndex = message.actions.length - 1;
   const failedTools: string[] = [];
 
-  const formattedEvents = message.actions.map((event, index) => {
-    if (event.type === "action") {
-      // Track tools that failed during this specific turn
-      if (event.data.status === AgentActionStatus.Failed) {
-        failedTools.push(event.data.tool);
-      }
-      return formatAction(event.data);
+  const formattedEvents = message.actions.map((action, index) => {
+    // Track tools that failed during this specific turn
+    if (action.status === "failed") {
+      failedTools.push(action.tool);
     }
 
-    if (event.type === "error") {
-      const errorText = formatError(event.data);
+    if (action.error) {
+      const errorText = formatError(action.error);
       const isLastEvent = index === lastIndex;
 
       // Keep standard error highlighting if it's just a generic event error
@@ -131,7 +103,7 @@ export function formatAgentMessage(
       return errorText;
     }
 
-    return null;
+    return formatAction(action);
   });
 
   let outputText = formattedEvents
@@ -236,9 +208,11 @@ export function indentMessagePart(part: MessagePart, n: number): MessagePart {
 export const buildAgentOrchestratorPrompt = async ({
   context,
   environment,
+  agent,
 }: {
   context: AgentContext;
   environment: AgentEnvironment;
+  agent: Agent;
 }): Promise<MessagePart[]> => {
   const history = [...(context.history || [])];
   let lastUserMessage: UserMessageData | undefined;
@@ -249,7 +223,7 @@ export const buildAgentOrchestratorPrompt = async ({
     if (!entry) {
       break;
     }
-    if (entry.type === "message" && entry.role === "user") {
+    if (entry.type === "message" && (entry as any).data?.role === "user") {
       lastUserMessage = entry.data as UserMessageData;
       break;
     }
@@ -267,12 +241,13 @@ export const buildAgentOrchestratorPrompt = async ({
 
     for (const entry of history) {
       if (entry.type === "summary") {
+        const summaryText = (entry.content as any[])?.filter(c => c.type === "text").map(c => c.text).join("\n") || "";
         parts.push({
           type: "text",
-          text: `**summary**\n${entry.data}`,
+          text: `**summary**\n${summaryText}`,
         });
       } else {
-        const role = entry.role;
+        const role = (entry as any).data?.role || "user";
         parts.push({ type: "text", text: `**${role}**\n` });
         if (role === "user") {
           const userParts = await formatUserMessage(
@@ -305,14 +280,15 @@ export const buildAgentOrchestratorPrompt = async ({
       const entryType = (entry as any).type || "message";
 
       if (entryType === "summary") {
+        const summaryText = ((entry as any).content as any[])?.filter(c => c.type === "text").map(c => c.text).join("\n") || "";
         parts.push({
           type: "text",
-          text: `\n\n**summary**\n\n${entry.data}\n\n`,
+          text: `\n\n**summary**\n\n${summaryText}\n\n`,
         });
         continue;
       }
 
-      const role = (entry as any).role;
+      const role = (entry as any).data?.role || "user";
       parts.push({ type: "text", text: `\n\n**${role}**\n\n` });
       if (role === "user") {
         const userParts = await formatUserMessage(
@@ -334,26 +310,10 @@ export const buildAgentOrchestratorPrompt = async ({
     parts.push({ type: "text", text: "\n\n# Context Resources\n" });
 
     for (const resource of context.resources) {
-      const resourceType = agent.getState().resourceTypes[resource.type];
-      if (!resourceType) {
-        agent.logger?.warn("Unknown resource type", {
-          event: "resource.unknown-type",
-          resourceType: resource.type,
-        });
-        continue;
-      }
-
-      const content = await resourceType.getMessageItem(
-        resource.data,
-        resource.key,
-      );
-      if (content) {
-        parts.push({
-          type: "text",
-          text: `\n- **${resource.type}:${resource.key}**\n`,
-        });
-        parts.push(indentMessagePart(messageItemToMessagePart(content), 2));
-      }
+      parts.push({
+        type: "text",
+        text: `\n- **${resource.type}:${resource.key}**\n${indent(renderYaml(resource.data), 2)}\n`,
+      });
     }
   }
 
