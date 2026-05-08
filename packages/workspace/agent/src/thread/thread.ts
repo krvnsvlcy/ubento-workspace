@@ -1,11 +1,11 @@
 import { createStore } from "zustand/vanilla";
 import { Agent } from "../agent/agent.js";
-import { UserMessageData } from "../message/types.js";
+import { MessageData, UserMessageData } from "../message/types.js";
 
 import { createAgentContext } from "@/context/context.js";
 import { AgentEnvironment } from "@/environment/environment.js";
 import { AgentMessage, createAgentMessage } from "@/message/message.js";
-import { AgentContext } from "../context/types.js";
+import { AgentContextData } from "../context/types.js";
 import {
   AgentExecution,
   createAgentExecution,
@@ -13,40 +13,47 @@ import {
 
 export interface AgentThreadState {
   activeExecution: AgentExecution | undefined;
-  context: AgentContext;
 }
 
 export function createAgentThread({
+  id,
   agent,
   initialContext,
   environment,
+  saveContext,
+  createMessage,
+  updateMessage,
 }: {
+  id: string;
   agent: Agent;
   environment: AgentEnvironment;
-  initialContext?: AgentContext;
+  initialContext?: AgentContextData;
+  saveContext: (context: AgentContextData) => Promise<void>;
+  createMessage: (data: MessageData) => Promise<string>; // id
+  updateMessage: (id: string, data: MessageData) => Promise<void>;
 }) {
-  const context = createAgentContext({ data: initialContext });
+  const context = createAgentContext({
+    data: initialContext,
+    save: async (data) => saveContext?.(data),
+  });
+
   const store = createStore<AgentThreadState>()(() => ({
     activeExecution: undefined,
-    context,
   }));
 
   const threadApi = {
+    id,
     agent,
     environment,
     context,
-    run: async ({
-      message,
-      maxIterations,
+    createExecution: ({
       abortController,
     }: {
-      message: Omit<UserMessageData, "role">;
-      maxIterations?: number;
       abortController?: AbortController;
-    }) => {
+    } = {}) => {
       const { activeExecution } = store.getState();
       if (activeExecution) {
-        throw new Error("There is already a running execution on this thread.");
+        throw new Error("There is already an active execution on this thread.");
       }
 
       const execution = createAgentExecution({
@@ -55,33 +62,34 @@ export function createAgentThread({
       });
 
       store.setState({ activeExecution: execution });
-
       // Auto-clear active execution when it finishes
-      execution.subscribe((state: any) => {
+      execution.subscribe((state) => {
         if (state.status !== "running" && state.status !== "idle") {
           store.setState({ activeExecution: undefined });
         }
       });
 
-      // Start the execution
-      execution.run({ message, maxIterations }).catch(() => {});
-
       return execution;
     },
     pushUserMessage: async (message: Omit<UserMessageData, "role">) => {
-      context.pushMessage({ ...message, role: "user" });
+      const data: MessageData = { ...message, role: "user" };
+      const id = await createMessage(data);
+      await context.writeMessage(id, data);
     },
     startAgentMessage: async (modelId: string): Promise<AgentMessage> => {
-      let id: string;
+      let id: string | undefined = undefined;
       const message = createAgentMessage({
         modelId,
         save: async (data) => {
-          if (id) {
-            context.updateMessage(id, data);
+          if (!id) {
+            throw Error("id is not defined");
           }
+          await updateMessage(id, data);
+          await context.writeMessage(id, message.getData());
         },
       });
-      id = context.pushMessage(message.getData());
+      id = await createMessage(message.getData());
+      await context.writeMessage(id, message.getData());
       return message;
     },
   };

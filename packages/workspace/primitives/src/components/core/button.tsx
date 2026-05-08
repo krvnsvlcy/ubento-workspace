@@ -6,18 +6,21 @@ export const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-neutral-surface text-neutral-content hover:bg-neutral-surface-hover",
+        default:
+          "bg-neutral-surface text-neutral-content hover:bg-neutral-surface-hover",
         primary: "bg-accent text-accent-contrast hover:bg-accent-hover",
-        destructive: "bg-destructive text-destructive-contrast hover:bg-destructive-hover",
+        destructive:
+          "bg-destructive text-destructive-contrast hover:bg-destructive-hover",
         outline:
           "border border-neutral-border bg-transparent hover:bg-neutral-surface text-neutral-content",
-        secondary: "bg-neutral-surface text-neutral-content hover:bg-neutral-surface-hover",
+        secondary:
+          "bg-neutral-surface text-neutral-content hover:bg-neutral-surface-hover",
         ghost: "hover:bg-neutral-surface hover:text-neutral-content",
         link: "text-accent underline-offset-4 hover:underline",
       },
       size: {
         default: "h-7 px-3",
-        sm: "h-9 px-3",
+        sm: "h-7 px-3",
         lg: "h-11 px-8",
         icon: "h-7 w-7",
       },

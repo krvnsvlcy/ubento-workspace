@@ -1,6 +1,5 @@
 import { chain, validate } from "@ubento/services.toolkit";
 import { Router } from "express";
-import multer from "multer";
 import z from "zod";
 import { createMessage, listMessages } from "../entities/messages.js";
 import {
@@ -12,8 +11,6 @@ import {
   updateThread,
 } from "../entities/threads.js";
 
-const upload = multer();
-
 const threadRouter: Router = Router();
 
 threadRouter.get(
@@ -21,7 +18,8 @@ threadRouter.get(
   chain(
     validate({
       query: z.object({
-        workspace_id: z.string(),
+        workspace_id: z.string().optional(),
+        team_id: z.string().optional(),
         members: z.string().optional(),
         cursor: z.string().optional(),
         limit: z.coerce.number().optional(),
@@ -33,6 +31,7 @@ threadRouter.get(
         cursor: req.query.cursor,
         limit: req.query.limit,
         workspace_id: req.query.workspace_id,
+        team_id: req.query.team_id,
         members: req.query.members ? req.query.members.split(",") : undefined,
         sort: req.query.sort as any,
       });

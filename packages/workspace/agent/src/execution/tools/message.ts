@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { AgentTool } from "../tool.js";
+import { AgentTool } from "../tool/tool.js";
 
 export const messageToolSchema = z.object({
   content: z

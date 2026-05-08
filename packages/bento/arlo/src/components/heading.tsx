@@ -1,4 +1,4 @@
-import { type ComponentProps } from "@ubento/bento.runtime";
+import { type ComponentProps } from "@ubento/bento.core";
 import { z } from "zod";
 import {
   getLayoutElementStyle,

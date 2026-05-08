@@ -15,34 +15,32 @@ function paddingStyle(padding: BoardStyle["padding"]) {
 }
 
 function getBoardStyle(style: BoardStyle): React.CSSProperties {
+  const direction = style.direction || "column";
+  const flow = style.flow || "fixed";
   return {
     position: "relative",
     width:
-      style.direction === "row"
-        ? style.flow === "fixed"
+      direction === "row"
+        ? flow === "fixed"
           ? "100%"
           : "fit-content"
         : "100%",
     height:
-      style.direction === "column"
-        ? style.flow === "fixed"
+      direction === "column"
+        ? flow === "fixed"
           ? "100%"
           : "fit-content"
         : "100%",
     minHeight: "100vh",
     display: "flex",
     alignItems: "stretch",
-    flexDirection: style.direction || "row",
+    flexDirection: direction,
     gap: style.gap ? `${style.gap || 0}px` : undefined,
     overflowX:
-      style.direction === "row"
-        ? style.flow === "fixed"
-          ? "hidden"
-          : "auto"
-        : "hidden",
+      direction === "row" ? (flow === "fixed" ? "hidden" : "auto") : "hidden",
     overflowY:
-      style.direction === "column"
-        ? style.flow === "fixed"
+      direction === "column"
+        ? flow === "fixed"
           ? "hidden"
           : "auto"
         : "hidden",

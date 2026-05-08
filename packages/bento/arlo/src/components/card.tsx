@@ -1,4 +1,4 @@
-import { edgesSpec, type ComponentProps } from "@ubento/bento.runtime";
+import { edgesSpec, type ComponentProps } from "@ubento/bento.core";
 import { z } from "zod";
 import {
   getEdgesStyle,
@@ -9,7 +9,7 @@ import {
 } from "../lib/style";
 
 export const cardPropsSchema = layoutElementStyleSchema.extend({
-  padding: edgesSpec(z.number()).optional(),
+  padding: z.union([edgesSpec(z.number()), z.number()]).optional(),
   radius: z.number().optional(),
   background: z.string().optional(),
   border: z.string().optional(),
@@ -23,7 +23,17 @@ function getCardStyle(
 ): React.CSSProperties {
   return {
     ...getLayoutElementStyle(props, layoutContext),
-    ...getEdgesStyle(props.padding),
+    ...getEdgesStyle(
+      typeof props.padding === "number"
+        ? {
+            top: props.padding,
+            bottom: props.padding,
+            left: props.padding,
+            right: props.padding,
+          }
+        : props.padding,
+      "padding",
+    ),
     borderRadius: props.radius !== undefined ? `${props.radius}px` : "16px",
     background: props.background || "white",
     border: props.border || "1px solid #f1f5f9",

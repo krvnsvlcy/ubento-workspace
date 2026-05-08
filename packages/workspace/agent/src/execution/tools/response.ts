@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { AgentTool } from "../tool.js";
+import { AgentTool } from "../tool/tool.js";
 
 export const responseToolSchema = z.object({
   content: z
@@ -18,6 +18,7 @@ export const responseTool: AgentTool<typeof responseToolSchema> & {
     return {
       content: [{ type: "text", text: "Response sent to user." }],
       structuredContent: { response: args.content },
+      shouldEnd: true,
     };
   },
 };

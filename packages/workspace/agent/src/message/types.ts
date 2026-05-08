@@ -70,6 +70,10 @@ export const userMessageAttachmentSchema = z.object({
   type: z.string(),
   data: z.any(),
 });
+export type UserMessageAttachment<T extends string = string, D = unknown> = {
+  type: T;
+  data: D;
+};
 
 export const userMessageDataSchema = z.object({
   role: z.literal("user"),

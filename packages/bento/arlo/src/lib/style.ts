@@ -2,7 +2,7 @@ import {
   lengthSchema,
   type EdgesSpec,
   type LengthSpec,
-} from "@ubento/bento.runtime";
+} from "@ubento/bento.core";
 import { createContext, useContext } from "react";
 import z from "zod";
 

@@ -45,8 +45,9 @@ export type AgentContextResource = z.infer<typeof agentContextResourceSchema>;
 // Context
 // ==========================================
 
-export const agentContextSchema = z.object({
+export const agentContextDataSchema = z.object({
   history: z.array(agentHistoryEntrySchema).optional(),
   resources: z.array(agentContextResourceSchema).optional(),
+  budget: z.number().optional(),
 });
-export type AgentContext = z.infer<typeof agentContextSchema>;
+export type AgentContextData = z.infer<typeof agentContextDataSchema>;

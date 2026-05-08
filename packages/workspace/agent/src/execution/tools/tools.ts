@@ -1,10 +1,9 @@
 import { z } from "zod";
 import { renderYaml } from "../../utils/format.js";
-import { AgentTool } from "../tool.js";
-import { ToolSet } from "../tool_set/tool_set.js";
+import { AgentTool } from "../tool/tool.js";
 
 export const searchToolsSchema = z.object({
-  set: z.string().describe("The name of the set to search in"),
+  set: z.string().describe("The name of the toolkit to search in"),
   query: z
     .string()
     .describe(
@@ -12,119 +11,115 @@ export const searchToolsSchema = z.object({
     ),
 });
 
-export function createSearchToolsTool(
-  toolSets: Record<string, ToolSet>,
-): AgentTool<typeof searchToolsSchema> & { toolName: string } {
-  return {
-    name: "search_tools",
-    toolName: "search_tools",
-    description:
-      "Search for tools in a specific set. Use this tool to find tools that can help you accomplish your task.",
-    args: searchToolsSchema,
-    async run({ args }) {
-      const toolSet = toolSets[args.set];
+export const searchToolsTool: AgentTool<typeof searchToolsSchema> & { toolName: string } = {
+  name: "search_tools",
+  toolName: "search_tools",
+  description:
+    "Search for tools in a specific toolkit. Use this tool to find tools that can help you accomplish your task.",
+  args: searchToolsSchema,
+  async run({ args, environment }) {
+    const toolkits = environment.listToolkits?.() || [];
+    const toolkit = toolkits.find((t) => t.name === args.set);
 
-      if (!toolSet) {
-        return {
-          isError: true,
-          content: [{ type: "text", text: `ToolSet "${args.set}" not found` }],
-        };
-      }
-
-      const toolDefs = await toolSet.searchTools(args.query);
-
-      let text = "";
-      if (!toolDefs.length) {
-        text = `No tools found in extension "${args.set}" matching "${args.query}".`;
-      } else {
-        text = renderYaml(toolDefs);
-      }
-
+    if (!toolkit) {
       return {
-        content: [{ type: "text", text }],
+        isError: true,
+        content: [{ type: "text", text: `Toolkit "${args.set}" not found` }],
       };
-    },
-  };
-}
+    }
+
+    const tools = await toolkit.listTools();
+    const toolDefs = tools.filter(
+      (t) => t.name.includes(args.query) || t.description?.includes(args.query)
+    );
+
+    let text = "";
+    if (!toolDefs.length) {
+      text = `No tools found in toolkit "${args.set}" matching "${args.query}".`;
+    } else {
+      text = renderYaml(toolDefs);
+    }
+
+    return {
+      content: [{ type: "text", text }],
+    };
+  },
+};
 
 export const listToolsSchema = z.object({
-  set: z.string().describe("The name of the set to list tools from"),
+  set: z.string().describe("The name of the toolkit to list tools from"),
 });
 
-export function createListToolsTool(
-  toolSets: Record<string, ToolSet>,
-): AgentTool<typeof listToolsSchema> & { toolName: string } {
-  return {
-    name: "list_tools",
-    toolName: "list_tools",
-    description: "List all tools available in a specific set.",
-    args: listToolsSchema,
-    async run({ args }) {
-      const toolSet = toolSets[args.set];
+export const listToolsTool: AgentTool<typeof listToolsSchema> & { toolName: string } = {
+  name: "list_tools",
+  toolName: "list_tools",
+  description: "List all tools available in a specific toolkit.",
+  args: listToolsSchema,
+  async run({ args, environment }) {
+    const toolkits = environment.listToolkits?.() || [];
+    const toolkit = toolkits.find((t) => t.name === args.set);
 
-      if (!toolSet) {
-        return {
-          isError: true,
-          content: [{ type: "text", text: `ToolSet "${args.set}" not found` }],
-        };
-      }
-
+    if (!toolkit) {
       return {
-        content: [
-          {
-            type: "text",
-            text: `Tool set "${args.set}" loaded successfully.`,
-          },
-        ],
+        isError: true,
+        content: [{ type: "text", text: `Toolkit "${args.set}" not found` }],
       };
-    },
-  };
-}
+    }
+
+    const tools = await toolkit.listTools();
+
+    return {
+      content: [
+        {
+          type: "text",
+          text: `Toolkit "${args.set}" loaded successfully.\n\n${renderYaml(tools)}`,
+        },
+      ],
+    };
+  },
+};
 
 export const describeToolSchema = z.object({
-  set: z.string().describe("The name of the set the tool belongs to"),
+  set: z.string().describe("The name of the toolkit the tool belongs to"),
   tool: z.string().describe("The name of the tool to describe"),
 });
 
-export function createDescribeToolTool(
-  toolSets: Record<string, ToolSet>,
-): AgentTool<typeof describeToolSchema> & { toolName: string } {
-  return {
-    name: "describe_tool",
-    toolName: "describe_tool",
-    description: "Describe a tool in detail.",
-    args: describeToolSchema,
-    async run({ args }) {
-      const toolSet = toolSets[args.set];
+export const describeToolTool: AgentTool<typeof describeToolSchema> & { toolName: string } = {
+  name: "describe_tool",
+  toolName: "describe_tool",
+  description: "Describe a tool in detail.",
+  args: describeToolSchema,
+  async run({ args, environment }) {
+    const toolkits = environment.listToolkits?.() || [];
+    const toolkit = toolkits.find((t) => t.name === args.set);
 
-      if (!toolSet) {
-        return {
-          isError: true,
-          content: [{ type: "text", text: `ToolSet "${args.set}" not found` }],
-        };
-      }
-
-      const tool = await toolSet.getTool(args.tool);
-      if (!tool) {
-        return {
-          isError: true,
-          content: [
-            {
-              type: "text",
-              text: `Tool "${args.tool}" not found in extension "${args.set}"`,
-            },
-          ],
-        };
-      }
-
+    if (!toolkit) {
       return {
+        isError: true,
+        content: [{ type: "text", text: `Toolkit "${args.set}" not found` }],
+      };
+    }
+
+    const tool = await toolkit.getTool(args.tool);
+    if (!tool) {
+      return {
+        isError: true,
         content: [
           {
             type: "text",
-            text: `Tool "${args.tool}" loaded successfully from extension "${args.set}"`,
+            text: `Tool "${args.tool}" not found in toolkit "${args.set}"`,
           },
         ],
       };
-    },
-  };
-}
+    }
+
+    return {
+      content: [
+        {
+          type: "text",
+          text: `Tool "${args.tool}" loaded successfully from toolkit "${args.set}"\n\n${renderYaml({ name: tool.name, description: tool.description })}`,
+        },
+      ],
+    };
+  },
+};

@@ -28,7 +28,9 @@ export function ElementView({
   const ErrorComponent = useEnvironmentErrorComponent();
   const Component = useEnvironmentComponent(element.component);
   const state = useBoardState();
-  const resolvedProps = useResolvedValue(element.props || {}, { state });
+  const resolvedProps = useResolvedValue(element.inputs || {}, {
+    state: state ?? {},
+  });
 
   function handleRef(dom: HTMLElement | null) {
     if (!dom) {

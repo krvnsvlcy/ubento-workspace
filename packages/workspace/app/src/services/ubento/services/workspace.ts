@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import {
   createStore,
+  Store,
   useMutation,
   useStoreEntities,
   useStoreEntity,
@@ -17,11 +18,11 @@ export function createUbentoWorkspaceService({
 }) {
   // --- Stores ---
 
-  const workspaceStore = createStore<
+  const workspaceStore: Store<
     workspaceClient.Workspace,
     { team_id?: string },
     UbentoApiPage
-  >({
+  > = createStore({
     namespace: ubentoEntities.workspace.name,
     getKey: (ws) => ws.id,
     fetchOne: async (key) => {
@@ -462,6 +463,10 @@ export function createUbentoWorkspaceService({
   };
 
   return {
+    boardStore,
+    workspaceStore,
+    workspaceMembershipStore,
+    workspaceInviteStore,
     ...hooks,
     ...imperatives,
   };

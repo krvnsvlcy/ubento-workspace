@@ -17,7 +17,7 @@
     "watch": "tsc --watch"
   },
   "dependencies": {
-    "@ubento/bento.runtime": "workspace:*",
+    "@ubento/bento.core": "workspace:*",
     "zod": "^4.3.6"
   },
   "devDependencies": {

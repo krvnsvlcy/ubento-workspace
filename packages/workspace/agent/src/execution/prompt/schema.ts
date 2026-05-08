@@ -1,4 +1,4 @@
-import { AgentTool } from "@/execution/tool";
+import { AgentTool } from "@/execution/tool/tool";
 import z from "zod";
 
 export const agentOrchestratorOutputSchema = z.object({

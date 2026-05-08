@@ -516,9 +516,9 @@ importers:
 
   packages/bento/arlo:
     dependencies:
-      '@ubento/bento.runtime':
+      '@ubento/bento.core':
         specifier: workspace:*
-        version: link:../runtime
+        version: link:../core
       zod:
         specifier: ^4.3.6
         version: 4.4.3
@@ -605,6 +605,12 @@ importers:
       '@ubento/workspace.primitives':
         specifier: workspace:*
         version: link:../../workspace/primitives
+      dequal:
+        specifier: ^2.0.3
+        version: 2.0.3
+      json-diff-ts:
+        specifier: ^4.10.4
+        version: 4.10.4
       lucide-react:
         specifier: ^0.468.0
         version: 0.468.0(react@19.2.5)
@@ -848,6 +854,8 @@ importers:
         specifier: ^5.0.0
         version: 5.9.3
 
+  packages/utils/telemetry: {}
+
   packages/utils/zustand-devtool:
     devDependencies:
       zustand:
@@ -910,6 +918,9 @@ importers:
       '@ubento/state':
         specifier: workspace:*
         version: link:../../utils/state
+      '@ubento/telemetry':
+        specifier: workspace:*
+        version: link:../../utils/telemetry
       '@ubento/workspace.primitives':
         specifier: workspace:*
         version: link:../primitives
@@ -1025,6 +1036,9 @@ importers:
       '@ubento/services.sdk':
         specifier: workspace:*
         version: link:../../services/sdk
+      '@ubento/telemetry':
+        specifier: workspace:*
+        version: link:../../utils/telemetry
       '@ubento/workspace.agent':
         specifier: workspace:*
         version: link:../agent
@@ -1043,6 +1057,15 @@ importers:
       dequal:
         specifier: ^2.0.3
         version: 2.0.3
+      fast-json-patch:
+        specifier: ^3.1.1
+        version: 3.1.1
+      json-diff-ts:
+        specifier: ^4.10.4
+        version: 4.10.4
+      lodash.debounce:
+        specifier: ^4.0.8
+        version: 4.0.8
       lucide-react:
         specifier: ^0.468.0
         version: 0.468.0(react@19.2.5)
@@ -1064,7 +1087,13 @@ importers:
       zod:
         specifier: ^4.3.6
         version: 4.4.3
+      zustand:
+        specifier: ^5.0.13
+        version: 5.0.13(@types/react@19.2.14)(react@19.2.5)(use-sync-external-store@1.6.0(react@19.2.5))
     devDependencies:
+      '@types/lodash.debounce':
+        specifier: ^4.0.9
+        version: 4.0.9
       '@types/react':
         specifier: ^19.0.0
         version: 19.2.14
@@ -1285,7 +1314,7 @@ importers:
     dependencies:
       '@hey-api/openapi-ts':
         specifier: ^0.77.0
-        version: 0.77.0(typescript@6.0.3)
+        version: 0.77.0(typescript@5.9.3)
       '@microsoft/api-extractor':
         specifier: ^7.53.1
         version: 7.58.7(@types/node@25.6.0)
@@ -1318,7 +1347,7 @@ importers:
         version: 4.2.0
       openapi-typescript:
         specifier: ^7.9.1
-        version: 7.13.0(typescript@6.0.3)
+        version: 7.13.0(typescript@5.9.3)
       pacote:
         specifier: ^21.0.1
         version: 21.5.0
@@ -4733,6 +4762,9 @@ packages:
   '@types/koa@2.15.0':
     resolution: {integrity: sha512-7QFsywoE5URbuVnG3loe03QXuGajrnotr3gQkXcEBShORai23MePfFYdhz90FEtBBpkyIYQbVD+evKtloCgX3g==}
 
+  '@types/lodash.debounce@4.0.9':
+    resolution: {integrity: sha512-Ma5JcgTREwpLRwMM+XwBR7DaWe96nC38uCBDFKZWbNKD+osjVzdpnUSwBcqCptrp16sSOLBAUb50Car5I0TCsQ==}
+
   '@types/lodash.get@4.4.9':
     resolution: {integrity: sha512-J5dvW98sxmGnamqf+/aLP87PYXyrha9xIgc2ZlHl6OHMFR2Ejdxep50QfU0abO1+CH6+ugx+8wEUN1toImAinA==}
 
@@ -6639,6 +6671,9 @@ packages:
     resolution: {integrity: sha512-7MptL8U0cqcFdzIzwOTHoilX9x5BrNqye7Z/LuC7kCMRio1EMSyqRK3BEAUD7sXRq4iT4AzTVuZdhgQ2TCvYLg==}
     engines: {node: '>=8.6.0'}
 
+  fast-json-patch@3.1.1:
+    resolution: {integrity: sha512-vf6IHUX2SBcA+5/+4883dsIjpBTqmfBjmYiWK1savxQmFk4JfBMLa7ynTYOs1Rolp/T1betJxHiGD3g1Mn8lUQ==}
+
   fast-json-stable-stringify@2.1.0:
     resolution: {integrity: sha512-lhd/wF+Lk98HZoTCtlVraHtfh5XYijIjalXck7saUtuanSDyLMxnHhSXEDJqHxD7msR8D0uCmqlkwjCV8xvwHw==}
 
@@ -7532,6 +7567,9 @@ packages:
   json-buffer@3.0.1:
     resolution: {integrity: sha512-4bV5BfR2mqfQTJm+V5tPPdf+ZpuhiIvTuAB5g8kcrXOZpTT/QwwVRWBywX1ozr6lEuPdbHxwaJlm9G6mI2sfSQ==}
 
+  json-diff-ts@4.10.4:
+    resolution: {integrity: sha512-/Ipg6migsLtNQQz+I3jm+hnPGZx4x47cVXTr4tgvxepQJKIB5iDmyguxicZ/59wIg3OlGgIGwIMftn+LqT8lNQ==}
+
   json-parse-even-better-errors@5.0.0:
     resolution: {integrity: sha512-ZF1nxZ28VhQouRWhUcVlUIN3qwSgPuswK05s/HIaoetAoE/9tngVmCHjSxmSQPav1nd+lPtTL0YZ/2AFdR/iYQ==}
     engines: {node: ^20.17.0 || >=22.9.0}
@@ -7727,6 +7765,9 @@ packages:
 
   lodash.clonedeep@4.5.0:
     resolution: {integrity: sha512-H5ZhCF25riFd9uB5UCkVKo61m3S/xZk1x4wA6yp/L3RFP6Z/eHH1ymQcGLo7J3GMPfm0V/7m1tryHuGVxpqEBQ==}
+
+  lodash.debounce@4.0.8:
+    resolution: {integrity: sha512-FT1yDzDYEoYWhnSGnpE/4Kj1fLZkDFyqRb7fNt6FdYOSxlUWAtp42Eh6Wb0rGIv/m9Bgo7x4GhQbm5Ys4SG5ow==}
 
   lodash.get@4.4.2:
     resolution: {integrity: sha512-z+Uw/vLuy6gQe8cfaFWD7p0wVv8fJl3mbzXh33RS+0oW2wvUqiRXiQ69gLWSLpgB5/6sU+r6BlQR0MBILadqTQ==}
@@ -10347,6 +10388,24 @@ packages:
       use-sync-external-store:
         optional: true
 
+  zustand@5.0.13:
+    resolution: {integrity: sha512-efI2tVaVQPqtOh114loML/Z80Y4NP3yc+Ff0fYiZJPauNeWZeIp/bRFD7I9bfmCOYBh/PHxlglQ9+wvlwnPikQ==}
+    engines: {node: '>=12.20.0'}
+    peerDependencies:
+      '@types/react': '>=18.0.0'
+      immer: '>=9.0.6'
+      react: '>=18.0.0'
+      use-sync-external-store: '>=1.2.0'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      immer:
+        optional: true
+      react:
+        optional: true
+      use-sync-external-store:
+        optional: true
+
   zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
 
@@ -11137,7 +11196,7 @@ snapshots:
       js-yaml: 4.1.1
       lodash: 4.18.1
 
-  '@hey-api/openapi-ts@0.77.0(typescript@6.0.3)':
+  '@hey-api/openapi-ts@0.77.0(typescript@5.9.3)':
     dependencies:
       '@hey-api/json-schema-ref-parser': 1.0.6
       ansi-colors: 4.1.3
@@ -11146,7 +11205,7 @@ snapshots:
       commander: 13.0.0
       handlebars: 4.7.8
       open: 10.1.2
-      typescript: 6.0.3
+      typescript: 5.9.3
     transitivePeerDependencies:
       - magicast
 
@@ -13151,6 +13210,10 @@ snapshots:
       '@types/keygrip': 1.0.6
       '@types/koa-compose': 3.2.9
       '@types/node': 25.6.0
+
+  '@types/lodash.debounce@4.0.9':
+    dependencies:
+      '@types/lodash': 4.17.24
 
   '@types/lodash.get@4.4.9':
     dependencies:
@@ -15851,6 +15914,8 @@ snapshots:
       merge2: 1.4.1
       micromatch: 4.0.8
 
+  fast-json-patch@3.1.1: {}
+
   fast-json-stable-stringify@2.1.0: {}
 
   fast-levenshtein@2.0.6: {}
@@ -16841,6 +16906,8 @@ snapshots:
 
   json-buffer@3.0.1: {}
 
+  json-diff-ts@4.10.4: {}
+
   json-parse-even-better-errors@5.0.0: {}
 
   json-schema-to-ts@1.6.4:
@@ -17026,6 +17093,8 @@ snapshots:
   lodash.camelcase@4.3.0: {}
 
   lodash.clonedeep@4.5.0: {}
+
+  lodash.debounce@4.0.8: {}
 
   lodash.get@4.4.2: {}
 
@@ -17951,16 +18020,6 @@ snapshots:
       parse-json: 8.3.0
       supports-color: 10.2.2
       typescript: 5.9.3
-      yargs-parser: 21.1.1
-
-  openapi-typescript@7.13.0(typescript@6.0.3):
-    dependencies:
-      '@redocly/openapi-core': 1.34.14(supports-color@10.2.2)
-      ansi-colors: 4.1.3
-      change-case: 5.4.4
-      parse-json: 8.3.0
-      supports-color: 10.2.2
-      typescript: 6.0.3
       yargs-parser: 21.1.1
 
   optionator@0.9.4:
@@ -20182,6 +20241,12 @@ snapshots:
       react: 19.2.5
 
   zustand@5.0.12(@types/react@19.2.14)(react@19.2.5)(use-sync-external-store@1.6.0(react@19.2.5)):
+    optionalDependencies:
+      '@types/react': 19.2.14
+      react: 19.2.5
+      use-sync-external-store: 1.6.0(react@19.2.5)
+
+  zustand@5.0.13(@types/react@19.2.14)(react@19.2.5)(use-sync-external-store@1.6.0(react@19.2.5)):
     optionalDependencies:
       '@types/react': 19.2.14
       react: 19.2.5

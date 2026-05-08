@@ -2,16 +2,15 @@ import { llmContentToText } from "@/utils/llm.js";
 import z, { undefined } from "zod";
 import { renderYaml } from "../../../utils/format.js";
 import { cleanJsonSchema } from "../../../utils/zod.js";
-import { AgentTool } from "../../tool.js";
-import { ToolSet } from "../../tool_set/tool_set.js";
-
+import { AgentTool } from "../../tool/tool.js";
+import { Toolkit } from "../../tool/toolkit/toolkit.js";
 
 export function toolsSection({
   tools,
-  toolSets,
+  toolkits,
 }: {
   tools: AgentTool[];
-  toolSets: ToolSet[];
+  toolkits: Toolkit[];
 }) {
   type ToolData = {
     name: string;
@@ -41,14 +40,14 @@ export function toolsSection({
     },
   ];
 
-  let toolSetsDoc = `There are no external tool sets currently available.`;
+  let toolkitsDoc = `There are no external toolkits currently available.`;
 
-  if (toolSets.length) {
-    toolSetsDoc = `
-**Available Tool Sets**
+  if (toolkits.length) {
+    toolkitsDoc = `
+**Available Toolkits**
 
 ${renderYaml(
-  toolSets.map((e) => ({
+  toolkits.map((e) => ({
     name: e.name,
     description: e.description,
   })),
@@ -64,14 +63,14 @@ ${renderYaml(toolList)}
 
 ## External Tools
 
-In addition to the tools above, You can load additional tools from external tool sets to achieve more advanced capabilities. 
-- Use \`list_tools\` with a tool set name to list available tools in that tool set.
-- Use \`describe_tool\` with a tool set name and tool name to get more information about a tool including its input schema.
-- **CRITICAL: To use an external tool, you MUST format the tool name as \`tool-set-name:tool_name\`**
-  (e.g., if the tool set is 'postgres' and the tool is 'run_query', call \`postgres:run_query\` as the tool name).
-- Always explore tool sets if you need capabilities not provided by your built-in tools.
+In addition to the tools above, You can load additional tools from external toolkits to achieve more advanced capabilities. 
+- Use \`list_tools\` with a toolkit name to list available tools in that toolkit.
+- Use \`describe_tool\` with a toolkit name and tool name to get more information about a tool including its input schema.
+- **CRITICAL: To use an external tool, you MUST format the tool name as \`toolkit-name:tool_name\`**
+  (e.g., if the toolkit is 'postgres' and the tool is 'run_query', call \`postgres:run_query\` as the tool name).
+- Always explore toolkits if you need capabilities not provided by your built-in tools.
 
-${toolSetsDoc}
+${toolkitsDoc}
 
 ## Tool Usage Guidelines
 

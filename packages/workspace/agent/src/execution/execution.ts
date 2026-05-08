@@ -16,7 +16,7 @@ import {
   agentOrchestratorOutputSchema,
   fixAgentOrchestratorCommonOutputPitfalls,
 } from "./prompt/schema.js";
-import { AgentTool } from "./tool.js";
+import { AgentTool } from "./tool/tool.js";
 
 export type AgentExecutionStatus =
   | "idle"
@@ -59,7 +59,7 @@ export function createAgentExecution({
     model: LanguageModel;
   }): Promise<{ shouldContinue: boolean }> {
     const stats = context.getStats();
-    if (stats.usage >= stats.budget) {
+    if (stats.budget > 0 && stats.usage >= stats.budget) {
       const summarizeModel = environment.getModel("summarize") || model;
       await context.summarize({ agent, model: summarizeModel });
       return { shouldContinue: true };
@@ -71,15 +71,15 @@ export function createAgentExecution({
       environment,
       agent,
     });
-    const tools = (await environment.getTools?.()) ?? [];
-    const toolSets = (await environment.getToolSets?.()) ?? [];
-    const agents = (await environment.getAgents?.()) ?? [];
+    const tools = (await environment.listTools?.()) ?? [];
+    const toolkits = (await environment.listToolkits?.()) ?? [];
+    const agents = (await environment.listAgents?.()) ?? [];
 
     const instructions = buildAgentOrchestratorInstructions({
       agent,
       environment,
       tools,
-      toolSets,
+      toolkits,
       agents,
     });
 
@@ -98,10 +98,15 @@ export function createAgentExecution({
     error?: AgentError;
     shouldEnd?: boolean;
   }> {
+    environment.logger?.debug(`Running tool ${tool.name}`, {
+      event: "tool_run",
+      tool: tool.name,
+      args,
+    });
+
     const argParseResult = tool.args.safeParse(args);
     if (!argParseResult.success) {
       return {
-        shouldEnd: true,
         error: {
           code: "tool_args_schema_mismatch",
           message: `Invalid arguments for ${tool.name}`,
@@ -126,6 +131,7 @@ export function createAgentExecution({
       const result = await tool.run({
         args: argParseResult.data,
         abortController,
+        environment,
       });
 
       if (result.isError) {
@@ -135,12 +141,25 @@ export function createAgentExecution({
           data: result.structuredContent,
         };
         await message.failAction(actionId, error);
-        return { shouldEnd: true, error };
+
+        environment.logger?.error("Tool execution failed", {
+          event: "tool_execution_error",
+          tool: tool.name,
+          error: error.message,
+        });
+
+        return { error };
       }
 
       await message.completeAction(actionId, {
         output: result.content,
         structuredOutput: result.structuredContent,
+      });
+
+      environment.logger?.info("Tool execution completed", {
+        event: "tool_execution_completed",
+        tool: tool.name,
+        shouldEnd: result.shouldEnd,
       });
 
       return { shouldEnd: result.shouldEnd };
@@ -154,7 +173,14 @@ export function createAgentExecution({
         },
       };
       await message.failAction(actionId, error);
-      return { shouldEnd: true, error };
+
+      environment.logger?.error("Tool execution threw exception", {
+        event: "tool_execution_exception",
+        tool: tool.name,
+        error: String(e),
+      });
+
+      return { error };
     }
   }
 
@@ -175,6 +201,14 @@ export function createAgentExecution({
       abortSignal: abortController.signal,
     });
 
+    environment.logger?.debug(
+      `Orchestrator Model generated response for ${agent.name}`,
+      {
+        event: "orchestrator_model_response",
+        content: result.text,
+      },
+    );
+
     const outputData = safeYamlParse(result.text);
     const [fixedOutputData] =
       fixAgentOrchestratorCommonOutputPitfalls(outputData);
@@ -194,9 +228,15 @@ export function createAgentExecution({
 
     const output = parsed.data;
 
-    // FIX: Yield back to the user instead of looping infinitely if no actions are taken
     if (!output.actions?.length) {
-      return { shouldContinue: false };
+      await agentMessage.fail({
+        code: "response_schema_mismatch",
+        message: "No actions to take",
+        data: {
+          error: "Response schema mismatch",
+        },
+      });
+      return { shouldContinue: true };
     }
 
     let shouldContinue = true;
@@ -214,7 +254,7 @@ export function createAgentExecution({
           message: `Unknown tool: ${act.tool}`,
           data: { tool: act.tool },
         });
-        continue;
+        break;
       }
 
       const result = await runAction({
@@ -223,9 +263,16 @@ export function createAgentExecution({
         args: act.args,
       });
 
-      // FIX: Halt execution if the action dictates it should end
+      let shouldBreak = false;
+      if (result.error) {
+        await agentMessage.fail(result.error);
+        shouldBreak = true;
+      }
       if (result.shouldEnd) {
         shouldContinue = false;
+        shouldBreak = true;
+      }
+      if (shouldBreak) {
         break;
       }
     }
@@ -279,11 +326,27 @@ export function createAgentExecution({
 
         let stateUpdate: Partial<AgentExecutionState> = {};
 
+        environment.logger?.debug("Agent execution started", {
+          event: "execution_start",
+          modelId: message.modelId,
+        });
+
         for (let i = 0; i < maxIterations; ++i) {
           if (abortController.signal.aborted) {
             stateUpdate.status = "stopped";
             stateUpdate.stopReason = "aborted";
             break;
+          }
+
+          // Only log initial states when the process is long
+          if (i === 3) {
+            environment.logger?.info(
+              "Process is taking longer than expected... Continued execution.",
+              {
+                event: "execution_long",
+                iterations: i,
+              },
+            );
           }
 
           const turnResult = await runTurn({ model });
@@ -300,8 +363,19 @@ export function createAgentExecution({
         }
 
         store.setState(stateUpdate);
+
+        environment.logger?.info("Agent execution completed", {
+          event: "execution_completed",
+          status: stateUpdate.status,
+          stopReason: stateUpdate.stopReason,
+        });
       } catch (e) {
         const normalizedError = normalizeError(e, abortController);
+
+        environment.logger?.error("Agent execution failed", {
+          event: "execution_error",
+          error: normalizedError.message,
+        });
 
         if (normalizedError.code === AgentExecutionErrorCode.ABORTED) {
           store.setState({

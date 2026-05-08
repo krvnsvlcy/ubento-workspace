@@ -1,12 +1,6 @@
-import {
-  BoardView,
-  createEnvironment,
-  EnvironmentContext,
-  Interactor,
-} from "@ubento/bento.core";
+import { BoardView, Interactor } from "@ubento/bento.core";
 import { useStoreEntity } from "@ubento/fabric";
 import { AlertCircle, Loader2 } from "lucide-react";
-import { useMemo } from "react";
 import { BentoRuntime } from "../runtime/runtime";
 
 export function BentoBoardView({
@@ -23,8 +17,6 @@ export function BentoBoardView({
     status,
     error,
   } = useStoreEntity(runtime.boardStore, boardId);
-
-  const environment = useMemo(() => createEnvironment(), []);
 
   if (status === "pending") {
     return (
@@ -94,11 +86,9 @@ export function BentoBoardView({
 
   return (
     <div className="h-full overflow-y-auto bg-background">
-      <EnvironmentContext value={environment}>
-        <BoardView spec={board.spec.data}>
-          <Interactor />
-        </BoardView>
-      </EnvironmentContext>
+      <BoardView spec={board.spec.data}>
+        <Interactor />
+      </BoardView>
     </div>
   );
 }

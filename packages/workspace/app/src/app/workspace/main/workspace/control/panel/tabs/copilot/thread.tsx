@@ -1,6 +1,7 @@
 import { useUbentoEngine } from "@/engine/engine";
 import { Sparkles } from "lucide-react";
 import { useEffect, useRef } from "react";
+import { CopilotMessage } from "./message/message";
 
 export function CopilotThread({ scope }: { scope: string }) {
   const engine = useUbentoEngine();
@@ -43,25 +44,10 @@ export function CopilotThread({ scope }: { scope: string }) {
   return (
     <div
       ref={scrollRef}
-      className="flex flex-1 flex-col gap-6 overflow-y-auto p-4 scrollbar-hide"
+      className="flex flex-1 flex-col gap-6 overflow-y-auto p-4 scrollbar-hide scroll-smooth"
     >
       {messages.map((message) => (
-        <div
-          key={message.id}
-          className={`flex flex-col gap-1.5 animate-in slide-in-from-bottom-2 duration-300 ${
-            message.role === "user" ? "items-end" : "items-start"
-          }`}
-        >
-          <div
-            className={`max-w-[85%] rounded-[20px] px-4 py-3 text-[14px] leading-[1.5] ${
-              message.role === "user"
-                ? "bg-neutral-surface"
-                : "border border-white/10 bg-white/5 text-foreground-100 shadow-sm"
-            }`}
-          >
-            {(message.data as any).text}
-          </div>
-        </div>
+        <CopilotMessage key={message.id} message={message} />
       ))}
     </div>
   );

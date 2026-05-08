@@ -1,10 +1,44 @@
 import { useUbentoEngine } from "@/engine/engine";
+import { UserMessageAttachment } from "@ubento/workspace.agent";
 import { Button } from "@ubento/workspace.primitives";
-import { ArrowRight, ChevronDown, Plus } from "lucide-react";
+import { ArrowRight, ChevronDown, Plus, X } from "lucide-react";
+
+function AttachmentChip({
+  attachment,
+  onRemove,
+}: {
+  attachment: UserMessageAttachment;
+  onRemove?: () => void;
+}) {
+  const engine = useUbentoEngine();
+  const typeConfig = engine.copilot.attachmentTypes[attachment.type];
+
+  const label = typeConfig?.label(attachment.data) ?? attachment.type;
+  const icon = typeConfig?.icon(attachment.data);
+
+  return (
+    <div className="flex items-center gap-1.5 rounded-full bg-neutral-surface border border-neutral-border px-2.5 py-1 text-xs text-neutral-content">
+      {icon && (
+        <span className="flex-shrink-0 text-neutral-content-subtle w-3.5 h-3.5 flex items-center justify-center">
+          {icon}
+        </span>
+      )}
+      <span className="truncate max-w-[120px]">{label}</span>
+      {onRemove && (
+        <button
+          onClick={onRemove}
+          className="ml-0.5 text-neutral-content-subtle hover:text-neutral-content transition-colors"
+        >
+          <X size={12} />
+        </button>
+      )}
+    </div>
+  );
+}
 
 export function CopilotInput({ scope }: { scope: string }) {
   const engine = useUbentoEngine();
-  const input = engine.copilot.useState((state) => state.input.text);
+  const input = engine.copilot.useState((state) => state.input);
 
   const handleSend = () => {
     engine.copilot.sendMessage(scope);
@@ -17,16 +51,39 @@ export function CopilotInput({ scope }: { scope: string }) {
     }
   };
 
+  const allContextAttachments = Object.values(input.contextAttachments).flat();
+
   return (
-    <div className="p-3">
-      <div className="flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/5 transition-all focus-within:border-primary-500/50 focus-within:ring-4 focus-within:ring-primary-500/10">
+    <div className="p-2">
+      <div className="flex flex-col overflow-hidden rounded-2xl border border-neutral-border transition-all focus-within:border-neutral-border-active">
+        {/* Attachments Section */}
+        {(input.userAttachments.length > 0 ||
+          allContextAttachments.length > 0) && (
+          <div className="flex flex-wrap gap-2 p-2">
+            {allContextAttachments.map((attachment, i) => (
+              <AttachmentChip key={`context-${i}`} attachment={attachment} />
+            ))}
+            {input.userAttachments.map((attachment, i) => (
+              <AttachmentChip
+                key={`user-${i}`}
+                attachment={attachment}
+                onRemove={() => {
+                  const newAttachments = [...input.userAttachments];
+                  newAttachments.splice(i, 1);
+                  engine.copilot.setUserAttachments(newAttachments);
+                }}
+              />
+            ))}
+          </div>
+        )}
+
         <textarea
-          value={input}
+          value={input.text}
           onChange={(e) => engine.copilot.setInputText(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Message AI Copilot..."
           rows={1}
-          className="max-h-[200px] w-full resize-none bg-transparent p-4 text-[14px] leading-relaxed text-foreground-100 outline-none scrollbar-hide placeholder:text-foreground-500"
+          className="max-h-[200px] w-full resize-none bg-transparent p-4 text-[14px] leading-relaxed text-neutral-content outline-none scrollbar-hide placeholder:text-neutral-content-subtle"
           style={{ height: "auto" }}
           onInput={(e) => {
             const target = e.target as HTMLTextAreaElement;
@@ -35,25 +92,25 @@ export function CopilotInput({ scope }: { scope: string }) {
           }}
         />
 
-        <div className="flex items-center justify-between border-t border-white/5 bg-white/[0.02] px-3 py-2">
+        <div className="flex items-center justify-between p-2">
           <div className="flex items-center gap-1">
-            <button className="flex h-8 w-8 items-center justify-center rounded-lg text-foreground-400 transition-colors hover:bg-white/5 hover:text-foreground-200">
-              <Plus size={18} />
-            </button>
-            <button className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[12px] font-medium text-foreground-400 transition-colors hover:bg-white/5 hover:text-foreground-200">
+            <Button size="icon" shape="circle">
+              <Plus size={16} />
+            </Button>
+            <Button shape="circle">
               <span>Auto</span>
               <ChevronDown size={14} />
-            </button>
+            </Button>
           </div>
 
           <Button
-            size="sm"
+            size="icon"
+            shape="circle"
             variant="primary"
             onClick={handleSend}
-            disabled={!input.trim()}
-            className="h-8 w-8 !p-0 rounded-lg"
+            disabled={!input.text.trim()}
           >
-            <ArrowRight size={18} />
+            <ArrowRight size={16} />
           </Button>
         </div>
       </div>

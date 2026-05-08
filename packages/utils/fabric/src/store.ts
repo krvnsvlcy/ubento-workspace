@@ -1,4 +1,4 @@
-import { createStore as createZustandStore } from "zustand/vanilla";
+import { createStore as createZustandStore, StoreApi } from "zustand/vanilla";
 
 // --- STATE TYPES ---
 
@@ -64,6 +64,45 @@ export function getEntityQueryKey(key: string) {
   return `item:${key}`;
 }
 
+// --- EXPLICIT STORE RETURN TYPE ---
+
+export interface Store<TData, TParams = {}, TPage = {}> {
+  namespace: string;
+  store: StoreApi<StoreState<TData, TPage>>;
+
+  // Garbage Collection API
+  retain: (cacheKey: string) => void;
+  release: (cacheKey: string) => void;
+
+  // Injection & Eviction
+  push: (item: TData) => void;
+  pushMany: (items: TData[]) => void;
+  remove: (key: string) => void;
+  removeMany: (keysOrMatcher: string[] | ((data: TData) => boolean)) => void;
+  update: (
+    key: string,
+    updater: Partial<TData> | ((data: TData) => Partial<TData>),
+  ) => void;
+  updateMany: (
+    match: string[] | ((data: TData) => boolean),
+    updater: Partial<TData> | ((data: TData) => Partial<TData>),
+  ) => void;
+
+  // Queries
+  fetch: (key: string, options?: FetchOptions) => Promise<TData | undefined>;
+  fetchMany: (options?: FetchManyOptions<TParams, TPage>) => Promise<void>;
+
+  // Selectors
+  selectEntity: (key: string, state: StoreState<TData, TPage>) => Entity<TData>;
+  selectManyEntities: (
+    state: StoreState<TData, TPage>,
+    params?: TParams,
+  ) => EntityList<TData, TPage>;
+
+  // Getters
+  getCached: (key: string) => TData | undefined;
+}
+
 // --- CORE FACTORY ---
 
 export function createStore<TData, TParams = {}, TPage = {}>({
@@ -84,8 +123,10 @@ export function createStore<TData, TParams = {}, TPage = {}>({
   }>;
   project?: (entities: TData[], params?: TParams) => TData[];
   gcTime?: number;
-}) {
-  const store = createZustandStore<StoreState<TData, TPage>>(() => ({
+}): Store<TData, TParams, TPage> {
+  const store: StoreApi<StoreState<TData, TPage>> = createZustandStore<
+    StoreState<TData, TPage>
+  >(() => ({
     data: {},
     queries: {},
   }));
@@ -401,12 +442,8 @@ export function createStore<TData, TParams = {}, TPage = {}>({
     },
 
     // --- GETTERS ---
-    getCached: (key: string) => {
+    getCached: (key: string): TData | undefined => {
       return get().data[key];
     },
   };
 }
-
-export type Store<TData, TParams = {}, TPage = {}> = ReturnType<
-  typeof createStore<TData, TParams, TPage>
->;

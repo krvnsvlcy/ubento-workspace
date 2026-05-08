@@ -1,6 +1,8 @@
 import { UbentoEngine, UbentoEngineState } from "@/engine/engine";
-import { workspaceSpecSchema } from "@ubento/bento.core";
+import { JsonPatch } from "@/utils/json";
+import { boardSpecSchema, workspaceSpecSchema } from "@ubento/bento.core";
 import {
+  BentoBoardData,
   BentoEngineHostRpcInterface,
   BentoEngineRuntimeRpcInterface,
   BentoLocation,
@@ -16,9 +18,12 @@ import {
 } from "@ubento/bento.runtime";
 import { createDuplexRpc, createWindowPort, DuplexRpc } from "@ubento/rpc";
 import { workspaceClient } from "@ubento/services.sdk";
+import { generateInitialBoardSpec } from "./init";
 import { createZustandStateController } from "@ubento/workspace.primitives";
-import { registerStore } from "@ubento/zustand-devtool";
+import { registerStore, unregisterStore } from "@ubento/zustand-devtool";
 import { dequal } from "dequal/lite";
+import { applyPatch } from "fast-json-patch";
+import debounce from "lodash.debounce";
 import z from "zod";
 import { createStore as createZustandStore } from "zustand/vanilla";
 
@@ -48,7 +53,6 @@ export type WorkspaceState = {
 
   // local state
   mode: BentoMode;
-  location: BentoLocation;
   workspace: BentoWorkspaceData;
 
   // synced from runtime
@@ -62,28 +66,32 @@ export type WorkspaceState = {
   leftPanelOpen: boolean;
 };
 
+let i = 0;
 export function createWorkspaceEngine({
   workspace,
-  engine,
+  engine: appEngine,
   user,
 }: {
   workspace: workspaceClient.Workspace;
   user: BentoUserData;
   engine: UbentoEngine;
 }) {
+  const id = i;
+  i++;
+  console.log("create workspace engine", id);
   let rpc: DuplexRpc<
     BentoEngineHostRpcInterface,
     BentoEngineRuntimeRpcInterface
   > | null = null;
-  const workspaceService = engine.ubento.workspace;
-  const moduleService = engine.ubento.module;
+  const workspaceService = appEngine.ubento.workspace;
+  const logger = appEngine.logger.child({ module: "workspace_engine" });
 
   const store = createZustandStore<WorkspaceState>()(() => ({
     status: "pending",
     mode: "live",
     location: {
-      boardId: engine.getState().location.board || "",
-      params: engine.getState().location.params || {},
+      boardId: appEngine.getState().location.board || "",
+      params: appEngine.getState().location.params || {},
     },
     boards: {},
     selection: [],
@@ -99,8 +107,271 @@ export function createWorkspaceEngine({
 
   const controller = createZustandStateController(store);
   registerStore("workspaceEngine", store);
-  const workspaceEngine = {
+
+  function getBentoLocation(
+    engineState: UbentoEngineState,
+  ): BentoLocation | undefined {
+    const location = engineState.location;
+    return location.board
+      ? {
+          boardId: location.board,
+          params: location.params || {},
+        }
+      : undefined;
+  }
+  const unsubscribeEngine = appEngine.subscribe(
+    (curr: UbentoEngineState, prev: UbentoEngineState) => {
+      // sync host location to runtime
+      if (
+        curr.location.board !== prev.location.board ||
+        !dequal(curr.location.params, prev.location.params)
+      ) {
+        const location = getBentoLocation(curr);
+        console.log("location changed", { location, rpc, id });
+        rpc?.egress.setLocation({ location });
+
+        // set copilot context attachments
+
+        if (location) {
+          appEngine.copilot.setContextAttachments("bento-location", [
+            {
+              type: "bento-location",
+              data: location,
+            },
+          ]);
+        } else {
+          appEngine.copilot.setContextAttachments("bento-location", []);
+        }
+      }
+    },
+  );
+
+  // Standalone functions here
+
+  async function connect() {
+    store.setState({ status: "connected" });
+    const engineState = appEngine.getState();
+    const state = store.getState();
+    return {
+      initialState: {
+        location: getBentoLocation(engineState),
+        workspace: state.workspace,
+        user,
+      },
+    };
+  }
+
+  async function ready() {
+    store.setState({ status: "ready" });
+  }
+
+  function goTo({ location }: { location?: BentoLocation }) {
+    appEngine.goToLocation({
+      board: location?.boardId,
+      params: location?.params,
+    });
+  }
+
+  async function getBoard({ boardId }: { boardId: string }) {
+    const data = await workspaceService.getBoard(boardId);
+    return {
+      id: data.id,
+      title: data.name,
+      spec: parseSpecData(boardDataSchema, data.data),
+    };
+  }
+
+  async function listBoards() {
+    const res = await workspaceService.listBoards({
+      workspaceId: workspace.id,
+    });
+    const boards = res.data
+      .map((b) => {
+        return {
+          id: b.id,
+          title: b.name,
+          spec: parseSpecData(boardDataSchema, b.data),
+        };
+      })
+      .filter((b) => !!b);
+    return {
+      boards,
+      nextCursor: res.nextPage?.cursor,
+    };
+  }
+
+  async function updateWorkspace(data: Partial<WorkspaceState>) {
+    const current = store.getState().workspace;
+    if (!current) return;
+    const updated = { ...current, ...data } as any;
+    await workspaceService.updateWorkspace(current.id, updated);
+    store.setState({ workspace: updated });
+  }
+
+  async function readBoard({ boardId }: { boardId: string }) {
+    let boardData = await rpc?.egress.readBoard({ boardId });
+    if (!boardData) {
+      boardData = await getBoard({ boardId });
+    }
+    return boardData;
+  }
+  async function writeBoard(data: BentoBoardData) {
+    await rpc?.egress.writeBoard({ boardId: data.id, data });
+  }
+
+  // update spec
+
+  async function readBoardSpec({ boardId }: { boardId: string }) {
+    const data = await readBoard({ boardId });
+    return data.spec;
+  }
+  async function updateBoardSpec({
+    boardId,
+    patch,
+  }: {
+    boardId: string;
+    patch: JsonPatch;
+  }) {
+    const data = await readBoard({ boardId });
+    const updatedSpec = applyPatch(data.spec.data, patch).newDocument;
+    const parsed = parseSpecData(boardSpecSchema, {
+      ...(updatedSpec as any),
+      id: boardId,
+      title: data.title,
+    });
+    await writeBoard({
+      ...data,
+      spec: parsed,
+    });
+  }
+  async function writeBoardSpec({
+    boardId,
+    spec,
+  }: {
+    boardId: string;
+    spec: any;
+  }) {
+    const data = await readBoard({ boardId });
+    const parsed = parseSpecData(boardSpecSchema, {
+      ...(spec as any),
+      id: boardId,
+      title: data.title,
+    });
+    await writeBoard({
+      ...data,
+      spec: parsed,
+    });
+  }
+
+  // Update metadata
+  async function updateBoardMetadata({
+    boardId,
+    metadata,
+  }: {
+    boardId: string;
+    metadata: Partial<Pick<BentoBoardData, "title">>;
+  }) {
+    await workspaceService.updateBoard(boardId, { name: metadata.title });
+  }
+
+  // delete board
+  async function deleteBoard({ boardId }: { boardId: string }) {
+    await workspaceService.deleteBoard(boardId);
+  }
+
+  // create board
+  async function createBoard({
+    name,
+    parentId,
+  }: {
+    name: string;
+    parentId?: string;
+  }) {
+    const state = store.getState();
+    const workspaceId = state.workspace.id;
+    return await workspaceService.createBoard({
+      name,
+      parentId,
+      workspace_id: workspaceId,
+      data: generateInitialBoardSpec({ title: name }),
+    });
+  }
+
+  const persistBoard = debounce(async (data: BentoBoardData) => {
+    await workspaceService.updateBoard(data.id, {
+      name: data.title,
+      data: data.spec.data as any,
+    });
+  }, 1000);
+  function boardUpdated({ data }: { data: BentoBoardData }) {
+    store.setState((state) => {
+      const boards = state.boards;
+      boards[data.id] = data;
+      return { boards };
+    });
+    persistBoard(data);
+  }
+
+  function installService(serviceName: string, ref: ModuleReference) {
+    store.setState((state) => {
+      const currentWorkspace = state.workspace;
+      if (!currentWorkspace) {
+        return state;
+      }
+
+      const nextServices = {
+        ...(currentWorkspace as any).services,
+      } as Record<string, ServiceData>;
+      let finalName = serviceName;
+      let i = 1;
+      while (finalName in nextServices) {
+        finalName = `${serviceName}${i}`;
+        i++;
+      }
+      nextServices[finalName] = {
+        module: ref,
+      };
+
+      const nextState = {
+        ...state,
+        workspace: { ...currentWorkspace, services: nextServices },
+      };
+      return nextState;
+    });
+  }
+
+  // watch boards
+  const unsubscribeBoards = workspaceService.boardStore.store.subscribe(
+    async (state, prevState) => {
+      for (const boardId in state.data) {
+        const board = state.data[boardId];
+        const prevBoard = prevState.data[boardId];
+        if (!dequal(board.name, prevBoard.name)) {
+          rpc?.egress.writeBoard({ boardId, data: { title: board.name } });
+        }
+      }
+    },
+  );
+
+  return {
+    id,
+    appEngine,
+    logger,
     ...controller,
+
+    connect,
+    ready,
+    goTo,
+    getBoard,
+    listBoards,
+    updateWorkspace,
+    installService,
+    readBoardSpec,
+    updateBoardSpec,
+    writeBoardSpec,
+    updateBoardMetadata,
+    deleteBoard,
+    createBoard,
 
     init: async (target: Window) => {
       rpc = createDuplexRpc<
@@ -110,58 +381,15 @@ export function createWorkspaceEngine({
         port: createWindowPort(window, target),
         channel: "workspace",
         handlers: {
-          connect: async () => {
-            store.setState({ status: "connected" });
-            const engineState = engine.getState();
-            const state = store.getState();
-            return {
-              initialState: {
-                location: getBentoLocation(engineState),
-                workspace: state.workspace,
-                user,
-              },
-            };
-          },
-          ready: async () => {
-            store.setState({ status: "ready" });
-          },
-          goTo: async ({ location }: { location?: BentoLocation }) => {
-            if (location) {
-              engine.goToLocation({
-                ...engine.getState().location,
-                board: location.boardId,
-                params: location.params as Record<string, string>,
-              });
-            }
-          },
-          getBoard: async ({ boardId }: { boardId: string }) => {
-            const data = await workspaceService.getBoard(boardId);
-            return {
-              id: data.id,
-              title: data.name,
-              spec: parseSpecData(boardDataSchema, data.data),
-            };
-          },
-          listBoards: async ({}) => {
-            const res = await workspaceService.listBoards({
-              workspaceId: workspace.id,
-            });
-            const boards = res.data
-              .map((b) => {
-                return {
-                  id: b.id,
-                  title: b.name,
-                  spec: parseSpecData(boardDataSchema, b.data),
-                };
-              })
-              .filter((b) => !!b);
-            return {
-              boards,
-              nextCursor: res.nextPage?.cursor,
-            };
-          },
+          connect,
+          ready,
+          goTo,
+          getBoard,
+          listBoards,
+          boardUpdated,
         },
       });
+      console.log("init rpc", { rpc, id });
 
       rpc.watch((event) => {
         console.log(`[host.rpc.event] ${event.type}`, event);
@@ -172,76 +400,11 @@ export function createWorkspaceEngine({
 
     dispose: () => {
       rpc?.dispose();
-    },
-
-    updateWorkspace: async (data: Partial<WorkspaceState>) => {
-      const current = store.getState().workspace;
-      if (!current) return;
-      const updated = { ...current, ...data } as any;
-      await workspaceService.updateWorkspace(current.id, updated);
-      store.setState({ workspace: updated });
-    },
-
-    goTo: (args: { location?: BentoLocation }) => {
-      engine.goToLocation({
-        board: args.location?.boardId,
-        params: args.location?.params,
-      });
-    },
-
-    installService: (serviceName: string, ref: ModuleReference) => {
-      store.setState((state) => {
-        const currentWorkspace = state.workspace;
-        if (!currentWorkspace) {
-          return state;
-        }
-
-        const nextServices = {
-          ...(currentWorkspace as any).services,
-        } as Record<string, ServiceData>;
-        let finalName = serviceName;
-        let i = 1;
-        while (finalName in nextServices) {
-          finalName = `${serviceName}${i}`;
-          i++;
-        }
-        nextServices[finalName] = {
-          module: ref,
-        };
-
-        const nextState = {
-          ...state,
-          workspace: { ...currentWorkspace, services: nextServices },
-        };
-        return nextState;
-      });
+      unsubscribeEngine();
+      unregisterStore("workspaceEngine");
+      unsubscribeBoards();
     },
   };
-
-  // sync host location to runtime
-
-  function getBentoLocation(
-    hostState: UbentoEngineState,
-  ): BentoLocation | undefined {
-    const location = hostState.location;
-    return location.board
-      ? {
-          boardId: location.board,
-          params: location.params || {},
-        }
-      : undefined;
-  }
-
-  engine.subscribe((curr: UbentoEngineState, prev: UbentoEngineState) => {
-    if (
-      curr.location.board !== prev.location.board ||
-      !dequal(curr.location.params, prev.location.params)
-    ) {
-      rpc?.egress.setLocation({ location: getBentoLocation(curr) });
-    }
-  });
-
-  return workspaceEngine;
 }
 
 export type WorkspaceEngine = ReturnType<typeof createWorkspaceEngine>;

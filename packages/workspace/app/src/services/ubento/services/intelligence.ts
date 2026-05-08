@@ -178,6 +178,19 @@ export function createUbentoIntelligenceService({
       messageStore.push(message);
       return message;
     },
+    updateMessage: async (
+      messageId: string,
+      data: {
+        data?: any;
+      },
+    ) => {
+      const message = await ubentoSdk.intelligence.updateMessage(
+        messageId,
+        data,
+      );
+      messageStore.push(message);
+      return message;
+    },
     updateThread: async (threadId: string, data: any) => {
       const thread = await ubentoSdk.intelligence.updateThread(threadId, data);
       threadStore.push(thread);

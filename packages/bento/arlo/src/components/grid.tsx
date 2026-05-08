@@ -1,4 +1,4 @@
-import { edgesSpec, type ComponentProps } from "@ubento/bento.runtime";
+import { edgesSpec, type ComponentProps } from "@ubento/bento.core";
 import { z } from "zod";
 import {
   getLayoutElementStyle,

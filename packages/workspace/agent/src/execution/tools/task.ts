@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { Agent } from "../../agent/agent.js";
-import { AgentTool } from "../tool.js";
+import { AgentTool } from "../tool/tool.js";
 
 export const taskToolSchema = z.object({
   threadId: z
@@ -93,12 +93,16 @@ export function createTaskTool({
       let responseData = "No response";
       const history = thread.context.getHistory();
       const lastMessage = history[history.length - 1];
-      if (lastMessage && lastMessage.type === "message" && (lastMessage as any).data?.role === "agent") {
-         const actions = (lastMessage as any).data.actions || [];
-         const responseAction = actions.find((a: any) => a.tool === "response");
-         if (responseAction && responseAction.structuredOutput?.response) {
-            responseData = responseAction.structuredOutput.response;
-         }
+      if (
+        lastMessage &&
+        lastMessage.type === "message" &&
+        (lastMessage as any).data?.role === "agent"
+      ) {
+        const actions = (lastMessage as any).data.actions || [];
+        const responseAction = actions.find((a: any) => a.tool === "response");
+        if (responseAction && responseAction.structuredOutput?.response) {
+          responseData = responseAction.structuredOutput.response;
+        }
       }
 
       const output: TaskToolOutput = {

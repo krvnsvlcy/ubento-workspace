@@ -1,8 +1,10 @@
+import { LayoutContext } from "@ubento/bento.arlo";
 import { BentoRuntimeView, createBentoRuntime } from "@ubento/bento.runtime";
 import "@ubento/bento.style/css/themes.css";
 import "@ubento/bento.style/dist/uno.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { environment } from "./environment.js";
 import "./modules.js";
 import { rpc } from "./rpc.js";
 
@@ -18,7 +20,9 @@ while (!connected) {
   });
   createRoot(document.getElementById("root")!).render(
     <StrictMode>
-      <BentoRuntimeView runtime={runtime} />
+      <LayoutContext value={"column"}>
+        <BentoRuntimeView runtime={runtime} environment={environment} />
+      </LayoutContext>
     </StrictMode>,
   );
   rpc.egress.ready({});

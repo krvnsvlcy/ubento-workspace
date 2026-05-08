@@ -1,6 +1,7 @@
 import { createStore } from "@ubento/fabric";
 import type { DuplexRpc } from "@ubento/rpc";
 import { createZustandStateController } from "@ubento/workspace.primitives";
+import { dequal } from "dequal";
 import { createStore as createZustandStore } from "zustand";
 import {
   BentoEngineHostRpcInterface,
@@ -56,10 +57,26 @@ export function createBentoRuntime({
     },
   );
 
+  boardStore.store.subscribe((state, prev) => {
+    for (const boardId in state.data) {
+      const board = state.data[boardId];
+      const prevBoard = prev.data[boardId];
+      if (!dequal(board, prevBoard)) {
+        rpc.egress.boardUpdated({ data: board });
+      }
+    }
+  });
+
   // Setup RPC Handlers
   rpc.setHandlers({
     setLocation: async ({ location }) => {
       controller.setState({ location });
+    },
+    readBoard: async ({ boardId }) => {
+      return boardStore.getCached(boardId);
+    },
+    writeBoard: async ({ boardId, data }) => {
+      boardStore.update(boardId, data);
     },
   });
 

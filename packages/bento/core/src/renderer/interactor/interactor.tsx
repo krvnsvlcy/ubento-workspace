@@ -65,7 +65,7 @@ function ElementHandle({ id, rootRect }: { id: string; rootRect: DOMRect }) {
             : "transparent",
         pointerEvents: "auto",
         cursor: "pointer",
-        zIndex: isSelected ? 10000 : element.parents.length, // we want the most nested elements to be on top
+        zIndex: element.parents.length, // we want the most nested elements to be on top
         transition: "outline 0.1s ease-out, background-color 0.1s ease-out",
       }}
     >

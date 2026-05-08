@@ -1,9 +1,20 @@
+import { copilotScope } from "@/engine/copilot/copilot";
+import { useUbentoEngine } from "@/engine/engine";
+import { Button } from "@ubento/workspace.primitives";
 import cx from "clsx";
-import { AppWindow, LayoutDashboard, Sparkles } from "lucide-react";
+import {
+  AppWindow,
+  History,
+  LayoutDashboard,
+  Plus,
+  Sparkles,
+  X,
+} from "lucide-react";
 import { useState } from "react";
 import { WorkspaceEngine } from "../../engine/engine";
 import { BoardTab } from "./tabs/board";
 import { CopilotTab } from "./tabs/copilot/copilot";
+import { HistoryTab } from "./tabs/copilot/history";
 import { WorkspaceTab } from "./tabs/workspace";
 
 const tabs = [
@@ -34,9 +45,10 @@ function Tab({
     <button
       onClick={onClick}
       className={cx(
-        "h-7 w-7 text-foreground-400 flex items-center justify-center rounded-md font-bold transition-all",
+        "h-7 w-7 flex items-center justify-center rounded-md font-bold transition-all cursor-pointer",
         {
-          "bg-foreground/10 text-foreground-500": isActive,
+          "text-accent": isActive,
+          "text-neutral-content-muted": !isActive,
         },
       )}
     >
@@ -52,20 +64,44 @@ export function ControlPanel({
   controller: WorkspaceEngine;
   onClose: () => void;
 }) {
+  const engine = useUbentoEngine();
   const [activeTab, setActiveTab] = useState<string>("ai");
-  const mode = controller.useState((s) => s.mode);
 
   let content = <></>;
+  let actions: Array<{
+    onClick: () => void;
+    icon: React.ReactNode;
+    label: string;
+  }> = [];
 
   switch (activeTab) {
     case "ai":
       content = <CopilotTab />;
+      actions = [
+        {
+          icon: <Plus size={16} />,
+          label: "New Conversation",
+          onClick: () => {
+            engine.copilot.clearActiveThread(copilotScope.team);
+          },
+        },
+        {
+          icon: <History size={16} />,
+          label: "History",
+          onClick: () => {
+            setActiveTab("ai-history");
+          },
+        },
+      ];
       break;
     case "board":
-      content = <BoardTab controller={controller} />;
+      content = <BoardTab workspaceEngine={controller} />;
       break;
     case "workspace":
       content = <WorkspaceTab controller={controller} />;
+      break;
+    case "ai-history":
+      content = <HistoryTab onBack={() => setActiveTab("ai")} />;
       break;
   }
 
@@ -76,18 +112,36 @@ export function ControlPanel({
         e.stopPropagation();
       }}
     >
-      <div className="flex justify-between items-center p-4">
+      <div className="flex justify-between items-center p-2">
         <div className="flex gap-2">
           {tabs.map((t) => (
             <Tab
               key={t.id}
-              isActive={activeTab === t.id}
+              isActive={
+                activeTab === t.id ||
+                (t.id === "ai" && activeTab === "ai-history")
+              }
               onClick={() => setActiveTab(t.id)}
               icon={t.icon}
             />
           ))}
         </div>
-        <div className="flex gap-2"></div>
+        <div className="flex gap-2">
+          {actions.map((a) => (
+            <Button
+              key={a.label}
+              size="icon"
+              shape="circle"
+              onClick={a.onClick}
+              variant="ghost"
+            >
+              {a.icon}
+            </Button>
+          ))}
+          <Button size="icon" shape="circle" onClick={onClose}>
+            <X size={16} />
+          </Button>
+        </div>
       </div>
       <hr />
       <div className="grow overflow-hidden">{content}</div>

@@ -48,12 +48,6 @@ export const boardUiSpecSchema = z.object({});
 export type BoardUiSpec = z.infer<typeof boardUiSpecSchema>;
 
 export const boardSpecSchema = z.object({
-  // metadata
-  id: z.string(),
-  parentId: z.string().optional(),
-  title: z.string(),
-  description: z.string().optional(),
-  icon: z.string().optional(),
   // data
   params: z.record(z.string(), boardParameterSpecSchema).optional(),
   state: stateSpecSchema.optional(),

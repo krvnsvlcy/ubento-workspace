@@ -1,13 +1,13 @@
 import z from "zod";
 import { renderYaml } from "../../../utils/format.js";
 import { cleanJsonSchema } from "../../../utils/zod.js";
-import { AgentTool } from "../../tool.js";
+import { AgentTool } from "../../tool/tool.js";
 import { MessageTool } from "../../tools/message.js";
 import { ResponseTool } from "../../tools/response.js";
 import { TaskTool } from "../../tools/task.js";
 import {
-  agentOrchestratorOutputSchema,
   AgentOrchestratorOutputSchema as AgentManagerSchema,
+  agentOrchestratorOutputSchema,
 } from "../schema.js";
 
 export function outputFormat(tools: AgentTool[], hasAgents: boolean) {

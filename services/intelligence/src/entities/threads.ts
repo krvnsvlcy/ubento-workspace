@@ -18,12 +18,14 @@ export enum ThreadStatus {
 
 export async function listThreads({
   workspace_id,
+  team_id,
   members,
   limit,
   cursor,
   sort,
 }: {
   workspace_id?: string;
+  team_id?: string;
   members?: string[];
   limit?: number;
   cursor?: string;
@@ -42,6 +44,7 @@ export async function listThreads({
     orderBy,
     where: {
       ...(workspace_id && { workspace_id }),
+      ...(team_id && { team_id }),
       ...(members?.length ? { members: { hasEvery: members } } : {}),
     },
     resolveCursor: (t) => ({ id: t.id }),

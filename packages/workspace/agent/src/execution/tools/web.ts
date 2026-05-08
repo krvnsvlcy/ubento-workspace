@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { AgentTool } from "../tool.js";
+import { AgentTool } from "../tool/tool.js";
 
 export const readWebpageSchema = z.object({
   url: z.string().url().describe("The URL of the web page to read"),

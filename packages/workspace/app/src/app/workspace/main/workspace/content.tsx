@@ -42,6 +42,7 @@ export function WorkspaceContent({ engine }: { engine: WorkspaceEngine }) {
     <div className="h-full w-full relative overflow-hidden">
       <iframe
         src={ubentoEngine.workspaceRuntimeUrl}
+        key={engine.id}
         onLoad={(e) => {
           if (e.currentTarget.contentWindow) {
             engine.init(e.currentTarget.contentWindow);

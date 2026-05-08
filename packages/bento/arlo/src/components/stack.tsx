@@ -1,6 +1,7 @@
-import { edgesSpec, type ComponentProps } from "@ubento/bento.runtime";
+import { edgesSpec, type ComponentProps } from "@ubento/bento.core";
 import { z } from "zod";
 import {
+  getEdgesStyle,
   getLayoutElementStyle,
   LayoutContext,
   layoutElementStyleSchema,
@@ -10,7 +11,7 @@ import {
 
 export const stackPropsSchema = layoutElementStyleSchema.extend({
   direction: z.enum(["row", "column"]),
-  padding: edgesSpec(z.number()).optional(),
+  padding: z.union([edgesSpec(z.number()), z.number()]).optional(),
   gap: z.number().optional(),
   justify: z
     .enum([
@@ -42,6 +43,17 @@ function getStackStyle(
     alignItems: props.align,
     justifyContent: props.justify,
     overflow: props.overflow,
+    ...getEdgesStyle(
+      typeof props.padding === "number"
+        ? {
+            top: props.padding,
+            bottom: props.padding,
+            left: props.padding,
+            right: props.padding,
+          }
+        : props.padding,
+      "padding",
+    ),
   };
 }
 

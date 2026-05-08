@@ -1,6 +1,7 @@
 import { WorkspaceEngine } from "@/app/workspace/main/workspace/engine/engine";
 import { createUbentoService, UbentoService } from "@/services/ubento/ubento";
 import type { UbentoSDK } from "@ubento/services.sdk";
+import { createLogger, Logger } from "@ubento/telemetry";
 import {
   createZustandStateController,
   StateController,
@@ -23,6 +24,7 @@ export type UbentoEngineState = {
 };
 
 export type UbentoEngine = StateController<UbentoEngineState> & {
+  logger: Logger;
   ubento: UbentoService;
   copilot: UbentoCopilot;
   workspaceRuntimeUrl: string;
@@ -51,6 +53,13 @@ export function createUbentoEngine({
   session: UbentoSession;
 }) {
   const initialLocation = parseLocation();
+  const logger = createLogger({
+    serviceName: "ubento-app",
+    module: "engine",
+    logToConsole: true,
+    level: "debug",
+  });
+
   const store = createStore<UbentoEngineState>()(() => ({
     session,
     location: initialLocation,
@@ -88,10 +97,18 @@ export function createUbentoEngine({
     stateController.setState((state) => ({ ...state, dragActive: false }));
   });
 
-  const ubento = createUbentoService({ ubentoSdk: ubentoApi });
-  const copilot = createUbentoCopilot({ ubento, session });
+  const ubento = createUbentoService({
+    ubentoSdk: ubentoApi,
+    logger: logger.child({ module: "service" }),
+  });
+  const copilot = createUbentoCopilot({
+    ubento,
+    session,
+    logger: logger.child({ module: "copilot" }),
+  });
 
   return {
+    logger,
     ...stateController,
     ubento,
     copilot,

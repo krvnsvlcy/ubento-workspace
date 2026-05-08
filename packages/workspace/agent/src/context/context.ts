@@ -1,102 +1,102 @@
-import { MessageData, AgentMessageData, UserMessageData } from "../message/types.js";
+import { Agent } from "../agent/agent.js";
+import {
+  formatAgentMessage,
+  formatUserMessage,
+} from "../execution/prompt/prompt/prompt.js";
+import {
+  AgentMessageData,
+  MessageData,
+  UserMessageData,
+} from "../message/types.js";
+import { LanguageModel } from "../utils/models.js";
 import { AgentContextStats } from "./stats.js";
 import {
-  AgentContext,
+  AgentContextData,
   AgentContextResource,
-  AgentHistoryEntry,
   AgentHistoryMessageEntry,
   AgentHistorySummaryEntry,
 } from "./types.js";
-import { Agent } from "../agent/agent.js";
-import { LanguageModel } from "../utils/models.js";
-import { formatAgentMessage, formatUserMessage } from "../execution/prompt/prompt/prompt.js";
 
 export function createAgentContext({
   data,
-}: { data?: Partial<AgentContext> } = {}) {
-  const history: AgentHistoryEntry[] = data?.history || [];
+  save,
+}: {
+  data?: Partial<AgentContextData>;
+  save?: (data: AgentContextData) => Promise<void>;
+}) {
+  const historyEntries: Array<AgentHistorySummaryEntry | string> = [];
+  const messages = new Map<string, AgentHistoryMessageEntry>();
+
+  for (const entry of data?.history || []) {
+    if (entry.type === "message") {
+      messages.set(entry.id, entry);
+      historyEntries.push(entry.id);
+    } else {
+      historyEntries.push(entry);
+    }
+  }
+
   const resources = new Map<string, AgentContextResource>(
     (data?.resources || []).map((r) => [r.key, r]),
   );
-  const listeners = new Set<(history: AgentHistoryEntry[]) => void>();
 
-  function notify() {
-    listeners.forEach((l) => l([...history]));
+  function getData(): AgentContextData {
+    return {
+      history: historyEntries.map((e) => {
+        if (typeof e === "string") {
+          const entry = messages.get(e);
+          if (!entry) {
+            throw new Error(`No history entry found for id ${e}`);
+          }
+          return entry;
+        }
+        return e;
+      }),
+      resources: Array.from(resources.values()),
+    };
   }
 
   return {
-    pushMessage(message: MessageData) {
-      const entry: AgentHistoryMessageEntry = {
-        type: "message",
-        id: crypto.randomUUID(),
-        data: message,
-      };
-      history.push(entry);
-      notify();
-      return entry.id;
-    },
-
-    updateMessage(id: string, message: MessageData) {
-      const entry = history.find(
-        (e): e is AgentHistoryMessageEntry =>
-          e.type === "message" && e.id === id,
-      );
-      if (entry) {
-        entry.data = message;
-        notify();
+    getData,
+    async writeMessage(id: string, message: MessageData) {
+      if (messages.has(id)) {
+        messages.get(id)!.data = message;
+      } else {
+        const entry: AgentHistoryMessageEntry = {
+          type: "message",
+          id,
+          data: message,
+        };
+        historyEntries.push(id);
+        messages.set(id, entry);
       }
+      await save?.(getData());
     },
 
-    setHistory(entries: AgentHistoryEntry[]) {
-      history.length = 0;
-      history.push(...entries);
-      notify();
-    },
-
-    getHistory(): ReadonlyArray<AgentHistoryEntry> {
-      return history;
-    },
-
-    subscribe(listener: (history: AgentHistoryEntry[]) => void) {
-      listeners.add(listener);
-      return () => listeners.delete(listener);
-    },
-
-    addResource(resource: AgentContextResource) {
+    async addResource(resource: AgentContextResource) {
       resources.set(resource.key, resource);
+      await save?.(getData());
     },
-
-    removeResource(key: string) {
+    async removeResource(key: string) {
       resources.delete(key);
+      await save?.(getData());
     },
 
     getResource(key: string) {
       return resources.get(key);
     },
-
     listResources(): AgentContextResource[] {
       return Array.from(resources.values());
     },
 
-    getData(): AgentContext {
-      return {
-        history: [...history],
-        resources: Array.from(resources.values()),
-      };
-    },
-
     getStats: (): AgentContextStats => {
       return {
-        window: history.length,
-        budget: resources.size,
-        usage: resources.size,
+        window: historyEntries.length,
+        budget: data?.budget || 0,
+        usage: historyEntries.length,
         breakdown: {
-          messages: history.filter(
-            (e): e is AgentHistoryMessageEntry => e.type === "message",
-          ).length,
-          summaries: history.filter(
-            (e): e is AgentHistorySummaryEntry => e.type === "summary",
-          ).length,
+          messages: messages.size,
+          summaries: historyEntries.filter((e) => typeof e !== "string").length,
           resources: resources.size,
         },
       };
@@ -111,6 +111,7 @@ export function createAgentContext({
       model: LanguageModel;
       maxLength?: number;
     }) => {
+      const history = getData().history || [];
       if (history.length <= 1) return;
 
       // Find FUM (first user message)
@@ -157,7 +158,10 @@ export function createAgentContext({
 
       const content = parts.join("\n");
 
-      const userMessageParts = await formatUserMessage(fum.data as UserMessageData, agent);
+      const userMessageParts = await formatUserMessage(
+        fum.data as UserMessageData,
+        agent,
+      );
       const userMessageText = userMessageParts
         .filter((p) => p.type === "text")
         .map((p) => p.text)
@@ -185,10 +189,15 @@ SUMMARY:`;
         content: [{ type: "text", text: text.trim() }],
       };
 
-      // Mutate history array directly
-      history.length = 0;
-      history.push(fum, summaryEntry);
-      notify();
+      // Reset history entries and messages
+      historyEntries.length = 0;
+      messages.clear();
+
+      // Restore FUM and Summary
+      messages.set(fum.id, fum);
+      historyEntries.push(fum.id, summaryEntry);
+
+      await save?.(getData());
     },
   };
 }

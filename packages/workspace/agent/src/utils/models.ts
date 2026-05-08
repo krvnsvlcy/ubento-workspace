@@ -25,14 +25,10 @@ export interface LanguageModelUsage {
 
 export interface LanguageModelGenerateResult {
   text: string;
-  finishReason: string;
-  usage?: LanguageModelUsage;
-  warnings?: any[];
 }
 
 export interface LanguageModel {
   id: string;
-  provider: string;
   generateText(
     options: LanguageModelCallOptions,
   ): Promise<LanguageModelGenerateResult>;

@@ -1,4 +1,5 @@
-import { AgentContext, AgentHistoryEntry } from "@/context/types";
+import { Agent } from "@/agent/agent.js";
+import { AgentContextData, AgentHistoryEntry } from "@/context/types";
 import { AgentEnvironment } from "@/environment/environment";
 import {
   AgentActionData,
@@ -9,7 +10,6 @@ import {
 import { indent, renderYaml } from "@/utils/format";
 import { llmContentToText } from "@/utils/llm";
 import { MessageItem } from "@/utils/ui";
-import { Agent } from "@/agent/agent.js";
 
 export interface TextPart {
   type: "text";
@@ -210,7 +210,7 @@ export const buildAgentOrchestratorPrompt = async ({
   environment,
   agent,
 }: {
-  context: AgentContext;
+  context: AgentContextData;
   environment: AgentEnvironment;
   agent: Agent;
 }): Promise<MessagePart[]> => {
@@ -241,7 +241,11 @@ export const buildAgentOrchestratorPrompt = async ({
 
     for (const entry of history) {
       if (entry.type === "summary") {
-        const summaryText = (entry.content as any[])?.filter(c => c.type === "text").map(c => c.text).join("\n") || "";
+        const summaryText =
+          (entry.content as any[])
+            ?.filter((c) => c.type === "text")
+            .map((c) => c.text)
+            .join("\n") || "";
         parts.push({
           type: "text",
           text: `**summary**\n${summaryText}`,
@@ -280,7 +284,11 @@ export const buildAgentOrchestratorPrompt = async ({
       const entryType = (entry as any).type || "message";
 
       if (entryType === "summary") {
-        const summaryText = ((entry as any).content as any[])?.filter(c => c.type === "text").map(c => c.text).join("\n") || "";
+        const summaryText =
+          ((entry as any).content as any[])
+            ?.filter((c) => c.type === "text")
+            .map((c) => c.text)
+            .join("\n") || "";
         parts.push({
           type: "text",
           text: `\n\n**summary**\n\n${summaryText}\n\n`,

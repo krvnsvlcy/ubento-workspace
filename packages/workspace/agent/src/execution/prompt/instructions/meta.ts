@@ -11,14 +11,11 @@ You will be given the following context to help you achieve your goal:
 
 <AgentsSection/>
 
-
 <GuidelinesSection/>
 
 ---
 
-<RoleSection/>
-
-<EnvironmentSection/>
+<CurrentAgentSection/>
 
 ---
 

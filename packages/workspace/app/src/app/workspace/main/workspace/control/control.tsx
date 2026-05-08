@@ -1,6 +1,6 @@
+import { useUbentoEngine } from "@/engine/engine.js";
 import { Sparkles } from "lucide-react";
 import { motion } from "motion/react";
-import { useUbentoEngine } from "@/engine/engine.js";
 import { WorkspaceEngine } from "../engine/engine.js";
 import { ControlPanel } from "./panel/control-panel.js";
 
@@ -33,7 +33,7 @@ export function WorkspaceControl({ engine }: { engine: WorkspaceEngine }) {
         layout
         className="bg-background shadow-2xl overflow-hidden border border-border"
         style={{
-          borderRadius: showControls ? 12 : 24,
+          borderRadius: showControls ? 20 : 32,
           width: showControls ? 400 : 48,
           height: showControls ? 600 : 48,
         }}

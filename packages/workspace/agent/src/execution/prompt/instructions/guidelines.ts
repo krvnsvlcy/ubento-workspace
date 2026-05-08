@@ -1,4 +1,4 @@
-import { AgentTool } from "../../tool.js";
+import { AgentTool } from "../../tool/tool.js";
 import { MessageTool } from "../../tools/message.js";
 import { ResponseTool } from "../../tools/response.js";
 
@@ -12,7 +12,6 @@ export function guidelinesSection(tools: AgentTool[]) {
     communicationRules = `- Use the \`${MessageTool.toolName}\` tool to communicate with the user.`;
   } else if (hasResponse) {
     communicationRules = `
-- You cannot communicate with the user directly.
 - Once you have fully solved the task, use the \`${ResponseTool.toolName}\` tool to submit your final work and results.
 - Only call the \`${ResponseTool.toolName}\` tool after verifying everything is complete.
 `.trim();
