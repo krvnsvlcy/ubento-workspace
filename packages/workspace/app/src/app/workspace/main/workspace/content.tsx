@@ -36,6 +36,60 @@ function WorkspaceOverlay({ engine }: { engine: WorkspaceEngine }) {
   );
 }
 
+function InvalidSpecOverlay({ engine }: { engine: WorkspaceEngine }) {
+  const specStatus = engine.useState(
+    (state) => state.workspace.spec.status,
+  );
+  const specErrors = engine.useState((state) => {
+    const spec = state.workspace.spec;
+    if (spec.status === "invalid") {
+      return spec.errors;
+    }
+    return undefined;
+  });
+
+  if (specStatus !== "invalid") {
+    return null;
+  }
+
+  const handleReset = () => {
+    const state = engine.getState();
+    engine.updateWorkspaceSpec({
+      spec: {
+        id: state.workspace.id,
+        title: state.workspace.title,
+        description: "",
+      },
+    });
+  };
+
+  return (
+    <div
+      style={{
+        position: "absolute",
+        inset: 0,
+        zIndex: 1001,
+      }}
+      className="bg-background"
+    >
+      <ErrorView
+        message="Workspace specification is invalid"
+        details={
+          specErrors && specErrors.length > 0 ? (
+            <pre className="max-w-[600px] max-h-[200px] overflow-auto text-[12px] whitespace-pre-wrap text-left">
+              {specErrors.join("\n")}
+            </pre>
+          ) : undefined
+        }
+        action={{
+          label: "Reset Workspace Spec",
+          handler: handleReset,
+        }}
+      />
+    </div>
+  );
+}
+
 export function WorkspaceContent({ engine }: { engine: WorkspaceEngine }) {
   const ubentoEngine = useUbentoEngine();
   return (
@@ -57,6 +111,8 @@ export function WorkspaceContent({ engine }: { engine: WorkspaceEngine }) {
       />
 
       <WorkspaceOverlay engine={engine} />
+      <InvalidSpecOverlay engine={engine} />
     </div>
   );
 }
+

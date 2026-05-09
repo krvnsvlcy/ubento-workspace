@@ -1,6 +1,10 @@
 import { UbentoEngine, UbentoEngineState } from "@/engine/engine";
 import { JsonPatch } from "@/utils/json";
-import { boardSpecSchema, workspaceSpecSchema } from "@ubento/bento.core";
+import {
+  boardSpecSchema,
+  WorkspaceSpec,
+  workspaceSpecSchema,
+} from "@ubento/bento.core";
 import {
   BentoBoardData,
   BentoEngineHostRpcInterface,
@@ -14,11 +18,9 @@ import {
   DropRect,
   ModuleReference,
   ParsedSpec,
-  ServiceData,
 } from "@ubento/bento.runtime";
 import { createDuplexRpc, createWindowPort, DuplexRpc } from "@ubento/rpc";
 import { workspaceClient } from "@ubento/services.sdk";
-import { generateInitialBoardSpec } from "./init";
 import { createZustandStateController } from "@ubento/workspace.primitives";
 import { registerStore, unregisterStore } from "@ubento/zustand-devtool";
 import { dequal } from "dequal/lite";
@@ -26,6 +28,7 @@ import { applyPatch } from "fast-json-patch";
 import debounce from "lodash.debounce";
 import z from "zod";
 import { createStore as createZustandStore } from "zustand/vanilla";
+import { generateInitialBoardSpec } from "./init";
 
 function parseSpecData<S extends z.ZodTypeAny>(
   schema: S,
@@ -101,7 +104,7 @@ export function createWorkspaceEngine({
       id: workspace.id,
       title: workspace.name,
       slug: workspace.slug,
-      spec: parseSpecData(workspaceSpecSchema, workspace),
+      spec: parseSpecData(workspaceSpecSchema, workspace.data),
     },
   }));
 
@@ -312,31 +315,54 @@ export function createWorkspaceEngine({
     persistBoard(data);
   }
 
-  function installService(serviceName: string, ref: ModuleReference) {
+  const persistWorkspace = debounce(async (data: BentoWorkspaceData) => {
+    await workspaceService.updateWorkspace(data.id, {
+      name: data.title,
+      data: data.spec.data as any,
+    });
+  }, 1000);
+  const unsubscribeWorkspace = store.subscribe(async (state, prevState) => {
+    if (dequal(state.workspace, prevState.workspace)) return;
+    persistWorkspace(state.workspace);
+  });
+  function readWorkspaceSpec() {
+    const state = store.getState();
+    const spec = state.workspace.spec;
+    if (spec.status === "valid") {
+      return spec.data;
+    }
+    return undefined;
+  }
+  function updateWorkspaceSpec({ spec }: { spec: Partial<WorkspaceSpec> }) {
     store.setState((state) => {
-      const currentWorkspace = state.workspace;
-      if (!currentWorkspace) {
-        return state;
-      }
-
-      const nextServices = {
-        ...(currentWorkspace as any).services,
-      } as Record<string, ServiceData>;
-      let finalName = serviceName;
-      let i = 1;
-      while (finalName in nextServices) {
-        finalName = `${serviceName}${i}`;
-        i++;
-      }
-      nextServices[finalName] = {
-        module: ref,
+      const workspaceData = state.workspace;
+      const currentSpec = workspaceData.spec.data;
+      return {
+        workspace: {
+          ...workspaceData,
+          spec: parseSpecData(workspaceSpecSchema, {
+            ...(currentSpec || {}),
+            ...spec,
+          }),
+        },
       };
+    });
+  }
 
-      const nextState = {
-        ...state,
-        workspace: { ...currentWorkspace, services: nextServices },
-      };
-      return nextState;
+  function installService(serviceName: string, ref: ModuleReference) {
+    const spec = readWorkspaceSpec();
+    if (!spec) return;
+
+    updateWorkspaceSpec({
+      spec: {
+        services: {
+          ...(spec.services || {}),
+          [serviceName]: {
+            module: ref,
+            args: {},
+          },
+        },
+      },
     });
   }
 
@@ -372,6 +398,7 @@ export function createWorkspaceEngine({
     updateBoardMetadata,
     deleteBoard,
     createBoard,
+    updateWorkspaceSpec,
 
     init: async (target: Window) => {
       rpc = createDuplexRpc<
@@ -403,6 +430,7 @@ export function createWorkspaceEngine({
       unsubscribeEngine();
       unregisterStore("workspaceEngine");
       unsubscribeBoards();
+      unsubscribeWorkspace();
     },
   };
 }

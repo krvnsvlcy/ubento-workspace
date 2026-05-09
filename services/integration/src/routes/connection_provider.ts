@@ -1,6 +1,5 @@
 import {
   chain,
-  makeCursorPageResponse,
   NotFoundError,
   parseCursorQuery,
   parseStringQuery,
@@ -59,7 +58,7 @@ router.get(
         organization_id: parseStringQuery(req, "organization_id"),
         name: parseStringQuery(req, "name"),
       });
-      res.json(toSerializable(makeCursorPageResponse(result)));
+      res.json(result);
     },
   ),
 );

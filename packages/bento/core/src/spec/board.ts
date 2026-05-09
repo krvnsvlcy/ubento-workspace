@@ -3,6 +3,12 @@ import { stateSpecSchema } from "./state.js";
 import { storeSpecSchema } from "./store.js";
 import { edgesSpec } from "./utils.js";
 
+export const moduleReferenceSchema = z.object({
+  id: z.string(),
+  versionId: z.string(),
+});
+export type ModuleReference = z.infer<typeof moduleReferenceSchema>;
+
 export const boardParameterSourceSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("enum"),
@@ -59,10 +65,17 @@ export const boardSpecSchema = z.object({
 });
 export type BoardSpec = z.infer<typeof boardSpecSchema>;
 
+export const serviceDataSchema = z.object({
+  module: moduleReferenceSchema,
+  args: z.record(z.string(), z.any()).optional(),
+});
+export type ServiceData = z.infer<typeof serviceDataSchema>;
+
 export const workspaceSpecSchema = z.object({
   id: z.string(),
   title: z.string(),
   description: z.string(),
   state: stateSpecSchema.optional(),
+  services: z.record(z.string(), serviceDataSchema).optional(),
 });
 export type WorkspaceSpec = z.infer<typeof workspaceSpecSchema>;

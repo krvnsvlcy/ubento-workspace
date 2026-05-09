@@ -11,19 +11,6 @@ export type ModuleReference = {
 export const boardDataSchema = z.any();
 export type BoardData = z.infer<typeof boardDataSchema>;
 
-export const serviceDataSchema = z.object({
-  moduleId: z.string().optional(),
-  moduleVersionId: z.string().optional(),
-  args: z.record(z.string(), z.any()).optional(),
-  module: z
-    .object({
-      id: z.string(),
-      versionId: z.string(),
-    })
-    .optional(),
-});
-export type ServiceData = z.infer<typeof serviceDataSchema>;
-
 export type DropContent =
   | { type: "element"; elementId: string; boardId: string }
   | { type: "module"; ref: ModuleReference };

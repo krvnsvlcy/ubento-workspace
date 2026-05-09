@@ -2,7 +2,7 @@ import { SideSection } from "@/app/components/side/section";
 import { WorkspaceEngine } from "@/app/workspace/main/workspace/engine/engine";
 import { useGlobalModals } from "@/contexts/modals";
 import { useUbento, useUbentoEngine } from "@/engine/engine";
-import { ServiceData } from "@ubento/bento.runtime";
+import { ServiceData } from "@ubento/bento.core";
 import { workspaceClient } from "@ubento/services.sdk";
 import {
   Box,
@@ -130,9 +130,14 @@ function BoardsSection({
 }
 
 function ServicesSection({ engine }: { engine: WorkspaceEngine }) {
-  const services = engine.useState(
-    (s) => (s.workspace as any)?.services || {},
-  ) as Record<string, ServiceData>;
+  const services = engine.useState((s) => {
+    const spec = s.workspace.spec;
+    if (spec.status === "valid") {
+      return spec.data.services ?? {};
+    } else {
+      return {};
+    }
+  }) as Record<string, ServiceData>;
   const serviceEntries = Object.entries(services);
   const { openModal } = useGlobalModals();
 
@@ -166,7 +171,7 @@ function ServicesSection({ engine }: { engine: WorkspaceEngine }) {
               <div className="flex-1 min-w-0">
                 <div className="text-[13px] font-medium truncate">{id}</div>
                 <div className="text-[10px] text-neutral-content-muted truncate">
-                  {service.module?.id || service.moduleId}
+                  {service.module.id}
                 </div>
               </div>
             </div>

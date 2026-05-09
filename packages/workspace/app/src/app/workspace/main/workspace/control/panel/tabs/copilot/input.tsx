@@ -39,6 +39,7 @@ function AttachmentChip({
 export function CopilotInput({ scope }: { scope: string }) {
   const engine = useUbentoEngine();
   const input = engine.copilot.useState((state) => state.input);
+  const input = engine.copilot.useState((state) => state.);
 
   const handleSend = () => {
     engine.copilot.sendMessage(scope);
