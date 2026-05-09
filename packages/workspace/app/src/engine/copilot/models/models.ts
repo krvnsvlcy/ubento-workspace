@@ -1,4 +1,4 @@
-import { UbentoSession } from "@/engine/session";
+import { UbentoSession } from "@/engine/app/session";
 import { UbentoService } from "@/services/ubento/ubento";
 import { createOpenResponses } from "@ai-sdk/open-responses";
 import { LanguageModelV3 } from "@ai-sdk/provider";

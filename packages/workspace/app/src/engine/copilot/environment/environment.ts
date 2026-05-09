@@ -10,10 +10,13 @@ import {
   Toolkit,
 } from "@ubento/workspace.agent";
 import { generateText } from "ai";
-import { UbentoSession } from "../../session";
+import { UbentoSession } from "../../app/session";
 import { getModel } from "../models/models";
 
 export type CopilotAgentEnvironment = AgentEnvironment & {
+  ubento: UbentoService;
+  session: UbentoSession;
+  logger: Logger;
   getThread: ({
     id,
     agent,
@@ -37,18 +40,20 @@ export function createCopilotAgentEnvironment({
   ubento,
   session,
   logger,
-  listToolkits,
+  toolkits,
+  workspaceId,
 }: {
   ubento: UbentoService;
   session: UbentoSession;
   logger: Logger;
-  listToolkits?: () => Toolkit[];
+  toolkits: Toolkit[];
+  workspaceId?: string;
 }) {
   const threads: Record<string, AgentThread> = {};
   const agents: Record<string, Agent> = {};
 
   const baseEnv = createEnvironment({
-    listToolkits,
+    listToolkits: () => toolkits,
     logger: logger.child({ module: "agent_env" }),
     getModel: (id) => {
       const v3Model = getModel({ modelId: id, ubento, session });
@@ -130,13 +135,9 @@ export function createCopilotAgentEnvironment({
 
   async function createThread({
     agent: agentName,
-    teamId,
-    workspaceId,
     title,
   }: {
     agent: string;
-    teamId?: string | undefined;
-    workspaceId?: string | undefined;
     title?: string | undefined;
   }) {
     const agent = getAgent(agentName);
@@ -146,7 +147,7 @@ export function createCopilotAgentEnvironment({
 
     const data = await ubento.intelligence.createThread({
       workspaceId,
-      teamId,
+      teamId: session.teamId,
       title,
     });
 
@@ -177,6 +178,9 @@ export function createCopilotAgentEnvironment({
 
   const environment: CopilotAgentEnvironment = {
     ...baseEnv,
+    ubento,
+    session,
+    logger,
     getThread,
     createThread,
     addAgent: (agent) => {

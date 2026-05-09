@@ -1,6 +1,9 @@
 import { SideSection } from "@/app/components/side/section";
 import { Home, LayoutDashboard, Plus } from "lucide-react";
-import { useUbento, useUbentoEngine } from "../../../../../../engine/engine";
+import {
+  useUbento,
+  useUbentoEngine,
+} from "../../../../../../engine/app/engine";
 import { TabDefinition } from "../../../types";
 
 export function WorkspaceItem({ workspace }: { workspace: any }) {

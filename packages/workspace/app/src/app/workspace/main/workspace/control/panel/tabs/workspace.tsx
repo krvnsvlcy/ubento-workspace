@@ -1,6 +1,6 @@
-import { ServiceData } from "@ubento/bento.runtime";
+import { ServiceData } from "@ubento/bento.core";
 import { Globe, Plus, Puzzle, Settings2, Trash2 } from "lucide-react";
-import { WorkspaceEngine } from "../../../engine/engine";
+import { WorkspaceEngine } from "../../../../../../../engine/workspace/engine";
 import { PropertyRow, Section, Select, TextInput } from "../shared";
 
 export function WorkspaceTab({ controller }: { controller: WorkspaceEngine }) {
@@ -60,7 +60,10 @@ export function WorkspaceTab({ controller }: { controller: WorkspaceEngine }) {
       <Section title="Services" icon={Puzzle}>
         <div className="px-4 py-2">
           {(
-            Object.entries((workspace as any).services || {}) as [string, ServiceData][]
+            Object.entries((workspace as any).services || {}) as [
+              string,
+              ServiceData,
+            ][]
           ).map(([name, data]) => (
             <div key={name} className="mb-2 flex flex-col rounded-md p-2">
               <div className="flex items-center justify-between">
@@ -82,7 +85,7 @@ export function WorkspaceTab({ controller }: { controller: WorkspaceEngine }) {
                     Module
                   </span>
                   <span className="text-[10px] font-mono text-neutral-content-subtle">
-                    {data.moduleId}
+                    {data.module.id}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
@@ -90,7 +93,7 @@ export function WorkspaceTab({ controller }: { controller: WorkspaceEngine }) {
                     Version
                   </span>
                   <span className="text-[10px] font-mono text-neutral-content-subtle">
-                    {data.moduleVersionId || "latest"}
+                    {data.module.versionId || "latest"}
                   </span>
                 </div>
               </div>

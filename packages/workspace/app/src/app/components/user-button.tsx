@@ -1,6 +1,6 @@
 import { useGlobalModals } from "@/contexts/modals";
 import { useSession } from "@/contexts/session";
-import { useUbento } from "@/engine/engine";
+import { useUbento } from "@/engine/app/engine";
 import { LogOut, Settings as SettingsIcon, User } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";

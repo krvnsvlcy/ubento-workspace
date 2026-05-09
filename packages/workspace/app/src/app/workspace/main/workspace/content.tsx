@@ -1,7 +1,8 @@
 import { ErrorView } from "@/app/components/error.js";
-import { useUbentoEngine } from "@/engine/engine";
+import { useWorkspaceEngine } from "@/contexts/workspace.js";
+import { useUbentoEngine } from "@/engine/app/engine.js";
 import { PendingView } from "@ubento/workspace.primitives";
-import { WorkspaceEngine } from "./engine/engine.js";
+import { WorkspaceEngine } from "../../../../engine/workspace/engine.js";
 
 function WorkspaceOverlay({ engine }: { engine: WorkspaceEngine }) {
   const workspaceName = engine.useState((state) => state.workspace.title);
@@ -37,9 +38,7 @@ function WorkspaceOverlay({ engine }: { engine: WorkspaceEngine }) {
 }
 
 function InvalidSpecOverlay({ engine }: { engine: WorkspaceEngine }) {
-  const specStatus = engine.useState(
-    (state) => state.workspace.spec.status,
-  );
+  const specStatus = engine.useState((state) => state.workspace.spec.status);
   const specErrors = engine.useState((state) => {
     const spec = state.workspace.spec;
     if (spec.status === "invalid") {
@@ -90,16 +89,17 @@ function InvalidSpecOverlay({ engine }: { engine: WorkspaceEngine }) {
   );
 }
 
-export function WorkspaceContent({ engine }: { engine: WorkspaceEngine }) {
-  const ubentoEngine = useUbentoEngine();
+export function WorkspaceContent() {
+  const appEngine = useUbentoEngine();
+  const workspaceEngine = useWorkspaceEngine();
   return (
     <div className="h-full w-full relative overflow-hidden">
       <iframe
-        src={ubentoEngine.workspaceRuntimeUrl}
-        key={engine.id}
+        src={appEngine.workspaceRuntimeUrl}
+        key={workspaceEngine.id}
         onLoad={(e) => {
           if (e.currentTarget.contentWindow) {
-            engine.init(e.currentTarget.contentWindow);
+            workspaceEngine.init(e.currentTarget.contentWindow);
           }
         }}
         style={{
@@ -110,9 +110,8 @@ export function WorkspaceContent({ engine }: { engine: WorkspaceEngine }) {
         }}
       />
 
-      <WorkspaceOverlay engine={engine} />
-      <InvalidSpecOverlay engine={engine} />
+      <WorkspaceOverlay engine={workspaceEngine} />
+      <InvalidSpecOverlay engine={workspaceEngine} />
     </div>
   );
 }
-

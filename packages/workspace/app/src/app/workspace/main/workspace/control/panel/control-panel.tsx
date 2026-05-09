@@ -1,5 +1,4 @@
-import { copilotScope } from "@/engine/copilot/copilot";
-import { useUbentoEngine } from "@/engine/engine";
+import { useCopilot } from "@/contexts/copilot";
 import { Button } from "@ubento/workspace.primitives";
 import cx from "clsx";
 import {
@@ -11,7 +10,7 @@ import {
   X,
 } from "lucide-react";
 import { useState } from "react";
-import { WorkspaceEngine } from "../../engine/engine";
+import { WorkspaceEngine } from "../../../../../../engine/workspace/engine";
 import { BoardTab } from "./tabs/board";
 import { CopilotTab } from "./tabs/copilot/copilot";
 import { HistoryTab } from "./tabs/copilot/history";
@@ -64,7 +63,7 @@ export function ControlPanel({
   controller: WorkspaceEngine;
   onClose: () => void;
 }) {
-  const engine = useUbentoEngine();
+  const copilot = useCopilot();
   const [activeTab, setActiveTab] = useState<string>("ai");
 
   let content = <></>;
@@ -82,7 +81,7 @@ export function ControlPanel({
           icon: <Plus size={16} />,
           label: "New Conversation",
           onClick: () => {
-            engine.copilot.clearActiveThread(copilotScope.team);
+            copilot.clearActiveThread();
           },
         },
         {

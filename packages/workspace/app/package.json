@@ -34,6 +34,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-textarea-autosize": "^8.5.9",
+    "ses": "^2.0.0",
     "yaml": "^2.8.3",
     "zod": "^4.3.6",
     "zustand": "^5.0.13"

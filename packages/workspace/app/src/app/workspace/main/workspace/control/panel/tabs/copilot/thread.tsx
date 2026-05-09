@@ -1,14 +1,14 @@
-import { useUbentoEngine } from "@/engine/engine";
+import { useCopilot } from "@/contexts/copilot";
+import { useUbentoEngine } from "@/engine/app/engine";
 import { Sparkles } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { CopilotMessage } from "./message/message";
 
-export function CopilotThread({ scope }: { scope: string }) {
-  const engine = useUbentoEngine();
-  const activeThreadId = engine.copilot.useState(
-    (s) => s.activeThreadMap[scope],
-  );
-  const { data: messages = [] } = engine.ubento.intelligence.useMessages(
+export function CopilotThread() {
+  const appEngine = useUbentoEngine();
+  const copilot = useCopilot();
+  const activeThreadId = copilot.useState((s) => s.activeThreadId);
+  const { data: messages = [] } = appEngine.ubento.intelligence.useMessages(
     { thread_id: activeThreadId ?? "" },
     { enabled: !!activeThreadId },
   );

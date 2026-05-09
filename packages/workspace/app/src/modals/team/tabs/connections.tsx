@@ -1,5 +1,5 @@
 import { useSession } from "@/contexts/session";
-import { useUbento } from "@/engine/engine";
+import { useUbento } from "@/engine/app/engine";
 import { Globe, Plus, Settings, Trash2, Zap } from "lucide-react";
 import { FC } from "react";
 

@@ -1,4 +1,4 @@
-import { useUbentoEngine } from "@/engine/engine";
+import { useCopilot } from "@/contexts/copilot";
 import { UserMessageAttachment } from "@ubento/workspace.agent";
 import { Button } from "@ubento/workspace.primitives";
 import { ArrowRight, ChevronDown, Plus, X } from "lucide-react";
@@ -10,11 +10,11 @@ function AttachmentChip({
   attachment: UserMessageAttachment;
   onRemove?: () => void;
 }) {
-  const engine = useUbentoEngine();
-  const typeConfig = engine.copilot.attachmentTypes[attachment.type];
+  const copilot = useCopilot();
+  const typeConfig = copilot.attachmentTypes[attachment.type as any];
 
-  const label = typeConfig?.label(attachment.data) ?? attachment.type;
-  const icon = typeConfig?.icon(attachment.data);
+  const label = typeConfig?.label(attachment.data as any) ?? attachment.type;
+  const icon = typeConfig?.icon(attachment.data as any);
 
   return (
     <div className="flex items-center gap-1.5 rounded-full bg-neutral-surface border border-neutral-border px-2.5 py-1 text-xs text-neutral-content">
@@ -36,13 +36,12 @@ function AttachmentChip({
   );
 }
 
-export function CopilotInput({ scope }: { scope: string }) {
-  const engine = useUbentoEngine();
-  const input = engine.copilot.useState((state) => state.input);
-  const input = engine.copilot.useState((state) => state.);
+export function CopilotInput() {
+  const copilot = useCopilot();
+  const input = copilot.useState((c) => c.input);
 
   const handleSend = () => {
-    engine.copilot.sendMessage(scope);
+    copilot.sendMessage();
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -71,7 +70,7 @@ export function CopilotInput({ scope }: { scope: string }) {
                 onRemove={() => {
                   const newAttachments = [...input.userAttachments];
                   newAttachments.splice(i, 1);
-                  engine.copilot.setUserAttachments(newAttachments);
+                  copilot.setUserAttachments(newAttachments);
                 }}
               />
             ))}
@@ -80,7 +79,7 @@ export function CopilotInput({ scope }: { scope: string }) {
 
         <textarea
           value={input.text}
-          onChange={(e) => engine.copilot.setInputText(e.target.value)}
+          onChange={(e) => copilot.setInputText(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Message AI Copilot..."
           rows={1}

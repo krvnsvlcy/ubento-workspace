@@ -1,10 +1,11 @@
-import { copilotScope } from "@/engine/copilot/copilot";
-import { useUbento, useUbentoEngine } from "@/engine/engine";
+import { useCopilot } from "@/contexts/copilot";
+import { useUbento, useUbentoEngine } from "@/engine/app/engine";
 import cx from "clsx";
 import { History, Loader2, MessageSquare } from "lucide-react";
 
 export function HistoryTab({ onBack }: { onBack: () => void }) {
   const engine = useUbentoEngine();
+  const copilot = useCopilot();
   const ubento = useUbento();
 
   const workspaceSlug = engine.useState((s) => s.location.workspace);
@@ -30,18 +31,10 @@ export function HistoryTab({ onBack }: { onBack: () => void }) {
 
   const isLoading = (workspaceSlug && workspaceLoading) || threadsLoading;
 
-  const activeThreadId = engine.copilot.useState((s) => {
-    const scope = workspaceSlug
-      ? copilotScope.workspace(workspaceSlug)
-      : copilotScope.team;
-    return s.activeThreadMap[scope];
-  });
+  const activeThreadId = copilot.useState((s) => s.activeThreadId);
 
   const handleSelectThread = (threadId: string) => {
-    const scope = workspaceSlug
-      ? copilotScope.workspace(workspaceSlug)
-      : copilotScope.team;
-    engine.copilot.setActiveThread(scope, threadId);
+    copilot.setActiveThread(threadId);
     onBack();
   };
 

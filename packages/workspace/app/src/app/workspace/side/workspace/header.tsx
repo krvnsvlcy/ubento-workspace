@@ -8,7 +8,7 @@ import {
 } from "@ubento/workspace.primitives";
 import { Building2, LogOut, Settings, Sidebar, User } from "lucide-react";
 import { useGlobalModals } from "../../../../contexts/modals";
-import { useUbentoEngine } from "../../../../engine/engine";
+import { useUbentoEngine } from "../../../../engine/app/engine";
 
 export function WorkspaceHeader() {
   const engine = useUbentoEngine();

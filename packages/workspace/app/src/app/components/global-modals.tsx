@@ -1,6 +1,6 @@
 import { useGlobalModals } from "@/contexts/modals";
 import { useSession } from "@/contexts/session";
-import { useUbento, useUbentoEngine } from "@/engine/engine";
+import { useUbento, useUbentoEngine } from "@/engine/app/engine";
 import { AccountModal } from "@/modals/account/account";
 import { CreateWorkspaceModal } from "@/modals/create_workspace/create_workspace";
 import { ServiceBrowserModal } from "@/modals/service_browser/services";
@@ -12,7 +12,7 @@ export function GlobalModals() {
   const session = useSession();
   const ubento = useUbento();
   const engine = useUbentoEngine();
-  const activeWorkspaceEngine = engine.useState((s) => s.activeWorkspaceEngine);
+  const activeWorkspaceEngine = engine.useState((s) => s.workspace);
 
   const { mutateAsync: createWorkspace } =
     ubento.workspace.useCreateWorkspace();

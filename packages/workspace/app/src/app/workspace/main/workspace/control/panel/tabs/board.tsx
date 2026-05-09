@@ -1,6 +1,6 @@
 import { Check, Copy, Edit2, Save, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { WorkspaceEngine } from "../../../engine/engine";
+import { WorkspaceEngine } from "../../../../../../../engine/workspace/engine";
 
 export function BoardTab({
   workspaceEngine,

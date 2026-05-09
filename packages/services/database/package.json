@@ -20,9 +20,9 @@
       "import": "./build/module.js",
       "types": "./build/module.d.ts"
     },
-    "./integration": {
-      "import": "./build/integration.js",
-      "types": "./build/integration.d.ts"
+    "./vertex": {
+      "import": "./build/vertex.js",
+      "types": "./build/vertex.d.ts"
     },
     "./intelligence": {
       "import": "./build/intelligence.js",
@@ -32,18 +32,18 @@
   "scripts": {
     "build": "npm run generate && scripts build",
     "watch": "scripts watch",
-    "generate": "npm run generate:iam && npm run generate:workspace && npm run generate:module && npm run generate:integration && npm run generate:intelligence && npm run generate:billing",
+    "generate": "npm run generate:iam && npm run generate:workspace && npm run generate:module && npm run generate:vertex && npm run generate:intelligence && npm run generate:billing",
     "generate:iam": "prisma generate --schema=./prisma/iam.prisma",
     "generate:workspace": "prisma generate --schema=./prisma/workspace.prisma",
     "generate:module": "prisma generate --schema=./prisma/module.prisma",
-    "generate:integration": "prisma generate --schema=./prisma/integration.prisma",
+    "generate:vertex": "prisma generate --schema=./prisma/vertex.prisma",
     "generate:intelligence": "prisma generate --schema=./prisma/intelligence.prisma",
     "generate:billing": "prisma generate --schema=./prisma/billing.prisma",
-    "push": "npm run push:iam && npm run push:workspace && npm run push:module && npm run push:integration && npm run push:intelligence && npm run push:billing",
+    "push": "npm run push:iam && npm run push:workspace && npm run push:module && npm run push:vertex && npm run push:intelligence && npm run push:billing",
     "push:iam": "prisma db push --schema=./prisma/iam.prisma",
     "push:workspace": "prisma db push --schema=./prisma/workspace.prisma",
     "push:module": "prisma db push --schema=./prisma/module.prisma",
-    "push:integration": "prisma db push --schema=./prisma/integration.prisma",
+    "push:vertex": "prisma db push --schema=./prisma/vertex.prisma",
     "push:intelligence": "prisma db push --schema=./prisma/intelligence.prisma",
     "push:billing": "prisma db push --schema=./prisma/billing.prisma"
   },

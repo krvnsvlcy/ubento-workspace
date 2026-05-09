@@ -94,6 +94,11 @@ export const ubentoAuth = {
         update: "module:source:update",
       },
     },
+    vertex: {
+      query: "vertex:query",
+      mutate: "vertex:mutate",
+      subscribe: "vertex:subscribe",
+    },
   },
   roles: {
     root: {

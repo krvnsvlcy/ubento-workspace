@@ -354,6 +354,9 @@ export function createUbentoWorkspaceService({
       workspaceStore.push(ws);
       return ws;
     },
+    getCachedWorkspaceBySlug: (slug: string) => {
+      return workspaceStore.getCached((workspace) => workspace.slug === slug);
+    },
     getWorkspaceBySlug: async (slug: string) => {
       const ws = await ubentoSdk.workspace.getWorkspaceBySlug(slug);
       workspaceStore.push(ws);

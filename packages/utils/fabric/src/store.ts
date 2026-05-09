@@ -100,7 +100,7 @@ export interface Store<TData, TParams = {}, TPage = {}> {
   ) => EntityList<TData, TPage>;
 
   // Getters
-  getCached: (key: string) => TData | undefined;
+  getCached: (key: string | ((entity: TData) => boolean)) => TData | undefined;
 }
 
 // --- CORE FACTORY ---
@@ -442,7 +442,12 @@ export function createStore<TData, TParams = {}, TPage = {}>({
     },
 
     // --- GETTERS ---
-    getCached: (key: string): TData | undefined => {
+    getCached: (
+      key: string | ((entity: TData) => boolean),
+    ): TData | undefined => {
+      if (typeof key === "function") {
+        return Object.values(get().data).find(key);
+      }
       return get().data[key];
     },
   };

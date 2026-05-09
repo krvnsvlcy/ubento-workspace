@@ -1,6 +1,6 @@
-import { WorkspaceEngine } from "@/app/workspace/main/workspace/engine/engine";
 import { useSession } from "@/contexts/session";
-import { useUbento } from "@/engine/engine";
+import { useUbento } from "@/engine/app/engine";
+import { WorkspaceEngine } from "@/engine/workspace/engine";
 import {
   Content,
   ContentBody,
@@ -82,7 +82,9 @@ export function ServiceBrowser({
   const ubento = useUbento();
   const session = useSession();
   const installedServices =
-    activeWorkspaceEngine?.useState((s) => (s.workspace as any)?.services || {}) || {};
+    activeWorkspaceEngine?.useState(
+      (s) => (s.workspace as any)?.services || {},
+    ) || {};
 
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");

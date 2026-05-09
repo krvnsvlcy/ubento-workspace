@@ -1,4 +1,4 @@
-import { useUbentoEngine } from "@/engine/engine";
+import { useUbentoEngine } from "@/engine/app/engine";
 import { useEffect, useState } from "react";
 import { Modal } from "../../app/components/modal";
 import { ServiceBrowser } from "./browser";
@@ -16,7 +16,9 @@ function ServiceBrowserModalContent({
   activeWorkspaceEngine: any;
 }) {
   const installedServices =
-    activeWorkspaceEngine.useState((s: any) => s.workspaceData?.services || {}) || {};
+    activeWorkspaceEngine.useState(
+      (s: any) => s.workspaceData?.services || {},
+    ) || {};
 
   const [view, setView] = useState<"browser" | "details">("browser");
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(
@@ -85,7 +87,7 @@ export function ServiceBrowserModal({
   onAdd: (moduleId: string, name: string) => void;
 }) {
   const engine = useUbentoEngine();
-  const activeWorkspaceEngine = engine.useState((s) => s.activeWorkspaceEngine);
+  const activeWorkspaceEngine = engine.useState((s) => s.workspace);
 
   if (!activeWorkspaceEngine) return null;
 

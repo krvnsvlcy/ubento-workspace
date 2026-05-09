@@ -1,7 +1,7 @@
-import { FC } from "react";
-import { ArrowUpRight, History } from "lucide-react";
-import { useUbento } from "@/engine/engine";
 import { useSession } from "@/contexts/session";
+import { useUbento } from "@/engine/app/engine";
+import { ArrowUpRight, History } from "lucide-react";
+import { FC } from "react";
 
 export const HistoryTab: FC = () => {
   const ubento = useUbento();
@@ -42,7 +42,9 @@ export const HistoryTab: FC = () => {
           </div>
           <div className="flex items-center gap-6">
             <div className="text-right">
-              <p className="text-sm font-black">${(inv.total / 100).toFixed(2)}</p>
+              <p className="text-sm font-black">
+                ${(inv.total / 100).toFixed(2)}
+              </p>
               <p className="text-[10px] text-accent font-bold uppercase">
                 {inv.status}
               </p>

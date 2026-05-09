@@ -1,7 +1,7 @@
 import { SideSection } from "@/app/components/side/section";
-import { WorkspaceEngine } from "@/app/workspace/main/workspace/engine/engine";
 import { useGlobalModals } from "@/contexts/modals";
-import { useUbento, useUbentoEngine } from "@/engine/engine";
+import { useUbento, useUbentoEngine } from "@/engine/app/engine";
+import { WorkspaceEngine } from "@/engine/workspace/engine";
 import { ServiceData } from "@ubento/bento.core";
 import { workspaceClient } from "@ubento/services.sdk";
 import {
@@ -184,7 +184,7 @@ function ServicesSection({ engine }: { engine: WorkspaceEngine }) {
 
 export function WorkspaceTab() {
   const engine = useUbentoEngine();
-  const activeWorkspaceEngine = engine.useState((s) => s.activeWorkspaceEngine);
+  const activeWorkspaceEngine = engine.useState((s) => s.workspace);
   const ubento = useUbento();
   const location = engine.useState((s) => s.location);
 

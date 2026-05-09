@@ -1,7 +1,7 @@
-import { FC } from "react";
-import { Package } from "lucide-react";
-import { useUbento } from "@/engine/engine";
 import { useSession } from "@/contexts/session";
+import { useUbento } from "@/engine/app/engine";
+import { Package } from "lucide-react";
+import { FC } from "react";
 
 export const AddonsTab: FC = () => {
   const ubento = useUbento();
@@ -28,7 +28,9 @@ export const AddonsTab: FC = () => {
     );
   }
 
-  const addons = products.filter((p: any) => p.type === "ADDON" || p.metadata?.is_addon);
+  const addons = products.filter(
+    (p: any) => p.type === "ADDON" || p.metadata?.is_addon,
+  );
 
   return (
     <div className="space-y-4 animate-in fade-in duration-300">

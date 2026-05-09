@@ -1,5 +1,5 @@
 import { LucideIcon } from "lucide-react";
-import { UbentoLocation } from "../../../engine/location";
+import { UbentoLocation } from "../../../engine/app/location";
 
 export type TabDefinition = {
   id: string;

@@ -1,20 +1,13 @@
-import { UbentoService } from "@/services/ubento/ubento.js";
-import { Logger } from "@ubento/telemetry";
-import {
-  AgentThread,
-  Toolkit,
-  UserMessageAttachment,
-} from "@ubento/workspace.agent";
+import { AgentThread, UserMessageAttachment } from "@ubento/workspace.agent";
 import { createZustandStateController } from "@ubento/workspace.primitives";
 import { registerStore } from "@ubento/zustand-devtool";
 import { createStore } from "zustand";
-import { UbentoSession } from "../session.js";
 import { copilotAgent } from "./agents/copilot.js";
 import {
   BentoLocationAttachment,
   ubentoLocationAttachmentType,
 } from "./attachments/location.js";
-import { createCopilotAgentEnvironment } from "./environment/environment.js";
+import { CopilotAgentEnvironment } from "./environment/environment.js";
 import { modelIds } from "./models/models.js";
 
 export const copilotScope = {
@@ -29,61 +22,43 @@ export type UbentoCopilotInput = {
 };
 export type UbentoCopilotState = {
   input: UbentoCopilotInput;
-  activeThreadMap: Record<string, string>; // scope -> threadId
   activeModelId: string;
-  toolkits: Record<string, Toolkit>;
+  activeThreadId?: string;
 };
 
 export function createUbentoCopilot({
-  ubento,
-  session,
-  logger,
+  environment,
 }: {
-  ubento: UbentoService;
-  session: UbentoSession;
-  logger: Logger;
+  environment: CopilotAgentEnvironment;
 }) {
-  const environment = createCopilotAgentEnvironment({
-    ubento,
-    session,
-    logger,
-    listToolkits: () => Object.values(store.getState().toolkits),
-  });
   const store = createStore<UbentoCopilotState>(() => ({
-    activeThreadMap: {},
     input: {
       text: "",
       userAttachments: [],
       contextAttachments: {},
     },
     activeModelId: modelIds.gemini3flash,
-    toolkits: {},
   }));
   registerStore("copilot", store);
   const controller = createZustandStateController(store);
 
-  environment.addAgent(copilotAgent);
-
+  const logger = environment.logger.child({ module: "copilot" });
   logger.info("Copilot engine initialized", {
     event: "copilot_init",
     modelId: store.getState().activeModelId,
   });
 
-  function setActiveThread({
-    scope,
-    threadId,
-  }: {
-    scope: string;
-    threadId: string;
-  }) {
-    logger.debug("Setting active thread", {
-      event: "copilot_set_active_thread",
-      scope,
-      threadId,
+  environment.addAgent(copilotAgent);
+
+  function setActiveThread(threadId: string) {
+    store.setState({
+      activeThreadId: threadId,
     });
-    store.setState((state) => ({
-      activeThreadMap: { ...state.activeThreadMap, [scope]: threadId },
-    }));
+  }
+  function clearActiveThread() {
+    store.setState({
+      activeThreadId: undefined,
+    });
   }
 
   const attachmentTypes = Object.fromEntries(
@@ -100,7 +75,7 @@ export function createUbentoCopilot({
         input: { ...s.input, text },
       }));
     },
-    setUserAttachments: (attachments: UbentoCopilotAttachments[]) => {
+    setUserAttachments: (attachments: UserMessageAttachment[]) => {
       store.setState((s) => ({
         input: { ...s.input, userAttachments: attachments },
       }));
@@ -119,33 +94,16 @@ export function createUbentoCopilot({
         },
       }));
     },
-    addToolkit: (toolkit: Toolkit) => {
-      store.setState((s) => ({
-        toolkits: {
-          ...s.toolkits,
-          [toolkit.name]: toolkit,
-        },
-      }));
-    },
-    removeToolkit: (toolkitName: string) => {
-      store.setState((s) => {
-        const toolkits = { ...s.toolkits };
-        delete toolkits[toolkitName];
-        return { toolkits };
-      });
-    },
-
-    sendMessage: async (scope: string) => {
+    sendMessage: async () => {
       const state = store.getState();
       const content = state.input.text;
 
       if (!content.trim()) return;
 
-      let threadId = state.activeThreadMap[scope];
+      let threadId = state.activeThreadId;
 
       logger.debug("Sending message to Copilot", {
         event: "copilot_send_message",
-        scope,
         threadId,
         contentLength: content.length,
       });
@@ -162,21 +120,11 @@ export function createUbentoCopilot({
             id: threadId,
             agent: copilotAgent.name,
           });
-          logger.debug("Resumed existing thread", {
-            event: "copilot_resume_thread",
-            threadId,
-          });
         } else {
           thread = await environment.createThread({
             agent: copilotAgent.name,
-            teamId: session.teamId,
           });
-          setActiveThread({ scope, threadId: thread.id });
-          logger.info("Created new thread", {
-            event: "copilot_create_thread",
-            scope,
-            threadId: thread.id,
-          });
+          setActiveThread(thread.id);
         }
 
         const execution = thread.createExecution();
@@ -205,7 +153,6 @@ export function createUbentoCopilot({
       } catch (error) {
         logger.error("Failed to send message to Copilot", {
           event: "copilot_send_error",
-          scope,
           error: String(error),
         });
         console.error("Failed to send message:", error);
@@ -216,18 +163,8 @@ export function createUbentoCopilot({
       }
     },
 
-    setActiveThread(scope: string, threadId: string) {
-      setActiveThread({ scope, threadId });
-    },
-    clearActiveThread(scope: string) {
-      logger.debug("Cleared active threads", {
-        event: "copilot_clear_active_thread",
-        scope,
-      });
-      store.setState((state) => ({
-        activeThreadMap: {},
-      }));
-    },
+    setActiveThread,
+    clearActiveThread,
   };
 }
 

@@ -1,7 +1,7 @@
 import { Button } from "@ubento/workspace.primitives";
 import clsx from "clsx";
 import { useEffect, useMemo } from "react";
-import { useUbentoEngine } from "../../../../engine/engine";
+import { useUbentoEngine } from "../../../../engine/app/engine";
 import { TabDefinition } from "../types";
 import { WorkspaceHeader } from "./header";
 import { assetsTab } from "./tabs/assets/assets-tab";

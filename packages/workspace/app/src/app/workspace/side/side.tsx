@@ -1,4 +1,4 @@
-import { useUbentoEngine } from "../../../engine/engine";
+import { useUbentoEngine } from "../../../engine/app/engine";
 import { ComponentSide } from "./component/component-side";
 import { WorkspaceSide } from "./workspace/workspace-side";
 export function Side() {
@@ -15,4 +15,3 @@ export function Side() {
 
   return <div className="h-full overflow-hidden">{content}</div>;
 }
-

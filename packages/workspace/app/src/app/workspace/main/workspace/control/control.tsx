@@ -1,7 +1,7 @@
-import { useUbentoEngine } from "@/engine/engine.js";
+import { useWorkspaceEngine } from "@/contexts/workspace.js";
+import { useUbentoEngine } from "@/engine/app/engine.js";
 import { Sparkles } from "lucide-react";
 import { motion } from "motion/react";
-import { WorkspaceEngine } from "../engine/engine.js";
 import { ControlPanel } from "./panel/control-panel.js";
 
 const style = `
@@ -21,10 +21,11 @@ const style = `
 }
 `;
 
-export function WorkspaceControl({ engine }: { engine: WorkspaceEngine }) {
-  const ubentoEngine = useUbentoEngine();
-  const showControls = ubentoEngine.useState((s) => s.showControls);
-  const setShowControls = (show: boolean) => ubentoEngine.setShowControls(show);
+export function WorkspaceControl() {
+  const appEngine = useUbentoEngine();
+  const workspaceEngine = useWorkspaceEngine();
+  const showControls = appEngine.useState((s) => s.showControls);
+  const setShowControls = (show: boolean) => appEngine.setShowControls(show);
 
   return (
     <div className="absolute bottom-8 right-8 z-50">
@@ -52,7 +53,7 @@ export function WorkspaceControl({ engine }: { engine: WorkspaceEngine }) {
             }}
           >
             <ControlPanel
-              controller={engine}
+              controller={workspaceEngine}
               onClose={() => setShowControls(false)}
             />
           </div>
