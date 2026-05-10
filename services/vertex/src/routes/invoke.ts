@@ -6,12 +6,9 @@ import {
   validate,
   ValidationError,
 } from "@ubento/services.toolkit";
+import { invokeService, ServiceSpecV1 } from "@ubento/vertex.core";
 import { Router } from "express";
 import z from "zod";
-import {
-  invokeService,
-  ServiceSpec,
-} from "../../../../packages/foundations/build/index.js";
 import { getTeamConnectionWithAuth } from "../entities/connection.js";
 import { getServiceSpec } from "../entities/service.js";
 
@@ -48,7 +45,7 @@ function createInvokeRoute(operationType: "query" | "action") {
       };
       const operationName = req.body[operationType] as string;
 
-      const manifest: ServiceSpec = await getServiceSpec(service, channel);
+      const manifest: ServiceSpecV1 = await getServiceSpec(service, channel);
 
       const operation =
         operationType === "query"
@@ -60,21 +57,31 @@ function createInvokeRoute(operationType: "query" | "action") {
           `Unsupported ${operationType}: ${operationName}`,
         );
 
-      const connection = await getTeamConnectionWithAuth(
-        team_id,
-        manifest.connection,
-      );
-      if (!connection)
-        throw new AuthorizationError(
-          `No valid connection found for ${service}`,
-        );
+      const connectionId = Object.keys(manifest.connections || {})[0];
+      const connectionSpec = connectionId
+        ? manifest.connections![connectionId]
+        : undefined;
+
+      let connection;
+      if (connectionSpec) {
+        connection = await getTeamConnectionWithAuth(team_id, connectionSpec);
+        if (!connection) {
+          throw new AuthorizationError(
+            `No valid connection found for ${service}`,
+          );
+        }
+      }
 
       const result = await invokeService({
         operation,
-        connection: {
-          provider: connection.provider.config,
-          auth: connection.auth,
-        },
+        connection:
+          connection && connectionSpec
+            ? {
+                spec: connectionSpec,
+                provider: connection.provider.config,
+                credentials: connection.auth as any,
+              }
+            : undefined,
         args: args ?? {},
       });
 

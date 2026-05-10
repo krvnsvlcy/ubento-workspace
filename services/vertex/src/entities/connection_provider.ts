@@ -66,12 +66,10 @@ export type ConnectionProviderConfig = z.infer<
 >;
 
 export async function listConnectionProviders({
-  team_id,
   name,
   cursor,
   limit,
 }: {
-  team_id?: string;
   name?: string;
   cursor?: string;
   limit?: number;
@@ -81,15 +79,8 @@ export async function listConnectionProviders({
     cursor,
     orderBy: [{ id: "asc" }],
     where: {
-      // Keep team_id scoped if provided
-      ...(team_id && { team_id }),
-
-      // Correct Substring check for MongoDB in Prisma
       ...(name && {
-        OR: [
-          { name: { contains: name, mode: "insensitive" } },
-          { display_name: { contains: name, mode: "insensitive" } },
-        ],
+        name: { contains: name, mode: "insensitive" },
       }),
     },
     resolveCursor: (p) => ({ id: p.id }),
@@ -100,15 +91,15 @@ export async function getConnectionProvider(id: string) {
 }
 
 export async function createConnectionProvider({
-  team_id,
+  code,
+  type,
   name,
-  display_name,
   description,
   config,
 }: {
-  team_id: string;
+  code: string;
+  type: string;
   name: string;
-  display_name: string;
   description?: string | null;
   config?: Prisma.InputJsonValue | null;
 }) {
@@ -118,9 +109,9 @@ export async function createConnectionProvider({
         code: ubentoEntities.connectionProvider.code,
         bareId: generateBareId(),
       }),
-      team_id,
+      code,
+      type,
       name,
-      display_name,
       description,
       config,
     },
@@ -130,8 +121,7 @@ export async function createConnectionProvider({
 export async function updateConnectionProvider(
   id: string,
   data: {
-    name: string;
-    display_name: string;
+    name?: string;
     description?: string | null;
     config?: Prisma.InputJsonValue | null;
   },

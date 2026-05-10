@@ -16,20 +16,20 @@ router.get(
   chain(
     validate({
       query: z.object({
-        provider_id: z.string().min(1),
+        oauth_client_id: z.string().min(1),
         team_id: z.string().min(1),
         state: z.string().optional(),
       }),
     }),
     async (req: Request, res: Response) => {
-      const { provider_id, team_id, state } = req.query as {
-        provider_id: string;
+      const { oauth_client_id, team_id, state } = req.query as {
+        oauth_client_id: string;
         team_id: string;
         state?: string;
       };
 
       const authUrl = await getAuthUrl({
-        providerId: provider_id,
+        oauthClientId: oauth_client_id,
         teamId: team_id,
         redirectUri: getRedirectUri(req),
         state,
@@ -72,7 +72,6 @@ router.get(
       const { clientState } = await handleOAuthCallback(
         code,
         state,
-        getRedirectUri(req),
       );
 
       // 2. Send the "Safe to Close" HTML

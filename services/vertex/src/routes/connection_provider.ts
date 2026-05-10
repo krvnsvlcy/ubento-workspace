@@ -55,7 +55,6 @@ router.get(
     async (req: Request, res: Response) => {
       const result = await listConnectionProviders({
         ...parseCursorQuery(req),
-        team_id: parseStringQuery(req, "team_id"),
         name: parseStringQuery(req, "name"),
       });
       res.json(result);
@@ -68,9 +67,9 @@ router.post(
   chain(
     validate({
       body: z.object({
-        team_id: z.string().min(1),
+        code: z.string().min(1),
+        type: z.string().min(1),
         name: z.string().min(1),
-        display_name: z.string().min(1),
         description: z.string().optional(),
         config: connectionProviderConfigSchema.optional(),
       }),
@@ -90,8 +89,9 @@ router.patch(
         provider_id: z.string(),
       }),
       body: z.object({
+        code: z.string().optional(),
+        type: z.string().optional(),
         name: z.string().optional(),
-        display_name: z.string().optional(),
         description: z.string().optional(),
         config: connectionProviderConfigSchema.optional(),
       }),

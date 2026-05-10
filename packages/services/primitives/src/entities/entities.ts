@@ -251,6 +251,21 @@ export const ubentoEntities = {
     name: "connection",
     code: "cnn",
   },
+  /**
+   * Represents an OAuth client credential for connecting to external services.
+   */
+  oauthClient: {
+    name: "oauth_client",
+    code: "oac",
+  },
+  service: {
+    name: "service",
+    code: "srv",
+  },
+  serviceChannel: {
+    name: "service_channel",
+    code: "svc",
+  },
 
   // Module
   /**

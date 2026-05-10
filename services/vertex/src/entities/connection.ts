@@ -10,11 +10,11 @@ import {
   ValidationError,
 } from "@ubento/services.toolkit";
 import {
-  ConnectionAuth,
-  connectionAuthSchema,
+  ConnectionCredentials,
+  connectionCredentialsSchema,
   ConnectionProviderConfig,
   ConnectionSpec,
-} from "../../../../packages/foundations/build/index.js";
+} from "@ubento/vertex.core";
 import { cryptoUtils } from "../lib/crypto.js";
 import prisma from "../lib/prisma.js";
 import {
@@ -22,17 +22,19 @@ import {
   getConnectionProvider,
 } from "./connection_provider.js";
 
-export type SafeConnection = Omit<Connection, "auth">;
+export type SafeConnection = Omit<Connection, "credentials">;
 export type ConnectionWithAuth = SafeConnection & {
   provider: {
     name: string;
     config: ConnectionProviderConfig;
   };
-  auth?: ConnectionAuth;
+  auth?: ConnectionCredentials;
 };
 
-function safeConnection<T extends Connection>(connection: T): Omit<T, "auth"> {
-  const { auth, ...safe } = connection;
+function safeConnection<T extends Connection>(
+  connection: T,
+): Omit<T, "credentials"> {
+  const { credentials, ...safe } = connection;
   return safe;
 }
 
@@ -81,18 +83,18 @@ export async function getConnectionWithAuth(
 
   const safeConn = safeConnection(connection);
 
-  // connection.auth refers to the raw encrypted DB payload here
-  if (!connection.auth) {
+  // connection.credentials refers to the raw encrypted DB payload here
+  if (!connection.credentials) {
     throw new Error(`Connection ${id} has no auth`);
   }
 
   const decryptedString = await cryptoUtils.decrypt({
-    iv: connection.auth.iv,
-    authTag: connection.auth.auth_tag,
-    cipherText: connection.auth.cipher_text,
+    iv: connection.credentials.iv,
+    authTag: connection.credentials.auth_tag,
+    cipherText: connection.credentials.cipher_text,
   });
 
-  const parsedAuthData = connectionAuthSchema.parse(
+  const parsedAuthData = connectionCredentialsSchema.parse(
     JSON.parse(decryptedString),
   );
 
@@ -109,10 +111,8 @@ export async function getTeamConnectionWithAuth(
   team_id: string,
   connectionSpec: ConnectionSpec,
 ): Promise<ConnectionWithAuth | undefined> {
-  const connection = await prisma.connection.findUnique({
-    where: {
-      provider_id_team_id: { provider_id: connectionSpec.provider, team_id },
-    },
+  const connection = await prisma.connection.findFirst({
+    where: { provider_id: connectionSpec.provider, team_id },
     include: { provider: true },
   });
   if (!connection) {
@@ -121,18 +121,18 @@ export async function getTeamConnectionWithAuth(
 
   const safeConn = safeConnection(connection);
 
-  // connection.auth refers to the raw encrypted DB payload here
-  if (!connection.auth) {
+  // connection.credentials refers to the raw encrypted DB payload here
+  if (!connection.credentials) {
     throw new Error(`Connection ${connection.id} has no auth`);
   }
 
   const decryptedString = await cryptoUtils.decrypt({
-    iv: connection.auth.iv,
-    authTag: connection.auth.auth_tag,
-    cipherText: connection.auth.cipher_text,
+    iv: connection.credentials.iv,
+    authTag: connection.credentials.auth_tag,
+    cipherText: connection.credentials.cipher_text,
   });
 
-  const parsedAuthData = connectionAuthSchema.parse(
+  const parsedAuthData = connectionCredentialsSchema.parse(
     JSON.parse(decryptedString),
   );
 
@@ -149,11 +149,15 @@ export async function getTeamConnectionWithAuth(
 export async function createConnection({
   team_id,
   provider_id,
-  auth,
+  name,
+  description,
+  credentials,
 }: {
   team_id: string;
   provider_id: string;
-  auth?: unknown;
+  name?: string;
+  description?: string;
+  credentials?: unknown;
 }) {
   const provider = await getConnectionProvider(provider_id);
   if (!provider) {
@@ -181,12 +185,19 @@ export async function createConnection({
         id: newConnectionId,
         team_id,
         provider_id,
+        name: name || provider.name,
+        description,
+        credentials: {
+          iv: "",
+          auth_tag: "",
+          cipher_text: "",
+        },
       },
     });
     return safeConnection(result); // FIXED: Protect raw return
   }
 
-  const parsedAuthData = connectionAuthSchema.safeParse(auth);
+  const parsedAuthData = connectionCredentialsSchema.safeParse(credentials);
   if (!parsedAuthData.success) {
     throw new ValidationError(
       `Invalid connection auth\n${parsedAuthData.error.message}`,
@@ -197,38 +208,43 @@ export async function createConnection({
 
   if (!strategy) {
     throw new ValidationError(
-      `Provider ${provider.display_name} does not support auth type ${authData.type}`,
+      `Provider ${provider.name} does not support auth type ${authData.type}`,
     );
   }
 
   const encryptedData = await cryptoUtils.encrypt(JSON.stringify(authData));
-  const result = await prisma.connection.upsert({
-    where: {
-      provider_id_team_id: {
-        provider_id,
-        team_id,
-      },
-    },
-    update: {
-      auth_strategy: authData.type,
-      auth: {
-        iv: encryptedData.iv,
-        auth_tag: encryptedData.authTag,
-        cipher_text: encryptedData.cipherText,
-      },
-    },
-    create: {
-      id: newConnectionId,
-      team_id,
-      provider_id,
-      auth_strategy: authData.type,
-      auth: {
-        iv: encryptedData.iv,
-        auth_tag: encryptedData.authTag,
-        cipher_text: encryptedData.cipherText,
-      },
-    },
+  const existingConnection = await prisma.connection.findFirst({
+    where: { provider_id, team_id },
   });
+
+  let result;
+  if (existingConnection) {
+    result = await prisma.connection.update({
+      where: { id: existingConnection.id },
+      data: {
+        credentials: {
+          iv: encryptedData.iv,
+          auth_tag: encryptedData.authTag,
+          cipher_text: encryptedData.cipherText,
+        },
+      },
+    });
+  } else {
+    result = await prisma.connection.create({
+      data: {
+        id: newConnectionId,
+        team_id,
+        provider_id,
+        name: name || `Connection for ${provider.name}`,
+        description,
+        credentials: {
+          iv: encryptedData.iv,
+          auth_tag: encryptedData.authTag,
+          cipher_text: encryptedData.cipherText,
+        },
+      },
+    });
+  }
 
   return safeConnection(result); // FIXED: Protect raw return
 }
@@ -252,12 +268,12 @@ export async function updateConnectionAuth(id: string, auth: unknown) {
     );
   }
 
-  const authData = connectionAuthSchema.parse(auth);
+  const authData = connectionCredentialsSchema.parse(auth);
   const strategy = config.authStrategies.find((s) => s.type === authData.type);
 
   if (!strategy) {
     throw new ValidationError(
-      `Provider ${provider.display_name} does not support auth type ${authData.type}`,
+      `Provider ${provider.name} does not support auth type ${authData.type}`,
     );
   }
 
@@ -265,8 +281,7 @@ export async function updateConnectionAuth(id: string, auth: unknown) {
   const result = await prisma.connection.update({
     where: { id },
     data: {
-      auth_strategy: authData.type,
-      auth: {
+      credentials: {
         iv: encryptedData.iv,
         auth_tag: encryptedData.authTag,
         cipher_text: encryptedData.cipherText,

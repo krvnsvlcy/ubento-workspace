@@ -537,6 +537,136 @@ export const spec = {
         },
       },
     },
+    "/vertex/oauth-clients": {
+      get: {
+        summary: "List all OAuth clients",
+        parameters: [
+          { name: "team_id", in: "query", schema: { type: "string" } },
+          { name: "provider_id", in: "query", schema: { type: "string" } },
+          { name: "cursor", in: "query", schema: { type: "string" } },
+          { name: "limit", in: "query", schema: { type: "number" } },
+        ],
+        responses: {
+          "200": {
+            description: "A list of OAuth clients",
+            content: {
+              "application/json": {
+                schema: makeCursorPageResponseSchema({
+                  $ref: "#/components/schemas/OAuthClient",
+                }),
+              },
+            },
+          },
+        },
+      },
+      post: {
+        summary: "Create an OAuth client",
+        requestBody: {
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  team_id: { type: "string" },
+                  provider_id: { type: "string" },
+                  name: { type: "string" },
+                  credentials: {
+                    type: "object",
+                    properties: {
+                      clientId: { type: "string" },
+                      clientSecret: { type: "string" },
+                    },
+                    required: ["clientId", "clientSecret"],
+                  },
+                },
+                required: ["provider_id", "name", "credentials"],
+              },
+            },
+          },
+        },
+        responses: {
+          "200": {
+            description: "The created OAuth client",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/OAuthClient" },
+              },
+            },
+          },
+        },
+      },
+    },
+    "/vertex/oauth-clients/{oauth_client_id}": {
+      parameters: [
+        {
+          name: "oauth_client_id",
+          in: "path",
+          schema: { type: "string" },
+          required: true,
+        },
+      ],
+      get: {
+        summary: "Get an OAuth client",
+        responses: {
+          "200": {
+            description: "The OAuth client",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/OAuthClient" },
+              },
+            },
+          },
+        },
+      },
+      patch: {
+        summary: "Update an OAuth client",
+        requestBody: {
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  name: { type: "string" },
+                  credentials: {
+                    type: "object",
+                    properties: {
+                      clientId: { type: "string" },
+                      clientSecret: { type: "string" },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          "200": {
+            description: "The updated OAuth client",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/OAuthClient" },
+              },
+            },
+          },
+        },
+      },
+      delete: {
+        summary: "Delete an OAuth client",
+        responses: {
+          "200": {
+            description: "Confirmation of deletion",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: { id: { type: "string" } },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   },
   components: {
     schemas: {
@@ -546,6 +676,7 @@ export const spec = {
       EncryptedData: prismaSchemas.definitions.EncryptedData,
       Service: prismaSchemas.definitions.Service,
       ServiceChannel: prismaSchemas.definitions.ServiceChannel,
+      OAuthClient: prismaSchemas.definitions.OAuthClient,
     },
   },
 };

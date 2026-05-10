@@ -1,6 +1,10 @@
-import { generateBareId, makeEntityId } from "@ubento/services.primitives";
+import {
+  generateBareId,
+  makeEntityId,
+  ubentoEntities,
+} from "@ubento/services.primitives";
 import { NotFoundError, prismaListWithCursor } from "@ubento/services.toolkit";
-import { ServiceSpec } from "../../../../packages/foundations/build/index.js";
+import { ServiceSpecV1 as ServiceSpec } from "@ubento/vertex.core";
 import prisma from "../lib/prisma.js";
 import { serviceBucket, storagePaths } from "../lib/storage.js";
 
@@ -43,7 +47,7 @@ export async function createServiceChannel({
   return prisma.serviceChannel.create({
     data: {
       id: makeEntityId({
-        code: "svc",
+        code: ubentoEntities.serviceChannel.code,
         bareId: generateBareId(),
       }),
       team_id,
