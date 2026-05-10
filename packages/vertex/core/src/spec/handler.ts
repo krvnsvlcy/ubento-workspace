@@ -15,7 +15,7 @@ export type HttpBody = z.infer<typeof httpBodySchema>;
 
 export const httpRequestSchema = z.object({
   method: z.enum(["GET", "POST", "PUT", "DELETE", "PATCH"]),
-  baseUrl: z.url().describe("The base url of the service"),
+  baseUrl: z.url().describe("The base url of the service").optional(),
   path: z.string().describe("The path to make the request to"),
   params: z
     .record(z.string(), z.unknown())

@@ -3,8 +3,12 @@ import type { ServiceSpecV1 } from "@ubento/vertex.core";
 export const spec: ServiceSpecV1 = {
   spec: 1,
   name: "lemonsqueezy",
-  connection: {
-    provider: "lemonsqueezy",
+  connections: {
+    default: {
+      type: "http",
+      provider: "lemonsqueezy",
+      baseUrl: "https://api.lemonsqueezy.com",
+    },
   },
   schemas: {
     order: {
@@ -159,12 +163,13 @@ export const spec: ServiceSpecV1 = {
           },
         },
       },
-      parameters: {},
+      args: {},
       handler: {
         type: "http",
-        method: "GET",
-        origin: "https://api.lemonsqueezy.com",
-        path: "/v1/users/me",
+        request: {
+          method: "GET",
+          path: "/v1/users/me",
+        },
       },
     },
   },
@@ -180,7 +185,7 @@ export const spec: ServiceSpecV1 = {
           },
         },
       },
-      parameters: {
+      args: {
         storeId: {
           schema: { type: "string" },
           required: true,
@@ -202,20 +207,21 @@ export const spec: ServiceSpecV1 = {
       },
       handler: {
         type: "http",
-        method: "POST",
-        origin: "https://api.lemonsqueezy.com",
-        path: "/v1/customers",
-        body: {
-          type: "json",
-          data: {
+        request: {
+          method: "POST",
+          path: "/v1/customers",
+          body: {
+            type: "json",
             data: {
-              type: "customers",
-              attributes: { $resolve: "args.data" },
-              relationships: {
-                store: {
-                  data: {
-                    type: "stores",
-                    id: { $resolve: "args.storeId" },
+              data: {
+                type: "customers",
+                attributes: { $resolve: "args.data" },
+                relationships: {
+                  store: {
+                    data: {
+                      type: "stores",
+                      id: { $resolve: "args.storeId" },
+                    },
                   },
                 },
               },
@@ -235,7 +241,7 @@ export const spec: ServiceSpecV1 = {
           },
         },
       },
-      parameters: {
+      args: {
         customerId: {
           schema: { type: "string" },
           required: true,
@@ -257,19 +263,20 @@ export const spec: ServiceSpecV1 = {
       },
       handler: {
         type: "http",
-        method: "PATCH",
-        origin: "https://api.lemonsqueezy.com",
-        path: "/v1/customers/{customerId}",
-        params: {
-          customerId: { $resolve: "args.customerId" },
-        },
-        body: {
-          type: "json",
-          data: {
+        request: {
+          method: "PATCH",
+          path: "/v1/customers/{customerId}",
+          params: {
+            customerId: { $resolve: "args.customerId" },
+          },
+          body: {
+            type: "json",
             data: {
-              type: "customers",
-              id: { $resolve: "args.customerId" },
-              attributes: { $resolve: "args.data" },
+              data: {
+                type: "customers",
+                id: { $resolve: "args.customerId" },
+                attributes: { $resolve: "args.data" },
+              },
             },
           },
         },
