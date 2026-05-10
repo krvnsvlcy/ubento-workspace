@@ -15,14 +15,14 @@ export const ConnectionsTab: FC<ConnectionsTabProps> = ({
   const teamId = initialTeam?.id || session.teamId;
 
   const { data: connections = [], isFetching } =
-    ubento.integration.useConnections({
-      organization_id: teamId,
+    ubento.vertex.useConnections({
+      team_id: teamId,
     });
-  const { data: providers = [] } = ubento.integration.useConnectionProviders();
-  const { mutate: deleteConnection } = ubento.integration.useDeleteConnection();
+  const { data: providers = [] } = ubento.vertex.useConnectionProviders();
+  const { mutate: deleteConnection } = ubento.vertex.useDeleteConnection();
 
   const getProvider = (providerId: string) =>
-    providers.find((p) => p.id === providerId);
+    providers.find((p: any) => p.id === providerId);
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
@@ -51,7 +51,7 @@ export const ConnectionsTab: FC<ConnectionsTabProps> = ({
               <p className="text-[13px]">No connections yet.</p>
             </div>
           )}
-          {connections.map((conn) => {
+          {connections.map((conn: any) => {
             const provider = getProvider(conn.provider_id);
             return (
               <div

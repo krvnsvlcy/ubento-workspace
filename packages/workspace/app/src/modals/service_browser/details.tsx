@@ -20,7 +20,7 @@ export function ServiceDetails({
   onInstall: (id: string, name: string) => void;
 }) {
   const ubento = useUbento();
-  const { data: service, isLoading } = ubento.module.useModule(serviceId);
+  const { data: service, isLoading } = ubento.vertex.useService(serviceId);
 
   if (isLoading) {
     return (
@@ -60,7 +60,7 @@ export function ServiceDetails({
               )}
             </div>
             <Text tone="subtle">
-              {service.summary || "Powerful integration for your workspace."}
+              {service.description || "Powerful integration for your workspace."}
             </Text>
           </div>
           {!isInstalled && (
@@ -81,7 +81,7 @@ export function ServiceDetails({
                 About this service
               </h3>
               <p className="text-[14px] text-neutral-content-muted leading-relaxed">
-                {service.summary}
+                {service.description || "No description available."}
               </p>
             </section>
 

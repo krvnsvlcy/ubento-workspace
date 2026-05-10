@@ -64,7 +64,7 @@ function ServiceCard({
           )}
         </div>
         <p className="text-[12px] text-neutral-content-muted line-clamp-1 leading-relaxed">
-          {service.summary ||
+          {service.description ||
             "Powerful integration to enhance your workspace productivity."}
         </p>
       </div>
@@ -89,16 +89,14 @@ export function ServiceBrowser({
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
 
-  const { data: services, isLoading } = ubento.module.useModules({
-    team_id: session.teamId,
-    type: "service",
+  const { data: services, isLoading } = ubento.vertex.useServices({
     limit: 100,
   });
 
-  const filtered = services?.filter((s) => {
+  const filtered = services?.filter((s: any) => {
     const matchesQuery =
       s.name.toLowerCase().includes(query.toLowerCase()) ||
-      s.summary?.toLowerCase().includes(query.toLowerCase());
+      s.description?.toLowerCase().includes(query.toLowerCase());
     const matchesCategory = activeCategory === "all";
     return matchesQuery && matchesCategory;
   });
@@ -173,12 +171,12 @@ export function ServiceBrowser({
               </div>
             ) : (
               <div className="grid grid-cols-2 gap-3 pb-6">
-                {filtered?.map((service) => (
+                {filtered?.map((service: any) => (
                   <ServiceCard
                     key={service.id}
                     service={service}
                     isInstalled={Object.values(installedServices).some(
-                      (s: any) => s.module.id === service.id,
+                      (s: any) => (s.module?.id || s.service_id) === service.id,
                     )}
                     onSelect={onSelectService}
                   />

@@ -60,7 +60,9 @@ export async function listServices({
     cursor,
     orderBy: [{ id: "asc" }],
     where: {
-      deleted_at: null,
+      deleted_at: {
+        isSet: false,
+      },
       ...(team_id && { team_id }),
       ...(scope && { scope }),
       ...(name && {

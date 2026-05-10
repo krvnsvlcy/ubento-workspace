@@ -6,10 +6,10 @@ import {
   UseStoreOptions,
 } from "@ubento/fabric";
 import { ubentoEntities } from "@ubento/services.primitives";
-import { integrationClient, UbentoSDK } from "@ubento/services.sdk";
+import { vertexClient, UbentoSDK } from "@ubento/services.sdk";
 import { UbentoApiPage, ubentoToFabricPagedResponse } from "../libs/pagination";
 
-export function createUbentoIntegrationService({
+export function createUbentoVertexService({
   ubentoSdk,
 }: {
   ubentoSdk: UbentoSDK;
@@ -17,21 +17,21 @@ export function createUbentoIntegrationService({
   // --- Stores ---
 
   const connectionProviderStore = createStore<
-    integrationClient.ConnectionProvider,
-    { organization_id?: string; name?: string },
+    vertexClient.ConnectionProvider,
+    { team_id?: string; name?: string },
     UbentoApiPage
   >({
     namespace: ubentoEntities.connectionProvider.name,
     getKey: (cp) => cp.id,
     fetchOne: async (key) => {
-      return await ubentoSdk.integration.getConnectionProvider(key);
+      return await ubentoSdk.vertex.getConnectionProvider(key);
     },
     fetchMany: async ({ page, params }) => {
       return ubentoToFabricPagedResponse(
-        await ubentoSdk.integration.listConnectionProviders({
+        await ubentoSdk.vertex.listConnectionProviders({
           cursor: page?.cursor,
           limit: page?.limit,
-          organization_id: params?.organization_id,
+          team_id: params?.team_id,
           name: params?.name,
         }),
       );
@@ -51,29 +51,61 @@ export function createUbentoIntegrationService({
   });
 
   const connectionStore = createStore<
-    integrationClient.Connection,
-    { organization_id?: string },
+    vertexClient.Connection,
+    { team_id?: string },
     UbentoApiPage
   >({
     namespace: ubentoEntities.connection.name,
     getKey: (c) => c.id,
     fetchOne: async (key) => {
-      return await ubentoSdk.integration.getConnection(key);
+      return await ubentoSdk.vertex.getConnection(key);
     },
     fetchMany: async ({ page, params }) => {
       return ubentoToFabricPagedResponse(
-        await ubentoSdk.integration.listConnections({
+        await ubentoSdk.vertex.listConnections({
           cursor: page?.cursor,
           limit: page?.limit,
-          organization_id: params?.organization_id,
+          team_id: params?.team_id,
         }),
       );
     },
     project: (entities, params) => {
       return [...entities].filter((c) => {
         if (
-          params?.organization_id &&
-          c.organization_id !== params.organization_id
+          params?.team_id &&
+          c.team_id !== params.team_id
+        )
+          return false;
+        return true;
+      });
+    },
+  });
+
+  const serviceStore = createStore<
+    vertexClient.Service,
+    { team_id?: string; name?: string },
+    UbentoApiPage
+  >({
+    namespace: "service",
+    getKey: (s) => s.id,
+    fetchOne: async (key) => {
+      return await ubentoSdk.vertex.getService(key);
+    },
+    fetchMany: async ({ page, params }) => {
+      return ubentoToFabricPagedResponse(
+        await ubentoSdk.vertex.listServices({
+          cursor: page?.cursor,
+          limit: page?.limit,
+          team_id: params?.team_id,
+          name: params?.name,
+        }),
+      );
+    },
+    project: (entities, params) => {
+      return [...entities].filter((s) => {
+        if (
+          params?.name &&
+          !s.name.toLowerCase().includes(params.name.toLowerCase())
         )
           return false;
         return true;
@@ -89,7 +121,7 @@ export function createUbentoIntegrationService({
       return useStoreEntity(connectionProviderStore, providerId, options);
     },
     useConnectionProviders: (
-      params?: { organization_id?: string; name?: string },
+      params?: { team_id?: string; name?: string },
       options?: UseStoreOptions,
     ) => {
       return useStoreEntities(connectionProviderStore, params, options);
@@ -100,7 +132,7 @@ export function createUbentoIntegrationService({
       return useStoreEntity(connectionStore, connectionId, options);
     },
     useConnections: (
-      params?: { organization_id?: string },
+      params?: { team_id?: string },
       options?: UseStoreOptions,
     ) => {
       return useStoreEntities(connectionStore, params, options);
@@ -108,11 +140,11 @@ export function createUbentoIntegrationService({
     useCreateConnection: () => {
       return useMutation({
         mutationFn: async (data: {
-          organization_id: string;
+          team_id: string;
           provider_id: string;
           auth?: Record<string, any>;
         }) => {
-          return await ubentoSdk.integration.createConnection(data);
+          return await ubentoSdk.vertex.createConnection(data);
         },
         onSuccess: (connection) => {
           connectionStore.push(connection);
@@ -122,12 +154,23 @@ export function createUbentoIntegrationService({
     useDeleteConnection: () => {
       return useMutation({
         mutationFn: async (connectionId: string) => {
-          return await ubentoSdk.integration.deleteConnection(connectionId);
+          return await ubentoSdk.vertex.deleteConnection(connectionId);
         },
         onSuccess: (_, connectionId) => {
           connectionStore.remove(connectionId);
         },
       });
+    },
+
+    // Services
+    useService: (serviceId: string, options?: UseStoreOptions) => {
+      return useStoreEntity(serviceStore, serviceId, options);
+    },
+    useServices: (
+      params?: { team_id?: string; name?: string; limit?: number; cursor?: string },
+      options?: UseStoreOptions,
+    ) => {
+      return useStoreEntities(serviceStore, params, options);
     },
   };
 
@@ -135,33 +178,43 @@ export function createUbentoIntegrationService({
 
   const imperatives = {
     getConnectionProvider: async (id: string) => {
-      const cp = await ubentoSdk.integration.getConnectionProvider(id);
+      const cp = await ubentoSdk.vertex.getConnectionProvider(id);
       connectionProviderStore.push(cp);
       return cp;
     },
     getConnectionProviders: async (params: any = {}) => {
-      const res = await ubentoSdk.integration.listConnectionProviders(params);
+      const res = await ubentoSdk.vertex.listConnectionProviders(params);
       connectionProviderStore.pushMany(res.data);
       return res;
     },
     getConnection: async (id: string) => {
-      const c = await ubentoSdk.integration.getConnection(id);
+      const c = await ubentoSdk.vertex.getConnection(id);
       connectionStore.push(c);
       return c;
     },
     getConnections: async (params: any = {}) => {
-      const res = await ubentoSdk.integration.listConnections(params);
+      const res = await ubentoSdk.vertex.listConnections(params);
       connectionStore.pushMany(res.data);
       return res;
     },
     createConnection: async (data: any) => {
-      const c = await ubentoSdk.integration.createConnection(data);
+      const c = await ubentoSdk.vertex.createConnection(data);
       connectionStore.push(c);
       return c;
     },
     deleteConnection: async (id: string) => {
-      const res = await ubentoSdk.integration.deleteConnection(id);
+      const res = await ubentoSdk.vertex.deleteConnection(id);
       connectionStore.remove(id);
+      return res;
+    },
+    getService: async (id: string) => {
+      const s = await ubentoSdk.vertex.getService(id);
+      serviceStore.push(s);
+      return s;
+    },
+    getServices: async (params: any = {}) => {
+      const res = await ubentoSdk.vertex.listServices(params);
+      serviceStore.pushMany(res.data);
       return res;
     },
   };

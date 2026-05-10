@@ -2,7 +2,7 @@ import { UbentoSDK } from "@ubento/services.sdk";
 import { Logger } from "@ubento/telemetry";
 import { createUbentoBillingService } from "./services/billing";
 import { createUbentoIamService } from "./services/iam";
-import { createUbentoIntegrationService } from "./services/integration";
+import { createUbentoVertexService } from "./services/vertex";
 import { createUbentoIntelligenceService } from "./services/intelligence";
 import { createUbentoModuleService } from "./services/module";
 import { createUbentoWorkspaceService } from "./services/workspace";
@@ -16,7 +16,7 @@ export function createUbentoService({ ubentoSdk, logger }: { ubentoSdk: UbentoSD
     workspace: createUbentoWorkspaceService({ ubentoSdk }),
     intelligence: createUbentoIntelligenceService({ ubentoSdk }),
     billing: createUbentoBillingService({ ubentoSdk }),
-    integration: createUbentoIntegrationService({ ubentoSdk }),
+    vertex: createUbentoVertexService({ ubentoSdk }),
   };
 }
 
