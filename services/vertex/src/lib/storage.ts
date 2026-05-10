@@ -6,12 +6,17 @@ export const serviceBucket = storage.bucket(env.GCP_SERVICE_BUCKET_NAME);
 
 export const storagePaths = {
   serviceSpecFile: ({
-    team_id,
-    service_name,
-    version_name,
+    scope,
+    service,
+    channel,
   }: {
-    team_id: string;
-    service_name: string;
-    version_name: string;
-  }) => `${team_id}/${service_name}/${version_name}/spec.json`,
+    scope?: string;
+    service: string;
+    channel: string;
+  }) => {
+    if (scope) {
+      return `${scope}/${service}/${channel}/spec.json`;
+    }
+    return `__public__/${service}/${channel}/spec.json`;
+  },
 };

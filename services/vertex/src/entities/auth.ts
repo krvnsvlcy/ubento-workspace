@@ -1,12 +1,9 @@
 import { ValidationError } from "@ubento/services.toolkit";
+import { ConnectionCredentials } from "@ubento/vertex.core";
 import get from "lodash.get";
 import z from "zod";
 import prisma from "../lib/prisma.js";
-import {
-  ConnectionAuth,
-  createConnection,
-  updateConnectionAuth,
-} from "./connection.js";
+import { createConnection, updateConnectionAuth } from "./connection.js";
 import {
   connectionProviderConfigSchema,
   getConnectionProvider,
@@ -19,7 +16,7 @@ import {
 export function parseOAuthData(
   tokenResponse: Record<string, any>,
   config: z.infer<typeof connectionProviderConfigSchema>,
-): Extract<ConnectionAuth, { type: "oauth2" }> {
+): Extract<ConnectionCredentials, { type: "oauth2" }> {
   const authConfig = config.authStrategies?.find((s) => s.type === "oauth2");
 
   // Safety check: ensure we are actually dealing with an OAuth2 provider
@@ -27,7 +24,7 @@ export function parseOAuthData(
     throw new Error("Cannot parse OAuth data for a non-oauth2 provider config");
   }
 
-  const mapping = authConfig.tokenResponseMapping;
+  const mapping = authConfig.tokenMapping;
 
   return {
     type: "oauth2",
@@ -42,12 +39,12 @@ export function parseOAuthData(
 
 export async function getAuthUrl({
   providerId,
-  organizationId,
+  teamId,
   redirectUri,
   state,
 }: {
   providerId: string;
-  organizationId: string;
+  teamId: string;
   redirectUri: string;
   state?: string;
 }) {
@@ -67,7 +64,7 @@ export async function getAuthUrl({
   // 2. Create the OAuth state record
   const connState = await prisma.oAuthConnectionState.create({
     data: {
-      organization_id: organizationId,
+      team_id: teamId,
       provider_id: providerId,
       expires_at: new Date(Date.now() + 5 * 60 * 1000), // in 5 minutes
       state,
@@ -185,7 +182,7 @@ export async function handleOAuthCallback(
   // 6. Find or create connection
   let connection = await prisma.connection.findFirst({
     where: {
-      organization_id: stateRecord.organization_id,
+      team_id: stateRecord.team_id,
       provider_id: stateRecord.provider_id,
     },
   });
@@ -200,7 +197,7 @@ export async function handleOAuthCallback(
     };
   } else {
     const created = await createConnection({
-      organization_id: stateRecord.organization_id,
+      team_id: stateRecord.team_id,
       provider_id: stateRecord.provider_id,
       auth: authData,
     });

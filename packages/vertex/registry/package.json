@@ -1,0 +1,50 @@
+{
+  "name": "@ubento/services-finance",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsx scripts/build.ts build --all",
+    "deploy": "tsx scripts/deploy.ts deploy --all",
+    "watch": "scripts watch",
+    "dev": "scripts dev"
+  },
+  "dependencies": {
+    "@doist/todoist-api-typescript": "^2.1.2",
+    "@hubspot/api-client": "^13.5.0",
+    "@lemonsqueezy/lemonsqueezy.js": "^3.3.0",
+    "@linear/sdk": "^30.0.0",
+    "@notionhq/client": "^2.2.15",
+    "@supabase/supabase-js": "^2.46.1",
+    "@ubento/bento.service": "workspace:*",
+    "@ubento/vertex.core": "workspace:*",
+    "@ubento/fabric": "workspace:*",
+    "@ubento/services.sdk": "workspace:*",
+    "@vercel/client": "^17.4.0",
+    "airtable": "^0.12.2",
+    "aws-sdk": "^2.1691.0",
+    "axios": "^1.7.7",
+    "cloudflare": "^4.0.0",
+    "coinbase-node": "^0.2.1",
+    "digitalocean": "^1.2.1",
+    "googleapis": "^144.0.0",
+    "intercom-client": "^6.1.1",
+    "node-hue-api": "^5.0.0-beta.10",
+    "octokit": "^4.0.2",
+    "plaid": "^28.0.0",
+    "plausible-api": "^1.0.1",
+    "posthog-node": "^4.2.1",
+    "resend": "^4.0.1",
+    "snoowrap": "^1.23.0",
+    "spotify-web-api-node": "^5.0.2",
+    "stripe": "^17.4.0",
+    "twitter-api-v2": "^1.18.1",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@microsoft/api-extractor": "^7.53.1",
+    "@types/mime-types": "^3.0.1",
+    "@types/node": "^22.9.0",
+    "mime-types": "^3.0.2"
+  }
+}

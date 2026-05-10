@@ -46,7 +46,7 @@ router.get(
   chain(
     validate({
       query: z.object({
-        organization_id: z.string().optional(),
+        team_id: z.string().optional(),
         name: z.string().optional(),
         cursor: z.string().optional(),
         limit: z.coerce.number().optional(),
@@ -55,7 +55,7 @@ router.get(
     async (req: Request, res: Response) => {
       const result = await listConnectionProviders({
         ...parseCursorQuery(req),
-        organization_id: parseStringQuery(req, "organization_id"),
+        team_id: parseStringQuery(req, "team_id"),
         name: parseStringQuery(req, "name"),
       });
       res.json(result);
@@ -68,7 +68,7 @@ router.post(
   chain(
     validate({
       body: z.object({
-        organization_id: z.string().min(1),
+        team_id: z.string().min(1),
         name: z.string().min(1),
         display_name: z.string().min(1),
         description: z.string().optional(),

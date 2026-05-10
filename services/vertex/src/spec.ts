@@ -12,7 +12,7 @@ export const spec = {
       get: {
         summary: "List all connection providers",
         parameters: [
-          { name: "organization_id", in: "query", schema: { type: "string" } },
+          { name: "team_id", in: "query", schema: { type: "string" } },
           { name: "name", in: "query", schema: { type: "string" } },
           { name: "cursor", in: "query", schema: { type: "string" } },
           { name: "limit", in: "query", schema: { type: "number" } },
@@ -38,13 +38,13 @@ export const spec = {
               schema: {
                 type: "object",
                 properties: {
-                  organization_id: { type: "string" },
+                  team_id: { type: "string" },
                   name: { type: "string" },
                   display_name: { type: "string" },
                   description: { type: "string", nullable: true },
                   config: { type: "object", nullable: true },
                 },
-                required: ["organization_id", "name", "display_name"],
+                required: ["team_id", "name", "display_name"],
               },
             },
           },
@@ -132,7 +132,7 @@ export const spec = {
       get: {
         summary: "List all connections",
         parameters: [
-          { name: "organization_id", in: "query", schema: { type: "string" } },
+          { name: "team_id", in: "query", schema: { type: "string" } },
           { name: "cursor", in: "query", schema: { type: "string" } },
           { name: "limit", in: "query", schema: { type: "number" } },
         ],
@@ -157,11 +157,11 @@ export const spec = {
               schema: {
                 type: "object",
                 properties: {
-                  organization_id: { type: "string" },
+                  team_id: { type: "string" },
                   provider_id: { type: "string" },
                   auth: { type: "object", nullable: true },
                 },
-                required: ["organization_id", "provider_id"],
+                required: ["team_id", "provider_id"],
               },
             },
           },
@@ -249,6 +249,294 @@ export const spec = {
         },
       },
     },
+    "/vertex/services": {
+      get: {
+        summary: "List all services",
+        parameters: [
+          { name: "team_id", in: "query", schema: { type: "string" } },
+          { name: "scope", in: "query", schema: { type: "string" } },
+          { name: "name", in: "query", schema: { type: "string" } },
+          { name: "cursor", in: "query", schema: { type: "string" } },
+          { name: "limit", in: "query", schema: { type: "number" } },
+        ],
+        responses: {
+          "200": {
+            description: "A list of services",
+            content: {
+              "application/json": {
+                schema: makeCursorPageResponseSchema({
+                  $ref: "#/components/schemas/Service",
+                }),
+              },
+            },
+          },
+        },
+      },
+      post: {
+        summary: "Create a service",
+        requestBody: {
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  team_id: { type: "string" },
+                  scope: { type: "string" },
+                  name: { type: "string" },
+                  display_name: { type: "string" },
+                  description: { type: "string", nullable: true },
+                  config: { type: "object", nullable: true },
+                },
+                required: ["team_id", "name", "display_name"],
+              },
+            },
+          },
+        },
+        responses: {
+          "200": {
+            description: "The created service",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Service" },
+              },
+            },
+          },
+        },
+      },
+    },
+    "/vertex/services/{service_id}": {
+      parameters: [
+        {
+          name: "service_id",
+          in: "path",
+          schema: { type: "string" },
+          required: true,
+        },
+      ],
+      get: {
+        summary: "Get a service",
+        responses: {
+          "200": {
+            description: "The service",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Service" },
+              },
+            },
+          },
+        },
+      },
+      patch: {
+        summary: "Update a service",
+        requestBody: {
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  name: { type: "string" },
+                  display_name: { type: "string" },
+                  description: { type: "string", nullable: true },
+                  config: { type: "object", nullable: true },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          "200": {
+            description: "The updated service",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Service" },
+              },
+            },
+          },
+        },
+      },
+      delete: {
+        summary: "Delete a service",
+        responses: {
+          "200": {
+            description: "Confirmation of deletion",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: { id: { type: "string" } },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    "/vertex/services/{service_id}/channels": {
+      parameters: [
+        {
+          name: "service_id",
+          in: "path",
+          schema: { type: "string" },
+          required: true,
+        },
+      ],
+      get: {
+        summary: "List all service channels",
+        parameters: [
+          { name: "cursor", in: "query", schema: { type: "string" } },
+          { name: "limit", in: "query", schema: { type: "number" } },
+        ],
+        responses: {
+          "200": {
+            description: "A list of service channels",
+            content: {
+              "application/json": {
+                schema: makeCursorPageResponseSchema({
+                  $ref: "#/components/schemas/ServiceChannel",
+                }),
+              },
+            },
+          },
+        },
+      },
+      post: {
+        summary: "Create a service channel",
+        requestBody: {
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  team_id: { type: "string" },
+                  name: { type: "string" },
+                },
+                required: ["team_id", "name"],
+              },
+            },
+          },
+        },
+        responses: {
+          "200": {
+            description: "The created service channel",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ServiceChannel" },
+              },
+            },
+          },
+        },
+      },
+    },
+    "/vertex/service-channels/{service_channel_id}": {
+      parameters: [
+        {
+          name: "service_channel_id",
+          in: "path",
+          schema: { type: "string" },
+          required: true,
+        },
+      ],
+      get: {
+        summary: "Get a service channel",
+        responses: {
+          "200": {
+            description: "The service channel",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ServiceChannel" },
+              },
+            },
+          },
+        },
+      },
+      patch: {
+        summary: "Update a service channel",
+        requestBody: {
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  name: { type: "string" },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          "200": {
+            description: "The updated service channel",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ServiceChannel" },
+              },
+            },
+          },
+        },
+      },
+      delete: {
+        summary: "Delete a service channel",
+        responses: {
+          "200": {
+            description: "Confirmation of deletion",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: { id: { type: "string" } },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    "/vertex/service-channels/{service_channel_id}/spec": {
+      parameters: [
+        {
+          name: "service_channel_id",
+          in: "path",
+          schema: { type: "string" },
+          required: true,
+        },
+      ],
+      get: {
+        summary: "Get the spec for a service channel",
+        responses: {
+          "200": {
+            description: "The service spec",
+            content: {
+              "application/json": {
+                schema: { type: "object" },
+              },
+            },
+          },
+        },
+      },
+      post: {
+        summary: "Upload the spec for a service channel",
+        requestBody: {
+          content: {
+            "application/json": {
+              schema: { type: "object" },
+            },
+          },
+        },
+        responses: {
+          "200": {
+            description: "Confirmation of upload",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: { success: { type: "boolean" } },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   },
   components: {
     schemas: {
@@ -256,8 +544,8 @@ export const spec = {
       Connection: prismaSchemas.definitions.Connection,
       OAuthConnectionState: prismaSchemas.definitions.OAuthConnectionState,
       EncryptedData: prismaSchemas.definitions.EncryptedData,
-      Extension: prismaSchemas.definitions.Extension,
-      ExtensionVersion: prismaSchemas.definitions.ExtensionVersion,
+      Service: prismaSchemas.definitions.Service,
+      ServiceChannel: prismaSchemas.definitions.ServiceChannel,
     },
   },
 };

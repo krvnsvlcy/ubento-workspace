@@ -1,7 +1,4 @@
-import {
-  Connection,
-  ConnectionProvider,
-} from "@ubento/services.database/vertex";
+import { Connection } from "@ubento/services.database/vertex";
 import {
   generateBareId,
   makeEntityId,
@@ -15,8 +12,9 @@ import {
 import {
   ConnectionAuth,
   connectionAuthSchema,
+  ConnectionProviderConfig,
   ConnectionSpec,
-} from "@ubento/vertex.core";
+} from "../../../../packages/foundations/build/index.js";
 import { cryptoUtils } from "../lib/crypto.js";
 import prisma from "../lib/prisma.js";
 import {
@@ -26,7 +24,10 @@ import {
 
 export type SafeConnection = Omit<Connection, "auth">;
 export type ConnectionWithAuth = SafeConnection & {
-  provider: ConnectionProvider;
+  provider: {
+    name: string;
+    config: ConnectionProviderConfig;
+  };
   auth?: ConnectionAuth;
 };
 
@@ -36,18 +37,18 @@ function safeConnection<T extends Connection>(connection: T): Omit<T, "auth"> {
 }
 
 export async function listConnections({
-  organization_id,
+  team_id,
   cursor,
   limit,
 }: {
-  organization_id?: string;
+  team_id?: string;
   cursor?: string;
   limit?: number;
 }) {
   const result = await prismaListWithCursor(prisma.connection, {
     limit,
     cursor,
-    where: { ...(organization_id && { organization_id }) },
+    where: { ...(team_id && { team_id }) },
     include: { provider: true },
     orderBy: [{ created_at: "desc" }, { id: "desc" }],
     resolveCursor: (c) => ({ id: c.id }),
@@ -55,7 +56,7 @@ export async function listConnections({
 
   return {
     ...result,
-    items: result.items.map(safeConnection),
+    data: result.data.map(safeConnection),
   };
 }
 
@@ -97,6 +98,10 @@ export async function getConnectionWithAuth(
 
   return {
     ...safeConn,
+    provider: {
+      ...safeConn.provider,
+      config: safeConn.provider.config as unknown as ConnectionProviderConfig,
+    },
     auth: parsedAuthData,
   };
 }
@@ -105,7 +110,9 @@ export async function getTeamConnectionWithAuth(
   connectionSpec: ConnectionSpec,
 ): Promise<ConnectionWithAuth | undefined> {
   const connection = await prisma.connection.findUnique({
-    where: { provider_id_organization_id: { provider_id, organization_id } },
+    where: {
+      provider_id_team_id: { provider_id: connectionSpec.provider, team_id },
+    },
     include: { provider: true },
   });
   if (!connection) {
@@ -131,16 +138,20 @@ export async function getTeamConnectionWithAuth(
 
   return {
     ...safeConn,
+    provider: {
+      ...safeConn.provider,
+      config: safeConn.provider.config as unknown as ConnectionProviderConfig,
+    },
     auth: parsedAuthData,
-  } as ConnectionWithAuth;
+  };
 }
 
 export async function createConnection({
-  organization_id,
+  team_id,
   provider_id,
   auth,
 }: {
-  organization_id: string;
+  team_id: string;
   provider_id: string;
   auth?: unknown;
 }) {
@@ -168,7 +179,7 @@ export async function createConnection({
     const result = await prisma.connection.create({
       data: {
         id: newConnectionId,
-        organization_id,
+        team_id,
         provider_id,
       },
     });
@@ -193,9 +204,9 @@ export async function createConnection({
   const encryptedData = await cryptoUtils.encrypt(JSON.stringify(authData));
   const result = await prisma.connection.upsert({
     where: {
-      provider_id_organization_id: {
+      provider_id_team_id: {
         provider_id,
-        organization_id,
+        team_id,
       },
     },
     update: {
@@ -208,7 +219,7 @@ export async function createConnection({
     },
     create: {
       id: newConnectionId,
-      organization_id,
+      team_id,
       provider_id,
       auth_strategy: authData.type,
       auth: {

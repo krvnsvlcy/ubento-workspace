@@ -1,17 +1,17 @@
 import z from "zod";
-import { handlerSchema } from "./handler";
+import { operationHandlerSchema } from "./handler";
 import { schemaSchema } from "./schema";
 
-export const actionManifestSchema = z.object({
+export const operationSpecSchema = z.object({
   name: z.string(),
   schema: schemaSchema,
-  parameters: z.record(
+  args: z.record(
     z.string(),
     z.object({
       schema: schemaSchema,
       required: z.boolean().optional(),
     }),
   ),
-  handler: handlerSchema,
+  handler: operationHandlerSchema,
 });
-export type ActionSpec = z.infer<typeof actionManifestSchema>;
+export type OperationSpec = z.infer<typeof operationSpecSchema>;

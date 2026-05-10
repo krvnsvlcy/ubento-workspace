@@ -5,6 +5,7 @@ import {
   ubentoEntities,
 } from "@ubento/services.primitives";
 import { prismaListWithCursor } from "@ubento/services.toolkit";
+import { httpOperationHandlerSchema } from "@ubento/vertex.core";
 import { z } from "zod";
 import prisma from "../lib/prisma.js";
 
@@ -18,26 +19,10 @@ export type BasicAuthConfig = z.infer<typeof basicAuthConfigSchema>;
 
 export const oauth2ConfigSchema = z.object({
   type: z.literal("oauth2"),
-  authorizationUrl: z.string(),
-  clientId: z.string(),
-  clientSecret: z.string(),
-  scopes: z.array(z.string()),
-  tokenUrl: z.string(),
-  tokenResponseMapping: z
-    .object({
-      accessToken: z.string().default("access_token"),
-      refreshToken: z.string().default("refresh_token"),
-      expiresIn: z.string().default("expires_in"),
-      tokenType: z.string().default("token_type"),
-      scope: z.string().default("scope"),
-    })
-    .default({
-      accessToken: "access_token",
-      refreshToken: "refresh_token",
-      expiresIn: "expires_in",
-      tokenType: "token_type",
-      scope: "scope",
-    }),
+  handlers: z.object({
+    authorize: httpOperationHandlerSchema,
+    token: httpOperationHandlerSchema,
+  }),
 });
 
 export type OAuth2Config = z.infer<typeof oauth2ConfigSchema>;
@@ -81,12 +66,12 @@ export type ConnectionProviderConfig = z.infer<
 >;
 
 export async function listConnectionProviders({
-  organization_id,
+  team_id,
   name,
   cursor,
   limit,
 }: {
-  organization_id?: string;
+  team_id?: string;
   name?: string;
   cursor?: string;
   limit?: number;
@@ -96,8 +81,8 @@ export async function listConnectionProviders({
     cursor,
     orderBy: [{ id: "asc" }],
     where: {
-      // Keep organization_id scoped if provided
-      ...(organization_id && { organization_id }),
+      // Keep team_id scoped if provided
+      ...(team_id && { team_id }),
 
       // Correct Substring check for MongoDB in Prisma
       ...(name && {
@@ -115,13 +100,13 @@ export async function getConnectionProvider(id: string) {
 }
 
 export async function createConnectionProvider({
-  organization_id,
+  team_id,
   name,
   display_name,
   description,
   config,
 }: {
-  organization_id: string;
+  team_id: string;
   name: string;
   display_name: string;
   description?: string | null;
@@ -133,7 +118,7 @@ export async function createConnectionProvider({
         code: ubentoEntities.connectionProvider.code,
         bareId: generateBareId(),
       }),
-      organization_id,
+      team_id,
       name,
       display_name,
       description,

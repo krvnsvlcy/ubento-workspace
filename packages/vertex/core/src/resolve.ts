@@ -5,7 +5,7 @@ import dlv from "dlv";
  * { "$resolve": "path.to.value" } signatures with the actual value from the context.
  */
 export function resolveObject<T = any>(
-  template: any,
+  template: T,
   context: Record<string, any>,
 ): T {
   // 1. Base case: Return null, undefined, or primitive values directly

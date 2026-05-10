@@ -17,20 +17,20 @@ router.get(
     validate({
       query: z.object({
         provider_id: z.string().min(1),
-        organization_id: z.string().min(1),
+        team_id: z.string().min(1),
         state: z.string().optional(),
       }),
     }),
     async (req: Request, res: Response) => {
-      const { provider_id, organization_id, state } = req.query as {
+      const { provider_id, team_id, state } = req.query as {
         provider_id: string;
-        organization_id: string;
+        team_id: string;
         state?: string;
       };
 
       const authUrl = await getAuthUrl({
         providerId: provider_id,
-        organizationId: organization_id,
+        teamId: team_id,
         redirectUri: getRedirectUri(req),
         state,
       });

@@ -11,13 +11,13 @@
           "type": "string",
           "default": "connection_provider"
         },
-        "team_id": {
+        "code": {
+          "type": "string"
+        },
+        "type": {
           "type": "string"
         },
         "name": {
-          "type": "string"
-        },
-        "display_name": {
           "type": "string"
         },
         "description": {
@@ -51,9 +51,9 @@
       },
       "required": [
         "id",
-        "team_id",
+        "code",
+        "type",
         "name",
-        "display_name",
         "updated_at"
       ]
     },
@@ -70,24 +70,20 @@
         "team_id": {
           "type": "string"
         },
-        "provider_id": {
+        "name": {
           "type": "string"
         },
-        "auth_strategy": {
+        "description": {
           "type": [
             "string",
             "null"
           ]
         },
-        "auth": {
-          "anyOf": [
-            {
-              "$ref": "#/definitions/EncryptedData"
-            },
-            {
-              "type": "null"
-            }
-          ]
+        "provider_id": {
+          "type": "string"
+        },
+        "credentials": {
+          "$ref": "#/definitions/EncryptedData"
         },
         "version": {
           "type": "integer",
@@ -105,6 +101,52 @@
       "required": [
         "id",
         "team_id",
+        "name",
+        "provider_id",
+        "updated_at"
+      ]
+    },
+    "OAuthClient": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "entity": {
+          "type": "string",
+          "default": "oauth_client"
+        },
+        "team_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "name": {
+          "type": "string"
+        },
+        "provider_id": {
+          "type": "string"
+        },
+        "credentials": {
+          "$ref": "#/definitions/EncryptedData"
+        },
+        "version": {
+          "type": "integer",
+          "default": 1
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "name",
         "provider_id",
         "updated_at"
       ]
@@ -122,7 +164,7 @@
         "team_id": {
           "type": "string"
         },
-        "provider_id": {
+        "oauth_client_id": {
           "type": "string"
         },
         "state": {
@@ -156,7 +198,7 @@
       },
       "required": [
         "team_id",
-        "provider_id",
+        "oauth_client_id",
         "expires_at",
         "updated_at"
       ]
@@ -173,6 +215,10 @@
         },
         "team_id": {
           "type": "string"
+        },
+        "scope": {
+          "type": "string",
+          "default": "__public__"
         },
         "name": {
           "type": "string"
@@ -224,7 +270,7 @@
         "updated_at"
       ]
     },
-    "ServiceVersion": {
+    "ServiceChannel": {
       "type": "object",
       "properties": {
         "id": {
@@ -240,7 +286,7 @@
         "service_id": {
           "type": "string"
         },
-        "label": {
+        "name": {
           "type": "string"
         },
         "version": {
@@ -267,7 +313,7 @@
         "id",
         "team_id",
         "service_id",
-        "label",
+        "name",
         "updated_at"
       ]
     },
@@ -299,14 +345,17 @@
     "connection": {
       "$ref": "#/definitions/Connection"
     },
+    "oAuthClient": {
+      "$ref": "#/definitions/OAuthClient"
+    },
     "oAuthConnectionState": {
       "$ref": "#/definitions/OAuthConnectionState"
     },
     "service": {
       "$ref": "#/definitions/Service"
     },
-    "serviceVersion": {
-      "$ref": "#/definitions/ServiceVersion"
+    "serviceChannel": {
+      "$ref": "#/definitions/ServiceChannel"
     }
   }
 }

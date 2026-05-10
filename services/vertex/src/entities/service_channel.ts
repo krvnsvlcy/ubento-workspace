@@ -1,0 +1,117 @@
+import { generateBareId, makeEntityId } from "@ubento/services.primitives";
+import { NotFoundError, prismaListWithCursor } from "@ubento/services.toolkit";
+import { ServiceSpec } from "../../../../packages/foundations/build/index.js";
+import prisma from "../lib/prisma.js";
+import { serviceBucket, storagePaths } from "../lib/storage.js";
+
+export async function listServiceChannels({
+  service_id,
+  cursor,
+  limit,
+}: {
+  service_id: string;
+  cursor?: string;
+  limit?: number;
+}) {
+  return prismaListWithCursor(prisma.serviceChannel, {
+    limit,
+    cursor,
+    orderBy: [{ id: "asc" }],
+    where: {
+      service_id,
+      deleted_at: null,
+    },
+    resolveCursor: (p) => ({ id: p.id }),
+  });
+}
+
+export async function getServiceChannel(id: string) {
+  const channel = await prisma.serviceChannel.findUnique({ where: { id } });
+  if (channel?.deleted_at) return null;
+  return channel;
+}
+
+export async function createServiceChannel({
+  team_id,
+  service_id,
+  name,
+}: {
+  team_id: string;
+  service_id: string;
+  name: string;
+}) {
+  return prisma.serviceChannel.create({
+    data: {
+      id: makeEntityId({
+        code: "svc",
+        bareId: generateBareId(),
+      }),
+      team_id,
+      service_id,
+      name,
+    },
+  });
+}
+
+export async function updateServiceChannel(
+  id: string,
+  data: {
+    name?: string;
+  },
+) {
+  return prisma.serviceChannel.update({ where: { id }, data });
+}
+
+export async function deleteServiceChannel(id: string) {
+  return prisma.serviceChannel.update({
+    where: { id },
+    data: { deleted_at: new Date() },
+  });
+}
+
+export async function getServiceChannelSpec(id: string): Promise<ServiceSpec> {
+  const channel = await prisma.serviceChannel.findUnique({
+    where: { id },
+    include: { service: true },
+  });
+  if (!channel || channel.deleted_at) {
+    throw new NotFoundError(`service_channel ${id}`);
+  }
+
+  const filePath = storagePaths.serviceSpecFile({
+    scope: channel.service.scope,
+    service: channel.service.name,
+    channel: channel.name,
+  });
+
+  try {
+    const [content] = await serviceBucket.file(filePath).download();
+    return JSON.parse(content.toString("utf-8")) as ServiceSpec;
+  } catch (error: any) {
+    if (error.code === 404) {
+      throw new NotFoundError(`spec for service_channel ${id}`);
+    }
+    throw error;
+  }
+}
+
+export async function uploadServiceChannelSpec(id: string, spec: ServiceSpec) {
+  const channel = await prisma.serviceChannel.findUnique({
+    where: { id },
+    include: { service: true },
+  });
+  if (!channel || channel.deleted_at) {
+    throw new NotFoundError(`service_channel ${id}`);
+  }
+
+  const filePath = storagePaths.serviceSpecFile({
+    scope: channel.service.scope,
+    service: channel.service.name,
+    channel: channel.name,
+  });
+
+  const file = serviceBucket.file(filePath);
+  await file.save(JSON.stringify(spec, null, 2), {
+    contentType: "application/json",
+  });
+}

@@ -1,8 +1,11 @@
-import { ServiceManifest } from "@ubento/bento.service";
+import type { ServiceSpecV1 } from "@ubento/vertex.core";
 
-export const lemonsqueezyServiceManifest: ServiceManifest = {
-  name: "@ubento/lemonsqueezy-service",
-  version: "1.0.0",
+export const spec: ServiceSpecV1 = {
+  spec: 1,
+  name: "lemonsqueezy",
+  connection: {
+    provider: "lemonsqueezy",
+  },
   schemas: {
     order: {
       type: "object",
@@ -157,11 +160,26 @@ export const lemonsqueezyServiceManifest: ServiceManifest = {
         },
       },
       parameters: {},
+      handler: {
+        type: "http",
+        method: "GET",
+        origin: "https://api.lemonsqueezy.com",
+        path: "/v1/users/me",
+      },
     },
   },
   actions: {
     createCustomer: {
       name: "Create Customer",
+      schema: {
+        type: "object",
+        properties: {
+          data: {
+            type: "ref",
+            ref: "customer",
+          },
+        },
+      },
       parameters: {
         storeId: {
           schema: { type: "string" },
@@ -182,9 +200,41 @@ export const lemonsqueezyServiceManifest: ServiceManifest = {
           required: true,
         },
       },
+      handler: {
+        type: "http",
+        method: "POST",
+        origin: "https://api.lemonsqueezy.com",
+        path: "/v1/customers",
+        body: {
+          type: "json",
+          data: {
+            data: {
+              type: "customers",
+              attributes: { $resolve: "args.data" },
+              relationships: {
+                store: {
+                  data: {
+                    type: "stores",
+                    id: { $resolve: "args.storeId" },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     },
     updateCustomer: {
       name: "Update Customer",
+      schema: {
+        type: "object",
+        properties: {
+          data: {
+            type: "ref",
+            ref: "customer",
+          },
+        },
+      },
       parameters: {
         customerId: {
           schema: { type: "string" },
@@ -205,8 +255,27 @@ export const lemonsqueezyServiceManifest: ServiceManifest = {
           required: true,
         },
       },
+      handler: {
+        type: "http",
+        method: "PATCH",
+        origin: "https://api.lemonsqueezy.com",
+        path: "/v1/customers/{customerId}",
+        params: {
+          customerId: { $resolve: "args.customerId" },
+        },
+        body: {
+          type: "json",
+          data: {
+            data: {
+              type: "customers",
+              id: { $resolve: "args.customerId" },
+              attributes: { $resolve: "args.data" },
+            },
+          },
+        },
+      },
     },
   },
 };
 
-export default lemonsqueezyServiceManifest;
+export default spec;
