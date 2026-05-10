@@ -70,7 +70,6 @@ router.post(
     validate({
       body: z.object({
         team_id: z.string().min(1),
-        scope: z.string().optional(),
         name: z.string().min(1),
         display_name: z.string().min(1),
         description: z.string().optional(),
@@ -78,7 +77,13 @@ router.post(
       }),
     }),
     async (req: Request, res: Response) => {
-      const service = await createService(req.body);
+      const service = await createService({
+        team_id: req.body.team_id,
+        name: req.body.name,
+        display_name: req.body.display_name,
+        description: req.body.description,
+        config: req.body.config,
+      });
       res.json(toSerializable(service));
     },
   ),

@@ -35,11 +35,11 @@
       "host": "http://localhost:44513",
     },
     {
-      "service": "integration-service",
-      "output": "./src/clients/integration",
-      "clientName": "createIntegrationServiceClient",
+      "service": "vertex-service",
+      "output": "./src/clients/vertex",
+      "clientName": "createVertexServiceClient",
       "clean": true,
-      "host": "http://localhost:44114",
+      "host": "http://localhost:28642",
     },
     {
       "service": "billing-service",
@@ -49,5 +49,5 @@
       "host": "http://localhost:6124",
     },
   ],
-  "only": ["intelligence-service"],
+  "only": ["vertex-service"],
 }

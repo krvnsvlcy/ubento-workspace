@@ -3,7 +3,6 @@ import {
   UbentoSDK,
 } from "@ubento/services.sdk";
 import fs from "fs";
-import mime from "mime-types";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -20,96 +19,101 @@ const tokenManager = createClientCredentialsTokenManager({
   issuerUrl: "https://auth.ubento.pro",
 });
 
-async function deployService(serviceName: string, sdk: UbentoSDK) {
-  const outDir = path.join(root, "build", serviceName);
-  if (!fs.existsSync(outDir)) {
-    console.error(
-      `Error: Build directory not found at ${outDir}. Run build first.`,
-    );
+async function deploySpec(specName: string, sdk: UbentoSDK) {
+  const specFilePath = path.join(root, "src", "specs", `${specName}.ts`);
+  if (!fs.existsSync(specFilePath)) {
+    console.error(`Error: Spec file not found at ${specFilePath}`);
     return;
   }
 
-  // Load or create moduleId
-  const modulesJsonPath = path.join(root, "modules.json");
-  let modules: Record<string, string> = {};
-  if (fs.existsSync(modulesJsonPath)) {
-    modules = JSON.parse(fs.readFileSync(modulesJsonPath, "utf-8"));
-  }
+  console.log(`🚀 Deploying spec: ${specName}`);
 
-  let moduleId = modules[serviceName];
-
-  if (!moduleId) {
-    console.log(`- Creating new module for ${serviceName}...`);
-
-    try {
-      const module = await sdk.module.createModule({
-        name: serviceName,
-        team_id: teamId,
-        type: "service",
-        scope: "private",
-        source: "manual-upload",
-      });
-      moduleId = module.id;
-      modules[serviceName] = moduleId;
-      fs.writeFileSync(modulesJsonPath, JSON.stringify(modules, null, 2));
-      console.log(`✅ Created module ${moduleId}`);
-    } catch (err) {
-      console.error(`❌ Failed to create module:`, err);
-      return;
-    }
-  }
-
-  console.log(
-    `🚀 Deploying version for ${serviceName} (Module: ${moduleId})...`,
-  );
-
-  // 1. Upload all files from build folder to CAS
-  const files = fs.readdirSync(outDir);
-  const fileMap: Record<string, string> = {};
-
-  for (const filename of files) {
-    const filePath = path.join(outDir, filename);
-    const stats = fs.statSync(filePath);
-    if (stats.isDirectory()) continue;
-
-    console.log(`- Uploading ${filename}...`);
-    const content = fs.readFileSync(filePath);
-    const contentType = mime.lookup(filename) || "application/octet-stream";
-
-    try {
-      const { hash } = await sdk.module.uploadFile(content, contentType);
-      fileMap[filename] = hash;
-      console.log(`✅ Uploaded ${filename} -> ${hash}`);
-    } catch (err) {
-      console.error(`❌ Failed to upload ${filename}:`, err);
-      return;
-    }
-  }
-
-  // 2. Create a new module version with the uploaded files
-  console.log(`- Creating new module version...`);
+  // 1. Import the spec
+  let spec: any;
   try {
-    await sdk.module.saveModuleVersion(moduleId, {
-      files: fileMap,
-    });
-    console.log(`✅ New version created for module ${moduleId}`);
+    const module = await import(specFilePath);
+    spec = module.default || module.spec;
+    if (!spec) {
+      throw new Error(`No spec found in ${specFilePath}`);
+    }
   } catch (err) {
-    console.error(`❌ Failed to create module version:`, err);
+    console.error(`❌ Failed to import spec ${specName}:`, err);
+    return;
+  }
+
+  const serviceName = spec.name || specName;
+
+  // 2. Find or create Service
+  let serviceId: string;
+  try {
+    const servicesResponse = await sdk.vertex.listServices({
+      team_id: teamId,
+      name: serviceName,
+    });
+    
+    const existingService = servicesResponse.data?.find((s: any) => s.name === serviceName);
+
+    if (existingService) {
+      serviceId = existingService.id;
+      console.log(`✅ Found existing service: ${serviceName} (${serviceId})`);
+    } else {
+      console.log(`- Creating new service: ${serviceName}...`);
+      const newService = await sdk.vertex.createService({
+        team_id: teamId,
+        name: serviceName,
+        display_name: serviceName,
+        scope: "private",
+      });
+      serviceId = newService.id;
+      console.log(`✅ Created service: ${serviceName} (${serviceId})`);
+    }
+  } catch (err) {
+    console.error(`❌ Failed to find or create service ${serviceName}:`, err);
+    return;
+  }
+
+  // 3. Find or create Service Channel (default to "default")
+  let channelId: string;
+  const channelName = "default";
+  try {
+    const channelsResponse = await sdk.vertex.listServiceChannels(serviceId);
+    const existingChannel = channelsResponse.data?.find((c: any) => c.name === channelName);
+
+    if (existingChannel) {
+      channelId = existingChannel.id;
+      console.log(`✅ Found existing channel: ${channelName} (${channelId})`);
+    } else {
+      console.log(`- Creating new channel: ${channelName}...`);
+      const newChannel = await sdk.vertex.createServiceChannel(serviceId, {
+        team_id: teamId,
+        name: channelName,
+      });
+      channelId = newChannel.id;
+      console.log(`✅ Created channel: ${channelName} (${channelId})`);
+    }
+  } catch (err) {
+    console.error(`❌ Failed to find or create channel ${channelName} for service ${serviceName}:`, err);
+    return;
+  }
+
+  // 4. Upload Spec
+  console.log(`- Uploading spec to channel ${channelName}...`);
+  try {
+    await sdk.vertex.uploadServiceChannelSpec(channelId, spec);
+    console.log(`✅ Spec uploaded successfully for ${serviceName}`);
+  } catch (err) {
+    console.error(`❌ Failed to upload spec for ${serviceName}:`, err);
     return;
   }
 
   console.log(`✨ Deployment completed for ${serviceName}`);
 }
 
-/**
- * Deployment script for finance services.
- * Usage: tsx scripts/deploy.ts deploy <service_name | --all>
- */
 async function run() {
-  const [command, serviceName] = process.argv.slice(2);
+  const [command, specName] = process.argv.slice(2);
 
-  if (command !== "deploy" || !serviceName) {
-    console.error("Usage: tsx scripts/deploy.ts deploy <service_name | --all>");
+  if (command !== "deploy" || !specName) {
+    console.error("Usage: tsx scripts/deploy.ts deploy <spec_name | --all>");
     process.exit(1);
   }
 
@@ -117,21 +121,24 @@ async function run() {
   const sdk = new UbentoSDK({
     tokenManager,
     serviceBaseUrls: {
-      module: "http://localhost:28888",
+      vertex: "http://localhost:28642",
     },
   });
 
-  if (serviceName === "--all") {
-    const srcDir = path.join(root, "src");
-    const services = fs.readdirSync(srcDir).filter((f) => {
-      return fs.statSync(path.join(srcDir, f)).isDirectory();
-    });
+  const specsDir = path.join(root, "src", "specs");
 
-    for (const service of services) {
-      await deployService(service, sdk);
+  if (specName === "--all") {
+    if (!fs.existsSync(specsDir)) {
+      console.error(`Error: Specs directory not found at ${specsDir}`);
+      return;
+    }
+    const files = fs.readdirSync(specsDir).filter((f) => f.endsWith(".ts"));
+    for (const file of files) {
+      const name = path.basename(file, ".ts");
+      await deploySpec(name, sdk);
     }
   } else {
-    await deployService(serviceName, sdk);
+    await deploySpec(specName, sdk);
   }
 }
 

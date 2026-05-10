@@ -4,7 +4,6 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "tsx scripts/build.ts build --all",
     "deploy": "tsx scripts/deploy.ts deploy --all",
     "watch": "scripts watch",
     "dev": "scripts dev"

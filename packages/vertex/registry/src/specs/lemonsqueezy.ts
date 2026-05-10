@@ -168,6 +168,7 @@ export const spec: ServiceSpecV1 = {
         type: "http",
         request: {
           method: "GET",
+          baseUrl: "https://api.lemonsqueezy.com",
           path: "/v1/users/me",
         },
       },
@@ -209,6 +210,7 @@ export const spec: ServiceSpecV1 = {
         type: "http",
         request: {
           method: "POST",
+          baseUrl: "https://api.lemonsqueezy.com",
           path: "/v1/customers",
           body: {
             type: "json",
@@ -265,6 +267,7 @@ export const spec: ServiceSpecV1 = {
         type: "http",
         request: {
           method: "PATCH",
+          baseUrl: "https://api.lemonsqueezy.com",
           path: "/v1/customers/{customerId}",
           params: {
             customerId: { $resolve: "args.customerId" },

@@ -1,7 +1,7 @@
 import { TokenManager } from "./lib/token_manager.js";
 import { BillingService } from "./services/billing.js";
 import { IamService } from "./services/iam.js";
-import { IntegrationService } from "./services/integration.js";
+import { VertexService } from "./services/vertex.js";
 import { IntelligenceService } from "./services/intelligence.js";
 import { ModuleService } from "./services/module.js";
 import { WorkspaceService } from "./services/workspace.js";
@@ -23,7 +23,7 @@ export type ServiceKey =
   | "module"
   | "intelligence"
   | "billing"
-  | "integration";
+  | "vertex";
 
 export class UbentoSDK {
   public readonly tokenManager: TokenManager;
@@ -33,7 +33,7 @@ export class UbentoSDK {
   public readonly module: ModuleService;
   public readonly intelligence: IntelligenceService;
   public readonly billing: BillingService;
-  public readonly integration: IntegrationService;
+  public readonly vertex: VertexService;
 
   constructor(options: UbentoSDKOptions) {
     const { baseUrl, serviceBaseUrls = {}, tokenManager } = options;
@@ -50,6 +50,6 @@ export class UbentoSDK {
     this.module = new ModuleService(makeConfig("module"));
     this.intelligence = new IntelligenceService(makeConfig("intelligence"));
     this.billing = new BillingService(makeConfig("billing"));
-    this.integration = new IntegrationService(makeConfig("integration"));
+    this.vertex = new VertexService(makeConfig("vertex"));
   }
 }
