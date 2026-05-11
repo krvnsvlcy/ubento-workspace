@@ -171,7 +171,7 @@ function ServicesSection({ engine }: { engine: WorkspaceEngine }) {
               <div className="flex-1 min-w-0">
                 <div className="text-[13px] font-medium truncate">{id}</div>
                 <div className="text-[10px] text-neutral-content-muted truncate">
-                  {service.module.id}
+                  {service.channel}
                 </div>
               </div>
             </div>

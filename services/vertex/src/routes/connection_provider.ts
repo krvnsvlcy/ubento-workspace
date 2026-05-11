@@ -6,10 +6,10 @@ import {
   toSerializable,
   validate,
 } from "@ubento/services.toolkit";
+import { connectionProviderConfigSchema } from "@ubento/vertex.core";
 import { Request, Response, Router } from "express";
 import { z } from "zod";
 import {
-  connectionProviderConfigSchema,
   createConnectionProvider,
   deleteConnectionProvider,
   getConnectionProvider,
@@ -34,6 +34,30 @@ router.get(
       if (!provider) {
         throw new NotFoundError(
           `connection_provider ${req.params.provider_id}`,
+        );
+      }
+      res.json(toSerializable(provider));
+    },
+  ),
+);
+
+router.get(
+  "/by-name/:name",
+  chain(
+    validate({
+      params: z.object({
+        name: z.string(),
+      }),
+    }),
+    async (req: Request, res: Response) => {
+      const result = await listConnectionProviders({
+        name: req.params.name as string,
+        limit: 1,
+      });
+      const provider = result.data[0];
+      if (!provider) {
+        throw new NotFoundError(
+          `connection_provider with name ${req.params.name}`,
         );
       }
       res.json(toSerializable(provider));

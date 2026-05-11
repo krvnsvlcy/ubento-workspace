@@ -16,14 +16,14 @@ export function WorkspaceTab({ controller }: { controller: WorkspaceEngine }) {
   const handleAddService = () => {
     const serviceName = prompt("Enter service name:");
     if (!serviceName) return;
-    const moduleId = prompt("Enter module ID:");
-    if (!moduleId) return;
+    const channel = prompt("Enter channel:") || "stable";
+    const connectionId = prompt("Enter connection ID:") || "default";
 
     const services = { ...(workspace as any).services };
     services[serviceName] = {
-      moduleId,
-      moduleVersionId: "latest",
-      args: {},
+      name: serviceName,
+      channel,
+      connectionId,
     };
     updateWorkspace({ services } as any);
   };
@@ -82,18 +82,18 @@ export function WorkspaceTab({ controller }: { controller: WorkspaceEngine }) {
               <div className="mt-1 flex flex-col gap-1 pt-1">
                 <div className="flex items-center justify-between">
                   <span className="text-[9px] uppercase tracking-wider text-neutral-content-subtle">
-                    Module
+                    Channel
                   </span>
                   <span className="text-[10px] font-mono text-neutral-content-subtle">
-                    {data.module.id}
+                    {data.channel}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-[9px] uppercase tracking-wider text-neutral-content-subtle">
-                    Version
+                    Connection
                   </span>
                   <span className="text-[10px] font-mono text-neutral-content-subtle">
-                    {data.module.versionId || "latest"}
+                    {data.connectionId}
                   </span>
                 </div>
               </div>

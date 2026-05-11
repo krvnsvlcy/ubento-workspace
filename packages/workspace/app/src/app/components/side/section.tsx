@@ -37,7 +37,14 @@ export function SideSection({
           <div className="flex items-center gap-1">
             {actions.map((action, index) => (
               <Tooltip key={index} content={action.tooltip}>
-                <Button size="icon" onClick={action.onClick} variant="ghost">
+                <Button
+                  size="icon"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    action.onClick();
+                  }}
+                  variant="ghost"
+                >
                   <action.icon size={14} />
                 </Button>
               </Tooltip>

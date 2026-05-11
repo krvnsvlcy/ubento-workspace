@@ -175,9 +175,7 @@ export function ServiceBrowser({
                   <ServiceCard
                     key={service.id}
                     service={service}
-                    isInstalled={Object.values(installedServices).some(
-                      (s: any) => (s.module?.id || s.service_id) === service.id,
-                    )}
+                    isInstalled={!!installedServices[service.id]}
                     onSelect={onSelectService}
                   />
                 ))}

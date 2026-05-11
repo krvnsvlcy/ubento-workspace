@@ -38,10 +38,53 @@ export class VertexService {
       cursor?: string;
     } = {},
   ) {
+    const result = await this.vertexClient.get("/vertex/connection-providers", {
+      params: { query: options },
+    });
+    return extractResponseData(result, true);
+  }
+
+  async getProviderByName(name: string): Promise<ConnectionProvider> {
     const result = await this.vertexClient.get(
+      "/vertex/connection-providers/by-name/{name}",
+      {
+        params: { path: { name } },
+      },
+    );
+    return extractResponseData(result, true);
+  }
+
+  async createConnectionProvider(data: {
+    code: string;
+    type: string;
+    name: string;
+    description?: string;
+    config?: Record<string, any>;
+  }): Promise<ConnectionProvider> {
+    const result = await this.vertexClient.post(
       "/vertex/connection-providers",
       {
-        params: { query: options },
+        body: data as any,
+      },
+    );
+    return extractResponseData(result, true);
+  }
+
+  async updateConnectionProvider(
+    providerId: string,
+    data: {
+      code?: string;
+      type?: string;
+      name?: string;
+      description?: string;
+      config?: Record<string, any>;
+    },
+  ): Promise<ConnectionProvider> {
+    const result = await this.vertexClient.patch(
+      "/vertex/connection-providers/{provider_id}",
+      {
+        params: { path: { provider_id: providerId } },
+        body: data as any,
       },
     );
     return extractResponseData(result, true);
@@ -66,12 +109,9 @@ export class VertexService {
       cursor?: string;
     } = {},
   ) {
-    const result = await this.vertexClient.get(
-      "/vertex/connections",
-      {
-        params: { query: options },
-      },
-    );
+    const result = await this.vertexClient.get("/vertex/connections", {
+      params: { query: options },
+    });
     return extractResponseData(result, true);
   }
 
@@ -85,17 +125,27 @@ export class VertexService {
     return extractResponseData(result, true);
   }
 
+  async getTeamConnection(
+    teamId: string,
+    provider: string,
+  ): Promise<Connection | undefined> {
+    const result = await this.vertexClient.get(
+      "/vertex/connections/team/{team_id}/{provider_name}",
+      {
+        params: { path: { team_id: teamId, provider_name: provider } },
+      },
+    );
+    return extractResponseData(result, false);
+  }
+
   async createConnection(data: {
     team_id: string;
     provider_id: string;
     auth?: Record<string, any>;
   }): Promise<Connection> {
-    const result = await this.vertexClient.post(
-      "/vertex/connections",
-      {
-        body: data as any,
-      },
-    );
+    const result = await this.vertexClient.post("/vertex/connections", {
+      body: data as any,
+    });
     return extractResponseData(result, true);
   }
 
@@ -119,12 +169,9 @@ export class VertexService {
       cursor?: string;
     } = {},
   ) {
-    const result = await this.vertexClient.get(
-      "/vertex/oauth-clients",
-      {
-        params: { query: options },
-      },
-    );
+    const result = await this.vertexClient.get("/vertex/oauth-clients", {
+      params: { query: options },
+    });
     return extractResponseData(result, true);
   }
 
@@ -147,12 +194,9 @@ export class VertexService {
       clientSecret: string;
     };
   }): Promise<OAuthClient> {
-    const result = await this.vertexClient.post(
-      "/vertex/oauth-clients",
-      {
-        body: data as any,
-      },
-    );
+    const result = await this.vertexClient.post("/vertex/oauth-clients", {
+      body: data as any,
+    });
     return extractResponseData(result, true);
   }
 
@@ -197,12 +241,9 @@ export class VertexService {
       cursor?: string;
     } = {},
   ) {
-    const result = await this.vertexClient.get(
-      "/vertex/services",
-      {
-        params: { query: options },
-      },
-    );
+    const result = await this.vertexClient.get("/vertex/services", {
+      params: { query: options },
+    });
     return extractResponseData(result, true);
   }
 
@@ -224,12 +265,9 @@ export class VertexService {
     description?: string;
     config?: Record<string, any>;
   }): Promise<Service> {
-    const result = await this.vertexClient.post(
-      "/vertex/services",
-      {
-        body: data as any,
-      },
-    );
+    const result = await this.vertexClient.post("/vertex/services", {
+      body: data as any,
+    });
     return extractResponseData(result, true);
   }
 
@@ -346,7 +384,10 @@ export class VertexService {
     return extractResponseData(result, true);
   }
 
-  async uploadServiceChannelSpec(serviceChannelId: string, spec: Record<string, any>) {
+  async uploadServiceChannelSpec(
+    serviceChannelId: string,
+    spec: Record<string, any>,
+  ) {
     const result = await this.vertexClient.post(
       "/vertex/service-channels/{service_channel_id}/spec",
       {

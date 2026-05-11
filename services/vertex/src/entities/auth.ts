@@ -2,16 +2,14 @@ import { ValidationError } from "@ubento/services.toolkit";
 import {
   buildRequestUrl,
   ConnectionCredentials,
+  connectionProviderConfigSchema,
   invokeHttpService,
   resolveObject,
 } from "@ubento/vertex.core";
 import { cryptoUtils } from "../lib/crypto.js";
 import prisma from "../lib/prisma.js";
 import { createConnection, updateConnectionAuth } from "./connection.js";
-import {
-  connectionProviderConfigSchema,
-  getConnectionProvider,
-} from "./connection_provider.js";
+import { getConnectionProvider } from "./connection_provider.js";
 
 export async function getAuthUrl({
   oauthClientId,

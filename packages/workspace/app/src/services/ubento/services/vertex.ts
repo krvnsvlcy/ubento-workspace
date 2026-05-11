@@ -1,12 +1,13 @@
 import {
   createStore,
   useMutation,
+  useQuery,
   useStoreEntities,
   useStoreEntity,
   UseStoreOptions,
 } from "@ubento/fabric";
 import { ubentoEntities } from "@ubento/services.primitives";
-import { vertexClient, UbentoSDK } from "@ubento/services.sdk";
+import { UbentoSDK, vertexClient } from "@ubento/services.sdk";
 import { UbentoApiPage, ubentoToFabricPagedResponse } from "../libs/pagination";
 
 export function createUbentoVertexService({
@@ -71,11 +72,7 @@ export function createUbentoVertexService({
     },
     project: (entities, params) => {
       return [...entities].filter((c) => {
-        if (
-          params?.team_id &&
-          c.team_id !== params.team_id
-        )
-          return false;
+        if (params?.team_id && c.team_id !== params.team_id) return false;
         return true;
       });
     },
@@ -95,7 +92,7 @@ export function createUbentoVertexService({
       return ubentoToFabricPagedResponse(
         await ubentoSdk.vertex.listServices({
           cursor: page?.cursor,
-          limit: page?.limit,
+          limit: page?.limit || 100,
           team_id: params?.team_id,
           name: params?.name,
         }),
@@ -126,10 +123,34 @@ export function createUbentoVertexService({
     ) => {
       return useStoreEntities(connectionProviderStore, params, options);
     },
+    useConnectionProviderByName: (name: string, options?: any) => {
+      return useQuery({
+        queryKey: ["connection-provider-by-name", name],
+        queryFn: async () => {
+          return await ubentoSdk.vertex.getProviderByName(name);
+        },
+        enabled: !!name,
+        ...options,
+      });
+    },
 
     // Connections
     useConnection: (connectionId: string, options?: UseStoreOptions) => {
       return useStoreEntity(connectionStore, connectionId, options);
+    },
+    useTeamConnection: ({
+      teamId,
+      provider,
+    }: {
+      teamId: string;
+      provider: string;
+    }) => {
+      return useQuery({
+        queryKey: ["team-connection", teamId, provider],
+        queryFn: async () => {
+          return await ubentoSdk.vertex.getTeamConnection(teamId, provider);
+        },
+      });
     },
     useConnections: (
       params?: { team_id?: string },
@@ -166,8 +187,39 @@ export function createUbentoVertexService({
     useService: (serviceId: string, options?: UseStoreOptions) => {
       return useStoreEntity(serviceStore, serviceId, options);
     },
+    useServiceChannels: (
+      serviceId: string,
+      { enabled = true }: { enabled?: boolean } = {},
+    ) => {
+      return useQuery({
+        queryKey: ["service-channels", serviceId],
+        queryFn: async () => {
+          const response =
+            await ubentoSdk.vertex.listServiceChannels(serviceId);
+          return response.data;
+        },
+        enabled,
+      });
+    },
+    useServiceChannelSpec: (
+      channelId: string,
+      { enabled = true }: { enabled?: boolean } = {},
+    ) => {
+      return useQuery({
+        queryKey: ["service-channel-spec", channelId],
+        queryFn: async () => {
+          return await ubentoSdk.vertex.getServiceChannelSpec(channelId);
+        },
+        enabled,
+      });
+    },
     useServices: (
-      params?: { team_id?: string; name?: string; limit?: number; cursor?: string },
+      params?: {
+        team_id?: string;
+        name?: string;
+        limit?: number;
+        cursor?: string;
+      },
       options?: UseStoreOptions,
     ) => {
       return useStoreEntities(serviceStore, params, options);

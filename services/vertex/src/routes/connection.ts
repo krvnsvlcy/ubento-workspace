@@ -12,6 +12,7 @@ import {
   createConnection,
   deleteConnection,
   getConnection,
+  getTeamConnection,
   listConnections,
   updateConnectionAuth,
 } from "../entities/connection.js";
@@ -32,6 +33,30 @@ router.get(
       );
       if (!connection) {
         throw new NotFoundError(`connection ${req.params.connection_id}`);
+      }
+      res.json(toSerializable(connection));
+    },
+  ),
+);
+
+router.get(
+  "/team/:team_id/:provider_name",
+  chain(
+    validate({
+      params: z.object({
+        team_id: z.string(),
+        provider_name: z.string(),
+      }),
+    }),
+    async (req: Request, res: Response) => {
+      const connection = await getTeamConnection(
+        req.params.team_id as string,
+        req.params.provider_name as string,
+      );
+      if (!connection) {
+        throw new NotFoundError(
+          `connection for team ${req.params.team_id} and provider ${req.params.provider_name}`,
+        );
       }
       res.json(toSerializable(connection));
     },

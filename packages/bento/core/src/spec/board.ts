@@ -65,9 +65,22 @@ export const boardSpecSchema = z.object({
 });
 export type BoardSpec = z.infer<typeof boardSpecSchema>;
 
+export const operationPermissionSchema = z.enum([
+  "allow",
+  "deny",
+  "require-approval",
+]);
+
 export const serviceDataSchema = z.object({
-  module: moduleReferenceSchema,
-  args: z.record(z.string(), z.any()).optional(),
+  name: z.string(),
+  channel: z.string(),
+  connectionId: z.string(),
+  permissions: z
+    .object({
+      queries: z.record(z.string(), operationPermissionSchema).optional(),
+      actions: z.record(z.string(), operationPermissionSchema).optional(),
+    })
+    .optional(),
 });
 export type ServiceData = z.infer<typeof serviceDataSchema>;
 

@@ -1,5 +1,5 @@
 import z from "zod";
-import { httpOperationHandlerSchema } from "../spec/handler";
+import { httpHandlerSchema } from "../spec/spec";
 
 // 1. The Strategy Definitions (No User Credentials)
 export const basicAuthStrategySchema = z.object({
@@ -15,11 +15,11 @@ export const apiKeyStrategySchema = z.object({
 
 export const oauth2StrategySchema = z.object({
   type: z.literal("oauth2"),
-  authorize: httpOperationHandlerSchema,
-  token: httpOperationHandlerSchema,
-  refresh: httpOperationHandlerSchema.optional(),
-  identity: httpOperationHandlerSchema.optional(),
-  revoke: httpOperationHandlerSchema.optional(),
+  authorize: httpHandlerSchema,
+  token: httpHandlerSchema,
+  refresh: httpHandlerSchema.optional(),
+  identity: httpHandlerSchema.optional(),
+  revoke: httpHandlerSchema.optional(),
 });
 
 // 2. The Record-Based Config

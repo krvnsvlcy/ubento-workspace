@@ -17,6 +17,7 @@
     "@ubento/data-transfer": "workspace:*",
     "@ubento/fabric": "workspace:*",
     "@ubento/rpc": "workspace:*",
+    "@ubento/vertex.core": "workspace:*",
     "@ubento/services.primitives": "workspace:*",
     "@ubento/services.sdk": "workspace:*",
     "@ubento/telemetry": "workspace:*",

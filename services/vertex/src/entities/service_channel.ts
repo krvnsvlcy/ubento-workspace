@@ -23,7 +23,9 @@ export async function listServiceChannels({
     orderBy: [{ id: "asc" }],
     where: {
       service_id,
-      deleted_at: null,
+      deleted_at: {
+        isSet: false,
+      },
     },
     resolveCursor: (p) => ({ id: p.id }),
   });

@@ -3,18 +3,22 @@ import {
   ConnectionProviderConfig,
 } from "../connection/connections";
 import { resolveObject } from "../resolve.js";
-import { ConnectionSpec } from "../spec/connection";
-import { HttpBody, HttpBodyType, OperationHandler } from "../spec/handler.js";
+import {
+  HttpBody,
+  HttpBodyType,
+  HttpConnectionSpec,
+  HttpHandler,
+} from "../spec/spec";
 import { InvokeError, InvokeResult } from "./invoke.js";
 
 export async function invokeHttpService({
-  handler: operationHandler,
+  handler,
   connection,
   args,
 }: {
-  handler: OperationHandler;
+  handler: HttpHandler;
   connection?: {
-    spec: ConnectionSpec;
+    spec: HttpConnectionSpec;
     provider: ConnectionProviderConfig;
     credentials: ConnectionCredentials;
   };
@@ -26,7 +30,7 @@ export async function invokeHttpService({
     credentials: connection?.credentials || {},
   };
 
-  const request = resolveObject(operationHandler.request, context);
+  const request = resolveObject(handler.request, context);
 
   // 2. Resolve Path Parameters
   const path = resolvePath(request.path, request.params);
@@ -69,7 +73,7 @@ export async function invokeHttpService({
   }
 
   // 9. Parse Upstream JSON
-  const data = await parseBody(response, operationHandler.response?.type);
+  const data = await parseBody(response, handler.response?.type);
 
   if (!response.ok) {
     return {
@@ -92,8 +96,8 @@ export async function invokeHttpService({
     headers: Object.fromEntries(response.headers.entries()),
   };
 
-  const resolvedResponse = operationHandler.response?.data
-    ? resolveObject(operationHandler.response.data, responseContext)
+  const resolvedResponse = handler.response?.data
+    ? resolveObject(handler.response.data, responseContext)
     : data;
 
   return { data: resolvedResponse, error: null };

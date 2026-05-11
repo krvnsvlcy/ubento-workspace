@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "deploy": "tsx scripts/deploy.ts deploy --all",
+    "deploy:provider": "tsx scripts/deploy.ts deploy-provider --all",
     "watch": "scripts watch",
     "dev": "scripts dev"
   },

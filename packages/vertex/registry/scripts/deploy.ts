@@ -50,8 +50,10 @@ async function deploySpec(specName: string, sdk: UbentoSDK) {
       team_id: teamId,
       name: serviceName,
     });
-    
-    const existingService = servicesResponse.data?.find((s: any) => s.name === serviceName);
+
+    const existingService = servicesResponse.data?.find(
+      (s: any) => s.name === serviceName,
+    );
 
     if (existingService) {
       serviceId = existingService.id;
@@ -77,7 +79,9 @@ async function deploySpec(specName: string, sdk: UbentoSDK) {
   const channelName = "default";
   try {
     const channelsResponse = await sdk.vertex.listServiceChannels(serviceId);
-    const existingChannel = channelsResponse.data?.find((c: any) => c.name === channelName);
+    const existingChannel = channelsResponse.data?.find(
+      (c: any) => c.name === channelName,
+    );
 
     if (existingChannel) {
       channelId = existingChannel.id;
@@ -92,7 +96,10 @@ async function deploySpec(specName: string, sdk: UbentoSDK) {
       console.log(`✅ Created channel: ${channelName} (${channelId})`);
     }
   } catch (err) {
-    console.error(`❌ Failed to find or create channel ${channelName} for service ${serviceName}:`, err);
+    console.error(
+      `❌ Failed to find or create channel ${channelName} for service ${serviceName}:`,
+      err,
+    );
     return;
   }
 
@@ -109,11 +116,68 @@ async function deploySpec(specName: string, sdk: UbentoSDK) {
   console.log(`✨ Deployment completed for ${serviceName}`);
 }
 
+async function deployProvider(providerName: string, sdk: UbentoSDK) {
+  const providerPath = path.join(
+    root,
+    "src",
+    "providers",
+    `${providerName}.ts`,
+  );
+  if (!fs.existsSync(providerPath)) {
+    console.error(`Error: Provider spec not found at ${providerPath}`);
+    return;
+  }
+
+  const { config } = await import(providerPath);
+  const code = providerName;
+  const name = providerName;
+  const description = `${providerName} connection provider`;
+
+  console.log(`🚀 Deploying provider: ${name}`);
+
+  try {
+    const providersResponse = await sdk.vertex.listConnectionProviders({
+      name: name,
+    });
+    const existingProvider = providersResponse.data?.find(
+      (p: any) => p.name === name,
+    );
+
+    if (existingProvider) {
+      console.log(
+        `✅ Found existing provider: ${name} (${existingProvider.id})`,
+      );
+      console.log(`- Updating provider config: ${name}...`);
+      await sdk.vertex.updateConnectionProvider(existingProvider.id, {
+        config: config as any,
+      });
+      console.log(`✅ Updated provider config: ${name}`);
+    } else {
+      console.log(`- Creating new provider: ${name}...`);
+      const newProvider = await sdk.vertex.createConnectionProvider({
+        code,
+        type: "http",
+        name,
+        description,
+        config: config as any,
+      });
+      console.log(`✅ Created provider: ${name} (${newProvider.id})`);
+    }
+  } catch (err) {
+    console.error(`❌ Failed to find or create provider ${name}:`, err);
+    return;
+  }
+
+  console.log(`✨ Deployment completed for provider ${name}`);
+}
+
 async function run() {
   const [command, specName] = process.argv.slice(2);
 
-  if (command !== "deploy" || !specName) {
-    console.error("Usage: tsx scripts/deploy.ts deploy <spec_name | --all>");
+  if (!["deploy", "deploy-provider"].includes(command) || !specName) {
+    console.error(
+      "Usage: tsx scripts/deploy.ts <deploy | deploy-provider> <name | --all>",
+    );
     process.exit(1);
   }
 
@@ -125,20 +189,40 @@ async function run() {
     },
   });
 
-  const specsDir = path.join(root, "src", "specs");
-
-  if (specName === "--all") {
-    if (!fs.existsSync(specsDir)) {
-      console.error(`Error: Specs directory not found at ${specsDir}`);
-      return;
+  if (command === "deploy") {
+    const specsDir = path.join(root, "src", "services");
+    if (specName === "--all") {
+      if (!fs.existsSync(specsDir)) {
+        console.error(`Error: Services directory not found at ${specsDir}`);
+        return;
+      }
+      const files = fs.readdirSync(specsDir).filter((f) => f.endsWith(".ts"));
+      for (const file of files) {
+        const name = path.basename(file, ".ts");
+        await deploySpec(name, sdk);
+      }
+    } else {
+      await deploySpec(specName, sdk);
     }
-    const files = fs.readdirSync(specsDir).filter((f) => f.endsWith(".ts"));
-    for (const file of files) {
-      const name = path.basename(file, ".ts");
-      await deploySpec(name, sdk);
+  } else if (command === "deploy-provider") {
+    const providersDir = path.join(root, "src", "providers");
+    if (specName === "--all") {
+      if (!fs.existsSync(providersDir)) {
+        console.error(
+          `Error: Providers directory not found at ${providersDir}`,
+        );
+        return;
+      }
+      const files = fs
+        .readdirSync(providersDir)
+        .filter((f) => f.endsWith(".ts"));
+      for (const file of files) {
+        const name = path.basename(file, ".ts");
+        await deployProvider(name, sdk);
+      }
+    } else {
+      await deployProvider(specName, sdk);
     }
-  } else {
-    await deploySpec(specName, sdk);
   }
 }
 

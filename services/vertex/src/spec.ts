@@ -128,6 +128,29 @@ export const spec = {
         },
       },
     },
+    "/vertex/connection-providers/by-name/{name}": {
+      parameters: [
+        {
+          name: "name",
+          in: "path",
+          schema: { type: "string" },
+          required: true,
+        },
+      ],
+      get: {
+        summary: "Get a connection provider by name",
+        responses: {
+          "200": {
+            description: "The connection provider",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ConnectionProvider" },
+              },
+            },
+          },
+        },
+      },
+    },
     "/vertex/connections": {
       get: {
         summary: "List all connections",
@@ -240,6 +263,35 @@ export const spec = {
         responses: {
           "200": {
             description: "The updated connection",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Connection" },
+              },
+            },
+          },
+        },
+      },
+    },
+    "/vertex/connections/team/{team_id}/{provider_name}": {
+      parameters: [
+        {
+          name: "team_id",
+          in: "path",
+          schema: { type: "string" },
+          required: true,
+        },
+        {
+          name: "provider_name",
+          in: "path",
+          schema: { type: "string" },
+          required: true,
+        },
+      ],
+      get: {
+        summary: "Get a connection for a team by provider name",
+        responses: {
+          "200": {
+            description: "The connection",
             content: {
               "application/json": {
                 schema: { $ref: "#/components/schemas/Connection" },

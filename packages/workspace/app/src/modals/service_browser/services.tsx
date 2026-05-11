@@ -1,4 +1,6 @@
-import { useUbentoEngine } from "@/engine/app/engine";
+import { useUbento, useUbentoEngine } from "@/engine/app/engine";
+import { WorkspaceEngine } from "@/engine/workspace/engine";
+import { ServiceData } from "@ubento/bento.core";
 import { useEffect, useState } from "react";
 import { Modal } from "../../app/components/modal";
 import { ServiceBrowser } from "./browser";
@@ -8,18 +10,13 @@ function ServiceBrowserModalContent({
   isOpen,
   onClose,
   onAdd,
-  activeWorkspaceEngine,
+  workspaceEngine,
 }: {
   isOpen: boolean;
   onClose: () => void;
-  onAdd: (moduleId: string, name: string) => void;
-  activeWorkspaceEngine: any;
+  onAdd: (serviceName: string, data: ServiceData) => void;
+  workspaceEngine: WorkspaceEngine;
 }) {
-  const installedServices =
-    activeWorkspaceEngine.useState(
-      (s: any) => s.workspaceData?.services || {},
-    ) || {};
-
   const [view, setView] = useState<"browser" | "details">("browser");
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(
     null,
@@ -46,8 +43,8 @@ function ServiceBrowserModalContent({
     setSelectedServiceId(null);
   };
 
-  const handleInstall = (id: string, name: string) => {
-    onAdd(id, name);
+  const handleInstall = (serviceName: string, data: ServiceData) => {
+    onAdd(serviceName, data);
   };
 
   return (
@@ -58,16 +55,14 @@ function ServiceBrowserModalContent({
     >
       {view === "browser" ? (
         <ServiceBrowser
-          activeWorkspaceEngine={activeWorkspaceEngine}
+          activeWorkspaceEngine={workspaceEngine}
           onSelectService={handleSelectService}
         />
       ) : (
         selectedServiceId && (
           <ServiceDetails
+            workspaceEngine={workspaceEngine}
             serviceId={selectedServiceId}
-            isInstalled={Object.values(installedServices).some(
-              (s: any) => s.module.id === selectedServiceId,
-            )}
             onBack={handleBack}
             onInstall={handleInstall}
           />
@@ -80,23 +75,26 @@ function ServiceBrowserModalContent({
 export function ServiceBrowserModal({
   isOpen,
   onClose,
-  onAdd,
 }: {
   isOpen: boolean;
   onClose: () => void;
-  onAdd: (moduleId: string, name: string) => void;
 }) {
   const engine = useUbentoEngine();
+  const ubento = useUbento();
   const activeWorkspaceEngine = engine.useState((s) => s.workspace);
 
   if (!activeWorkspaceEngine) return null;
+
+  const handleAddService = async (serviceName: string, data: ServiceData) => {
+    activeWorkspaceEngine.installService(serviceName, data);
+  };
 
   return (
     <ServiceBrowserModalContent
       isOpen={isOpen}
       onClose={onClose}
-      onAdd={onAdd}
-      activeWorkspaceEngine={activeWorkspaceEngine}
+      onAdd={handleAddService}
+      workspaceEngine={activeWorkspaceEngine}
     />
   );
 }

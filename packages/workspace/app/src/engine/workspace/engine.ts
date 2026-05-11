@@ -2,6 +2,7 @@ import { UbentoEngine, UbentoEngineState } from "@/engine/app/engine";
 import { JsonPatch } from "@/utils/json";
 import {
   boardSpecSchema,
+  ServiceData,
   WorkspaceSpec,
   workspaceSpecSchema,
 } from "@ubento/bento.core";
@@ -15,7 +16,6 @@ import {
   BoardData,
   boardDataSchema,
   DropRect,
-  ModuleReference,
   ParsedSpec,
 } from "@ubento/bento.runtime";
 import { createDuplexRpc, createWindowPort, DuplexRpc } from "@ubento/rpc";
@@ -355,7 +355,7 @@ export function createWorkspaceEngine({
     });
   }
 
-  function installService(serviceName: string, ref: ModuleReference) {
+  function installService(serviceName: string, data: ServiceData) {
     const spec = readWorkspaceSpec();
     if (!spec) return;
 
@@ -363,10 +363,7 @@ export function createWorkspaceEngine({
       spec: {
         services: {
           ...(spec.services || {}),
-          [serviceName]: {
-            module: ref,
-            args: {},
-          },
+          [serviceName]: data,
         },
       },
     });

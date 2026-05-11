@@ -35,17 +35,6 @@ export function GlobalModals() {
     }
   };
 
-  const handleAddService = async (moduleId: string, name: string) => {
-    if (!activeWorkspaceEngine) return;
-
-    const module = await ubento.module.getModule(moduleId);
-    activeWorkspaceEngine.installService(name, {
-      scope: "private",
-      id: module.id,
-      versionId: module.latest_version_id,
-    });
-    closeModal();
-  };
 
   const { data: team } = ubento.iam.useTeam(session?.teamId || "", {
     enabled: !!session?.teamId,
@@ -75,7 +64,6 @@ export function GlobalModals() {
       <ServiceBrowserModal
         isOpen={activeModal === "services"}
         onClose={closeModal}
-        onAdd={handleAddService}
       />
     </>
   );

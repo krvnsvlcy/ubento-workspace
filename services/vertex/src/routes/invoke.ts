@@ -6,7 +6,7 @@ import {
   validate,
   ValidationError,
 } from "@ubento/services.toolkit";
-import { invokeService, ServiceSpecV1 } from "@ubento/vertex.core";
+import { invokeHttpService, ServiceSpecV1 } from "@ubento/vertex.core";
 import { Router } from "express";
 import z from "zod";
 import { getTeamConnectionWithAuth } from "../entities/connection.js";
@@ -57,10 +57,7 @@ function createInvokeRoute(operationType: "query" | "action") {
           `Unsupported ${operationType}: ${operationName}`,
         );
 
-      const connectionId = Object.keys(manifest.connections || {})[0];
-      const connectionSpec = connectionId
-        ? manifest.connections![connectionId]
-        : undefined;
+      const connectionSpec = manifest.connection;
 
       let connection;
       if (connectionSpec) {
@@ -72,8 +69,8 @@ function createInvokeRoute(operationType: "query" | "action") {
         }
       }
 
-      const result = await invokeService({
-        operation,
+      const result = await invokeHttpService({
+        handler: operation.handler,
         connection:
           connection && connectionSpec
             ? {

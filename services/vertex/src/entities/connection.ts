@@ -13,14 +13,11 @@ import {
   ConnectionCredentials,
   connectionCredentialsSchema,
   ConnectionProviderConfig,
-  ConnectionSpec,
+  connectionProviderConfigSchema,
 } from "@ubento/vertex.core";
 import { cryptoUtils } from "../lib/crypto.js";
 import prisma from "../lib/prisma.js";
-import {
-  connectionProviderConfigSchema,
-  getConnectionProvider,
-} from "./connection_provider.js";
+import { getConnectionProvider } from "./connection_provider.js";
 
 export type SafeConnection = Omit<Connection, "credentials">;
 export type ConnectionWithAuth = SafeConnection & {
@@ -107,9 +104,21 @@ export async function getConnectionWithAuth(
     auth: parsedAuthData,
   };
 }
+
+export async function getTeamConnection(
+  team_id: string,
+  provider_name: string,
+) {
+  const connection = await prisma.connection.findFirst({
+    where: { provider: { name: provider_name }, team_id },
+    include: { provider: true },
+  });
+  return connection ? safeConnection(connection) : null;
+}
+
 export async function getTeamConnectionWithAuth(
   team_id: string,
-  connectionSpec: ConnectionSpec,
+  connectionSpec: { provider: string },
 ): Promise<ConnectionWithAuth | undefined> {
   const connection = await prisma.connection.findFirst({
     where: { provider_id: connectionSpec.provider, team_id },
