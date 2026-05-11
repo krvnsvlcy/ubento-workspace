@@ -17,13 +17,21 @@ export const cardVariants = cva(
 );
 
 export interface CardProps
-  extends HTMLAttributes<HTMLDivElement>, VariantProps<typeof cardVariants> {}
+  extends HTMLAttributes<HTMLDivElement>, VariantProps<typeof cardVariants> {
+  gap?: number | string;
+}
 
 export const Card = forwardRef<HTMLDivElement, CardProps>(
-  ({ className, variant, ...props }, ref) => (
+  ({ className, variant, style, gap, ...props }, ref) => (
     <div
       ref={ref}
       className={cardVariants({ variant, className })}
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: typeof gap === "number" ? `${gap}px` : gap,
+        ...style,
+      }}
       {...props}
     />
   ),

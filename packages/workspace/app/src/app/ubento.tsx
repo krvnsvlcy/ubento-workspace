@@ -1,9 +1,8 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { initDevTool } from "@ubento/zustand-devtool";
-import { ModalProvider } from "../contexts/modals";
 import { ThemeProvider } from "../contexts/theme";
 import { UbentoEngine, UbentoEngineContext } from "../engine/app/engine";
-import { GlobalModals } from "./components/global-modals";
+import { ModalRenderer } from "./components/modal-renderer";
 import { SessionProvider } from "./session";
 import { Layout } from "./workspace/layout";
 
@@ -16,10 +15,8 @@ export function Ubento({ engine }: { engine: UbentoEngine }) {
       <QueryClientProvider client={queryClient}>
         <SessionProvider>
           <ThemeProvider>
-            <ModalProvider>
-              <Layout />
-              <GlobalModals />
-            </ModalProvider>
+            <Layout />
+            <ModalRenderer />
           </ThemeProvider>
         </SessionProvider>
       </QueryClientProvider>

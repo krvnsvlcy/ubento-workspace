@@ -1,4 +1,5 @@
 import { edgesSpec, type ComponentProps } from "@ubento/bento.core";
+import * as React from "react";
 import { z } from "zod";
 import {
   getEdgesStyle,
@@ -26,6 +27,11 @@ export const stackPropsSchema = layoutElementStyleSchema.extend({
   align: z.enum(["start", "end", "center", "stretch"]).optional(),
   wrap: z.boolean().optional(),
   overflow: z.enum(["visible", "hidden", "scroll", "auto"]).optional(),
+  intent: z
+    .enum(["accent", "neutral", "success", "warning", "info", "destructive"])
+    .optional(),
+  border: z.boolean().optional(),
+  radius: z.number().optional(),
 });
 export type StackProps = z.infer<typeof stackPropsSchema>;
 
@@ -33,27 +39,33 @@ function getStackStyle(
   props: StackProps,
   layoutContext: LayoutContextType,
 ): React.CSSProperties {
+  const { direction, padding, gap, justify, align, wrap, overflow, intent, border, radius } = props;
+  const themePrefix = intent ? `--color-${intent}` : null;
+
   return {
     ...getLayoutElementStyle(props, layoutContext),
     position: "relative",
-    gap: props.gap ? `${props.gap}px` : undefined,
+    gap: gap ? `${gap}px` : undefined,
     display: "flex",
-    flexWrap: props.wrap ? "wrap" : "nowrap",
-    flexDirection: props.direction,
-    alignItems: props.align,
-    justifyContent: props.justify,
-    overflow: props.overflow,
+    flexWrap: wrap ? "wrap" : "nowrap",
+    flexDirection: direction,
+    alignItems: align,
+    justifyContent: justify,
+    overflow: overflow,
     ...getEdgesStyle(
-      typeof props.padding === "number"
+      typeof padding === "number"
         ? {
-            top: props.padding,
-            bottom: props.padding,
-            left: props.padding,
-            right: props.padding,
+            top: padding,
+            bottom: padding,
+            left: padding,
+            right: padding,
           }
-        : props.padding,
+        : padding,
       "padding",
     ),
+    background: themePrefix ? `var(${themePrefix}-surface)` : undefined,
+    border: border && themePrefix ? `1px solid var(${themePrefix}-border)` : undefined,
+    borderRadius: radius ? `${radius}px` : undefined,
   };
 }
 

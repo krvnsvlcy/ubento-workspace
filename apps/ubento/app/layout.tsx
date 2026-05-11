@@ -1,4 +1,5 @@
 import { SessionProvider } from "@/components/session";
+import { ModalRenderer } from "@/components/modal-renderer";
 import { getSession } from "@/lib/auth";
 import "@ubento/bento.style/dist/uno.css";
 import type { Metadata } from "next";
@@ -36,6 +37,7 @@ export default async function RootLayout({
           }
         >
           {children}
+          <ModalRenderer />
         </SessionProvider>
       </body>
     </html>

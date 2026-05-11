@@ -1,7 +1,11 @@
 import { SideSection } from "@/app/components/side/section";
-import { useGlobalModals } from "@/contexts/modals";
+import {
+  useWorkspaceEngine,
+  WorkspaceEngineProvider,
+} from "@/contexts/workspace";
 import { useUbento, useUbentoEngine } from "@/engine/app/engine";
-import { WorkspaceEngine } from "@/engine/workspace/engine";
+import { ServiceBrowserModal } from "@/modals/service_browser/services";
+import { useModal } from "@/utils/modal-store";
 import { ServiceData } from "@ubento/bento.core";
 import { workspaceClient } from "@ubento/services.sdk";
 import {
@@ -129,8 +133,9 @@ function BoardsSection({
   );
 }
 
-function ServicesSection({ engine }: { engine: WorkspaceEngine }) {
-  const services = engine.useState((s) => {
+function ServicesSection() {
+  const workspaceEngine = useWorkspaceEngine();
+  const services = workspaceEngine.useState((s) => {
     const spec = s.workspace.spec;
     if (spec.status === "valid") {
       return spec.data.services ?? {};
@@ -139,7 +144,7 @@ function ServicesSection({ engine }: { engine: WorkspaceEngine }) {
     }
   }) as Record<string, ServiceData>;
   const serviceEntries = Object.entries(services);
-  const { openModal } = useGlobalModals();
+  const { open } = useModal();
 
   return (
     <SideSection
@@ -148,7 +153,7 @@ function ServicesSection({ engine }: { engine: WorkspaceEngine }) {
         {
           icon: Plus,
           tooltip: "Install Service",
-          onClick: () => openModal("services"),
+          onClick: () => open(ServiceBrowserModal, { workspaceEngine }),
         },
       ]}
     >
@@ -227,9 +232,7 @@ export function WorkspaceTab() {
         </div>
       </div>
       {workspace && <BoardsSection workspace={workspace} />}
-      {activeWorkspaceEngine && (
-        <ServicesSection engine={activeWorkspaceEngine} />
-      )}
+      {activeWorkspaceEngine && <ServicesSection />}
     </div>
   );
 }
@@ -238,6 +241,10 @@ export const workspaceTab: TabDefinition = {
   id: "workspace",
   name: "Workspace",
   icon: LayoutDashboard,
-  component: WorkspaceTab,
+  component: () => (
+    <WorkspaceEngineProvider>
+      <WorkspaceTab />
+    </WorkspaceEngineProvider>
+  ),
   enabled: (location) => !!location.workspace,
 };

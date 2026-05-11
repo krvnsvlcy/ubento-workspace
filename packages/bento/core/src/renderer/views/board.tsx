@@ -1,7 +1,8 @@
 import { PropsWithChildren } from "react";
-import { BoardSpec, BoardStyle } from "../../spec/board";
-import { BoardContext } from "../states/board";
-import { ElementView } from "./element/element";
+import { BoardSpec, BoardStyle } from "../../spec/board.js";
+import { BoardContext } from "../states/board.js";
+import { ElementView } from "./element/element.js";
+import { OverlayRenderer } from "./overlay-renderer.js";
 
 function paddingStyle(padding: BoardStyle["padding"]) {
   const sidePadding = (value?: number) => `${value || 0}px`;
@@ -63,6 +64,7 @@ export function BoardView({
       <div style={getBoardStyle(spec.style || {})}>
         {content}
         {children}
+        <OverlayRenderer />
       </div>
     </BoardContext>
   );

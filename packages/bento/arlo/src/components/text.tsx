@@ -1,5 +1,6 @@
+import { type ComponentProps } from "@ubento/bento.core";
+import * as React from "react";
 import { z } from "zod";
-import { ComponentProps } from "../../../core/build/environment/component";
 import {
   getLayoutElementStyle,
   layoutElementStyleSchema,
@@ -9,9 +10,12 @@ import {
 
 export const textPropsSchema = layoutElementStyleSchema.extend({
   text: z.string().optional(),
+  intent: z
+    .enum(["accent", "neutral", "success", "warning", "info", "destructive"])
+    .default("neutral"),
+  subtle: z.boolean().optional(),
   size: z.number().optional(),
   weight: z.number().optional(),
-  color: z.string().optional(),
   align: z.enum(["left", "center", "right", "justify"]).optional(),
   italic: z.boolean().optional(),
   underline: z.boolean().optional(),
@@ -23,14 +27,20 @@ function getTextStyle(
   props: TextProps,
   layoutContext: LayoutContextType,
 ): React.CSSProperties {
+  const { intent, subtle, size, weight, align, italic, underline, lineHeight } =
+    props;
+  const themePrefix = `--color-${intent}`;
+  const colorSuffix = subtle ? "-content-subtle" : "-content";
+
   return {
     ...getLayoutElementStyle(props, layoutContext),
-    fontSize: props.size ? `${props.size}px` : undefined,
-    fontWeight: props.weight,
-    textAlign: props.align,
-    fontStyle: props.italic ? "italic" : undefined,
-    textDecoration: props.underline ? "underline" : undefined,
-    lineHeight: props.lineHeight,
+    fontSize: size ? `${size}px` : undefined,
+    fontWeight: weight,
+    textAlign: align,
+    fontStyle: italic ? "italic" : undefined,
+    textDecoration: underline ? "underline" : undefined,
+    lineHeight: lineHeight ? `${lineHeight}` : "1.5",
+    color: `var(${themePrefix}${colorSuffix})`,
   };
 }
 

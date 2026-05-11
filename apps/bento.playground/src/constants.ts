@@ -1,185 +1,237 @@
-import type { BoardSpec } from "@ubento/bento.runtime";
+import type { BoardSpec } from "@ubento/bento.core";
 
 export const DEFAULT_SPEC: BoardSpec = {
-  title: "Bento Playground",
   params: {},
   state: {
-    title: { type: "string", value: "Modern UI Builder" },
-    description: {
-      type: "string",
-      value:
-        "A high-performance, schema-driven UI engine for building stunning interfaces.",
-    },
+    userName: { type: "string", value: "Jane Doe" },
+    userEmail: { type: "string", value: "jane@ubento.com" },
+    notifications: { type: "boolean", value: true },
+    theme: { type: "string", value: "system" },
+    progress: { type: "number", value: 65 },
   },
   style: {
     direction: "column",
-    gap: 32,
+    gap: 40,
     padding: { top: 64, right: 64, bottom: 64, left: 64 },
     flow: "scroll",
   },
-  children: ["hero", "features_grid", "footer"],
+  children: ["header", "main_content"],
   elements: {
-    hero: {
+    header: {
       component: "Stack",
-      props: {
-        direction: "column",
-        gap: 16,
-        align: "start",
-      },
-      children: ["badge", "hero_title", "hero_description"],
-    },
-    badge: {
-      component: "Text",
-      props: {
-        text: "v0.18.0 RELEASE",
-        size: 10,
-        weight: 800,
-        color: "#818cf8",
-        lineHeight: 1,
-      },
-    },
-    hero_title: {
-      component: "Heading",
-      props: {
-        text: "Build Faster with Bento",
-        level: "h1",
-        size: 48,
-        weight: 800,
-        color: "#0f172a",
-      },
-    },
-    hero_description: {
-      component: "Text",
-      props: {
-        text: "Experiment with the bento renderer by editing the JSON on the left. The preview updates in real-time as you type.",
-        size: 18,
-        weight: 400,
-        color: "#64748b",
-        width: { value: 600, unit: "px" },
-      },
-    },
-    features_grid: {
-      component: "Grid",
-      props: {
-        columns: 2,
-        gap: 24,
-      },
-      children: ["card_1", "card_2", "card_3", "card_4"],
-    },
-    card_1: {
-      component: "Stack",
-      props: {
-        direction: "column",
-        gap: 12,
-        padding: { top: 24, right: 24, bottom: 24, left: 24 },
-      },
-      children: ["card_1_title", "card_1_desc"],
-    },
-    card_1_title: {
-      component: "Heading",
-      props: { text: "Schema Driven", level: "h3", size: 20, weight: 600 },
-    },
-    card_1_desc: {
-      component: "Text",
-      props: {
-        text: "Define your UI using a robust, typed schema.",
-        size: 14,
-        color: "#64748b",
-      },
-    },
-    card_2: {
-      component: "Stack",
-      props: {
-        direction: "column",
-        gap: 12,
-        padding: { top: 24, right: 24, bottom: 24, left: 24 },
-      },
-      children: ["card_2_title", "card_2_desc"],
-    },
-    card_2_title: {
-      component: "Heading",
-      props: { text: "Real-time Preview", level: "h3", size: 20, weight: 600 },
-    },
-    card_2_desc: {
-      component: "Text",
-      props: {
-        text: "Instant feedback as you modify your UI structure.",
-        size: 14,
-        color: "#64748b",
-      },
-    },
-    card_3: {
-      component: "Stack",
-      props: {
-        direction: "column",
-        gap: 12,
-        padding: { top: 24, right: 24, bottom: 24, left: 24 },
-      },
-      children: ["card_3_title", "card_3_desc"],
-    },
-    card_3_title: {
-      component: "Heading",
-      props: { text: "Modular Design", level: "h3", size: 20, weight: 600 },
-    },
-    card_3_desc: {
-      component: "Text",
-      props: {
-        text: "Encapsulated components for maximum reusability.",
-        size: 14,
-        color: "#64748b",
-      },
-    },
-    card_4: {
-      component: "Stack",
-      props: {
-        direction: "column",
-        gap: 12,
-        padding: { top: 24, right: 24, bottom: 24, left: 24 },
-      },
-      children: ["card_4_title", "card_4_desc"],
-    },
-    card_4_title: {
-      component: "Heading",
-      props: { text: "Powerful Layouts", level: "h3", size: 20, weight: 600 },
-    },
-    card_4_desc: {
-      component: "Text",
-      props: {
-        text: "Flex and Grid systems integrated directly into the spec.",
-        size: 14,
-        color: "#64748b",
-      },
-    },
-    footer: {
-      component: "Stack",
-      props: {
+      inputs: {
         direction: "row",
         justify: "space-between",
         align: "center",
+        padding: 24,
+        intent: "neutral",
+        border: true,
+        radius: 12,
       },
-      children: ["footer_left", "footer_right"],
+      children: ["header_left", "header_right"],
     },
-    footer_left: {
-      component: "Text",
-      props: {
-        text: "Ready to build?",
-        size: 14,
-        weight: 500,
-        color: "#94a3b8",
-      },
-    },
-    footer_right: {
+    header_left: {
       component: "Stack",
-      props: { direction: "row", gap: 12 },
-      children: ["btn_docs", "btn_start"],
+      inputs: { direction: "row", gap: 12, align: "center" },
+      children: ["logo", "header_title"],
     },
-    btn_docs: {
-      component: "Button",
-      props: { label: "Documentation", variant: "outline", size: "medium" },
+    logo: {
+      component: "Avatar",
+      inputs: { fallback: "A", intent: "accent", size: 32 },
     },
-    btn_start: {
+    header_title: {
+      component: "Heading",
+      inputs: { text: "Arlo Design System", level: "h4", weight: 700 },
+    },
+    header_right: {
+      component: "Stack",
+      inputs: { direction: "row", gap: 16, align: "center" },
+      children: ["status_badge", "profile_avatar"],
+    },
+    status_badge: {
+      component: "Badge",
+      inputs: { label: "Live Preview", intent: "success", variant: "surface" },
+    },
+    profile_avatar: {
+      component: "Avatar",
+      inputs: {
+        src: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
+        alt: "Jane Doe",
+      },
+    },
+    main_content: {
+      component: "Grid",
+      inputs: { columns: 2, gap: 32 },
+      children: ["form_section", "visuals_section"],
+    },
+    form_section: {
+      component: "Card",
+      inputs: { padding: 32, gap: 24 },
+      children: ["form_heading", "field_name", "field_email", "field_bio", "field_options", "form_footer"],
+    },
+    form_heading: {
+      component: "Stack",
+      inputs: { direction: "column", gap: 4 },
+      children: ["form_title", "form_subtitle"],
+    },
+    form_title: {
+      component: "Heading",
+      inputs: { text: "User Profile", level: "h3" },
+    },
+    form_subtitle: {
+      component: "Text",
+      inputs: { text: "Manage your account settings and preferences.", subtle: true, size: 14 },
+    },
+    field_name: {
+      component: "Stack",
+      inputs: { direction: "column", gap: 8 },
+      children: ["label_name", "input_name"],
+    },
+    label_name: {
+      component: "Label",
+      inputs: { text: "Full Name", htmlFor: "name" },
+    },
+    input_name: {
+      component: "Input",
+      inputs: { value: "Jane Doe", placeholder: "Enter name", intent: "neutral" },
+    },
+    field_email: {
+      component: "Stack",
+      inputs: { direction: "column", gap: 8 },
+      children: ["label_email", "input_email"],
+    },
+    label_email: {
+      component: "Label",
+      inputs: { text: "Email Address", htmlFor: "email" },
+    },
+    input_email: {
+      component: "Input",
+      inputs: { type: "email", value: "jane@ubento.com", intent: "neutral" },
+    },
+    field_bio: {
+      component: "Stack",
+      inputs: { direction: "column", gap: 8 },
+      children: ["label_bio", "textarea_bio"],
+    },
+    label_bio: {
+      component: "Label",
+      inputs: { text: "Short Biography", htmlFor: "bio" },
+    },
+    textarea_bio: {
+      component: "Textarea",
+      inputs: { placeholder: "Tell us about yourself...", rows: 4 },
+    },
+    field_options: {
+      component: "Stack",
+      inputs: { direction: "row", gap: 24, align: "center", padding: { top: 12, bottom: 12 } },
+      children: ["theme_select_field", "notification_switch_field"],
+    },
+    theme_select_field: {
+      component: "Stack",
+      inputs: { direction: "column", gap: 8, width: { value: 1, unit: "fr" } },
+      children: ["label_theme", "select_theme"],
+    },
+    label_theme: {
+      component: "Label",
+      inputs: { text: "UI Theme" },
+    },
+    select_theme: {
+      component: "Select",
+      inputs: {
+        value: "system",
+        options: [
+          { label: "System", value: "system" },
+          { label: "Light", value: "light" },
+          { label: "Dark", value: "dark" },
+        ],
+      },
+    },
+    notification_switch_field: {
+      component: "Stack",
+      inputs: { direction: "column", gap: 8, align: "start" },
+      children: ["label_notif", "switch_notif"],
+    },
+    label_notif: {
+      component: "Label",
+      inputs: { text: "Notifications" },
+    },
+    switch_notif: {
+      component: "Switch",
+      inputs: { checked: true, intent: "success" },
+    },
+    form_footer: {
+      component: "Stack",
+      inputs: { direction: "row", justify: "end", gap: 12, padding: { top: 16 } },
+      children: ["btn_cancel", "btn_save"],
+    },
+    btn_cancel: {
       component: "Button",
-      props: { label: "Get Started", variant: "primary", size: "medium" },
+      inputs: { label: "Reset", variant: "ghost" },
+    },
+    btn_save: {
+      component: "Button",
+      inputs: { label: "Save Changes", variant: "primary", intent: "accent" },
+    },
+    visuals_section: {
+      component: "Stack",
+      inputs: { direction: "column", gap: 32 },
+      children: ["feedback_card", "skeleton_card"],
+    },
+    feedback_card: {
+      component: "Card",
+      inputs: { padding: 32, gap: 20 },
+      children: ["feedback_heading", "progress_field", "feedback_separator", "alert_stack"],
+    },
+    feedback_heading: {
+      component: "Heading",
+      inputs: { text: "Feedback & Status", level: "h4" },
+    },
+    progress_field: {
+      component: "Stack",
+      inputs: { direction: "column", gap: 12 },
+      children: ["label_progress", "progress_bar"],
+    },
+    label_progress: {
+      component: "Label",
+      inputs: { text: "System Integrity" },
+    },
+    progress_bar: {
+      component: "Progress",
+      inputs: { value: 85, intent: "info" },
+    },
+    feedback_separator: {
+      component: "Separator",
+      inputs: { intent: "neutral" },
+    },
+    alert_stack: {
+      component: "Stack",
+      inputs: { direction: "row", gap: 12 },
+      children: ["checkbox_alert", "label_alert"],
+    },
+    checkbox_alert: {
+      component: "Checkbox",
+      inputs: { checked: true, intent: "destructive" },
+    },
+    label_alert: {
+      component: "Label",
+      inputs: { text: "Critical updates available", intent: "destructive", weight: 600 },
+    },
+    skeleton_card: {
+      component: "Card",
+      inputs: { padding: 32, gap: 16, intent: "neutral", border: true },
+      children: ["skel_title", "skel_line_1", "skel_line_2"],
+    },
+    skel_title: {
+      component: "Skeleton",
+      inputs: { height: { value: 24, unit: "px" }, width: { value: 200, unit: "px" }, radius: 4 },
+    },
+    skel_line_1: {
+      component: "Skeleton",
+      inputs: { height: { value: 16, unit: "px" }, width: { value: 1, unit: "fr" }, radius: 4 },
+    },
+    skel_line_2: {
+      component: "Skeleton",
+      inputs: { height: { value: 16, unit: "px" }, width: { value: 0.7, unit: "fr" }, radius: 4 },
     },
   },
 };

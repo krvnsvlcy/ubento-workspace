@@ -1,5 +1,7 @@
 import { SideSection } from "@/app/components/side/section";
 import { Home, LayoutDashboard, Plus } from "lucide-react";
+import { useModal } from "@/utils/modal-store";
+import { CreateWorkspaceModal } from "@/modals/create_workspace/create_workspace";
 import {
   useUbento,
   useUbentoEngine,
@@ -30,10 +32,30 @@ export function HomeTab() {
   const ubento = useUbento();
   const engine = useUbentoEngine();
   const session = engine.useState((s) => s.session);
+  const { open } = useModal();
 
   const { data: workspaces } = ubento.workspace.useWorkspaces({
     team_id: session?.teamId,
   });
+
+  const { mutateAsync: createWorkspace } =
+    ubento.workspace.useCreateWorkspace();
+
+  const handleCreateWorkspace = async () => {
+    await open(CreateWorkspaceModal, {
+      onSubmit: async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+        const name = formData.get("name") as string;
+        try {
+          await createWorkspace({ name, team_id: session?.teamId!, data: {} });
+        } catch (err) {
+          console.error("Error creating workspace:", err);
+        }
+      },
+      isCreating: false,
+    });
+  };
 
   return (
     <SideSection
@@ -42,7 +64,7 @@ export function HomeTab() {
         {
           icon: Plus,
           tooltip: "Create Workspace",
-          onClick: () => {},
+          onClick: handleCreateWorkspace,
         },
       ]}
     >

@@ -7,7 +7,9 @@ import {
   DropdownMenuTrigger,
 } from "@ubento/workspace.primitives";
 import { Building2, LogOut, Settings, Sidebar, User } from "lucide-react";
-import { useGlobalModals } from "../../../../contexts/modals";
+import { useModal } from "@/utils/modal-store";
+import { TeamModal } from "@/modals/team/team_modal";
+import { AccountModal } from "@/modals/account/account";
 import { useUbentoEngine } from "../../../../engine/app/engine";
 
 export function WorkspaceHeader() {
@@ -17,7 +19,7 @@ export function WorkspaceHeader() {
     enabled: !!session?.teamId,
   });
 
-  const { openModal } = useGlobalModals();
+  const { open } = useModal();
 
   const handleLogout = () => {
     window.location.href = "/api/auth/logout";
@@ -49,11 +51,11 @@ export function WorkspaceHeader() {
           </div>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" className="w-56">
-          <DropdownMenuItem onClick={() => openModal("team")}>
+          <DropdownMenuItem onClick={() => open(TeamModal, { team })}>
             <Settings size={14} className="mr-2" />
             <span>Team Settings</span>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => openModal("account")}>
+          <DropdownMenuItem onClick={() => open(AccountModal, { user: session })}>
             <User size={14} className="mr-2" />
             <span>Account Settings</span>
           </DropdownMenuItem>

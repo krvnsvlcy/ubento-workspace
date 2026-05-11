@@ -1,12 +1,13 @@
-import { useGlobalModals } from "@/contexts/modals";
 import { useSession } from "@/contexts/session";
 import { useUbento } from "@/engine/app/engine";
+import { useModal } from "@/utils/modal-store";
+import { AccountModal } from "@/modals/account/account";
 import { LogOut, Settings as SettingsIcon, User } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 
 export function UserButton() {
-  const { openModal } = useGlobalModals();
+  const { open } = useModal();
   const ubento = useUbento();
   const session = useSession();
   const { data: user } = ubento.iam.useUser(session?.userId || "");
@@ -75,7 +76,7 @@ export function UserButton() {
             <button
               onClick={() => {
                 setIsUserMenuOpen(false);
-                openModal("account");
+                open(AccountModal, { user: session });
               }}
               className="group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-neutral-content-subtle transition-all hover:bg-neutral-surface-hover hover:text-neutral-content"
             >

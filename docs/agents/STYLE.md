@@ -56,3 +56,5 @@ When generating new UI components:
 2. **Prefer Neutral Surface/Content**: Use `bg-neutral-surface` and `text-neutral-content` for the base UI.
 3. **Use Contrast Tokens**: When placing text on a colored background (like a primary button), always use the `-contrast` token (e.g., `text-accent-contrast`).
 4. **Think Semantically**: If a button is meant to delete something, use `destructive`. if it's the main "Save" button, use `accent`.
+5. **Define Component Props Inline**: Always define component props inline and prefer function declarations.
+   - Example: `export function MyComponent({ propA, propB }: { propA: string; propB: number }) { ... }`

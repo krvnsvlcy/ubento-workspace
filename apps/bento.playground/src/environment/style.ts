@@ -2,7 +2,7 @@ import {
   lengthSchema,
   type EdgesSpec,
   type LengthSpec,
-} from "@ubento/bento.runtime";
+} from "@ubento/bento.core";
 import { createContext, useContext } from "react";
 import z from "zod";
 
@@ -98,9 +98,5 @@ export const LayoutContext = createContext<LayoutContextType | undefined>(
   undefined,
 );
 export function useLayoutContext() {
-  const context = useContext(LayoutContext);
-  if (!context) {
-    throw new Error("useLayoutContext must be used within a LayoutContext");
-  }
-  return context;
+  return useContext(LayoutContext) || "column";
 }

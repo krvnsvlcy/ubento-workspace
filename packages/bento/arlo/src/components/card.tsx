@@ -1,4 +1,5 @@
 import { edgesSpec, type ComponentProps } from "@ubento/bento.core";
+import * as React from "react";
 import { z } from "zod";
 import {
   getEdgesStyle,
@@ -11,8 +12,11 @@ import {
 export const cardPropsSchema = layoutElementStyleSchema.extend({
   padding: z.union([edgesSpec(z.number()), z.number()]).optional(),
   radius: z.number().optional(),
-  background: z.string().optional(),
-  border: z.string().optional(),
+  gap: z.number().optional(),
+  intent: z
+    .enum(["accent", "neutral", "success", "warning", "info", "destructive"])
+    .default("neutral"),
+  border: z.boolean().default(true),
   shadow: z.union([z.boolean(), z.string()]).optional(),
 });
 export type CardProps = z.infer<typeof cardPropsSchema>;
@@ -21,31 +25,37 @@ function getCardStyle(
   props: CardProps,
   layoutContext: LayoutContextType,
 ): React.CSSProperties {
+  const { intent, padding, radius, border, shadow, gap } = props;
+  const themePrefix = `--color-${intent}`;
+
   return {
     ...getLayoutElementStyle(props, layoutContext),
     ...getEdgesStyle(
-      typeof props.padding === "number"
+      typeof padding === "number"
         ? {
-            top: props.padding,
-            bottom: props.padding,
-            left: props.padding,
-            right: props.padding,
+            top: padding,
+            bottom: padding,
+            left: padding,
+            right: padding,
           }
-        : props.padding,
+        : padding,
       "padding",
     ),
-    borderRadius: props.radius !== undefined ? `${props.radius}px` : "16px",
-    background: props.background || "white",
-    border: props.border || "1px solid #f1f5f9",
+    borderRadius: radius !== undefined ? `${radius}px` : "8px",
+    background: `var(${themePrefix}-surface)`,
+    color: `var(${themePrefix}-content)`,
+    border: border ? `1px solid var(${themePrefix}-border)` : "none",
     boxShadow:
-      props.shadow === true
-        ? "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)"
-        : typeof props.shadow === "string"
-          ? props.shadow
+      shadow === true
+        ? "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)"
+        : typeof shadow === "string"
+          ? shadow
           : undefined,
     overflow: "hidden",
     display: "flex",
     flexDirection: "column",
+    gap: gap !== undefined ? `${gap}px` : undefined,
+    transition: "all 0.15s ease-in-out",
   };
 }
 

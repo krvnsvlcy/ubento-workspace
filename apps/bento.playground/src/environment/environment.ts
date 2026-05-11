@@ -1,18 +1,50 @@
-import { createEnvironment, type Environment } from "@ubento/bento.runtime";
-import { Button } from "./components/button";
-import { Card } from "./components/card";
-import { Grid } from "./components/grid";
-import { Heading } from "./components/heading";
-import { Stack } from "./components/stack";
-import { Text } from "./components/text";
+import { createEnvironment, type Environment } from "@ubento/bento.core";
+import {
+  Accordion,
+  Alert,
+  Avatar,
+  Badge,
+  Button,
+  Card,
+  Checkbox,
+  Grid,
+  Heading,
+  Input,
+  Label,
+  Progress,
+  RadioGroup,
+  Select,
+  Separator,
+  Skeleton,
+  Stack,
+  Switch,
+  Tabs,
+  Text,
+  Textarea,
+} from "@ubento/bento.arlo";
 
 export const environment: Environment = createEnvironment({
   components: {
-    Stack,
-    Grid,
-    Text,
-    Heading,
-    Button,
-    Card,
+    Accordion: Accordion as any,
+    Alert: Alert as any,
+    Avatar: Avatar as any,
+    Badge: Badge as any,
+    Button: Button as any,
+    Card: Card as any,
+    Checkbox: Checkbox as any,
+    Grid: Grid as any,
+    Heading: Heading as any,
+    Input: Input as any,
+    Label: Label as any,
+    Progress: Progress as any,
+    RadioGroup: RadioGroup as any,
+    Select: Select as any,
+    Separator: Separator as any,
+    Skeleton: Skeleton as any,
+    Stack: Stack as any,
+    Switch: Switch as any,
+    Tabs: Tabs as any,
+    Text: Text as any,
+    Textarea: Textarea as any,
   },
 });

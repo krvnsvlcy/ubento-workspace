@@ -1,12 +1,12 @@
+import { LayoutContext } from "@ubento/bento.arlo";
 import {
   BoardView,
   EnvironmentContext,
   Interactor,
   useInteractionManager,
   type BoardSpec,
-} from "@ubento/bento.runtime";
+} from "@ubento/bento.core";
 import { environment } from "../environment/environment";
-import { LayoutContext } from "../environment/style";
 
 interface ViewerPaneProps {
   spec: BoardSpec;
@@ -51,9 +51,11 @@ export function ViewerPane({ spec, error }: ViewerPaneProps) {
 
 function Inspector({ spec }: { spec: BoardSpec }) {
   const interactionManager = useInteractionManager();
-  const selectedId = interactionManager.useState((state) => state.selection[0]);
+  const selectedId = interactionManager.useState(
+    (state: any) => state.selection[0],
+  );
 
-  if (!selectedId) return null;
+  if (!selectedId || !spec.elements) return null;
 
   const element = spec.elements[selectedId];
   if (!element) return null;
@@ -108,7 +110,7 @@ function Inspector({ spec }: { spec: BoardSpec }) {
             Props
           </label>
           <pre className="bg-slate-50 p-4 rounded-2xl text-[11px] font-mono text-slate-600 border border-slate-100 overflow-auto max-h-60 custom-scrollbar">
-            {JSON.stringify(element.props, null, 2)}
+            {JSON.stringify(element.inputs, null, 2)}
           </pre>
         </div>
       </div>
