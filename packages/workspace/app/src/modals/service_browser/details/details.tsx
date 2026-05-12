@@ -58,7 +58,7 @@ export function ServiceDetails({
   if (isServiceError || !serviceData) {
     return (
       <ErrorView
-        message="Failed to load service"
+        message={`Failed to load service ${serviceId}`}
         action={{
           label: "Retry",
           handler: () => refetchService(),

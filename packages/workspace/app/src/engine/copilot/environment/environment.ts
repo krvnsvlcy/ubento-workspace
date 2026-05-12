@@ -17,6 +17,7 @@ export type CopilotAgentEnvironment = AgentEnvironment & {
   ubento: UbentoService;
   session: UbentoSession;
   logger: Logger;
+  thread: (id: string) => AgentThread | undefined;
   getThread: ({
     id,
     agent,
@@ -125,9 +126,7 @@ export function createCopilotAgentEnvironment({
         });
         logger.debug("Message updated: ", {
           event: "thread_message_updated",
-          messageId,
-          threadId: data.id,
-          role: messageData.role,
+          data: messageData,
         });
       },
     });
@@ -181,6 +180,7 @@ export function createCopilotAgentEnvironment({
     ubento,
     session,
     logger,
+    thread: (id) => threads[id],
     getThread,
     createThread,
     addAgent: (agent) => {

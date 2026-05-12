@@ -11,10 +11,8 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { WorkspaceEngine } from "../../../../../../engine/workspace/engine";
-import { BoardTab } from "./tabs/board";
 import { CopilotTab } from "./tabs/copilot/copilot";
 import { HistoryTab } from "./tabs/copilot/history";
-import { WorkspaceTab } from "./tabs/workspace";
 
 const tabs = [
   {
@@ -71,7 +69,22 @@ export function ControlPanel({
     onClick: () => void;
     icon: React.ReactNode;
     label: string;
-  }> = [];
+  }> = [
+    {
+      icon: <Plus size={16} />,
+      label: "New Conversation",
+      onClick: () => {
+        copilot.clearActiveThread();
+      },
+    },
+    {
+      icon: <History size={16} />,
+      label: "History",
+      onClick: () => {
+        setActiveTab("ai-history");
+      },
+    },
+  ];
 
   switch (activeTab) {
     case "ai":
@@ -93,12 +106,6 @@ export function ControlPanel({
         },
       ];
       break;
-    case "board":
-      content = <BoardTab workspaceEngine={controller} />;
-      break;
-    case "workspace":
-      content = <WorkspaceTab controller={controller} />;
-      break;
     case "ai-history":
       content = <HistoryTab onBack={() => setActiveTab("ai")} />;
       break;
@@ -113,19 +120,6 @@ export function ControlPanel({
     >
       <div className="flex justify-between items-center p-2">
         <div className="flex gap-2">
-          {tabs.map((t) => (
-            <Tab
-              key={t.id}
-              isActive={
-                activeTab === t.id ||
-                (t.id === "ai" && activeTab === "ai-history")
-              }
-              onClick={() => setActiveTab(t.id)}
-              icon={t.icon}
-            />
-          ))}
-        </div>
-        <div className="flex gap-2">
           {actions.map((a) => (
             <Button
               key={a.label}
@@ -137,6 +131,8 @@ export function ControlPanel({
               {a.icon}
             </Button>
           ))}
+        </div>
+        <div className="flex gap-2">
           <Button size="icon" shape="circle" onClick={onClose}>
             <X size={16} />
           </Button>

@@ -1,8 +1,44 @@
 import { useCopilot } from "@/contexts/copilot";
 import { useUbentoEngine } from "@/engine/app/engine";
-import { Sparkles } from "lucide-react";
+import { useStoreState } from "@ubento/workspace.primitives";
+import { Loader2, Sparkles } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { CopilotMessage } from "./message/message";
+
+function CopilotStatusIndicator() {
+  const copilot = useCopilot();
+  const activeThreadId = copilot.useState((c) => c.activeThreadId);
+  const thread = activeThreadId
+    ? copilot.environment.thread(activeThreadId)
+    : undefined;
+  const activeExecution = useStoreState(
+    thread?.store,
+    (state) => state.activeExecution,
+  );
+  const executionStatus = useStoreState(
+    activeExecution?.store,
+    (state) => state.status,
+  );
+
+  switch (executionStatus) {
+    case "thinking":
+      return (
+        <div className="flex items-center gap-2 px-1 py-1 text-xs text-neutral-content-muted animate-in fade-in">
+          <Loader2 size={12} className="animate-spin text-accent" />
+          <span>Thinking...</span>
+        </div>
+      );
+    case "working":
+      return (
+        <div className="flex items-center gap-2 px-1 py-1 text-xs text-neutral-content-muted animate-in fade-in">
+          <Loader2 size={12} className="animate-spin text-accent" />
+          <span>Working...</span>
+        </div>
+      );
+    default:
+      return null;
+  }
+}
 
 export function CopilotThread() {
   const appEngine = useUbentoEngine();
@@ -44,11 +80,12 @@ export function CopilotThread() {
   return (
     <div
       ref={scrollRef}
-      className="flex flex-1 flex-col gap-6 overflow-y-auto p-4 scrollbar-hide scroll-smooth"
+      className="flex flex-1 flex-col gap-4 overflow-y-auto p-4 scrollbar-hide scroll-smooth"
     >
       {messages.map((message) => (
         <CopilotMessage key={message.id} message={message} />
       ))}
+      <CopilotStatusIndicator />
     </div>
   );
 }

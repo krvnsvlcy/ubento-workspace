@@ -155,6 +155,7 @@ export function createWorkspaceEngine({
   // Standalone functions here
 
   async function connect() {
+    console.log("[workspace.connect]", id);
     store.setState({ status: "connected" });
     const engineState = appEngine.getState();
     const state = store.getState();
@@ -375,7 +376,7 @@ export function createWorkspaceEngine({
       for (const boardId in state.data) {
         const board = state.data[boardId];
         const prevBoard = prevState.data[boardId];
-        if (!dequal(board.name, prevBoard.name)) {
+        if (board.name !== prevBoard?.name) {
           rpc?.egress.writeBoard({ boardId, data: { title: board.name } });
         }
       }
@@ -446,7 +447,6 @@ export function createWorkspaceEngine({
           boardUpdated,
         },
       });
-      console.log("init rpc", { rpc, id });
 
       rpc.watch((event) => {
         console.log(`[host.rpc.event] ${event.type}`, event);

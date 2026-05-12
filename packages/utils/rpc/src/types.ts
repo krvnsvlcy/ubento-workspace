@@ -29,5 +29,6 @@ export type HandlerMap<Ingress extends RpcInterfaceDefinition> = {
 export type HandlerMapProxy<Ingress extends RpcInterfaceDefinition> = {
   readonly [K in keyof Ingress]: (
     req: ReqOf<Ingress[K]>,
+    options?: { timeout?: number },
   ) => ResOf<Ingress[K]> | Promise<ResOf<Ingress[K]>>;
 };

@@ -58,6 +58,7 @@ function InvalidSpecOverlay({ engine }: { engine: WorkspaceEngine }) {
         id: state.workspace.id,
         title: state.workspace.title,
         description: "",
+        services: {},
       },
     });
   };

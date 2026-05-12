@@ -5,11 +5,10 @@ import { useEffect, useMemo } from "react";
 import { useUbentoEngine } from "../../../../engine/app/engine";
 import { TabDefinition } from "../types";
 import { WorkspaceHeader } from "./header";
-import { assetsTab } from "./tabs/assets/assets-tab";
 import { homeTab } from "./tabs/home/home";
 import { workspaceTab } from "./tabs/workspace/workspace";
 
-const tabs: TabDefinition[] = [homeTab, workspaceTab, assetsTab];
+const tabs: TabDefinition[] = [homeTab, workspaceTab];
 
 function TabButton({
   tab,

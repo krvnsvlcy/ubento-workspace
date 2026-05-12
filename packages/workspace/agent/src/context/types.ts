@@ -37,6 +37,7 @@ export type AgentHistoryEntry = z.infer<typeof agentHistoryEntrySchema>;
 export const agentContextResourceSchema = z.object({
   key: z.string(),
   type: z.string(),
+  label: z.string(),
   data: z.any(),
 });
 export type AgentContextResource = z.infer<typeof agentContextResourceSchema>;

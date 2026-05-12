@@ -95,10 +95,17 @@ function ServicesSection() {
         </div>
       ) : (
         serviceEntries.map(([name, service]) => (
-          <TreeEntry key={name} icon="service">
-            <div className="flex items-center justify-between w-full min-w-0 truncate">
-              {name}
-            </div>
+          <TreeEntry
+            key={name}
+            icon="service"
+            onClick={() =>
+              open(ServiceBrowserModal, {
+                workspaceEngine,
+                initialSelectedServiceId: service.id,
+              })
+            }
+          >
+            {name}
           </TreeEntry>
         ))
       )}

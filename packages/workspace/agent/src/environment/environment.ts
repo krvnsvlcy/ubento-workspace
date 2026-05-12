@@ -4,13 +4,10 @@ import { AgentTool } from "../execution/tool/tool.js";
 import { Toolkit } from "../execution/tool/toolkit/toolkit.js";
 import { LanguageModel } from "../utils/models.js";
 
+import { ResourceType } from "@/context/resource.js";
 import { messageTool } from "../execution/tools/message.js";
 import { responseTool } from "../execution/tools/response.js";
-import {
-  describeToolTool,
-  listToolsTool,
-  searchToolsTool,
-} from "../execution/tools/tools.js";
+import { describeToolTool, listToolsTool } from "../execution/tools/tools.js";
 
 export type AgentEnvironment = {
   getModel: (id: string) => LanguageModel | undefined;
@@ -19,6 +16,11 @@ export type AgentEnvironment = {
   listTools: () => Promise<AgentTool[]>;
   addTool: (tool: AgentTool) => void;
   removeTool: (name: string) => void;
+
+  resourceTypes?: ResourceType[];
+  addResourceType: (resourceType: ResourceType) => void;
+  removeResourceType: (type: string) => void;
+  getResourceType: (type: string) => ResourceType | undefined;
 
   listToolkits?: () => Toolkit[];
   listAgents?: () => Agent[];
@@ -38,10 +40,11 @@ export function createEnvironment({
   const tools = new Map<string, AgentTool>([
     [messageTool.name, messageTool],
     [responseTool.name, responseTool],
-    [searchToolsTool.name, searchToolsTool],
     [listToolsTool.name, listToolsTool],
     [describeToolTool.name, describeToolTool],
   ]);
+
+  const resourceTypes = new Map<string, ResourceType>();
 
   return {
     getModel,
@@ -73,6 +76,19 @@ export function createEnvironment({
     },
     removeTool(name: string) {
       tools.delete(name);
+    },
+
+    get resourceTypes() {
+      return Array.from(resourceTypes.values());
+    },
+    addResourceType(resourceType: ResourceType) {
+      resourceTypes.set(resourceType.type, resourceType);
+    },
+    removeResourceType(type: string) {
+      resourceTypes.delete(type);
+    },
+    getResourceType(type: string) {
+      return resourceTypes.get(type);
     },
   };
 }

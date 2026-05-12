@@ -37,7 +37,9 @@ export function TreeEntry({
       ) : (
         <></>
       )}
-      <div className="px-2 flex items-center gap-1 grow">{children}</div>
+      <div className="px-2 grow overflow-hidden whitespace-nowrap truncate">
+        {children}
+      </div>
 
       {actions?.length && (
         <div

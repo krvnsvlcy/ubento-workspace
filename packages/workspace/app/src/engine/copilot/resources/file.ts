@@ -1,5 +1,5 @@
-import { ResourceType } from "@ubento/workspace.agent";
 import { UbentoSDK } from "@ubento/services.sdk";
+import { ResourceType } from "@ubento/workspace.agent";
 
 export interface FileResourceData {
   path: string;
@@ -11,7 +11,7 @@ export const fileResource = {
   create: (ubentoApi: UbentoSDK): ResourceType<FileResourceData> => {
     return {
       type: "file",
-      getMessageItem: async (data) => {
+      resolveData: async (data) => {
         // Shim for file reading via SDK
         return {
           type: "data",

@@ -1,4 +1,4 @@
-import { type ExtractState, type StoreApi } from "zustand";
+import { createStore, type ExtractState, type StoreApi } from "zustand";
 import { useStoreWithEqualityFn } from "zustand/traditional";
 
 export type StateController<S> = {
@@ -23,3 +23,29 @@ export function createZustandStateController<S extends StoreApi<unknown>>(
     setState: store.setState,
   };
 }
+
+export const nullStore = createStore<any>()(() => ({}));
+
+export function useStoreState<S extends StoreApi<unknown>>(
+  store: S | undefined,
+): ExtractState<S> | undefined;
+export function useStoreState<S extends StoreApi<unknown>, T>(
+  store: S | undefined,
+  selector: (state: ExtractState<S>) => T,
+  equalityFn?: (a: T, b: T) => boolean,
+): T | undefined;
+export function useStoreState<S extends StoreApi<unknown>, T>(
+  store: S | undefined,
+  selector?: (state: ExtractState<S>) => T,
+  equalityFn?: (a: T, b: T) => boolean,
+) {
+  const nonNullSelector = selector || ((state: any) => state);
+  return useStoreWithEqualityFn(
+    store ?? (nullStore as S),
+    store ? nonNullSelector : () => undefined,
+    store ? equalityFn : undefined,
+  );
+}
+
+export * from "./react.js";
+export * from "./state.js";

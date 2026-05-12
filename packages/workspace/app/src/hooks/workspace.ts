@@ -1,28 +1,29 @@
 import { useSession } from "@/contexts/session";
 import { useUbento } from "@/engine/app/engine";
-import { useQuery } from "@tanstack/react-query";
 import { WorkspaceEngine } from "@/engine/workspace/engine";
+import { useQuery } from "@tanstack/react-query";
 
 export function useWorkspaceServices(workspaceEngine: WorkspaceEngine) {
   const workspaceSpec = workspaceEngine.useState((s) => s.workspace.spec) || {};
   const installedServices =
     workspaceSpec.status === "valid" ? workspaceSpec.data?.services || {} : {};
-  const installedServiceNames = new Set(
-    Object.values(installedServices).map((s) => s.name),
+  const installedServiceIds = new Set(
+    Object.values(installedServices).map((s) => s.id),
   );
 
-  return { installedServices, installedServiceNames };
+  return { installedServices, installedServiceIds };
 }
 
 export function useServiceWorkspaceState(
   workspaceEngine: WorkspaceEngine,
   service: {
-    name: string;
+    id: string;
     provider?: string;
   },
 ) {
-  const { installedServices, installedServiceNames } = useWorkspaceServices(workspaceEngine);
-  const isInstalled = installedServiceNames.has(service.name);
+  const { installedServices, installedServiceIds } =
+    useWorkspaceServices(workspaceEngine);
+  const isInstalled = installedServiceIds.has(service.id);
 
   const session = useSession();
   const ubento = useUbento();
@@ -34,8 +35,11 @@ export function useServiceWorkspaceState(
       const result = await ubento.sdk.vertex.listConnections({
         team_id: session.teamId || "",
       });
-      const connectionsArray = Array.isArray(result) ? result : (result as any)?.data || [];
-      return connectionsArray.filter((c: any) => c.provider?.name === provider || c.provider?.code === provider);
+      const connectionsArray = result?.data || [];
+      return connectionsArray.filter(
+        (c: any) =>
+          c.provider?.name === provider || c.provider?.code === provider,
+      );
     },
     enabled: !!session.teamId && !!provider,
   });

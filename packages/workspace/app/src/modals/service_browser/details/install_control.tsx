@@ -3,13 +3,13 @@ import {
   useServiceWorkspaceState,
   useWorkspaceServices,
 } from "@/hooks/workspace";
+import { ConnectionModal } from "@/modals/connection";
+import { useModal } from "@/utils/modal-store";
 import { vertexClient } from "@ubento/services.sdk";
 import { ServiceSpecV1 } from "@ubento/vertex.core";
 import { Badge, Button } from "@ubento/workspace.primitives";
 import { Plus, Sparkles, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useModal } from "@/utils/modal-store";
-import { ConnectionModal } from "@/modals/connection";
 
 export function InstallControl({
   workspaceEngine,
@@ -27,7 +27,7 @@ export function InstallControl({
   const { connections, isLoadingConnections } = useServiceWorkspaceState(
     workspaceEngine,
     {
-      name: service.name,
+      id: service.id,
       provider: specData?.connection?.provider,
     },
   );
@@ -82,8 +82,7 @@ export function InstallControl({
   const activeConnection =
     connections.find((c) => c.id === selectedConnectionId) || connections[0];
   const isInstalledWithActiveConnection = Object.values(installedServices).some(
-    (s: any) =>
-      s.name === service.name && s.connectionId === activeConnection.id,
+    (s: any) => s.id === service.id && s.connectionId === activeConnection.id,
   );
 
   // Case 2: One connection
@@ -112,8 +111,8 @@ export function InstallControl({
             <Button
               onClick={() =>
                 workspaceEngine.installService(service.name, {
-                  name: service.name,
-                  channel: activeChannelId || "",
+                  id: service.id,
+                  channelId: activeChannelId || "",
                   connectionId: activeConnection.id,
                 })
               }
@@ -165,13 +164,14 @@ export function InstallControl({
           </Button>
         ) : (
           <Button
-            onClick={() =>
+            onClick={() => {
+              alert(activeChannelId);
               workspaceEngine.installService(service.name, {
-                name: service.name,
-                channel: activeChannelId || "",
+                id: service.id,
+                channelId: activeChannelId || "",
                 connectionId: activeConnection.id,
-              })
-            }
+              });
+            }}
             variant="primary"
             className="gap-2"
           >

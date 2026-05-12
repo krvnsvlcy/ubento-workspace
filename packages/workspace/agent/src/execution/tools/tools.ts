@@ -11,7 +11,9 @@ export const searchToolsSchema = z.object({
     ),
 });
 
-export const searchToolsTool: AgentTool<typeof searchToolsSchema> & { toolName: string } = {
+export const searchToolsTool: AgentTool<typeof searchToolsSchema> & {
+  toolName: string;
+} = {
   name: "search_tools",
   toolName: "search_tools",
   description:
@@ -30,7 +32,7 @@ export const searchToolsTool: AgentTool<typeof searchToolsSchema> & { toolName: 
 
     const tools = await toolkit.listTools();
     const toolDefs = tools.filter(
-      (t) => t.name.includes(args.query) || t.description?.includes(args.query)
+      (t) => t.name.includes(args.query) || t.description?.includes(args.query),
     );
 
     let text = "";
@@ -50,7 +52,9 @@ export const listToolsSchema = z.object({
   set: z.string().describe("The name of the toolkit to list tools from"),
 });
 
-export const listToolsTool: AgentTool<typeof listToolsSchema> & { toolName: string } = {
+export const listToolsTool: AgentTool<typeof listToolsSchema> & {
+  toolName: string;
+} = {
   name: "list_tools",
   toolName: "list_tools",
   description: "List all tools available in a specific toolkit.",
@@ -72,7 +76,7 @@ export const listToolsTool: AgentTool<typeof listToolsSchema> & { toolName: stri
       content: [
         {
           type: "text",
-          text: `Toolkit "${args.set}" loaded successfully.\n\n${renderYaml(tools)}`,
+          text: renderYaml(tools),
         },
       ],
     };
@@ -84,7 +88,9 @@ export const describeToolSchema = z.object({
   tool: z.string().describe("The name of the tool to describe"),
 });
 
-export const describeToolTool: AgentTool<typeof describeToolSchema> & { toolName: string } = {
+export const describeToolTool: AgentTool<typeof describeToolSchema> & {
+  toolName: string;
+} = {
   name: "describe_tool",
   toolName: "describe_tool",
   description: "Describe a tool in detail.",
@@ -117,7 +123,11 @@ export const describeToolTool: AgentTool<typeof describeToolSchema> & { toolName
       content: [
         {
           type: "text",
-          text: `Tool "${args.tool}" loaded successfully from toolkit "${args.set}"\n\n${renderYaml({ name: tool.name, description: tool.description })}`,
+          text: renderYaml({
+            name: tool.name,
+            description: tool.description,
+            args: tool.args.toJSONSchema(),
+          }),
         },
       ],
     };

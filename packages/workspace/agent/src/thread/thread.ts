@@ -1,10 +1,11 @@
-import { createStore } from "zustand/vanilla";
+import { createStore, StoreApi } from "zustand/vanilla";
 import { Agent } from "../agent/agent.js";
 import { MessageData, UserMessageData } from "../message/types.js";
 
 import { createAgentContext } from "@/context/context.js";
 import { AgentEnvironment } from "@/environment/environment.js";
 import { AgentMessage, createAgentMessage } from "@/message/message.js";
+import { createZustandStateController, StateController } from "@ubento/state";
 import { AgentContextData } from "../context/types.js";
 import {
   AgentExecution,
@@ -13,6 +14,17 @@ import {
 
 export interface AgentThreadState {
   activeExecution: AgentExecution | undefined;
+}
+
+export interface AgentThread extends StateController<AgentThreadState> {
+  id: string;
+  agent: Agent;
+  environment: AgentEnvironment;
+  context: ReturnType<typeof createAgentContext>;
+  store: StoreApi<AgentThreadState>;
+  createExecution(args?: { abortController?: AbortController }): AgentExecution;
+  pushUserMessage(message: Omit<UserMessageData, "role">): Promise<void>;
+  startAgentMessage(modelId: string): Promise<AgentMessage>;
 }
 
 export function createAgentThread({
@@ -31,7 +43,7 @@ export function createAgentThread({
   saveContext: (context: AgentContextData) => Promise<void>;
   createMessage: (data: MessageData) => Promise<string>; // id
   updateMessage: (id: string, data: MessageData) => Promise<void>;
-}) {
+}): AgentThread {
   const context = createAgentContext({
     data: initialContext,
     save: async (data) => saveContext?.(data),
@@ -40,12 +52,15 @@ export function createAgentThread({
   const store = createStore<AgentThreadState>()(() => ({
     activeExecution: undefined,
   }));
+  const controller = createZustandStateController(store);
 
-  const threadApi = {
+  const threadApi: AgentThread = {
     id,
     agent,
     environment,
     context,
+    store,
+    ...controller,
     createExecution: ({
       abortController,
     }: {
@@ -56,7 +71,7 @@ export function createAgentThread({
         throw new Error("There is already an active execution on this thread.");
       }
 
-      const execution = createAgentExecution({
+      const execution: AgentExecution = createAgentExecution({
         thread: threadApi,
         abortController,
       });
@@ -64,7 +79,11 @@ export function createAgentThread({
       store.setState({ activeExecution: execution });
       // Auto-clear active execution when it finishes
       execution.subscribe((state) => {
-        if (state.status !== "running" && state.status !== "idle") {
+        if (
+          state.status === "completed" ||
+          state.status === "errored" ||
+          state.status === "stopped"
+        ) {
           store.setState({ activeExecution: undefined });
         }
       });
@@ -84,8 +103,10 @@ export function createAgentThread({
           if (!id) {
             throw Error("id is not defined");
           }
-          await updateMessage(id, data);
-          await context.writeMessage(id, message.getData());
+          await Promise.all([
+            updateMessage(id, data),
+            context.writeMessage(id, message.getData()),
+          ]);
         },
       });
       id = await createMessage(message.getData());
@@ -96,5 +117,3 @@ export function createAgentThread({
 
   return threadApi;
 }
-
-export type AgentThread = ReturnType<typeof createAgentThread>;

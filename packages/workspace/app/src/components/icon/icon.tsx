@@ -2,6 +2,7 @@ import {
   Bolt,
   Box,
   CircleX,
+  Component,
   Home,
   LayoutGrid,
   PanelsTopLeft,
@@ -17,6 +18,7 @@ const iconMap = {
   board: PanelsTopLeft,
   assets: Box,
   service: Bolt,
+  component: Component,
 } satisfies Record<string, LucideIcon>;
 
 export type IconKey = keyof typeof iconMap;

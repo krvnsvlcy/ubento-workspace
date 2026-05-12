@@ -1,5 +1,6 @@
 import { RefHandler } from "../../../environment/environment";
-import { useBoardElement, useBoardState } from "../../states/board";
+import { useBoardElement } from "../../states/board";
+import { useBoardRenderingContext } from "../../states/context";
 import {
   useEnvironment,
   useEnvironmentComponent,
@@ -27,10 +28,8 @@ export function ElementView({
   const environment = useEnvironment();
   const ErrorComponent = useEnvironmentErrorComponent();
   const Component = useEnvironmentComponent(element.component);
-  const state = useBoardState();
-  const resolvedProps = useResolvedValue(element.inputs || {}, {
-    state: state ?? {},
-  });
+  const context = useBoardRenderingContext();
+  const resolvedProps = useResolvedValue(element.inputs || {}, context);
 
   function handleRef(dom: HTMLElement | null) {
     if (!dom) {

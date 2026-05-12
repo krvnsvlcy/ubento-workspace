@@ -1,5 +1,6 @@
 import { PropsWithChildren } from "react";
 import { BoardSpec, BoardStyle } from "../../spec/board.js";
+import { StoreProvider } from "../providers/store.js";
 import { BoardContext } from "../states/board.js";
 import { ElementView } from "./element/element.js";
 import { OverlayRenderer } from "./overlay-renderer.js";
@@ -61,11 +62,25 @@ export function BoardView({
 
   return (
     <BoardContext value={spec}>
-      <div style={getBoardStyle(spec.style || {})}>
-        {content}
-        {children}
-        <OverlayRenderer />
-      </div>
+      <StoreProvider store={spec.store || {}}>
+        <div
+          style={getBoardStyle({
+            ...(spec.style || {}),
+            direction: "column",
+            gap: 0,
+            padding: {
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+            },
+          })}
+        >
+          {content}
+          {children}
+          <OverlayRenderer />
+        </div>
+      </StoreProvider>
     </BoardContext>
   );
 }

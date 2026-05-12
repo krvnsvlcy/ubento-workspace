@@ -11,6 +11,7 @@ import { buildAgentOrchestratorInstructions } from "./prompt/instructions/instru
 import {
   buildAgentOrchestratorPrompt,
   MessagePart,
+  messagePartsToMarkdown,
 } from "./prompt/prompt/prompt.js";
 import {
   agentOrchestratorOutputSchema,
@@ -20,7 +21,8 @@ import { AgentTool } from "./tool/tool.js";
 
 export type AgentExecutionStatus =
   | "idle"
-  | "running"
+  | "thinking"
+  | "working"
   | "completed"
   | "errored"
   | "stopped";
@@ -58,6 +60,9 @@ export function createAgentExecution({
   }: {
     model: LanguageModel;
   }): Promise<{ shouldContinue: boolean }> {
+    // Ensure we are in the thinking state whenever we start a new turn
+    store.setState({ status: "thinking" });
+
     const stats = context.getStats();
     if (stats.budget > 0 && stats.usage >= stats.budget) {
       const summarizeModel = environment.getModel("summarize") || model;
@@ -205,6 +210,8 @@ export function createAgentExecution({
       `Orchestrator Model generated response for ${agent.name}`,
       {
         event: "orchestrator_model_response",
+        instructions,
+        prompt: messagePartsToMarkdown(prompt),
         content: result.text,
       },
     );
@@ -257,22 +264,21 @@ export function createAgentExecution({
         break;
       }
 
+      // Transition to working state before executing the tool action
+      store.setState({ status: "working" });
+
       const result = await runAction({
         tool,
         message: agentMessage,
         args: act.args,
       });
 
-      let shouldBreak = false;
       if (result.error) {
         await agentMessage.fail(result.error);
-        shouldBreak = true;
+        return { shouldContinue: true };
       }
       if (result.shouldEnd) {
         shouldContinue = false;
-        shouldBreak = true;
-      }
-      if (shouldBreak) {
         break;
       }
     }
@@ -302,6 +308,7 @@ export function createAgentExecution({
 
   return {
     thread,
+    store,
     subscribe: store.subscribe,
     getState: store.getState,
     run: async ({
@@ -319,7 +326,7 @@ export function createAgentExecution({
       try {
         store.setState({
           error: undefined,
-          status: "running",
+          status: "thinking", // Start with thinking instead of running
         });
 
         await thread.pushUserMessage(message);
@@ -338,7 +345,6 @@ export function createAgentExecution({
             break;
           }
 
-          // Only log initial states when the process is long
           if (i === 3) {
             environment.logger?.info(
               "Process is taking longer than expected... Continued execution.",

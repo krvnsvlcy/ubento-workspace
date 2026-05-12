@@ -268,7 +268,7 @@ export function createDuplexRpc<
         if (typeof prop !== "string") {
           return undefined;
         }
-        return (arg: any) => call(prop, arg);
+        return (arg: any, options?: { timeout?: number }) => call(prop, arg, options);
       },
     },
   );

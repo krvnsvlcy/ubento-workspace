@@ -1,5 +1,5 @@
-import { ResourceType } from "@ubento/workspace.agent";
 import { UbentoSDK } from "@ubento/services.sdk";
+import { ResourceType } from "@ubento/workspace.agent";
 
 export interface DirectoryResourceData {
   path: string;
@@ -11,7 +11,7 @@ export const directoryResource = {
   create: (ubentoApi: UbentoSDK): ResourceType<DirectoryResourceData> => {
     return {
       type: "directory",
-      getMessageItem: async (data) => {
+      resolveData: async (data) => {
         // Shim for directory reading via SDK
         return {
           type: "data",

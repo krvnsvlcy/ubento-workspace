@@ -1,60 +1,6 @@
 import { createStore } from "zustand";
 import { StateSpec } from "../../spec/state";
 
-export type DataStatus = "pending" | "ready" | "error";
-export type DataFetchStatus = "idle" | "running" | "success" | "error";
-
-export type EntityState<T> = {
-  data?: T;
-  status: DataStatus;
-  fetchStatus: DataFetchStatus;
-  error?: Error;
-  isFetching: boolean;
-  isError: boolean;
-  fetch: () => Promise<T>;
-};
-export type EntityListState<T, Params> = {
-  data?: T[];
-  params?: Params;
-  status: DataStatus;
-  fetchStatus: DataFetchStatus;
-  error?: Error;
-  isFetching: boolean;
-  isError: boolean;
-  fetch: () => Promise<T[]>;
-};
-export type PagedEntityListState<T, Params> = {
-  data?: T[];
-  params?: Params;
-  status: DataStatus;
-  fetchStatus: DataFetchStatus;
-  error?: Error;
-  isFetching: boolean;
-  isError: boolean;
-  // page info
-  pageNumber: number;
-  pageSize: number;
-  pageCount: number;
-  itemCount: number;
-  // navigation
-  hasPrevPage: boolean;
-  hasNextPage: boolean;
-  nextPage: () => void;
-  prevPage: () => void;
-};
-export type InfiniteEntityListState<T, Params> = {
-  data?: T[];
-  params?: Params;
-  status: DataStatus;
-  fetchStatus: DataFetchStatus;
-  error?: Error;
-  isFetching: boolean;
-  isError: boolean;
-  // page info
-  hasMore: boolean;
-  fetchMore: () => void;
-};
-
 export type StateBuilderContext = {};
 
 export function buildBoardState({

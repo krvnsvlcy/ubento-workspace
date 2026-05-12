@@ -69,6 +69,7 @@ export function createUbentoCopilot({
   return {
     logger,
     attachmentTypes,
+    environment,
     ...controller,
     setInputText: (text: string) => {
       store.setState((s) => ({

@@ -15,7 +15,7 @@ export function BentoHomeView({ runtime }: { runtime: BentoRuntime }) {
       <div className="max-w-7xl mx-auto w-full px-6 lg:px-12 py-16 flex flex-col gap-20">
         {/* Hero Section */}
         <div className="flex flex-col gap-2">
-          <h1 className="text-5xl font-black tracking-tighter text-neutral-content">
+          <h1 className="text-5xl font-semibold tracking-tighter text-neutral-content">
             {workspace.title}
           </h1>
           <p className="text-neutral-content-muted">
@@ -56,7 +56,7 @@ export function BentoHomeView({ runtime }: { runtime: BentoRuntime }) {
               <div className="w-24 h-24 rounded-full bg-neutral-surface flex items-center justify-center mb-6 text-neutral-content-muted opacity-20">
                 <LayoutGrid size={48} />
               </div>
-              <h3 className="text-2xl font-bold text-neutral-content mb-2">
+              <h3 className="text-2xl font-medium text-neutral-content mb-2">
                 No boards yet
               </h3>
               <p className="text-neutral-content-muted max-w-xs text-center mb-10">

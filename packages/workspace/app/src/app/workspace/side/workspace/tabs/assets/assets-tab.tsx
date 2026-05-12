@@ -5,7 +5,8 @@ import {
   BrowserDataTransferStore,
   DataTransferPayload,
 } from "@ubento/data-transfer";
-import { Box, Plus, Search } from "lucide-react";
+import { EmptyView } from "@ubento/workspace.primitives";
+import { Box, Search } from "lucide-react";
 import { useState } from "react";
 import { TabDefinition } from "../../../types";
 
@@ -53,80 +54,22 @@ export function AssetItem({ module }: { module: any }) {
   );
 }
 
-function AssetSection({
-  title,
-  type,
-  query,
-}: {
-  title: string;
-  type: "component";
-  query: string;
-}) {
+export function AssetsTab() {
+  const [query, setQuery] = useState("");
   const ubento = useUbento();
   const session = useSession();
-  const engine = useUbentoEngine();
-  const location = engine.useState((s) => s.location);
-  const modules = ubento.module.useModules({ team_id: session.teamId, type });
-
-  const createModule = async (name: string) => {
-    const mod = await ubento.module.createModule({
-      team_id: session.teamId,
-      name,
-      source: "",
-      scope: "private",
-      type,
-    });
-    engine.goToLocation({
-      ...location,
-      component: mod.id,
-      componentTab: "ai",
-    });
-  };
+  const modules = ubento.module.useModules({
+    team_id: session.teamId,
+    type: "component",
+  });
 
   const filteredModules = modules.data?.filter((m) =>
     m.name.toLowerCase().includes(query.toLowerCase()),
   );
 
-  if (query && filteredModules?.length === 0) return null;
-
-  return (
-    <div className="flex flex-col gap-0.5">
-      <div className="flex items-center justify-between px-3 py-2">
-        <p className="text-[10px] font-bold text-neutral-content-muted uppercase tracking-wider">
-          {title}
-        </p>
-        <button
-          onClick={() => {
-            const name = prompt(`Enter ${type} name:`);
-            if (name) createModule(name);
-          }}
-          className="p-1 hover:bg-neutral-surface-hover rounded text-neutral-content-muted hover:text-accent transition-colors"
-        >
-          <Plus size={14} />
-        </button>
-      </div>
-
-      <div className="flex flex-col gap-px px-1">
-        {filteredModules?.map((module) => (
-          <AssetItem key={module.id} module={module} />
-        ))}
-      </div>
-
-      {modules.data?.length === 0 && !modules.isLoading && !query && (
-        <div className="px-3 py-2 text-[11px] text-neutral-content-muted italic">
-          No {title.toLowerCase()} found.
-        </div>
-      )}
-    </div>
-  );
-}
-
-export function AssetsTab() {
-  const [query, setQuery] = useState("");
-
   return (
     <div className="flex h-full flex-col">
-      <div className="px-3 py-2">
+      <div className="px-2">
         <div className="flex items-center gap-2 rounded-lg bg-neutral-surface-hover px-2.5 py-1.5 border border-neutral-border focus-within:border-accent/50 transition-colors">
           <Search size={12} className="text-neutral-content-muted" />
           <input
@@ -138,8 +81,18 @@ export function AssetsTab() {
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-1 pb-8">
-        <AssetSection title="Components" type="component" query={query} />
+      <div className="flex-1 overflow-y-auto px-2 py-2">
+        <div className="flex flex-col gap-px px-1">
+          {filteredModules?.map((module) => (
+            <AssetItem key={module.id} module={module} />
+          ))}
+        </div>
+
+        {filteredModules?.length === 0 && !modules.isLoading && (
+          <EmptyView>
+            {query ? "No results found." : "No components found."}
+          </EmptyView>
+        )}
       </div>
     </div>
   );

@@ -5,11 +5,13 @@ import { ServiceDetails } from "./details/details";
 
 export function ServiceBrowserModal({
   workspaceEngine,
+  initialSelectedServiceId,
 }: {
   workspaceEngine: WorkspaceEngine;
+  initialSelectedServiceId?: string;
 }) {
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(
-    null,
+    initialSelectedServiceId || null,
   );
 
   return (

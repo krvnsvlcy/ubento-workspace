@@ -1,7 +1,7 @@
 import { useCopilot } from "@/contexts/copilot";
 import { UserMessageAttachment } from "@ubento/workspace.agent";
-import { Button } from "@ubento/workspace.primitives";
-import { ArrowRight, ChevronDown, Plus, X } from "lucide-react";
+import { Button, useStoreState } from "@ubento/workspace.primitives";
+import { ArrowRight, ChevronDown, Plus, Square, X } from "lucide-react";
 
 function AttachmentChip({
   attachment,
@@ -39,6 +39,18 @@ function AttachmentChip({
 export function CopilotInput() {
   const copilot = useCopilot();
   const input = copilot.useState((c) => c.input);
+  const activeThreadId = copilot.useState((c) => c.activeThreadId);
+  const thread = activeThreadId
+    ? copilot.environment.thread(activeThreadId)
+    : undefined;
+  const activeExecution = useStoreState(
+    thread?.store,
+    (state) => state.activeExecution,
+  );
+  const executionStatus = useStoreState(
+    activeExecution?.store,
+    (state) => state.status,
+  );
 
   const handleSend = () => {
     copilot.sendMessage();
@@ -103,15 +115,26 @@ export function CopilotInput() {
             </Button>
           </div>
 
-          <Button
-            size="icon"
-            shape="circle"
-            variant="primary"
-            onClick={handleSend}
-            disabled={!input.text.trim()}
-          >
-            <ArrowRight size={16} />
-          </Button>
+          {executionStatus === "thinking" || executionStatus === "working" ? (
+            <Button
+              size="icon"
+              shape="circle"
+              variant="primary"
+              onClick={() => activeExecution?.stop()}
+            >
+              <Square size={12} fill="currentColor" />
+            </Button>
+          ) : (
+            <Button
+              size="icon"
+              shape="circle"
+              variant="primary"
+              onClick={handleSend}
+              disabled={!input.text.trim()}
+            >
+              <ArrowRight size={16} />
+            </Button>
+          )}
         </div>
       </div>
     </div>

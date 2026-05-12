@@ -35,7 +35,7 @@ export const EmptyView: React.FC<ViewProps> = ({
   return (
     <div
       id="empty-view"
-      className={`flex flex-col items-center justify-center min-h-[300px] w-full p-8 text-center border-2 border-dashed border-neutral-border rounded-2xl bg-neutral-surface animate-in zoom-in-95 duration-500 ${className}`}
+      className={`flex flex-col items-center justify-center min-h-[300px] w-full p-8 text-center border-2 border-dashed border-neutral-border rounded-2xl bg-neutral-surface ${className}`}
     >
       <div className="w-16 h-16 rounded-full bg-neutral-surface-hover flex items-center justify-center mb-4">
         <svg

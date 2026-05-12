@@ -1,6 +1,4 @@
-export type ValueResolverContext = {
-  state: Record<string, any>;
-};
+import { BoardRenderingContextApi } from "./context";
 
 /**
  * Safely retrieves a nested value from an object.
@@ -28,7 +26,7 @@ function getByPath(obj: Record<string, any>, path: string): any {
  */
 export function resolveValue(
   raw: unknown,
-  context: ValueResolverContext,
+  context: BoardRenderingContextApi,
 ): unknown {
   // 1. Base case: Primitives and null return as-is
   if (typeof raw !== "object" || raw === null) {
@@ -59,6 +57,9 @@ export function resolveValue(
   );
 }
 
-export function useResolvedValue<T>(raw: T, context: ValueResolverContext): T {
+export function useResolvedValue<T>(
+  raw: T,
+  context: BoardRenderingContextApi,
+): T {
   return resolveValue(raw, context) as T;
 }

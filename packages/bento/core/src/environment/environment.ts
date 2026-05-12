@@ -1,9 +1,15 @@
-import { Component, ComponentStore, createComponentStore } from "./component.js";
+import {
+  Component,
+  ComponentStore,
+  createComponentStore,
+} from "./component.js";
 import { createDomManager, DomManager } from "./dom.js";
 import { createInteractionManager, InteractionManager } from "./interaction.js";
 import { createOverlayManager, OverlayManager } from "./overlay.js";
+import { ServiceStore } from "./service.js";
 
 export type Environment = {
+  serviceStore: ServiceStore;
   componentStore: ComponentStore;
   domManager: DomManager;
   interactionManager: InteractionManager;
