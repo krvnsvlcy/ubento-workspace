@@ -46,6 +46,18 @@ export default defineConfig({
       outFile: "./dist/uno.css",
     },
   },
+  rules: [
+    ["animate-in", { animation: "enter 150ms ease-out forwards" }],
+    ["animate-out", { animation: "exit 150ms ease-in forwards" }],
+    ["fade-in-0", { "--tw-enter-opacity": "0" }],
+    ["fade-out-0", { "--tw-exit-opacity": "0" }],
+    ["zoom-in-95", { "--tw-enter-scale": "0.95" }],
+    ["zoom-out-95", { "--tw-exit-scale": "0.95" }],
+    ["slide-in-from-top-2", { "--tw-enter-translate-y": "-0.5rem" }],
+    ["slide-in-from-right-2", { "--tw-enter-translate-x": "0.5rem" }],
+    ["slide-in-from-left-2", { "--tw-enter-translate-x": "-0.5rem" }],
+    ["slide-in-from-bottom-2", { "--tw-enter-translate-y": "0.5rem" }],
+  ],
   theme: {
     colors: {
       background: "var(--color-background)",
@@ -59,6 +71,11 @@ export default defineConfig({
       warning: colorTheme("warning"),
       info: colorTheme("info"),
       destructive: colorTheme("destructive"),
+    },
+    font: {
+      heading: "var(--font-heading)",
+      body: "var(--font-body)",
+      code: "var(--font-code)",
     },
   },
   presets: [

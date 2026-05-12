@@ -1,0 +1,55 @@
+/* Animation utilities matching Tailwind data-attribute variants */
+
+.data-\[state\=open\]\:animate-in {
+  animation: enter 150ms ease-out forwards;
+}
+
+.data-\[state\=closed\]\:animate-out {
+  animation: exit 150ms ease-in forwards;
+}
+
+.data-\[state\=closed\]\:fade-out-0 {
+  --tw-exit-opacity: 0;
+}
+
+.data-\[state\=open\]\:fade-in-0 {
+  --tw-enter-opacity: 0;
+}
+
+.data-\[state\=closed\]\:zoom-out-95 {
+  --tw-exit-scale: 0.95;
+}
+
+.data-\[state\=open\]\:zoom-in-95 {
+  --tw-enter-scale: 0.95;
+}
+
+.data-\[side\=bottom\]\:slide-in-from-top-2 {
+  --tw-enter-translate-y: -0.5rem;
+}
+
+.data-\[side\=left\]\:slide-in-from-right-2 {
+  --tw-enter-translate-x: 0.5rem;
+}
+
+.data-\[side\=right\]\:slide-in-from-left-2 {
+  --tw-enter-translate-x: -0.5rem;
+}
+
+.data-\[side\=top\]\:slide-in-from-bottom-2 {
+  --tw-enter-translate-y: 0.5rem;
+}
+
+@keyframes enter {
+  from {
+    opacity: var(--tw-enter-opacity, 1);
+    transform: translate(var(--tw-enter-translate-x, 0), var(--tw-enter-translate-y, 0)) scale(var(--tw-enter-scale, 1));
+  }
+}
+
+@keyframes exit {
+  to {
+    opacity: var(--tw-exit-opacity, 1);
+    transform: translate(var(--tw-exit-translate-x, 0), var(--tw-exit-translate-y, 0)) scale(var(--tw-exit-scale, 1));
+  }
+}

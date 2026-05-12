@@ -111,8 +111,46 @@ function getPopperRect({
   };
 }
 
+export const PopperContext = React.createContext<{
+  anchor: HTMLElement | null;
+  setAnchor: (el: HTMLElement | null) => void;
+  isOpen: boolean;
+  setIsOpen: (open: boolean) => void;
+} | null>(null);
+
+export function PopperProvider({ children }: PropsWithChildren) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [anchor, setAnchor] = useState<HTMLElement | null>(null);
+  return (
+    <PopperContext.Provider value={{ isOpen, setIsOpen, anchor, setAnchor }}>
+      {children}
+    </PopperContext.Provider>
+  );
+}
+
+export function PopperTrigger({ children }: PropsWithChildren) {
+  const context = React.useContext(PopperContext);
+  if (!context)
+    throw new Error("PopperTrigger must be used within PopperProvider");
+
+  const child = React.Children.only(children) as any;
+
+  return React.cloneElement(child, {
+    ref: (el: HTMLElement | null) => {
+      const originalRef = child.ref;
+      if (typeof originalRef === "function") originalRef(el);
+      else if (originalRef) originalRef.current = el;
+      context.setAnchor(el);
+    },
+    onClick: (e: React.MouseEvent) => {
+      if (child.props && child.props.onClick) child.props.onClick(e);
+      context.setIsOpen(!context.isOpen);
+    },
+  });
+}
+
 export function Popper({
-  anchor,
+  anchor: propAnchor,
   position,
   align,
   offset,
@@ -133,6 +171,9 @@ export function Popper({
   border?: boolean;
   shadow?: boolean;
 }>): JSX.Element {
+  const context = React.useContext(PopperContext);
+  const anchor = propAnchor || context?.anchor;
+  const isOpen = context ? context.isOpen : true;
   const ref = React.useRef<HTMLDivElement | null>(null);
   const [{ x, y, width, height }, setRect] = useState({
     x: 0,
@@ -151,8 +192,6 @@ export function Popper({
     const containerRect =
       getClosestPositionedParent(container).getBoundingClientRect();
 
-    console.log({ container, parent: getClosestPositionedParent(container) });
-
     setRect(
       getPopperRect({
         anchorRect,
@@ -168,9 +207,9 @@ export function Popper({
         offset: offset || 0,
       }),
     );
-  }, [align, anchor, offset, position, container]);
+  }, [isOpen, align, anchor, offset, position, container]);
 
-  if (!anchor) return <></>;
+  if (!isOpen || !anchor) return <></>;
 
   const transform = "";
 
@@ -186,10 +225,17 @@ export function Popper({
   };
   const className = cx(
     {
-      "rounded-md": filled || border,
-      "bg-neutral-surface ": filled,
-      "border": border,
+      "rounded-lg": filled || border,
+      "bg-background ": filled,
+      border: border,
       "shadow-md": shadow,
+    },
+    "animate-in fade-in-0 zoom-in-95",
+    {
+      "slide-in-from-top-2": position === "bottom",
+      "slide-in-from-bottom-2": position === "top",
+      "slide-in-from-left-2": position === "right",
+      "slide-in-from-right-2": position === "left",
     },
     exlusiveBoxIgnoreClassName,
   );
@@ -204,7 +250,10 @@ export function Popper({
         }}
         className={className}
         style={style}
-        onClose={onClose || (() => {})}
+        onClose={() => {
+          context?.setIsOpen(false);
+          onClose?.();
+        }}
       >
         {children}
       </ExclusiveBox>

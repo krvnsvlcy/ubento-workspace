@@ -37,4 +37,6 @@ export type BentoEngineRuntimeRpcInterface = {
     boardId: string;
     data: Partial<BentoBoardData>;
   }) => Promise<void>;
+
+  setTheme: ({ css }: { css: string }) => Promise<void>;
 };

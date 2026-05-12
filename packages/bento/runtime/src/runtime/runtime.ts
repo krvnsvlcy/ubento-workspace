@@ -78,6 +78,15 @@ export function createBentoRuntime({
     writeBoard: async ({ boardId, data }) => {
       boardStore.update(boardId, data);
     },
+    setTheme: async ({ css }) => {
+      let styleTag = document.getElementById("theme-variables");
+      if (!styleTag) {
+        styleTag = document.createElement("style");
+        styleTag.id = "theme-variables";
+        document.head.appendChild(styleTag);
+      }
+      styleTag.innerHTML = css;
+    },
   });
 
   return {

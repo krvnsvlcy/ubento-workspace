@@ -1,7 +1,8 @@
-import { SideSection } from "@/app/components/side/section";
-import { Home, LayoutDashboard, Plus } from "lucide-react";
-import { useModal } from "@/utils/modal-store";
+import { Icon } from "@/components/icon/icon";
+import { SideSection } from "@/components/side/section";
+import { TreeEntry } from "@/components/tree/tree-entry";
 import { CreateWorkspaceModal } from "@/modals/create_workspace/create_workspace";
+import { useModal } from "@/utils/modal-store";
 import {
   useUbento,
   useUbentoEngine,
@@ -22,7 +23,7 @@ export function WorkspaceItem({ workspace }: { workspace: any }) {
           : "text-neutral-content-subtle hover:bg-neutral-surface-hover hover:text-neutral-content"
       }`}
     >
-      <LayoutDashboard size={14} />
+      <Icon icon="workspace" />
       <span className="truncate">{workspace.name}</span>
     </button>
   );
@@ -32,6 +33,7 @@ export function HomeTab() {
   const ubento = useUbento();
   const engine = useUbentoEngine();
   const session = engine.useState((s) => s.session);
+  const location = engine.useState((s) => s.location);
   const { open } = useModal();
 
   const { data: workspaces } = ubento.workspace.useWorkspaces({
@@ -62,14 +64,21 @@ export function HomeTab() {
       title="Workspaces"
       actions={[
         {
-          icon: Plus,
-          tooltip: "Create Workspace",
-          onClick: handleCreateWorkspace,
+          icon: "plus",
+          title: "Create Workspace",
+          handler: handleCreateWorkspace,
         },
       ]}
     >
-      {(workspaces || []).map((workspace: any) => (
-        <WorkspaceItem key={workspace.id} workspace={workspace} />
+      {(workspaces || []).map((workspace) => (
+        <TreeEntry
+          key={workspace.id}
+          icon="workspace"
+          active={location.workspace === workspace.slug}
+          onClick={() => engine.openWorkspace(workspace.slug)}
+        >
+          {workspace.name}
+        </TreeEntry>
       ))}
     </SideSection>
   );
@@ -78,7 +87,7 @@ export function HomeTab() {
 export const homeTab: TabDefinition = {
   id: "home",
   name: "Home",
-  icon: Home,
+  icon: "home",
   component: HomeTab,
   enabled: () => true,
 };

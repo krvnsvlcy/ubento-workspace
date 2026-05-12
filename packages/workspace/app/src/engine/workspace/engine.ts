@@ -402,6 +402,12 @@ export function createWorkspaceEngine({
     }),
   });
 
+  // watch theme changes
+  const handleThemeChanged = ((e: CustomEvent<{ css: string }>) => {
+    rpc?.egress.setTheme({ css: e.detail.css });
+  }) as EventListener;
+  window.addEventListener("ubento:theme-changed", handleThemeChanged);
+
   return {
     id,
     appEngine,
@@ -455,6 +461,7 @@ export function createWorkspaceEngine({
       unregisterStore("workspaceEngine");
       unsubscribeBoards();
       unsubscribeWorkspace();
+      window.removeEventListener("ubento:theme-changed", handleThemeChanged);
     },
   };
 }

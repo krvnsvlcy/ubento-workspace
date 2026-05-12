@@ -148,7 +148,7 @@ export function AssetsTab() {
 export const assetsTab: TabDefinition = {
   id: "assets",
   name: "Assets",
-  icon: Box,
+  icon: "assets",
   component: AssetsTab,
   enabled: (location) => !!location.workspace,
 };

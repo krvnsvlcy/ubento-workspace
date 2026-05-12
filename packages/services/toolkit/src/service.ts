@@ -30,7 +30,11 @@ export type ServiceOptions = {
   exposeHeaders?: string[]; // default: ["Link", "X-Request-Id"]
   cors?: CorsOptions | boolean; // new option
   spec?: any;
-  bodyParser?: boolean;
+  bodyParser?:
+    | boolean
+    | {
+        limit?: string;
+      };
 };
 
 export type ServiceInstance = {
@@ -135,7 +139,9 @@ export function createService(options: ServiceOptions): ServiceInstance {
 
   /* ------------------ Body parsing ------------------ */
   if (options.bodyParser !== false) {
-    app.use(Express.json());
+    const bodyParserOptions =
+      typeof options.bodyParser === "object" ? options.bodyParser : {};
+    app.use(Express.json({ limit: bodyParserOptions.limit }));
     app.use(Express.urlencoded({ extended: true }));
   }
 

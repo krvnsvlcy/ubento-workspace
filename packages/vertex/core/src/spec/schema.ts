@@ -14,15 +14,17 @@ export const booleanJsonSchema = z.object({
 
 export const arrayJsonSchema = z.object({
   type: z.literal("array"),
-  items: z.lazy(() => schemaSchema),
+  items: z.lazy(() => schemaSchema).optional(),
 });
 
 export const objectJsonSchema = z.object({
   type: z.literal("object"),
-  properties: z.record(
-    z.string(),
-    z.lazy(() => schemaSchema),
-  ),
+  properties: z
+    .record(
+      z.string(),
+      z.lazy(() => schemaSchema),
+    )
+    .optional(),
   required: z.array(z.string()).optional(),
 });
 

@@ -5,6 +5,7 @@ export type UbentoLocation = {
   workspaceTab?: string;
   componentTab?: string;
   component?: string;
+  style?: boolean;
 };
 
 // /w/{workspaceSlug}/{boardId}?params={json}&workspaceTab={tab}&component={moduleId}&componentTab={tab}
@@ -18,6 +19,7 @@ export function parseLocation(): UbentoLocation {
   const workspaceTab = urlParams.get("workspaceTab") || undefined;
   const componentTab = urlParams.get("componentTab") || undefined;
   const component = urlParams.get("component") || undefined;
+  const style = urlParams.get("style") === "true" || undefined;
   let params: Record<string, string> | undefined;
 
   if (jsonParams) {
@@ -36,10 +38,11 @@ export function parseLocation(): UbentoLocation {
       workspaceTab,
       componentTab,
       component,
+      style,
     };
   }
 
-  return { params, workspaceTab, componentTab, component };
+  return { params, workspaceTab, componentTab, component, style };
 }
 
 export function stringifyLocation(location: UbentoLocation): string {
@@ -70,6 +73,9 @@ export function stringifyLocation(location: UbentoLocation): string {
   }
   if (location.component) {
     queryParts.push(`component=${encodeURIComponent(location.component)}`);
+  }
+  if (location.style) {
+    queryParts.push(`style=true`);
   }
 
   if (queryParts.length > 0) {

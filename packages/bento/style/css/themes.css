@@ -1,5 +1,7 @@
 @import "./themes/default.css";
+@import "./animation.css";
 @import "./scrollbar.css";
+@import "./fonts.css";
 
 *,
 ::after,
@@ -8,4 +10,19 @@
 ::file-selector-button {
   /* scrollbar-width: none; */
   border-color: var(--color-neutral-border);
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--color-neutral-content);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+  color: var(--color-neutral-content);
 }

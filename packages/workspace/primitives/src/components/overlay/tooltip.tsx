@@ -1,6 +1,6 @@
+import { usePopperContainer } from "@/components/overlay/popper/popper_container.js";
 import * as Tooltip_ from "@radix-ui/react-tooltip";
 import type { PropsWithChildren, ReactNode } from "react";
-import { usePopperContainer } from "@/components/overlay/popper/popper_container.js";
 
 export function Tooltip({
   content,
@@ -29,7 +29,7 @@ export function Tooltip({
           <Tooltip_.Content
             sideOffset={sideOffset}
             side={side}
-            className="border rounded py-0.5 px-1 bg-neutral-surface"
+            className="rounded-md py-0.5 px-1 bg-inverse-surface/90 backdrop-blur-sm text-inverse-content text-xs"
             style={{
               zIndex: 1000,
             }}

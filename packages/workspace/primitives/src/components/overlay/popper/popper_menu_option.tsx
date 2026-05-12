@@ -1,5 +1,6 @@
 import cx from "clsx";
 import React from "react";
+import { PopperContext } from "./popper.js";
 
 export type PopperMenuOptionProps = {
   label?: React.ReactNode;
@@ -7,6 +8,8 @@ export type PopperMenuOptionProps = {
   onClick: (e: React.MouseEvent) => void;
   dimmed?: boolean;
   disabled?: boolean;
+  destructive?: boolean;
+  closeOnSelect?: boolean;
 };
 
 export function PopperMenuOption({
@@ -15,7 +18,10 @@ export function PopperMenuOption({
   onClick,
   dimmed = false,
   disabled = false,
+  destructive = false,
+  closeOnSelect = true,
 }: PopperMenuOptionProps) {
+  const context = React.useContext(PopperContext);
   let iconNode = <></>;
 
   if (icon) {
@@ -34,12 +40,11 @@ export function PopperMenuOption({
   return (
     <div
       className={cx(
-        "h-6 py-1 w-full rounded text-sm flex items-center gap-1",
+        "h-8 py-1 px-2 w-full rounded-md text-sm flex items-center gap-2",
         {
           "text-neutral-content": dimmed || disabled,
-          "hover:bg-neutral-surface/80": !disabled,
-          "px-2": !icon,
-          "pl-1 pr-2": icon,
+          "hover:bg-current/7": !disabled,
+          "text-destructive": destructive,
         },
       )}
       style={{
@@ -55,6 +60,9 @@ export function PopperMenuOption({
               e.stopPropagation();
               e.preventDefault();
               onClick(e);
+              if (closeOnSelect && context) {
+                context.setIsOpen(false);
+              }
             }
       }
     >

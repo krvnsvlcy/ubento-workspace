@@ -1,4 +1,4 @@
-import { ErrorView } from "@/app/components/error.js";
+import { ErrorView } from "@/components/error.js";
 import { useWorkspaceEngine } from "@/contexts/workspace.js";
 import { useUbentoEngine } from "@/engine/app/engine.js";
 import { PendingView } from "@ubento/workspace.primitives";

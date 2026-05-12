@@ -1,15 +1,22 @@
+import { AccountModal } from "@/modals/account/account";
+import { TeamModal } from "@/modals/team/team_modal";
+import { useModal } from "@/utils/modal-store";
 import {
   Button,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+  Popper,
+  PopperMenu,
+  PopperMenuOption,
+  PopperProvider,
+  PopperTrigger,
 } from "@ubento/workspace.primitives";
-import { Building2, LogOut, Settings, Sidebar, User } from "lucide-react";
-import { useModal } from "@/utils/modal-store";
-import { TeamModal } from "@/modals/team/team_modal";
-import { AccountModal } from "@/modals/account/account";
+import {
+  Building2,
+  LogOut,
+  Palette,
+  Settings,
+  Sidebar,
+  User,
+} from "lucide-react";
 import { useUbentoEngine } from "../../../../engine/app/engine";
 
 export function WorkspaceHeader() {
@@ -34,8 +41,8 @@ export function WorkspaceHeader() {
 
   return (
     <div className="px-3 flex gap-1">
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
+      <PopperProvider>
+        <PopperTrigger>
           <div className="p-1 grow rounded-lg hover:bg-neutral-surface-hover transition-colors cursor-pointer flex gap-2 text-sm text-neutral-content min-w-0">
             <div className="w-6 h-6 rounded-md bg-neutral-content/10 flex items-center justify-center shrink-0">
               <Building2 size={14} />
@@ -49,23 +56,51 @@ export function WorkspaceHeader() {
               </span>
             </div>
           </div>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="w-56">
-          <DropdownMenuItem onClick={() => open(TeamModal, { team })}>
-            <Settings size={14} className="mr-2" />
-            <span>Team Settings</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => open(AccountModal, { user: session })}>
-            <User size={14} className="mr-2" />
-            <span>Account Settings</span>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleLogout} variant="destructive">
-            <LogOut size={14} className="mr-2" />
-            <span>Logout</span>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+        </PopperTrigger>
+        <Popper
+          position="bottom"
+          align="start"
+          exclusive
+          filled
+          border
+          shadow
+          offset={4}
+        >
+          <div className="w-56">
+            <PopperMenu
+              options={[
+                [
+                  {
+                    label: "Team Settings",
+                    icon: <Settings size={14} />,
+                    onClick: () => open(TeamModal, { team }),
+                  },
+                  {
+                    label: "Account Settings",
+                    icon: <User size={14} />,
+                    onClick: () => open(AccountModal, { user: session }),
+                  },
+                ],
+                [
+                  {
+                    label: "Logout",
+                    icon: <LogOut size={14} />,
+                    onClick: handleLogout,
+                    destructive: true,
+                  },
+                ],
+              ]}
+            />
+          </div>
+        </Popper>
+      </PopperProvider>
+      <Button
+        size="icon"
+        variant="ghost"
+        onClick={() => engine.goToLocation({ style: true })}
+      >
+        <Palette size={14} />
+      </Button>
       <Button size="icon" onClick={handleSidebarClick} variant="ghost">
         <Sidebar size={14} />
       </Button>

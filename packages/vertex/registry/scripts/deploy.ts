@@ -20,7 +20,7 @@ const tokenManager = createClientCredentialsTokenManager({
 });
 
 async function deploySpec(specName: string, sdk: UbentoSDK) {
-  const specFilePath = path.join(root, "src", "specs", `${specName}.ts`);
+  const specFilePath = path.join(root, "src", "services", `${specName}.ts`);
   if (!fs.existsSync(specFilePath)) {
     console.error(`Error: Spec file not found at ${specFilePath}`);
     return;
@@ -203,6 +203,7 @@ async function run() {
       }
     } else {
       await deploySpec(specName, sdk);
+      console.log("done here ------------------------------");
     }
   } else if (command === "deploy-provider") {
     const providersDir = path.join(root, "src", "providers");

@@ -1,4 +1,4 @@
-import { ErrorView } from "@/app/components/error";
+import { ErrorView } from "@/components/error";
 import { useUbento } from "@/engine/app/engine";
 import { WorkspaceEngine } from "@/engine/workspace/engine";
 import { serviceSpecV1Schema } from "@ubento/vertex.core";

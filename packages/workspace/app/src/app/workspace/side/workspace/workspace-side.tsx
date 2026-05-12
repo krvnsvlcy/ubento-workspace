@@ -1,3 +1,4 @@
+import { Icon } from "@/components/icon/icon";
 import { Button } from "@ubento/workspace.primitives";
 import clsx from "clsx";
 import { useEffect, useMemo } from "react";
@@ -21,7 +22,7 @@ function TabButton({
   location: any;
   onClick: () => void;
 }) {
-  const Icon = tab.icon;
+  const icon = tab.icon;
 
   return (
     <Button
@@ -31,7 +32,7 @@ function TabButton({
         "opacity-50 hover:opacity-70": !isActive,
       })}
     >
-      <Icon size={14} />
+      <Icon icon={icon} size={16} />
     </Button>
   );
 }

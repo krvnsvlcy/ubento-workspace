@@ -28,9 +28,11 @@ export function ExclusiveBox({
       }
     };
 
-    document.addEventListener("mousedown", handleMouseDown);
+    document.addEventListener("mousedown", handleMouseDown, { capture: true });
     return () => {
-      document.removeEventListener("mousedown", handleMouseDown);
+      document.removeEventListener("mousedown", handleMouseDown, {
+        capture: true,
+      });
     };
   }, [ref, onClose]);
 
