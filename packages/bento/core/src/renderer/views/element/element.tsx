@@ -14,31 +14,22 @@ function FallbackElement({ ref }: { ref: RefHandler }) {
   const FallbackComponent = useEnvironmentFallBackComponent();
   if (!FallbackComponent) return <></>;
 
-  return <FallbackComponent props={{}} ref={ref} />;
+  return <FallbackComponent.render ref={ref} props={{}} />;
 }
 
-export function ElementView({
+function UnsafeElementView({
   id,
   parents = [],
+  handleRef,
 }: {
   id: string;
   parents?: string[];
+  handleRef: RefHandler;
 }) {
   const element = useBoardElement(id);
-  const environment = useEnvironment();
-  const ErrorComponent = useEnvironmentErrorComponent();
   const Component = useEnvironmentComponent(element.component);
   const context = useBoardRenderingContext();
-  const resolvedProps = useResolvedValue(element.inputs || {}, context);
-
-  function handleRef(dom: HTMLElement | null) {
-    if (!dom) {
-      environment.domManager.remove(id);
-    } else {
-      environment.domManager.add(id, { dom, parents });
-    }
-    return () => environment.domManager.remove(id);
-  }
+  const resolvedProps = useResolvedValue(element.props || {}, context);
 
   if (!Component) {
     return <FallbackElement ref={handleRef} />;
@@ -49,14 +40,38 @@ export function ElementView({
   ));
 
   return (
+    <Component.render props={resolvedProps} ref={handleRef}>
+      {children}
+    </Component.render>
+  );
+}
+
+export function ElementView({
+  id,
+  parents = [],
+}: {
+  id: string;
+  parents?: string[];
+}) {
+  const environment = useEnvironment();
+
+  const ErrorComponent = useEnvironmentErrorComponent();
+  function handleRef(dom: HTMLElement | null) {
+    if (!dom) {
+      environment.domManager.remove(id);
+    } else {
+      environment.domManager.add(id, { dom, parents });
+    }
+    return () => environment.domManager.remove(id);
+  }
+
+  return (
     <ErrorBoundary
       elementId={id}
       errorComponent={ErrorComponent}
       refHandler={handleRef}
     >
-      <Component props={resolvedProps} ref={handleRef}>
-        {children}
-      </Component>
+      <UnsafeElementView id={id} parents={parents} handleRef={handleRef} />
     </ErrorBoundary>
   );
 }

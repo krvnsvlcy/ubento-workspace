@@ -5,13 +5,15 @@ import { AttachmentType } from "../types";
 
 export type BentoLocationAttachment = UserMessageAttachment<
   "bento-location",
-  BentoLocation
+  BentoLocation & {
+    boardTitle?: string;
+  }
 >;
 export const ubentoLocationAttachmentType: AttachmentType<BentoLocationAttachment> =
   {
     type: "bento-location",
     label: (data) => {
-      return `${data.boardId}`;
+      return data.boardTitle || data.boardId;
     },
     icon: (data) => {
       return <LayoutDashboard />;

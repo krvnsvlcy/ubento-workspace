@@ -1,4 +1,4 @@
-import { type ComponentProps } from "@ubento/bento.core";
+import { createComponent } from "@ubento/bento.core";
 import * as React from "react";
 import { z } from "zod";
 import {
@@ -33,7 +33,11 @@ function getSkeletonStyle(
   };
 }
 
-export function Skeleton({ ref, props }: ComponentProps<SkeletonProps>) {
-  const layoutContext = useLayoutContext();
-  return <div ref={ref} style={getSkeletonStyle(props, layoutContext)} />;
-}
+export const Skeleton = createComponent({
+  schema: skeletonPropsSchema,
+  summary: "Skeleton component",
+  render: ({ ref, props }) => {
+    const layoutContext = useLayoutContext();
+    return <div ref={ref} style={getSkeletonStyle(props, layoutContext)} />;
+  }
+});

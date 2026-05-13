@@ -1,4 +1,4 @@
-import { type ComponentProps } from "@ubento/bento.core";
+import { createComponent } from "@ubento/bento.core";
 import * as React from "react";
 import { z } from "zod";
 import {
@@ -25,13 +25,16 @@ export const accordionPropsSchema = layoutElementStyleSchema.extend({
 });
 export type AccordionProps = z.infer<typeof accordionPropsSchema>;
 
-export function Accordion({ ref, props }: ComponentProps<AccordionProps>) {
-  const layoutContext = useLayoutContext();
-  const { items, intent } = props;
-  const themePrefix = `--color-${intent}`;
+export const Accordion = createComponent({
+  schema: accordionPropsSchema,
+  summary: "Accordion component",
+  render: ({ ref, props }) => {
+    const layoutContext = useLayoutContext();
+    const { items, intent } = props;
+    const themePrefix = `--color-${intent}`;
 
-  return (
-    <div ref={ref} style={{
+    return (
+      <div ref={ref} style={{
       ...getLayoutElementStyle(props, layoutContext),
       width: "100%",
       display: "flex",
@@ -81,3 +84,4 @@ export function Accordion({ ref, props }: ComponentProps<AccordionProps>) {
     </div>
   );
 }
+});

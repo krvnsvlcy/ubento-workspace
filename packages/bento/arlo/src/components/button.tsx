@@ -1,4 +1,4 @@
-import { type ComponentProps } from "@ubento/bento.core";
+import { type ComponentProps, createComponent } from "@ubento/bento.core";
 import * as React from "react";
 import { z } from "zod";
 import {
@@ -96,36 +96,40 @@ function getButtonStyle(
   return baseStyles;
 }
 
-export function Button({ ref, props, children }: ComponentProps<ButtonProps>) {
-  const layoutContext = useLayoutContext();
-  const [isHovered, setIsHovered] = React.useState(false);
-  const [isActive, setIsActive] = React.useState(false);
+export const Button = createComponent({
+  schema: buttonPropsSchema,
+  summary: "Button component",
+  render: ({ ref, props, children }) => {
+    const layoutContext = useLayoutContext();
+    const [isHovered, setIsHovered] = React.useState(false);
+    const [isActive, setIsActive] = React.useState(false);
 
-  const style = getButtonStyle(props, layoutContext);
+    const style = getButtonStyle(props, layoutContext);
 
-  const dynamicStyle = {
-    ...style,
-    background: isActive
-      ? (style as any)["--btn-active-bg"] || style.background
-      : isHovered
-        ? (style as any)["--btn-hover-bg"] || style.background
-        : style.background,
-  };
+    const dynamicStyle = {
+      ...style,
+      background: isActive
+        ? (style as any)["--btn-active-bg"] || style.background
+        : isHovered
+          ? (style as any)["--btn-hover-bg"] || style.background
+          : style.background,
+    };
 
-  return (
-    <button
-      ref={ref}
-      style={dynamicStyle}
-      disabled={props.disabled}
-      onMouseEnter={() => !props.disabled && setIsHovered(true)}
-      onMouseLeave={() => {
-        setIsHovered(false);
-        setIsActive(false);
-      }}
-      onMouseDown={() => !props.disabled && setIsActive(true)}
-      onMouseUp={() => setIsActive(false)}
-    >
-      {props.label || children}
-    </button>
-  );
-}
+    return (
+      <button
+        ref={ref}
+        style={dynamicStyle}
+        disabled={props.disabled}
+        onMouseEnter={() => !props.disabled && setIsHovered(true)}
+        onMouseLeave={() => {
+          setIsHovered(false);
+          setIsActive(false);
+        }}
+        onMouseDown={() => !props.disabled && setIsActive(true)}
+        onMouseUp={() => setIsActive(false)}
+      >
+        {props.label || children}
+      </button>
+    );
+  }
+});

@@ -20,35 +20,28 @@ function paddingStyle(padding: BoardStyle["padding"]) {
 }
 
 function getBoardStyle(style: BoardStyle): React.CSSProperties {
-  const direction = style.direction || "column";
+  const layout = style.layout || "column";
   const flow = style.flow || "fixed";
   return {
     position: "relative",
     width:
-      direction === "row"
-        ? flow === "fixed"
-          ? "100%"
-          : "fit-content"
-        : "100%",
+      layout === "row" ? (flow === "fixed" ? "100%" : "fit-content") : "100%",
     height:
-      direction === "column"
+      layout === "column"
         ? flow === "fixed"
           ? "100%"
           : "fit-content"
         : "100%",
     minHeight: "100vh",
     display: "flex",
-    alignItems: "stretch",
-    flexDirection: direction,
+    alignItems: layout === "center" ? "center" : "stretch",
+    flexDirection: layout === "center" ? "column" : layout,
+    justifyContent: layout === "center" ? "center" : "start",
     gap: style.gap ? `${style.gap || 0}px` : undefined,
     overflowX:
-      direction === "row" ? (flow === "fixed" ? "hidden" : "auto") : "hidden",
+      layout === "row" ? (flow === "fixed" ? "hidden" : "auto") : "hidden",
     overflowY:
-      direction === "column"
-        ? flow === "fixed"
-          ? "hidden"
-          : "auto"
-        : "hidden",
+      layout === "column" ? (flow === "fixed" ? "hidden" : "auto") : "hidden",
     pointerEvents: "auto",
     padding: paddingStyle(style.padding),
   };
@@ -81,14 +74,14 @@ export function BoardView({
             <div
               style={getBoardStyle({
                 ...(spec.style || {}),
-                direction: "column",
-                gap: 0,
-                padding: {
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                },
+                // direction: "column",
+                // gap: 0,
+                // padding: {
+                //   top: 0,
+                //   left: 0,
+                //   right: 0,
+                //   bottom: 0,
+                // },
               })}
             >
               {content}

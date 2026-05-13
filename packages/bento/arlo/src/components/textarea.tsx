@@ -1,4 +1,4 @@
-import { type ComponentProps } from "@ubento/bento.core";
+import { createComponent } from "@ubento/bento.core";
 import * as React from "react";
 import { z } from "zod";
 import {
@@ -58,24 +58,28 @@ function getTextareaStyle(
   return baseStyles;
 }
 
-export function Textarea({ ref, props }: ComponentProps<TextareaProps>) {
-  const layoutContext = useLayoutContext();
-  const [isFocused, setIsFocused] = React.useState(false);
-  const [isHovered, setIsHovered] = React.useState(false);
+export const Textarea = createComponent({
+  schema: textareaPropsSchema,
+  summary: "Textarea component",
+  render: ({ ref, props }) => {
+    const layoutContext = useLayoutContext();
+    const [isFocused, setIsFocused] = React.useState(false);
+    const [isHovered, setIsHovered] = React.useState(false);
 
-  return (
-    <textarea
-      ref={ref}
-      value={props.value}
-      placeholder={props.placeholder}
-      disabled={props.disabled}
-      readOnly={props.readOnly}
-      rows={props.rows}
-      onFocus={() => setIsFocused(true)}
-      onBlur={() => setIsFocused(false)}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      style={getTextareaStyle(props, layoutContext, isFocused, isHovered)}
-    />
-  );
-}
+    return (
+      <textarea
+        ref={ref}
+        value={props.value}
+        placeholder={props.placeholder}
+        disabled={props.disabled}
+        readOnly={props.readOnly}
+        rows={props.rows}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        style={getTextareaStyle(props, layoutContext, isFocused, isHovered)}
+      />
+    );
+  }
+});

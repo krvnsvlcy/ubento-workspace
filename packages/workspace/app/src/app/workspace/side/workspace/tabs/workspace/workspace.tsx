@@ -20,6 +20,7 @@ function BoardsSection({
   const engine = useUbentoEngine();
   const ubento = useUbento();
   const location = engine.useState((s) => s.location);
+  const workspaceEngine = useWorkspaceEngine();
   const { data: rootBoards } = ubento.workspace.useBoards(
     { workspace_id: workspace.id, parent_id: null },
     { enabled: !!workspace.id },
@@ -54,6 +55,30 @@ function BoardsSection({
                 params: {},
               });
             }}
+            actions={[
+              {
+                icon: "edit",
+                title: "Rename",
+                handler: async () => {
+                  const newName = window.prompt("Enter new board name:", board.name);
+                  if (newName && newName !== board.name) {
+                    await workspaceEngine.updateBoardMetadata({
+                      boardId: board.id,
+                      metadata: { title: newName },
+                    });
+                  }
+                },
+              },
+              {
+                icon: "trash",
+                title: "Delete",
+                handler: async () => {
+                  if (window.confirm(`Are you sure you want to delete board "${board.name}"?`)) {
+                    await workspaceEngine.deleteBoard({ boardId: board.id });
+                  }
+                },
+              },
+            ]}
           >
             {board.name}
           </TreeEntry>

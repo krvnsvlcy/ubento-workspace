@@ -14,6 +14,7 @@ export const createWorkspaceToolkit = ({
   updateBoardMetadata,
   deleteBoard,
   createBoard,
+  checkBoard,
 }: {
   goTo: (args: {
     location: { boardId: string; params: Record<string, string> };
@@ -23,13 +24,22 @@ export const createWorkspaceToolkit = ({
   }) => Promise<{ id: string; title: string; spec: any }>;
   listBoards: () => Promise<{ boards: Array<{ id: string; title: string }> }>;
   readBoardSpec: (args: { boardId: string }) => Promise<any>;
-  updateBoardSpec: (args: { boardId: string; patch: any[] }) => Promise<void>;
+  updateBoardSpec: (args: {
+    boardId: string;
+    patch: any[];
+  }) => Promise<{ status: string; errors?: string[] }>;
   updateBoardMetadata: (args: {
     boardId: string;
     metadata: { title?: string };
   }) => Promise<void>;
   deleteBoard: (args: { boardId: string }) => Promise<void>;
-  createBoard: (args: { name: string }) => Promise<{ id: string }>;
+  createBoard: (args: {
+    name: string;
+    spec?: any;
+  }) => Promise<{ id: string; status: string; errors?: string[] }>;
+  checkBoard: (args: {
+    boardId: string;
+  }) => Promise<{ status: string; errors?: string[] }>;
 }) => {
   const goToArgs = z.object({
     boardId: z.string().describe("The ID of the board to navigate to"),
@@ -124,14 +134,21 @@ export const createWorkspaceToolkit = ({
       "Update the specification of a specific board using JSON Patch.",
     args: updateBoardSpecArgs,
     run: async ({ args }) => {
-      await updateBoardSpec({
+      const result = await updateBoardSpec({
         boardId: args.boardId,
         patch: args.patch as any,
       });
       return {
         content: [
-          { type: "text", text: `Updated board spec for "${args.boardId}".` },
+          {
+            type: "text",
+            text: renderYaml({
+              status: result.status,
+              errors: result.errors || [],
+            }),
+          },
         ],
+        structuredContent: result,
       };
     },
   };
@@ -190,6 +207,10 @@ export const createWorkspaceToolkit = ({
 
   const createBoardArgs = z.object({
     title: z.string().describe("The title of the new board"),
+    spec: z
+      .any()
+      .optional()
+      .describe("Optional initial specification for the board"),
   });
 
   const createBoardTool: AgentTool<typeof createBoardArgs> = {
@@ -199,14 +220,45 @@ export const createWorkspaceToolkit = ({
     run: async ({ args }) => {
       const result = await createBoard({
         name: args.title,
+        spec: args.spec,
       });
       return {
         content: [
           {
             type: "text",
-            text: `Created board "${args.title}" with ID "${result.id}".`,
+            text: renderYaml({
+              id: result.id,
+              status: result.status,
+              errors: result.errors || [],
+            }),
           },
         ],
+        structuredContent: result,
+      };
+    },
+  };
+
+  const checkBoardArgs = z.object({
+    boardId: z.string().describe("The ID of the board to check"),
+  });
+
+  const checkBoardTool: AgentTool<typeof checkBoardArgs> = {
+    name: "check_board",
+    description: "Check the status and errors of a specific board.",
+    args: checkBoardArgs,
+    run: async ({ args }) => {
+      const result = await checkBoard({ boardId: args.boardId });
+      return {
+        content: [
+          {
+            type: "text",
+            text: renderYaml({
+              status: result.status,
+              errors: result.errors || [],
+            }),
+          },
+        ],
+        structuredContent: result,
       };
     },
   };
@@ -214,7 +266,7 @@ export const createWorkspaceToolkit = ({
   return createLocalToolkit({
     name: "workspace",
     description: "Tools for navigating and inspecting the current workspace",
-    tools: [
+    tools: {
       goToTool,
       getBoardTool,
       listBoardsTool,
@@ -223,6 +275,7 @@ export const createWorkspaceToolkit = ({
       updateBoardMetadataTool,
       deleteBoardTool,
       createBoardTool,
-    ],
+      checkBoardTool,
+    },
   });
 };

@@ -11,6 +11,7 @@ export const modelIds = {
   // Google models
   gemini3proPreview: "google/gemini-3-pro-preview",
   gemini3flash: "google/gemini-3-flash",
+  gemini3flashLite: "google/gemini-3.1-flash-lite",
 } as const;
 
 export type LanguageModel = LanguageModelV3;

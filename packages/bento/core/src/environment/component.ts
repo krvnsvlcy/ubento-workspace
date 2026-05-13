@@ -1,4 +1,5 @@
 import { createZustandStateController } from "@ubento/workspace.primitives";
+import z from "zod";
 import { createStore as createZustandStore } from "zustand";
 
 export type RefHandler = (dom: HTMLElement | null) => (() => void) | void;
@@ -9,7 +10,31 @@ export type ComponentProps<P = {}> = {
   children?: React.ReactNode;
 };
 
-export type Component<P = {}> = React.ComponentType<ComponentProps<P>>;
+export type Component<S extends z.ZodType<any> = z.ZodAny> = {
+  schema: S;
+  render: React.ComponentType<ComponentProps<z.infer<S>>>;
+  summary: string;
+  instruction?: string;
+};
+
+export function createComponent<S extends z.ZodType<any>>({
+  schema,
+  render,
+  instruction,
+  summary,
+}: {
+  schema: S;
+  summary: string;
+  render: React.ComponentType<ComponentProps<z.infer<S>>>;
+  instruction?: string;
+}): Component<S> {
+  return {
+    summary,
+    schema,
+    render,
+    instruction,
+  };
+}
 
 export type ComponentStoreState = {
   components: Record<string, Component>;

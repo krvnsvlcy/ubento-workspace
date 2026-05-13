@@ -76,9 +76,9 @@ export function createAgentExecution({
       environment,
       agent,
     });
-    const tools = (await environment.listTools?.()) ?? [];
-    const toolkits = (await environment.listToolkits?.()) ?? [];
-    const agents = (await environment.listAgents?.()) ?? [];
+    const tools = environment.getAgentTools(agent);
+    const toolkits = environment.listToolkits?.() ?? [];
+    const agents = environment.listAgents?.() ?? [];
 
     const instructions = buildAgentOrchestratorInstructions({
       agent,
@@ -95,10 +95,12 @@ export function createAgentExecution({
     tool,
     args,
     message,
+    model,
   }: {
     tool: AgentTool;
     args: unknown;
     message: AgentMessage;
+    model: LanguageModel;
   }): Promise<{
     error?: AgentError;
     shouldEnd?: boolean;
@@ -137,6 +139,14 @@ export function createAgentExecution({
         args: argParseResult.data,
         abortController,
         environment,
+        thread,
+        stop: () => {
+          abortController.abort();
+        },
+        setStructuredOutput: (output: Record<string, unknown>) => {
+          message.updateAction(actionId, { structuredOutput: output });
+        },
+        modelId: model.id,
       });
 
       if (result.isError) {
@@ -213,6 +223,7 @@ export function createAgentExecution({
         instructions,
         prompt: messagePartsToMarkdown(prompt),
         content: result.text,
+        modelId: model.id,
       },
     );
 
@@ -271,6 +282,7 @@ export function createAgentExecution({
         tool,
         message: agentMessage,
         args: act.args,
+        model,
       });
 
       if (result.error) {

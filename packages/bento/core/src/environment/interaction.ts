@@ -18,6 +18,7 @@ export function createInteractionManager() {
 
   return {
     ...controller,
+    store,
     select: (ids: string | string[]) => {
       controller.setState((state) => ({
         ...state,

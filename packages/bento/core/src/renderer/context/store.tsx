@@ -79,8 +79,8 @@ export const ActionStoreEntryProvider = memo(function ActionStoreEntryProvider({
         isPending: result.isPending,
         isSuccess: result.isSuccess,
         status: result.status,
-        mutate: result.mutate,
-        mutateAsync: result.mutateAsync,
+        run: result.mutate,
+        runAsync: result.mutateAsync,
         reset: result.reset,
       }}
     >

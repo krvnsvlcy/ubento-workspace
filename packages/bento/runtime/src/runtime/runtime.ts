@@ -19,6 +19,7 @@ export type BentoRuntimeState = {
   workspace: BentoWorkspaceData;
   user: BentoUserData;
   location?: BentoLocation;
+  theme?: { css: string };
 };
 
 export function createBentoRuntime({
@@ -39,6 +40,16 @@ export function createBentoRuntime({
       ...initialState,
     };
   });
+
+  if (initialState.theme) {
+    let styleTag = document.getElementById("theme-variables");
+    if (!styleTag) {
+      styleTag = document.createElement("style");
+      styleTag.id = "theme-variables";
+      document.head.appendChild(styleTag);
+    }
+    styleTag.innerHTML = initialState.theme.css;
+  }
   const controller = createZustandStateController(store);
 
   const boardStore = createStore<BentoBoardData, { parentId?: string }, string>(
@@ -94,6 +105,39 @@ export function createBentoRuntime({
       }
       styleTag.innerHTML = css;
     },
+    listComponents: async (_: {}) => {
+      return Object.fromEntries(
+        Object.entries(components || {}).map(([key, value]) => [
+          key,
+          value.summary,
+        ]),
+      );
+    },
+    describeComponents: async ({ names }) => {
+      const result: Record<string, unknown> = {};
+      for (const name of names) {
+        const comp = components?.[name];
+        if (comp) {
+          result[name] = {
+            name,
+            schema: comp.schema.toJSONSchema(),
+            summary: comp.summary,
+            instruction: comp.instruction,
+          };
+        }
+      }
+      return result;
+    },
+    getCatalog: async (args) => {
+      return Object.fromEntries(
+        Object.entries(components || {}).map(([key, value]) => [
+          key,
+          {
+            schema: value.schema.toJSONSchema(),
+          },
+        ]),
+      );
+    },
   });
 
   const environment: Environment = createEnvironment({
@@ -131,6 +175,10 @@ export function createBentoRuntime({
     components,
     fallbackComponent,
     errorComponent,
+  });
+
+  environment.interactionManager.subscribe((state) => {
+    rpc.egress.selectionUpdated({ selection: state.selection });
   });
 
   return {

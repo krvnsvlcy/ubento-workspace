@@ -12,11 +12,12 @@ export const responseTool: AgentTool<typeof responseToolSchema> & {
 } = {
   name: "response",
   toolName: "response",
-  description: "Submit your final work and results to the user.",
+  description: "Submit your final response. Only call this when you are done.",
   args: responseToolSchema,
-  async run({ args }) {
+  async run({ args, thread }) {
+    await thread.context.setResponse(args.content);
     return {
-      content: [{ type: "text", text: "Response sent to user." }],
+      content: [{ type: "text", text: "Response sent." }],
       structuredContent: { response: args.content },
       shouldEnd: true,
     };

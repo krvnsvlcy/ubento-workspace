@@ -69,6 +69,7 @@ export function createAgentMessage({
       return Object.values(actionData);
     },
     createAction,
+    updateAction,
     async startAction(id: string) {
       await updateAction(id, { status: "running" });
     },

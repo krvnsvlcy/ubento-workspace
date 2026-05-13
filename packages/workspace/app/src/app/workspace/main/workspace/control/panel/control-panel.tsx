@@ -1,58 +1,130 @@
 import { useCopilot } from "@/contexts/copilot";
 import { Button } from "@ubento/workspace.primitives";
-import cx from "clsx";
-import {
-  AppWindow,
-  History,
-  LayoutDashboard,
-  Plus,
-  Sparkles,
-  X,
-} from "lucide-react";
-import { useState } from "react";
+import { Box, Edit2, History, LayoutDashboard, Plus, Save, X } from "lucide-react";
+import { useEffect, useState } from "react";
 import { WorkspaceEngine } from "../../../../../../engine/workspace/engine";
+import { BoardTab } from "./tabs/board";
 import { CopilotTab } from "./tabs/copilot/copilot";
 import { HistoryTab } from "./tabs/copilot/history";
 
-const tabs = [
-  {
-    id: "ai",
-    icon: <Sparkles size={14} />,
-  },
-  {
-    id: "board",
-    icon: <LayoutDashboard size={14} />,
-  },
-  {
-    id: "workspace",
-    icon: <AppWindow size={14} />,
-  },
-];
+function SelectionTab({ controller }: { controller: WorkspaceEngine }) {
+  const selection = controller.useState((s) => s.selection);
+  const boards = controller.useState((s) => s.boards);
+  const location = controller.appEngine.useState((s) => s.location);
 
-function Tab({
-  isActive,
-  onClick,
-  icon,
-}: {
-  isActive: boolean;
-  onClick: () => void;
-  icon: React.ReactNode;
-}) {
+  const currentBoardId = location?.board;
+  const currentBoard = currentBoardId ? boards[currentBoardId] : undefined;
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [editText, setEditText] = useState("");
+  const [error, setError] = useState<string | null>(null);
+
+  const elements = (currentBoard?.spec?.data as any)?.elements || {};
+
+  useEffect(() => {
+    if (!isEditing && selection && currentBoard) {
+      const selectedRecord: Record<string, any> = {};
+      selection.forEach((id) => {
+        if (elements[id]) {
+          selectedRecord[id] = elements[id];
+        }
+      });
+      setEditText(JSON.stringify(selectedRecord, null, 2));
+    }
+  }, [selection, currentBoard, isEditing]);
+
+  if (!selection || selection.length === 0) {
+    return (
+      <div className="p-4 text-neutral-content-muted">No element selected</div>
+    );
+  }
+
+  const handleSave = async () => {
+    if (!currentBoardId || !currentBoard) return;
+    try {
+      const parsed = JSON.parse(editText);
+      setError(null);
+      
+      const updatedElements = { ...elements, ...parsed };
+      const updatedSpec = { ...currentBoard.spec.data, elements: updatedElements };
+      
+      await controller.writeBoardSpec({ boardId: currentBoardId, spec: updatedSpec });
+      setIsEditing(false);
+    } catch (e: any) {
+      setError(e.message || "Invalid JSON");
+    }
+  };
+
   return (
-    <button
-      onClick={onClick}
-      className={cx(
-        "h-7 w-7 flex items-center justify-center rounded-md font-bold transition-all cursor-pointer",
-        {
-          "text-accent": isActive,
-          "text-neutral-content-muted": !isActive,
-        },
+    <div className="p-4 h-full overflow-auto flex flex-col gap-4">
+      <div className="flex justify-between items-center">
+        <p className="text-xs font-bold text-neutral-content-muted uppercase">
+          Selection Data
+        </p>
+        <div className="flex items-center gap-2">
+          {!isEditing && (
+            <button
+              onClick={() => setIsEditing(true)}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs bg-white/5 hover:bg-white/10 text-foreground-200 rounded-md transition-colors"
+              title="Edit element data"
+            >
+              <Edit2 size={12} />
+              <span>Edit</span>
+            </button>
+          )}
+          {isEditing && (
+            <>
+              <button
+                onClick={handleSave}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs bg-primary-500/10 hover:bg-primary-500/20 text-primary-400 rounded-md transition-colors"
+                title="Save changes"
+              >
+                <Save size={12} />
+                <span>Save</span>
+              </button>
+              <button
+                onClick={() => {
+                  setIsEditing(false);
+                  setError(null);
+                }}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs bg-white/5 hover:bg-white/10 text-foreground-200 rounded-md transition-colors"
+                title="Cancel editing"
+              >
+                <X size={12} />
+                <span>Cancel</span>
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+
+      {error && (
+        <div className="text-xs text-red-400 bg-red-400/10 p-2 rounded-md">
+          {error}
+        </div>
       )}
-    >
-      {icon}
-    </button>
-  );
-}
+
+      <div className="grow relative min-h-[300px]">
+        {isEditing ? (
+          <textarea
+            value={editText}
+            onChange={(e) => setEditText(e.target.value)}
+            className="w-full h-full text-[11px] font-mono leading-relaxed text-foreground-300 bg-black/20 p-3 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-500/50 resize-none scrollbar-hide"
+          />
+        ) : (
+          <pre className="h-full overflow-auto text-[11px] font-mono leading-relaxed text-foreground-300 bg-black/20 p-3 rounded-md scrollbar-hide">
+            {editText}
+          </pre>
+        )}
+      </div>
+
+      {!isEditing && selection.map(id => !elements[id]).some(b => b) && (
+        <div className="p-2 bg-amber-500/10 text-amber-500 text-xs rounded-lg">
+          Warning: Some selected IDs were not found in the board spec.
+        </div>
+      )}
+    </div>
+  );}
 
 export function ControlPanel({
   controller,
@@ -75,6 +147,7 @@ export function ControlPanel({
       label: "New Conversation",
       onClick: () => {
         copilot.clearActiveThread();
+        setActiveTab("ai");
       },
     },
     {
@@ -84,30 +157,34 @@ export function ControlPanel({
         setActiveTab("ai-history");
       },
     },
+    {
+      icon: <LayoutDashboard size={16} />,
+      label: "Board",
+      onClick: () => {
+        setActiveTab("board");
+      },
+    },
+    {
+      icon: <Box size={16} />,
+      label: "Selection",
+      onClick: () => {
+        setActiveTab("selection");
+      },
+    },
   ];
 
   switch (activeTab) {
     case "ai":
       content = <CopilotTab />;
-      actions = [
-        {
-          icon: <Plus size={16} />,
-          label: "New Conversation",
-          onClick: () => {
-            copilot.clearActiveThread();
-          },
-        },
-        {
-          icon: <History size={16} />,
-          label: "History",
-          onClick: () => {
-            setActiveTab("ai-history");
-          },
-        },
-      ];
       break;
     case "ai-history":
       content = <HistoryTab onBack={() => setActiveTab("ai")} />;
+      break;
+    case "board":
+      content = <BoardTab />;
+      break;
+    case "selection":
+      content = <SelectionTab controller={controller} />;
       break;
   }
 
@@ -127,6 +204,7 @@ export function ControlPanel({
               shape="circle"
               onClick={a.onClick}
               variant="ghost"
+              title={a.label}
             >
               {a.icon}
             </Button>

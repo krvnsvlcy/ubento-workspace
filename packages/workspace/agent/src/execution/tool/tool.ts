@@ -1,4 +1,5 @@
 import { AgentEnvironment } from "@/environment/environment.js";
+import { AgentThread } from "@/thread/thread.js";
 import { z } from "zod";
 import { LLMContent } from "../../utils/llm.js";
 
@@ -25,10 +26,18 @@ export interface AgentTool<
     args,
     abortController,
     environment,
+    thread,
+    stop,
+    setStructuredOutput,
+    modelId,
   }: {
     args: z.infer<I>;
     abortController: AbortController;
     environment: E;
+    thread: AgentThread;
+    stop: () => void;
+    setStructuredOutput: (output: Record<string, unknown>) => void;
+    modelId: string;
   }): Promise<ToolCallResult>;
 }
 

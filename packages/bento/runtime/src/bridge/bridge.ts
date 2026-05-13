@@ -20,6 +20,7 @@ export type BentoEngineHostRpcInterface = {
 
   // sync
   boardUpdated: ({ data }: { data: BentoBoardData }) => Promise<void>;
+  selectionUpdated: ({ selection }: { selection: string[] }) => Promise<void>;
 
   // services
   runQuery: ({
@@ -59,4 +60,13 @@ export type BentoEngineRuntimeRpcInterface = {
   }) => Promise<void>;
 
   setTheme: ({ css }: { css: string }) => Promise<void>;
+
+  // catalog
+  getCatalog: ({}) => Promise<unknown>;
+  listComponents: ({}) => Promise<Record<string, unknown>>;
+  describeComponents: ({
+    names,
+  }: {
+    names: string[];
+  }) => Promise<Record<string, unknown>>;
 };

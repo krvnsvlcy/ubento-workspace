@@ -1,6 +1,8 @@
 import { AgentActionData, AgentMessageData } from "@ubento/workspace.agent";
-import { Check, Loader2, Terminal, X } from "lucide-react";
+import { Check, Copy, Loader2, Sparkles, Terminal, X } from "lucide-react";
 import { useState } from "react";
+import { useUbentoEngine } from "@/engine/app/engine";
+import { CopilotMessage } from "../message";
 
 function ActionLine({ action }: { action: AgentActionData }) {
   const [isOpen, setIsOpen] = useState(action.status === "pending");
@@ -26,6 +28,35 @@ function ActionLine({ action }: { action: AgentActionData }) {
     </button>
   );
 }
+function TaskActionView({ action }: { action: AgentActionData }) {
+  const appEngine = useUbentoEngine();
+  const threadId = action.structuredOutput?.threadId as string | undefined;
+
+  const { data: messages } = appEngine.ubento.intelligence.useMessages(
+    { thread_id: threadId ?? "" },
+    { enabled: !!threadId },
+  );
+
+  if (!threadId) {
+    return <ActionLine action={action} />;
+  }
+
+  return (
+    <div className="flex flex-col gap-2 border-l-2 border-primary-500/20 pl-4 ml-2 my-2">
+      <div className="text-xs text-content-muted flex items-center gap-2">
+        <Sparkles size={12} className="text-primary-400" />
+        <span className="font-medium">Task: {action.input?.title || "Specialized Agent"}</span>
+        <span className="text-neutral-500">({action.status})</span>
+      </div>
+      <div className="flex flex-col gap-4">
+        {messages?.map((msg) => (
+          <CopilotMessage key={msg.id} message={msg} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function ActionView({ action }: { action: AgentActionData }) {
   switch (action.tool) {
     case "message":
@@ -38,13 +69,24 @@ function ActionView({ action }: { action: AgentActionData }) {
           {action.input?.content || ""}
         </div>
       );
+    case "task":
+      return <TaskActionView action={action} />;
     default:
       return <ActionLine action={action} />;
   }
 }
 
 export function AgentMessage({ data }: { data: AgentMessageData }) {
+  const [copied, setCopied] = useState(false);
   if (!data.actions.length && data.status !== "errored") return null;
+
+  const handleCopy = () => {
+    if (data.error) {
+      navigator.clipboard.writeText(JSON.stringify(data.error, null, 2));
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   return (
     <div className="group flex w-full flex-col gap-4 animate-in slide-in-from-left-4 duration-500">
@@ -59,6 +101,19 @@ export function AgentMessage({ data }: { data: AgentMessageData }) {
         {data.status === "errored" && (
           <div className="flex items-center gap-2 py-1 text-content-muted text-xs">
             <X size={14} /> An error occurred while processing this message.
+            {data.error && (
+              <button
+                onClick={handleCopy}
+                className="ml-1 flex items-center justify-center rounded p-1 hover:bg-surface-active transition-colors"
+                title="Copy error data"
+              >
+                {copied ? (
+                  <Check size={12} className="text-green-400" />
+                ) : (
+                  <Copy size={12} />
+                )}
+              </button>
+            )}
           </div>
         )}
       </div>

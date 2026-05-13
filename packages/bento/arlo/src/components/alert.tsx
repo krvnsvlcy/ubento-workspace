@@ -1,4 +1,4 @@
-import { type ComponentProps } from "@ubento/bento.core";
+import { createComponent } from "@ubento/bento.core";
 import * as React from "react";
 import { z } from "zod";
 import {
@@ -62,18 +62,22 @@ function getAlertStyle(
   };
 }
 
-export function Alert({ ref, props, children }: ComponentProps<AlertProps>) {
-  const layoutContext = useLayoutContext();
-  return (
-    <div ref={ref} role="alert" style={getAlertStyle(props, layoutContext)}>
-      {props.title && (
-        <div style={{ fontWeight: 600, fontSize: "14px", lineHeight: 1.2 }}>
-          {props.title}
+export const Alert = createComponent({
+  schema: alertPropsSchema,
+  summary: "Alert component",
+  render: ({ ref, props, children }) => {
+    const layoutContext = useLayoutContext();
+    return (
+      <div ref={ref} role="alert" style={getAlertStyle(props, layoutContext)}>
+        {props.title && (
+          <div style={{ fontWeight: 600, fontSize: "14px", lineHeight: 1.2 }}>
+            {props.title}
+          </div>
+        )}
+        <div style={{ fontSize: "13px", opacity: 0.9, lineHeight: 1.4 }}>
+          {props.description || children}
         </div>
-      )}
-      <div style={{ fontSize: "13px", opacity: 0.9, lineHeight: 1.4 }}>
-        {props.description || children}
       </div>
-    </div>
-  );
-}
+    );
+  },
+});

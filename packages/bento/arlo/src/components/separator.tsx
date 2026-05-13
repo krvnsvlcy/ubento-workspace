@@ -1,4 +1,4 @@
-import { type ComponentProps } from "@ubento/bento.core";
+import { createComponent } from "@ubento/bento.core";
 import * as React from "react";
 import { z } from "zod";
 import {
@@ -33,14 +33,18 @@ function getSeparatorStyle(
   };
 }
 
-export function Separator({ ref, props }: ComponentProps<SeparatorProps>) {
-  const layoutContext = useLayoutContext();
-  return (
-    <div
-      ref={ref}
-      role="separator"
-      aria-orientation={props.orientation}
-      style={getSeparatorStyle(props, layoutContext)}
-    />
-  );
-}
+export const Separator = createComponent({
+  schema: separatorPropsSchema,
+  summary: "Separator component",
+  render: ({ ref, props }) => {
+    const layoutContext = useLayoutContext();
+    return (
+      <div
+        ref={ref}
+        role="separator"
+        aria-orientation={props.orientation}
+        style={getSeparatorStyle(props, layoutContext)}
+      />
+    );
+  }
+});

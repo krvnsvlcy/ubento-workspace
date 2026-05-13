@@ -38,6 +38,7 @@ export default defineConfig({
       patterns: [
         "../runtime/src/**/*.{ts,tsx}",
         "../core/src/**/*.{ts,tsx}",
+        "../arlo/src/**/*.{ts,tsx}",
         "../../workspace/app/src/**/*.{ts,tsx}",
         "../../workspace/primitives/src/**/*.{ts,tsx}",
         "../../../apps/theme-builder/src/**/*.{ts,tsx}",

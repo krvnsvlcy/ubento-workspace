@@ -30,6 +30,16 @@ function quickEnvironment({
         },
       };
     },
+    createAgentThread: async ({ agent }) => {
+      return createAgentThread({
+        id: crypto.randomUUID(),
+        agent,
+        environment: env,
+        saveContext: async () => {},
+        createMessage: async () => crypto.randomUUID(),
+        updateMessage: async () => {},
+      });
+    },
   });
 
   for (const tool of tools) {
@@ -45,6 +55,7 @@ describe("Agent", () => {
       name: "quick-agent",
       description: "A simple agent",
       instructions: "You are a helpful assistant",
+      communicationInterface: "response",
     };
 
     const environment = quickEnvironment({
@@ -112,6 +123,7 @@ describe("Agent", () => {
       name: "quick-agent",
       description: "A simple agent",
       instructions: "You are a helpful assistant",
+      communicationInterface: "response",
     };
 
     const environment = quickEnvironment({
@@ -195,6 +207,7 @@ describe("Agent", () => {
       name: "quick-agent",
       description: "A simple agent",
       instructions: "You are a helpful assistant",
+      communicationInterface: "response",
     };
 
     const environment = quickEnvironment({
@@ -259,6 +272,7 @@ describe("Agent", () => {
       name: "quick-agent",
       description: "A simple agent",
       instructions: "You are a helpful assistant",
+      communicationInterface: "response",
     };
 
     const environment = quickEnvironment({
@@ -322,6 +336,7 @@ describe("Agent", () => {
       name: "quick-agent",
       description: "A simple agent",
       instructions: "You are a helpful assistant",
+      communicationInterface: "response",
     };
 
     const environment = quickEnvironment({

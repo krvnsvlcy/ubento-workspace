@@ -1,6 +1,7 @@
 import { UbentoEngine, UbentoEngineState } from "@/engine/app/engine";
 import { JsonPatch } from "@/utils/json";
 import {
+  BoardSpec,
   boardSpecSchema,
   ServiceData,
   WorkspaceSpec,
@@ -13,7 +14,6 @@ import {
   BentoLocation,
   BentoMode,
   BentoWorkspaceData,
-  BoardData,
   boardDataSchema,
   DropRect,
   ParsedSpec,
@@ -28,10 +28,15 @@ import debounce from "lodash.debounce";
 import z from "zod";
 import { createStore as createZustandStore } from "zustand/vanilla";
 import { UbentoSession } from "../app/session";
+import { copilotInstructions } from "../copilot/agents/copilot";
+import { editorInstructions } from "../copilot/agents/editor";
+import { explorerInstructions } from "../copilot/agents/explorer";
 import { createUbentoCopilot } from "../copilot/copilot";
 import { createCopilotAgentEnvironment } from "../copilot/environment/environment";
-import { createWorkspaceToolkit } from "./copilot/toolkit";
 import { generateInitialBoardSpec } from "./init";
+import { createCatalogToolkit } from "./toolkits/catalog";
+import { createServicesToolkit } from "./toolkits/services";
+import { createWorkspaceToolkit } from "./toolkits/workspace";
 
 function parseSpecData<S extends z.ZodTypeAny>(
   schema: S,
@@ -62,7 +67,7 @@ export type WorkspaceState = {
   workspace: BentoWorkspaceData;
 
   // synced from runtime
-  boards: Record<string, BoardData>;
+  boards: Record<string, BentoBoardData>;
   selectionScope?: string;
   selection: string[];
   hover?: string;
@@ -142,7 +147,10 @@ export function createWorkspaceEngine({
           copilot.setContextAttachments("bento-location", [
             {
               type: "bento-location",
-              data: location,
+              data: {
+                ...location,
+                boardTitle: store.getState().boards[location.boardId].title,
+              },
             },
           ]);
         } else {
@@ -159,6 +167,9 @@ export function createWorkspaceEngine({
     store.setState({ status: "connected" });
     const engineState = appEngine.getState();
     const state = store.getState();
+    const styleTag = document.getElementById("theme-variables");
+    const themeCss = styleTag?.innerHTML || "";
+
     return {
       initialState: {
         location: getBentoLocation(engineState),
@@ -167,6 +178,7 @@ export function createWorkspaceEngine({
           name: session.name,
           email: session.email,
         },
+        theme: { css: themeCss },
       },
     };
   }
@@ -210,6 +222,14 @@ export function createWorkspaceEngine({
     };
   }
 
+  async function listComponents() {
+    return rpc?.egress.listComponents({}) || [];
+  }
+
+  async function describeComponents(names: string[]) {
+    return rpc?.egress.describeComponents({ names }) || {};
+  }
+
   async function updateWorkspace(data: Partial<WorkspaceState>) {
     const current = store.getState().workspace;
     if (!current) return;
@@ -235,6 +255,15 @@ export function createWorkspaceEngine({
     const data = await readBoard({ boardId });
     return data.spec;
   }
+
+  async function checkBoard({ boardId }: { boardId: string }) {
+    const data = await readBoard({ boardId });
+    const spec = data.spec;
+    if (spec.status === "valid") {
+      return await deepValidateBoard(spec.data);
+    }
+    return spec;
+  }
   async function updateBoardSpec({
     boardId,
     patch,
@@ -249,10 +278,14 @@ export function createWorkspaceEngine({
       id: boardId,
       title: data.title,
     });
+    const validated =
+      parsed.status === "valid" ? await deepValidateBoard(parsed.data) : parsed;
+
     await writeBoard({
       ...data,
-      spec: parsed,
+      spec: validated,
     });
+    return validated;
   }
   async function writeBoardSpec({
     boardId,
@@ -262,15 +295,55 @@ export function createWorkspaceEngine({
     spec: any;
   }) {
     const data = await readBoard({ boardId });
-    const parsed = parseSpecData(boardSpecSchema, {
+    let parsed = parseSpecData(boardSpecSchema, {
       ...(spec as any),
       id: boardId,
       title: data.title,
     });
+    const validated =
+      parsed.status === "valid" ? await deepValidateBoard(parsed.data) : parsed;
+
     await writeBoard({
       ...data,
-      spec: parsed,
+      spec: validated,
     });
+  }
+
+  async function deepValidateBoard(
+    parsed: BoardSpec,
+  ): Promise<ParsedSpec<BoardSpec>> {
+    const components = (await rpc?.egress.getCatalog({})) as
+      | Record<string, { schema: any }>
+      | undefined;
+    if (!components) {
+      return { status: "valid", data: parsed };
+    }
+
+    let errors: string[] = [];
+
+    for (const [elementId, element] of Object.entries(parsed.elements || {})) {
+      const comp = components[element.component];
+      if (!comp) {
+        errors.push(
+          `Component ${element.component} used by element ${elementId} not found`,
+        );
+        continue;
+      }
+      const schema = z.fromJSONSchema(comp.schema);
+      const validated = schema.safeParse(element.inputs || {});
+      if (!validated.success) {
+        errors.push(
+          ...validated.error.issues.map((e) => {
+            return `Error in element ${elementId}: ${e.message}`;
+          }),
+        );
+      }
+    }
+
+    if (errors.length > 0) {
+      return { status: "invalid", errors, data: parsed };
+    }
+    return { status: "valid", data: parsed };
   }
 
   // Update metadata
@@ -293,18 +366,49 @@ export function createWorkspaceEngine({
   async function createBoard({
     name,
     parentId,
+    spec,
   }: {
     name: string;
     parentId?: string;
+    spec?: any;
   }) {
     const state = store.getState();
     const workspaceId = state.workspace.id;
-    return await workspaceService.createBoard({
+
+    const result = await workspaceService.createBoard({
       name,
       parentId,
       workspace_id: workspaceId,
       data: generateInitialBoardSpec({ title: name }),
     });
+
+    if (spec) {
+      const parsed = parseSpecData(boardSpecSchema, {
+        ...(spec as any),
+        id: result.id,
+        title: name,
+      });
+      const validated =
+        parsed.status === "valid"
+          ? await deepValidateBoard(parsed.data)
+          : parsed;
+
+      await workspaceService.updateBoard(result.id, {
+        name,
+        data: validated.data as any,
+      });
+
+      return {
+        id: result.id,
+        status: validated.status,
+        errors: "errors" in validated ? (validated as any).errors : undefined,
+      };
+    }
+
+    return {
+      id: result.id,
+      status: "valid",
+    };
   }
 
   const persistBoard = debounce(async (data: BentoBoardData) => {
@@ -320,6 +424,10 @@ export function createWorkspaceEngine({
       return { boards };
     });
     persistBoard(data);
+  }
+
+  function selectionUpdated({ selection }: { selection: string[] }) {
+    store.setState({ selection });
   }
 
   async function runQuery({
@@ -409,24 +517,103 @@ export function createWorkspaceEngine({
     },
   );
 
+  const workspaceToolkit = createWorkspaceToolkit({
+    goTo,
+    getBoard,
+    listBoards,
+    readBoardSpec,
+    updateBoardSpec,
+    updateBoardMetadata,
+    deleteBoard,
+    createBoard,
+    checkBoard,
+  });
+  const catalogToolkit = createCatalogToolkit({
+    listComponents,
+    describeComponents,
+  });
+  const servicesToolkit = createServicesToolkit({
+    getServices: async () => {
+      const spec = readWorkspaceSpec();
+      return spec?.services;
+    },
+    getServiceSpec: async (serviceChannelId) => {
+      return appEngine.ubento.sdk.vertex.getServiceChannelSpec(
+        serviceChannelId,
+      );
+    },
+  });
+  const environment = createCopilotAgentEnvironment({
+    session,
+    ubento: appEngine.ubento,
+    logger: logger.child({ module: "copilot" }),
+    tools: [
+      workspaceToolkit.tools.goToTool,
+      workspaceToolkit.tools.getBoardTool,
+      workspaceToolkit.tools.listBoardsTool,
+      workspaceToolkit.tools.readBoardSpecTool,
+      workspaceToolkit.tools.updateBoardSpecTool,
+      workspaceToolkit.tools.updateBoardMetadataTool,
+      workspaceToolkit.tools.deleteBoardTool,
+      workspaceToolkit.tools.createBoardTool,
+      workspaceToolkit.tools.checkBoardTool,
+      catalogToolkit.tools.listComponents,
+      catalogToolkit.tools.describeComponents,
+      servicesToolkit.tools.listServices,
+      servicesToolkit.tools.describeService,
+      servicesToolkit.tools.describeActions,
+      servicesToolkit.tools.describeQueries,
+      servicesToolkit.tools.describeSchemas,
+    ],
+  });
+  environment.addAgent({
+    name: "copilot",
+    description: "The primary WorkOS orchestration assistant (Supervisor)",
+    instructions: copilotInstructions,
+    tools: [workspaceToolkit.tools.goToTool.name],
+    communicationInterface: "message",
+  });
+  environment.addAgent({
+    name: "explorer",
+    description:
+      "Agent to gather information and discover components in the workspace",
+    instructions: explorerInstructions,
+    tools: [
+      workspaceToolkit.tools.getBoardTool.name,
+      workspaceToolkit.tools.listBoardsTool.name,
+      workspaceToolkit.tools.readBoardSpecTool.name,
+      catalogToolkit.tools.listComponents.name,
+      catalogToolkit.tools.describeComponents.name,
+      servicesToolkit.tools.listServices.name,
+      servicesToolkit.tools.describeService.name,
+      servicesToolkit.tools.describeActions.name,
+      servicesToolkit.tools.describeQueries.name,
+      servicesToolkit.tools.describeSchemas.name,
+    ],
+    communicationInterface: "response",
+  });
+  environment.addAgent({
+    name: "editor",
+    description: "Agent to edit the workspace and modify board specifications",
+    instructions: editorInstructions,
+    tools: [
+      catalogToolkit.tools.listComponents.name,
+      catalogToolkit.tools.describeComponents.name,
+      workspaceToolkit.tools.getBoardTool.name,
+      workspaceToolkit.tools.listBoardsTool.name,
+      workspaceToolkit.tools.readBoardSpecTool.name,
+      workspaceToolkit.tools.updateBoardSpecTool.name,
+      workspaceToolkit.tools.updateBoardMetadataTool.name,
+      workspaceToolkit.tools.deleteBoardTool.name,
+      workspaceToolkit.tools.createBoardTool.name,
+      workspaceToolkit.tools.checkBoardTool.name,
+    ],
+    communicationInterface: "response",
+  });
+
   const copilot = createUbentoCopilot({
-    environment: createCopilotAgentEnvironment({
-      session,
-      ubento: appEngine.ubento,
-      logger: logger.child({ module: "copilot" }),
-      toolkits: [
-        createWorkspaceToolkit({
-          goTo,
-          getBoard,
-          listBoards,
-          readBoardSpec,
-          updateBoardSpec,
-          updateBoardMetadata,
-          deleteBoard,
-          createBoard,
-        }),
-      ],
-    }),
+    environment,
+    mainAgentName: "copilot",
   });
 
   // watch theme changes
@@ -450,6 +637,7 @@ export function createWorkspaceEngine({
     updateWorkspace,
     installService,
     readBoardSpec,
+    checkBoard,
     updateBoardSpec,
     writeBoardSpec,
     updateBoardMetadata,
@@ -471,6 +659,7 @@ export function createWorkspaceEngine({
           getBoard,
           listBoards,
           boardUpdated,
+          selectionUpdated,
           runQuery,
           runAction,
         },

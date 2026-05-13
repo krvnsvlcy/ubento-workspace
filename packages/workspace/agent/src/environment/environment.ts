@@ -5,15 +5,17 @@ import { Toolkit } from "../execution/tool/toolkit/toolkit.js";
 import { LanguageModel } from "../utils/models.js";
 
 import { ResourceType } from "@/context/resource.js";
+import { taskTool } from "@/execution/tools/task.js";
 import { messageTool } from "../execution/tools/message.js";
 import { responseTool } from "../execution/tools/response.js";
 import { describeToolTool, listToolsTool } from "../execution/tools/tools.js";
+import { AgentThread } from "../thread/thread.js";
 
 export type AgentEnvironment = {
   getModel: (id: string) => LanguageModel | undefined;
 
   getTool: (name: string) => Promise<AgentTool | undefined>;
-  listTools: () => Promise<AgentTool[]>;
+  getAgentTools: (agent: Agent) => AgentTool[];
   addTool: (tool: AgentTool) => void;
   removeTool: (name: string) => void;
 
@@ -22,37 +24,74 @@ export type AgentEnvironment = {
   removeResourceType: (type: string) => void;
   getResourceType: (type: string) => ResourceType | undefined;
 
-  listToolkits?: () => Toolkit[];
-  listAgents?: () => Agent[];
+  listToolkits: () => Toolkit[];
+  listAgents: () => Agent[];
+  addAgent: (agent: Agent) => void;
+  removeAgent: (name: string) => void;
+  getAgent: (name: string) => Agent | undefined;
+
+  createAgentThread: (input: {
+    agent: Agent;
+    title: string;
+  }) => Promise<AgentThread>;
 
   logger?: Logger;
 };
 
 export function createEnvironment({
+  tools: upstreamTools = [],
   getModel,
   logger,
   listToolkits = () => [],
+  createAgentThread,
 }: {
+  tools?: AgentTool[];
   getModel: (id: string) => LanguageModel | undefined;
   logger?: Logger;
   listToolkits?: () => Toolkit[];
+  createAgentThread: ({
+    agent,
+    title,
+  }: {
+    agent: Agent;
+    title: string;
+  }) => Promise<AgentThread>;
 }): AgentEnvironment {
-  const tools = new Map<string, AgentTool>([
+  const coreTools = new Map<string, AgentTool>([
     [messageTool.name, messageTool],
     [responseTool.name, responseTool],
     [listToolsTool.name, listToolsTool],
     [describeToolTool.name, describeToolTool],
+    [taskTool.name, taskTool],
+  ]);
+  const envTools = new Map<string, AgentTool>([
+    ...upstreamTools.map((t) => [t.name, t] as const),
+  ]);
+  const allTools = new Map<string, AgentTool>([
+    ...coreTools.entries(),
+    ...envTools.entries(),
   ]);
 
   const resourceTypes = new Map<string, ResourceType>();
 
-  return {
+  const agents = new Map<string, Agent>([]);
+
+  const environment: AgentEnvironment = {
     getModel,
     logger,
     listToolkits,
 
+    listAgents: () => Array.from(agents.values()),
+    addAgent: (agent: Agent) => {
+      agents.set(agent.name, agent);
+    },
+    removeAgent: (name: string) => {
+      agents.delete(name);
+    },
+    getAgent: (name: string) => agents.get(name),
+
     async getTool(name: string) {
-      const builtIn = tools.get(name);
+      const builtIn = allTools.get(name);
       if (builtIn) return builtIn;
 
       const parts = name.split(":");
@@ -68,14 +107,27 @@ export function createEnvironment({
 
       return undefined;
     },
-    async listTools() {
-      return Array.from(tools.values());
+    getAgentTools(agent: Agent) {
+      const tools = [...coreTools.values()].filter((t) => {
+        if (agent.communicationInterface === "message") {
+          return t.name !== responseTool.name;
+        } else {
+          return t.name !== messageTool.name;
+        }
+      });
+      for (const name of agent.tools ?? []) {
+        const tool = envTools.get(name);
+        if (tool) {
+          tools.push(tool);
+        }
+      }
+      return tools;
     },
     addTool(tool: AgentTool) {
-      tools.set(tool.name, tool);
+      allTools.set(tool.name, tool);
     },
     removeTool(name: string) {
-      tools.delete(name);
+      allTools.delete(name);
     },
 
     get resourceTypes() {
@@ -90,5 +142,7 @@ export function createEnvironment({
     getResourceType(type: string) {
       return resourceTypes.get(type);
     },
+    createAgentThread,
   };
+  return environment;
 }

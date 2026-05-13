@@ -11,30 +11,40 @@ export interface ConnectionModalProps {
   onSuccess?: () => void;
 }
 
-export function ConnectionModal({ providerName, onSuccess }: ConnectionModalProps) {
+export function ConnectionModal({
+  providerName,
+  onSuccess,
+}: ConnectionModalProps) {
   const { close } = useModalInstance();
   const ubento = useUbento();
   const session = useSession();
-  
-  const { data: providerData } = ubento.vertex.useConnectionProviderByName(providerName);
-  
-  const { data: allConnections = [], isLoading: isLoadingConnections } = 
+
+  const { data: providerData } =
+    ubento.vertex.useConnectionProviderByName(providerName);
+
+  const { data: allConnections = [], isLoading: isLoadingConnections } =
     ubento.vertex.useConnections({ team_id: session.teamId });
-    
-  const { mutate: createConnection, isLoading: isCreating } = (ubento.vertex as any).useCreateConnection();
-  const { mutate: deleteConnection } = (ubento.vertex as any).useDeleteConnection();
+
+  const { mutate: createConnection, isLoading: isCreating } = (
+    ubento.vertex as any
+  ).useCreateConnection();
+  const { mutate: deleteConnection } = (
+    ubento.vertex as any
+  ).useDeleteConnection();
 
   const [apiKey, setApiKey] = useState("");
   const [connectionName, setConnectionName] = useState("");
   const [showAddCard, setShowAddCard] = useState(false);
 
-  const config = (providerData as any)?.config as ConnectionProviderConfig | undefined;
+  const config = (providerData as any)?.config as
+    | ConnectionProviderConfig
+    | undefined;
   const supportsToken = !!config?.auth.apiKey;
   const supportsOAuth2 = !!config?.auth.oauth2;
 
   // Filter connections for this provider
   const connections = allConnections.filter(
-    (c: any) => c.provider_id === providerData?.id
+    (c: any) => c.provider_id === providerData?.id,
   );
 
   const handleSave = () => {
@@ -55,7 +65,7 @@ export function ConnectionModal({ providerName, onSuccess }: ConnectionModalProp
           setApiKey("");
           setConnectionName("");
         },
-      }
+      },
     );
   };
 
@@ -84,7 +94,8 @@ export function ConnectionModal({ providerName, onSuccess }: ConnectionModalProp
           <div>
             <Heading className="text-lg font-bold">{providerName}</Heading>
             <Text tone="subtle" className="text-sm">
-              {providerData?.description || "Connect external services to your workspace."}
+              {providerData?.description ||
+                "Connect external services to your workspace."}
             </Text>
           </div>
         </div>
@@ -107,7 +118,7 @@ export function ConnectionModal({ providerName, onSuccess }: ConnectionModalProp
           {showAddCard && (
             <div className="p-4 bg-neutral-surface border border-neutral-border rounded-xl space-y-4 animate-in fade-in slide-in-from-top-2 duration-200">
               <Heading className="text-sm font-bold">New Connection</Heading>
-              
+
               <div className="space-y-2">
                 <label className="text-[11px] font-semibold text-neutral-content-muted uppercase">
                   Connection Name
@@ -135,10 +146,19 @@ export function ConnectionModal({ providerName, onSuccess }: ConnectionModalProp
               )}
 
               <div className="flex justify-end gap-2">
-                <Button onClick={() => setShowAddCard(false)} variant="ghost" size="sm">
+                <Button
+                  onClick={() => setShowAddCard(false)}
+                  variant="ghost"
+                  size="sm"
+                >
                   Cancel
                 </Button>
-                <Button onClick={handleSave} variant="primary" size="sm" disabled={!apiKey || isCreating}>
+                <Button
+                  onClick={handleSave}
+                  variant="primary"
+                  size="sm"
+                  disabled={!apiKey || isCreating}
+                >
                   {isCreating ? "Saving..." : "Save"}
                 </Button>
               </div>
@@ -166,7 +186,9 @@ export function ConnectionModal({ providerName, onSuccess }: ConnectionModalProp
                       <Globe className="h-4 w-4" />
                     </div>
                     <div>
-                      <p className="text-sm font-bold">{conn.name || "Connection"}</p>
+                      <p className="text-sm font-bold">
+                        {conn.name || "Connection"}
+                      </p>
                       <p className="text-[10px] text-neutral-content-muted font-bold uppercase">
                         {conn.id}
                       </p>

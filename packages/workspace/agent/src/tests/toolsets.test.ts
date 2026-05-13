@@ -21,7 +21,7 @@ describe("Toolkits", () => {
     const mockToolkit = createLocalToolkit({
       name: "my-toolkit",
       description: "A mock toolkit",
-      tools: [mockTool],
+      tools: { my_tool: mockTool },
     });
 
     let savedMessages: any[] = [];
@@ -43,13 +43,24 @@ describe("Toolkits", () => {
           };
         },
       }),
-      toolkits: [mockToolkit],
+      listToolkits: () => [mockToolkit],
+      createAgentThread: async ({ agent }) => {
+        return createAgentThread({
+          id: crypto.randomUUID(),
+          agent,
+          environment,
+          saveContext: async () => {},
+          createMessage: async () => crypto.randomUUID(),
+          updateMessage: async () => {},
+        });
+      },
     });
 
     const agent: Agent = {
       name: "test-agent",
       description: "Test agent",
       instructions: "Test instructions",
+      communicationInterface: "response",
     };
 
     const thread = createAgentThread({

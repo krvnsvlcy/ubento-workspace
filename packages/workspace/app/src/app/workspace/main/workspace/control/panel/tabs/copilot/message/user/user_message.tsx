@@ -13,7 +13,7 @@ export function UserMessage({ data }: { data: UserMessageData }) {
 
   return (
     <div className="group flex w-full flex-col gap-1.5 animate-in slide-in-from-right-4 duration-500">
-      <div className="w-full rounded-lg border border-white/5 bg-neutral-surface px-4 py-2.5 text-[13px] leading-[1.6] text-neutral-content">
+      <div className="w-full rounded-lg border bg-neutral-surface px-4 py-2.5 text-[13px] leading-[1.6] text-neutral-content">
         {data.text}
       </div>
       <div className="flex justify-end px-1 opacity-0 group-hover:opacity-100 transition-opacity">

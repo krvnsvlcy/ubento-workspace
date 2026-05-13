@@ -1,4 +1,4 @@
-import { edgesSpec, type ComponentProps } from "@ubento/bento.core";
+import { createComponent, edgesSpec } from "@ubento/bento.core";
 import * as React from "react";
 import { z } from "zod";
 import {
@@ -8,7 +8,7 @@ import {
   layoutElementStyleSchema,
   useLayoutContext,
   type LayoutContextType,
-} from "../lib/style";
+} from "../../lib/style";
 
 export const stackPropsSchema = layoutElementStyleSchema.extend({
   direction: z.enum(["row", "column"]),
@@ -39,7 +39,18 @@ function getStackStyle(
   props: StackProps,
   layoutContext: LayoutContextType,
 ): React.CSSProperties {
-  const { direction, padding, gap, justify, align, wrap, overflow, intent, border, radius } = props;
+  const {
+    direction,
+    padding,
+    gap,
+    justify,
+    align,
+    wrap,
+    overflow,
+    intent,
+    border,
+    radius,
+  } = props;
   const themePrefix = intent ? `--color-${intent}` : null;
 
   return {
@@ -64,18 +75,25 @@ function getStackStyle(
       "padding",
     ),
     background: themePrefix ? `var(${themePrefix}-surface)` : undefined,
-    border: border && themePrefix ? `1px solid var(${themePrefix}-border)` : undefined,
+    border:
+      border && themePrefix
+        ? `1px solid var(${themePrefix}-border)`
+        : undefined,
     borderRadius: radius ? `${radius}px` : undefined,
   };
 }
 
-export function Stack({ ref, props, children }: ComponentProps<StackProps>) {
-  const parentLayoutContext = useLayoutContext();
-  return (
-    <div ref={ref} style={getStackStyle(props, parentLayoutContext)}>
-      <LayoutContext.Provider value={props.direction || "row"}>
-        {children}
-      </LayoutContext.Provider>
-    </div>
-  );
-}
+export const Stack = createComponent({
+  schema: stackPropsSchema,
+  summary: "Stack component",
+  render: ({ ref, props, children }) => {
+    const parentLayoutContext = useLayoutContext();
+    return (
+      <div ref={ref} style={getStackStyle(props, parentLayoutContext)}>
+        <LayoutContext.Provider value={props.direction}>
+          {children}
+        </LayoutContext.Provider>
+      </div>
+    );
+  },
+});

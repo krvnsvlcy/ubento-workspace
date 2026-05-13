@@ -1,4 +1,4 @@
-import { edgesSpec, type ComponentProps } from "@ubento/bento.core";
+import { createComponent, edgesSpec } from "@ubento/bento.core";
 import * as React from "react";
 import { z } from "zod";
 import {
@@ -7,12 +7,11 @@ import {
   layoutElementStyleSchema,
   useLayoutContext,
   type LayoutContextType,
-} from "../lib/style";
+} from "../../lib/style";
 
 export const cardPropsSchema = layoutElementStyleSchema.extend({
   padding: z.union([edgesSpec(z.number()), z.number()]).optional(),
   radius: z.number().optional(),
-  gap: z.number().optional(),
   intent: z
     .enum(["accent", "neutral", "success", "warning", "info", "destructive"])
     .default("neutral"),
@@ -25,7 +24,7 @@ function getCardStyle(
   props: CardProps,
   layoutContext: LayoutContextType,
 ): React.CSSProperties {
-  const { intent, padding, radius, border, shadow, gap } = props;
+  const { intent, padding, radius, border, shadow } = props;
   const themePrefix = `--color-${intent}`;
 
   return {
@@ -54,16 +53,22 @@ function getCardStyle(
     overflow: "hidden",
     display: "flex",
     flexDirection: "column",
-    gap: gap !== undefined ? `${gap}px` : undefined,
-    transition: "all 0.15s ease-in-out",
   };
 }
 
-export function Card({ ref, props, children }: ComponentProps<CardProps>) {
-  const layoutContext = useLayoutContext();
-  return (
-    <div ref={ref} style={getCardStyle(props, layoutContext)}>
-      {children}
-    </div>
-  );
-}
+export const Card = createComponent({
+  schema: cardPropsSchema,
+  summary: "Use this component to visualy group related items together.",
+  instruction: [
+    "You must provide proper padding values. The component does not provide any default padding.",
+    "Also this component does not layout children. For internal layouting eg spacing between items or aligning them, you must wrap the content in a layout component such as a stack or grid.",
+  ].join("\n"),
+  render: ({ props, ref, children }) => {
+    const layoutContext = useLayoutContext();
+    return (
+      <div ref={ref} style={getCardStyle(props, layoutContext)}>
+        {children}
+      </div>
+    );
+  },
+});

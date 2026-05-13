@@ -39,6 +39,7 @@ export function createAgentContext({
   const resources = new Map<string, AgentContextResource>(
     (data?.resources || []).map((r) => [r.key, r]),
   );
+  let response = data?.response;
 
   function getData(): AgentContextData {
     return {
@@ -53,11 +54,19 @@ export function createAgentContext({
         return e;
       }),
       resources: Array.from(resources.values()),
+      response,
     };
   }
 
   return {
     getData,
+    getResponse() {
+      return response;
+    },
+    async setResponse(value: string) {
+      response = value;
+      await save?.(getData());
+    },
     async writeMessage(id: string, message: MessageData) {
       if (messages.has(id)) {
         messages.get(id)!.data = message;

@@ -1,4 +1,4 @@
-import { type ComponentProps } from "@ubento/bento.core";
+import { createComponent } from "@ubento/bento.core";
 import * as React from "react";
 import { z } from "zod";
 import {
@@ -71,32 +71,36 @@ function getSelectStyle(
   return baseStyles;
 }
 
-export function Select({ ref, props }: ComponentProps<SelectProps>) {
-  const layoutContext = useLayoutContext();
-  const [isFocused, setIsFocused] = React.useState(false);
-  const [isHovered, setIsHovered] = React.useState(false);
+export const Select = createComponent({
+  schema: selectPropsSchema,
+  summary: "Select component",
+  render: ({ ref, props }) => {
+    const layoutContext = useLayoutContext();
+    const [isFocused, setIsFocused] = React.useState(false);
+    const [isHovered, setIsHovered] = React.useState(false);
 
-  return (
-    <select
-      ref={ref}
-      value={props.value}
-      disabled={props.disabled}
-      onFocus={() => setIsFocused(true)}
-      onBlur={() => setIsFocused(false)}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      style={getSelectStyle(props, layoutContext, isFocused, isHovered)}
-    >
-      {props.placeholder && (
-        <option value="" disabled>
-          {props.placeholder}
-        </option>
-      )}
-      {props.options.map((opt) => (
-        <option key={opt.value} value={opt.value} disabled={opt.disabled}>
-          {opt.label}
-        </option>
-      ))}
-    </select>
-  );
-}
+    return (
+      <select
+        ref={ref}
+        value={props.value}
+        disabled={props.disabled}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        style={getSelectStyle(props, layoutContext, isFocused, isHovered)}
+      >
+        {props.placeholder && (
+          <option value="" disabled>
+            {props.placeholder}
+          </option>
+        )}
+        {props.options.map((opt) => (
+          <option key={opt.value} value={opt.value} disabled={opt.disabled}>
+            {opt.label}
+          </option>
+        ))}
+      </select>
+    );
+  }
+});

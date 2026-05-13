@@ -1,4 +1,4 @@
-import { BoardView } from "@ubento/bento.core";
+import { BoardView, Interactor } from "@ubento/bento.core";
 import { useStoreEntity } from "@ubento/fabric";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { BentoRuntime } from "../runtime/runtime";
@@ -87,7 +87,7 @@ export function BentoBoardView({
   return (
     <div className="h-full overflow-y-auto bg-background">
       <BoardView spec={board.spec.data} params={params}>
-        {/* <Interactor /> */}
+        <Interactor />
       </BoardView>
     </div>
   );

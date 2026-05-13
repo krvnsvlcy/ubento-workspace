@@ -1,7 +1,7 @@
 import z from "zod";
 
 // consume a value in the current context
-export const paramDirectiveSchema = z.object({
+export const useDirectiveSchema = z.object({
   $use: z.string(),
 });
-export type ParamDirective = z.infer<typeof paramDirectiveSchema>;
+export type UseDirective = z.infer<typeof useDirectiveSchema>;

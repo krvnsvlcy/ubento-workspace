@@ -1,6 +1,5 @@
 import * as React from "react";
 import { useEnvironment } from "../states/environment.js";
-import { ElementView } from "./element/element.js";
 
 export function OverlayRenderer() {
   const environment = useEnvironment();
@@ -30,7 +29,9 @@ export function OverlayRenderer() {
 
 function OverlayItem({ overlay }: { overlay: any }) {
   const environment = useEnvironment();
-  const Component = environment.componentStore.useState((s) => s.components[overlay.component]);
+  const Component = environment.componentStore.useState(
+    (s) => s.components[overlay.component],
+  );
 
   const style: React.CSSProperties = {
     position: "absolute",
@@ -53,10 +54,7 @@ function OverlayItem({ overlay }: { overlay: any }) {
 
   return (
     <div style={style}>
-      <Component
-        ref={() => {}}
-        props={overlay.inputs}
-      />
+      <Component.render ref={() => {}} props={overlay.inputs} />
     </div>
   );
 }

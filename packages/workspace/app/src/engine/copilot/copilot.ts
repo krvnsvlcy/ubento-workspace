@@ -2,7 +2,6 @@ import { AgentThread, UserMessageAttachment } from "@ubento/workspace.agent";
 import { createZustandStateController } from "@ubento/workspace.primitives";
 import { registerStore } from "@ubento/zustand-devtool";
 import { createStore } from "zustand";
-import { copilotAgent } from "./agents/copilot.js";
 import {
   BentoLocationAttachment,
   ubentoLocationAttachmentType,
@@ -28,8 +27,10 @@ export type UbentoCopilotState = {
 
 export function createUbentoCopilot({
   environment,
+  mainAgentName,
 }: {
   environment: CopilotAgentEnvironment;
+  mainAgentName: string;
 }) {
   const store = createStore<UbentoCopilotState>(() => ({
     input: {
@@ -37,7 +38,7 @@ export function createUbentoCopilot({
       userAttachments: [],
       contextAttachments: {},
     },
-    activeModelId: modelIds.gemini3flash,
+    activeModelId: modelIds.gemini3flashLite,
   }));
   registerStore("copilot", store);
   const controller = createZustandStateController(store);
@@ -47,8 +48,6 @@ export function createUbentoCopilot({
     event: "copilot_init",
     modelId: store.getState().activeModelId,
   });
-
-  environment.addAgent(copilotAgent);
 
   function setActiveThread(threadId: string) {
     store.setState({
@@ -119,11 +118,11 @@ export function createUbentoCopilot({
         if (threadId) {
           thread = await environment.getThread({
             id: threadId,
-            agent: copilotAgent.name,
+            agent: mainAgentName,
           });
         } else {
           thread = await environment.createThread({
-            agent: copilotAgent.name,
+            agent: mainAgentName,
           });
           setActiveThread(thread.id);
         }

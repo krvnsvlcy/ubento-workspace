@@ -3,10 +3,12 @@ import {
   Box,
   CircleX,
   Component,
+  Edit2,
   Home,
   LayoutGrid,
   PanelsTopLeft,
   Plus,
+  Trash2,
 } from "lucide-react";
 
 type LucideIcon = React.ComponentType<React.ComponentProps<"svg">>;
@@ -19,6 +21,8 @@ const iconMap = {
   assets: Box,
   service: Bolt,
   component: Component,
+  edit: Edit2,
+  trash: Trash2,
 } satisfies Record<string, LucideIcon>;
 
 export type IconKey = keyof typeof iconMap;

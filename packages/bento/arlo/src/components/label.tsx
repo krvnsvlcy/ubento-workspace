@@ -1,4 +1,4 @@
-import { type ComponentProps } from "@ubento/bento.core";
+import { createComponent } from "@ubento/bento.core";
 import * as React from "react";
 import { z } from "zod";
 import {
@@ -39,15 +39,19 @@ function getLabelStyle(
   };
 }
 
-export function Label({ ref, props, children }: ComponentProps<LabelProps>) {
-  const layoutContext = useLayoutContext();
-  return (
-    <label
-      ref={ref}
-      htmlFor={props.htmlFor}
-      style={getLabelStyle(props, layoutContext)}
-    >
-      {props.text || children}
-    </label>
-  );
-}
+export const Label = createComponent({
+  schema: labelPropsSchema,
+  summary: "Label component",
+  render: ({ ref, props, children }) => {
+    const layoutContext = useLayoutContext();
+    return (
+      <label
+        ref={ref}
+        htmlFor={props.htmlFor}
+        style={getLabelStyle(props, layoutContext)}
+      >
+        {props.text || children}
+      </label>
+    );
+  }
+});

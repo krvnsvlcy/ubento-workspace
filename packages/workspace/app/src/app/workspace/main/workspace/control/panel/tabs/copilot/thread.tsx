@@ -44,10 +44,11 @@ export function CopilotThread() {
   const appEngine = useUbentoEngine();
   const copilot = useCopilot();
   const activeThreadId = copilot.useState((s) => s.activeThreadId);
-  const { data: messages = [] } = appEngine.ubento.intelligence.useMessages(
+  const { data } = appEngine.ubento.intelligence.useMessages(
     { thread_id: activeThreadId ?? "" },
     { enabled: !!activeThreadId },
   );
+  const messages = activeThreadId ? data : [];
 
   const scrollRef = useRef<HTMLDivElement>(null);
 

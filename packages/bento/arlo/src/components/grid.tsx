@@ -1,4 +1,4 @@
-import { edgesSpec, type ComponentProps } from "@ubento/bento.core";
+import { edgesSpec, createComponent } from "@ubento/bento.core";
 import * as React from "react";
 import { z } from "zod";
 import {
@@ -61,11 +61,15 @@ function getGridStyle(
   };
 }
 
-export function Grid({ ref, props, children }: ComponentProps<GridProps>) {
-  const layoutContext = useLayoutContext();
-  return (
-    <div ref={ref} style={getGridStyle(props, layoutContext)}>
-      <LayoutContext.Provider value="grid">{children}</LayoutContext.Provider>
-    </div>
-  );
-}
+export const Grid = createComponent({
+  schema: gridPropsSchema,
+  summary: "Grid component",
+  render: ({ ref, props, children }) => {
+    const layoutContext = useLayoutContext();
+    return (
+      <div ref={ref} style={getGridStyle(props, layoutContext)}>
+        <LayoutContext.Provider value="grid">{children}</LayoutContext.Provider>
+      </div>
+    );
+  }
+});

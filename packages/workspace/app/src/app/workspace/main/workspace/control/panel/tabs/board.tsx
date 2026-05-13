@@ -1,12 +1,9 @@
+import { useWorkspaceEngine } from "@/contexts/workspace";
 import { Check, Copy, Edit2, Save, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { WorkspaceEngine } from "../../../../../../../engine/workspace/engine";
 
-export function BoardTab({
-  workspaceEngine,
-}: {
-  workspaceEngine: WorkspaceEngine;
-}) {
+export function BoardTab() {
+  const workspaceEngine = useWorkspaceEngine();
   const location = workspaceEngine.appEngine.useState((s) => s.location);
   const boardId = location.board;
   const board = workspaceEngine.useState((s) =>

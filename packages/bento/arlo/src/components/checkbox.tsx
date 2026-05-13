@@ -1,4 +1,4 @@
-import { type ComponentProps } from "@ubento/bento.core";
+import { createComponent } from "@ubento/bento.core";
 import * as React from "react";
 import { z } from "zod";
 import {
@@ -54,22 +54,26 @@ function getCheckboxStyle(
   return baseStyles;
 }
 
-export function Checkbox({ ref, props }: ComponentProps<CheckboxProps>) {
-  const layoutContext = useLayoutContext();
-  const [isFocused, setIsFocused] = React.useState(false);
-  const [isHovered, setIsHovered] = React.useState(false);
+export const Checkbox = createComponent({
+  schema: checkboxPropsSchema,
+  summary: "Checkbox component",
+  render: ({ ref, props }) => {
+    const layoutContext = useLayoutContext();
+    const [isFocused, setIsFocused] = React.useState(false);
+    const [isHovered, setIsHovered] = React.useState(false);
 
-  return (
-    <input
-      type="checkbox"
-      ref={ref}
-      checked={props.checked}
-      disabled={props.disabled}
-      onFocus={() => setIsFocused(true)}
-      onBlur={() => setIsFocused(false)}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      style={getCheckboxStyle(props, layoutContext, isFocused, isHovered)}
-    />
-  );
-}
+    return (
+      <input
+        type="checkbox"
+        ref={ref}
+        checked={props.checked}
+        disabled={props.disabled}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        style={getCheckboxStyle(props, layoutContext, isFocused, isHovered)}
+      />
+    );
+  }
+});

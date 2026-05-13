@@ -1,20 +1,24 @@
 import { AgentTool } from "../tool";
 import { Toolkit } from "./toolkit";
 
-export function createLocalToolkit({
+export function createLocalToolkit<TM extends Record<string, AgentTool>>({
   name,
   description,
   tools,
 }: {
   name: string;
   description?: string;
-  tools: AgentTool[];
-}): Toolkit {
+  tools: TM;
+}): Toolkit & { tools: TM } {
   return {
     name,
     description,
     listTools: async () =>
-      tools.map((t) => ({ name: t.name, description: t.description })),
-    getTool: async (name) => tools.find((t) => t.name === name),
+      Object.values(tools).map((t) => ({
+        name: t.name,
+        description: t.description,
+      })),
+    getTool: async (name) => tools[name],
+    tools,
   };
 }

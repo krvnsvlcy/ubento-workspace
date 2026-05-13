@@ -5,6 +5,7 @@ import {
   agentContextDataSchema,
   AgentEnvironment,
   AgentThread,
+  AgentTool,
   createAgentThread,
   createEnvironment,
   Toolkit,
@@ -31,10 +32,6 @@ export type CopilotAgentEnvironment = AgentEnvironment & {
       title?: string;
     } & ({ teamId?: string } | { workspaceId?: string }),
   ) => Promise<AgentThread>;
-
-  addAgent: (agent: Agent) => void;
-  getAgent: (name: string) => Agent | undefined;
-  removeAgent: (name: string) => void;
 };
 
 export function createCopilotAgentEnvironment({
@@ -42,19 +39,21 @@ export function createCopilotAgentEnvironment({
   session,
   logger,
   toolkits,
+  tools,
   workspaceId,
 }: {
   ubento: UbentoService;
   session: UbentoSession;
   logger: Logger;
-  toolkits: Toolkit[];
+  toolkits?: Toolkit[];
+  tools?: AgentTool[];
   workspaceId?: string;
 }) {
   const threads: Record<string, AgentThread> = {};
-  const agents: Record<string, Agent> = {};
 
   const baseEnv = createEnvironment({
-    listToolkits: () => toolkits,
+    tools,
+    listToolkits: () => toolkits ?? [],
     logger: logger.child({ module: "agent_env" }),
     getModel: (id) => {
       const v3Model = getModel({ modelId: id, ubento, session });
@@ -78,11 +77,10 @@ export function createCopilotAgentEnvironment({
         },
       };
     },
+    createAgentThread: ({ agent, title }: { agent: Agent; title?: string }) => {
+      return createThread({ agent: agent.name, title });
+    },
   });
-
-  function getAgent(name: string): Agent | undefined {
-    return agents[name];
-  }
 
   function createAgentThreadFromData({
     data,
@@ -139,7 +137,7 @@ export function createCopilotAgentEnvironment({
     agent: string;
     title?: string | undefined;
   }) {
-    const agent = getAgent(agentName);
+    const agent = baseEnv.getAgent(agentName);
     if (!agent) {
       throw new Error(`Agent with name ${agentName} not found`);
     }
@@ -165,12 +163,12 @@ export function createCopilotAgentEnvironment({
     if (cachedThread) return cachedThread;
 
     const data = await ubento.intelligence.getThread(id);
-    const agent = getAgent(agentName);
-    if (!agent) {
+    const agentObj = baseEnv.getAgent(agentName);
+    if (!agentObj) {
       throw new Error(`Agent with name ${agentName} not found`);
     }
 
-    const instance = createAgentThreadFromData({ data, agent });
+    const instance = createAgentThreadFromData({ data, agent: agentObj });
     threads[id] = instance;
     return instance;
   }
@@ -183,14 +181,6 @@ export function createCopilotAgentEnvironment({
     thread: (id) => threads[id],
     getThread,
     createThread,
-    addAgent: (agent) => {
-      agents[agent.name] = agent;
-    },
-    getAgent,
-    listAgents: () => Object.values(agents),
-    removeAgent: (name) => {
-      delete agents[name];
-    },
   };
 
   return environment;

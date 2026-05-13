@@ -1,4 +1,4 @@
-import { type ComponentProps } from "@ubento/bento.core";
+import { createComponent } from "@ubento/bento.core";
 import * as React from "react";
 import { z } from "zod";
 import {
@@ -61,24 +61,28 @@ function getInputStyle(
   return baseStyles;
 }
 
-export function Input({ ref, props }: ComponentProps<InputProps>) {
-  const layoutContext = useLayoutContext();
-  const [isFocused, setIsFocused] = React.useState(false);
-  const [isHovered, setIsHovered] = React.useState(false);
+export const Input = createComponent({
+  schema: inputPropsSchema,
+  summary: "Input component",
+  render: ({ ref, props }) => {
+    const layoutContext = useLayoutContext();
+    const [isFocused, setIsFocused] = React.useState(false);
+    const [isHovered, setIsHovered] = React.useState(false);
 
-  return (
-    <input
-      ref={ref}
-      type={props.type}
-      value={props.value}
-      placeholder={props.placeholder}
-      disabled={props.disabled}
-      readOnly={props.readOnly}
-      onFocus={() => setIsFocused(true)}
-      onBlur={() => setIsFocused(false)}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      style={getInputStyle(props, layoutContext, isFocused, isHovered)}
-    />
-  );
-}
+    return (
+      <input
+        ref={ref}
+        type={props.type}
+        value={props.value}
+        placeholder={props.placeholder}
+        disabled={props.disabled}
+        readOnly={props.readOnly}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        style={getInputStyle(props, layoutContext, isFocused, isHovered)}
+      />
+    );
+  }
+});

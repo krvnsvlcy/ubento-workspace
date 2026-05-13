@@ -1,3 +1,4 @@
+import { Icon } from "@/components/icon/icon";
 import { useEffect, useMemo } from "react";
 import { useUbentoEngine } from "../../../../engine/app/engine";
 import { TabDefinition } from "../types";
@@ -18,7 +19,6 @@ function TabButton({
   location: any;
   onClick: () => void;
 }) {
-  const Icon = tab.icon;
   const name = typeof tab.name === "function" ? tab.name(location) : tab.name;
 
   return (
@@ -30,7 +30,7 @@ function TabButton({
           : "text-neutral-content-muted hover:bg-neutral-surface-hover"
       }`}
     >
-      <Icon size={12} className="mr-1.5" />
+      <Icon icon={tab.icon} size={12} className="mr-1.5" />
       {name}
     </button>
   );

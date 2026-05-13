@@ -10,6 +10,9 @@ const models: Record<
   }
 > = {
   // Gemini
+  "google/gemini-3.1-flash-lite": {
+    creditRate: 1, // 0.5, 3
+  },
   "google/gemini-3-flash": {
     creditRate: 1, // 0.5, 3
   },
