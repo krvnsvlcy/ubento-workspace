@@ -322,6 +322,32 @@ export function createWorkspaceEngine({
     persistBoard(data);
   }
 
+  async function runQuery({
+    service,
+    query,
+    params,
+  }: {
+    service: string;
+    query: string;
+    params?: Record<string, unknown>;
+  }) {
+    alert(`runQuery: ${service}.${query}`);
+    throw new Error("runQuery not implemented");
+  }
+
+  async function runAction({
+    service,
+    action,
+    params,
+  }: {
+    service: string;
+    action: string;
+    params?: Record<string, unknown>;
+  }) {
+    alert(`runAction: ${service}.${action}`);
+    throw new Error("runAction not implemented");
+  }
+
   const persistWorkspace = debounce(async (data: BentoWorkspaceData) => {
     await workspaceService.updateWorkspace(data.id, {
       name: data.title,
@@ -445,6 +471,8 @@ export function createWorkspaceEngine({
           getBoard,
           listBoards,
           boardUpdated,
+          runQuery,
+          runAction,
         },
       });
 

@@ -5,7 +5,7 @@ import {
   QueryStoreEntry,
   StoreEntry,
 } from "../../spec/store.js";
-import { useService } from "../states/environment.js";
+import { useEnvironment } from "../renderer.js";
 import {
   BoardRenderingContext,
   BoardRenderingContextPatch,
@@ -20,11 +20,15 @@ export const QueryStoreEntryProvider = memo(function QueryStoreEntryProvider({
   name: string;
   entry: QueryStoreEntry;
 }>) {
-  const service = useService(entry.service);
+  const environment = useEnvironment();
   const result = useQuery({
     queryKey: [entry.service, name, entry.params],
     queryFn: () =>
-      service.runQuery({ query: entry.query, params: entry.params }),
+      environment.serviceApi.runQuery({
+        service: entry.service,
+        query: entry.query,
+        params: entry.params,
+      }),
   });
 
   return (
@@ -55,10 +59,11 @@ export const ActionStoreEntryProvider = memo(function ActionStoreEntryProvider({
   name: string;
   entry: ActionStoreEntry;
 }>) {
-  const service = useService(entry.service);
+  const environment = useEnvironment();
   const result = useMutation({
     mutationFn: (variables: any) =>
-      service.runAction({
+      environment.serviceApi.runAction({
+        service: entry.service,
         action: entry.action,
         params: { ...entry.params, ...variables },
       }),

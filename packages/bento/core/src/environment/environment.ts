@@ -6,7 +6,6 @@ import {
 import { createDomManager, DomManager } from "./dom.js";
 import { createInteractionManager, InteractionManager } from "./interaction.js";
 import { createOverlayManager, OverlayManager } from "./overlay.js";
-import { createServiceStore, ServiceStore } from "./service.js";
 
 export type SessionApi = {
   user: { id: string; name: string; email: string; picture: string };
@@ -16,11 +15,31 @@ export type SessionApi = {
 export type WorkspaceApi = {
   goTo: (args: { boardId: string; params?: Record<string, string> }) => void;
 };
+export type ServiceApi = {
+  runQuery: ({
+    service,
+    query,
+    params,
+  }: {
+    service: string;
+    query: string;
+    params?: Record<string, unknown>;
+  }) => Promise<unknown>;
+  runAction: ({
+    service,
+    action,
+    params,
+  }: {
+    service: string;
+    action: string;
+    params?: Record<string, unknown>;
+  }) => Promise<unknown>;
+};
 
 export type Environment = {
   sessionApi: SessionApi;
   workspaceApi: WorkspaceApi;
-  serviceStore: ServiceStore;
+  serviceApi: ServiceApi;
   componentStore: ComponentStore;
   domManager: DomManager;
   interactionManager: InteractionManager;
@@ -30,12 +49,14 @@ export type Environment = {
 export function createEnvironment({
   sessionApi,
   workspaceApi,
+  serviceApi,
   components,
   fallbackComponent,
   errorComponent,
 }: {
   sessionApi: SessionApi;
   workspaceApi: WorkspaceApi;
+  serviceApi: ServiceApi;
   components?: Record<string, Component>;
   fallbackComponent?: Component;
   errorComponent?: Component;
@@ -43,7 +64,7 @@ export function createEnvironment({
   return {
     sessionApi,
     workspaceApi,
-    serviceStore: createServiceStore(),
+    serviceApi,
     componentStore: createComponentStore({
       components,
       fallbackComponent,

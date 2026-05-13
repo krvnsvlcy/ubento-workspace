@@ -20,6 +20,26 @@ export type BentoEngineHostRpcInterface = {
 
   // sync
   boardUpdated: ({ data }: { data: BentoBoardData }) => Promise<void>;
+
+  // services
+  runQuery: ({
+    service,
+    query,
+    params,
+  }: {
+    service: string;
+    query: string;
+    params?: Record<string, unknown>;
+  }) => Promise<unknown>;
+  runAction: ({
+    service,
+    action,
+    params,
+  }: {
+    service: string;
+    action: string;
+    params?: Record<string, unknown>;
+  }) => Promise<unknown>;
 };
 
 export type BentoEngineRuntimeRpcInterface = {

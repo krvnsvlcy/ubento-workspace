@@ -97,6 +97,14 @@ export function createBentoRuntime({
   });
 
   const environment: Environment = createEnvironment({
+    serviceApi: {
+      runQuery: async (args) => {
+        return rpc.egress.runQuery(args);
+      },
+      runAction: async (args) => {
+        return rpc.egress.runAction(args);
+      },
+    },
     sessionApi: {
       user: {
         id: "",

@@ -1,6 +1,5 @@
 import { createContext, useContext } from "react";
 import { Component, Environment } from "../../environment/environment";
-import { fallbackService } from "../../environment/service";
 
 export const EnvironmentContext = createContext<Environment | null>(null);
 
@@ -27,15 +26,6 @@ export function useEnvironmentFallBackComponent(): Component | undefined {
 export function useEnvironmentErrorComponent(): Component | undefined {
   const context = useEnvironment();
   return context.componentStore.useState((state) => state.errorComponent);
-}
-
-// Service
-
-export function useService(name: string) {
-  const environment = useEnvironment();
-  return environment.serviceStore.useState(
-    (state) => state.services[name] ?? fallbackService,
-  );
 }
 
 // DOM & Interaction
