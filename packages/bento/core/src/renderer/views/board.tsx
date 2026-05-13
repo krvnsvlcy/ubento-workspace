@@ -1,6 +1,9 @@
 import { PropsWithChildren } from "react";
 import { BoardSpec, BoardStyle } from "../../spec/board.js";
-import { StoreProvider } from "../providers/store.js";
+import { BoardRenderingContext } from "../context/context.js";
+import { BoardStateProvider } from "../context/state.js";
+import { StoreProvider } from "../context/store.js";
+import { useEnvironment } from "../renderer.js";
 import { BoardContext } from "../states/board.js";
 import { ElementView } from "./element/element.js";
 import { OverlayRenderer } from "./overlay-renderer.js";
@@ -54,33 +57,47 @@ function getBoardStyle(style: BoardStyle): React.CSSProperties {
 export function BoardView({
   spec,
   children,
-}: PropsWithChildren<{ spec: BoardSpec }>) {
+  params,
+}: PropsWithChildren<{ spec: BoardSpec; params: Record<string, unknown> }>) {
+  const environment = useEnvironment();
   const content =
     spec.children?.map((child) => {
       return <ElementView key={child} id={child} />;
     }) ?? [];
 
   return (
-    <BoardContext value={spec}>
-      <StoreProvider store={spec.store || {}}>
-        <div
-          style={getBoardStyle({
-            ...(spec.style || {}),
-            direction: "column",
-            gap: 0,
-            padding: {
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-            },
-          })}
-        >
-          {content}
-          {children}
-          <OverlayRenderer />
-        </div>
-      </StoreProvider>
+    <BoardContext value={{ spec, params }}>
+      <BoardRenderingContext
+        value={{
+          workspace: environment.workspaceApi,
+          session: environment.sessionApi,
+          params,
+          state: {},
+          store: {},
+        }}
+      >
+        <BoardStateProvider initialState={spec.initialState || {}}>
+          <StoreProvider store={spec.store || {}}>
+            <div
+              style={getBoardStyle({
+                ...(spec.style || {}),
+                direction: "column",
+                gap: 0,
+                padding: {
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                },
+              })}
+            >
+              {content}
+              {children}
+              <OverlayRenderer />
+            </div>
+          </StoreProvider>
+        </BoardStateProvider>
+      </BoardRenderingContext>
     </BoardContext>
   );
 }

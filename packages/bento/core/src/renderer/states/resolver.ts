@@ -1,4 +1,4 @@
-import { BoardRenderingContextApi } from "./context";
+import { BoardRenderingContextType } from "../context/context";
 
 /**
  * Safely retrieves a nested value from an object.
@@ -26,7 +26,7 @@ function getByPath(obj: Record<string, any>, path: string): any {
  */
 export function resolveValue(
   raw: unknown,
-  context: BoardRenderingContextApi,
+  context: BoardRenderingContextType,
 ): unknown {
   // 1. Base case: Primitives and null return as-is
   if (typeof raw !== "object" || raw === null) {
@@ -59,7 +59,7 @@ export function resolveValue(
 
 export function useResolvedValue<T>(
   raw: T,
-  context: BoardRenderingContextApi,
+  context: BoardRenderingContextType,
 ): T {
   return resolveValue(raw, context) as T;
 }

@@ -1,6 +1,6 @@
 import { RefHandler } from "../../../environment/environment";
+import { useBoardRenderingContext } from "../../context/context";
 import { useBoardElement } from "../../states/board";
-import { useBoardRenderingContext } from "../../states/context";
 import {
   useEnvironment,
   useEnvironmentComponent,

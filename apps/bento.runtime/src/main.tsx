@@ -1,10 +1,17 @@
-import { LayoutContext } from "@ubento/bento.arlo";
+import {
+  Button,
+  Card,
+  Grid,
+  Heading,
+  LayoutContext,
+  Stack,
+  Text,
+} from "@ubento/bento.arlo";
 import { BentoRuntimeView, createBentoRuntime } from "@ubento/bento.runtime";
 import "@ubento/bento.style/css/themes.css";
 import "@ubento/bento.style/dist/uno.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { environment } from "./environment.js";
 import "./modules.js";
 import { rpc } from "./rpc.js";
 
@@ -20,11 +27,19 @@ while (!connected) {
     const runtime = createBentoRuntime({
       rpc,
       initialState,
+      components: {
+        Stack,
+        Grid,
+        Text,
+        Heading,
+        Button,
+        Card,
+      },
     });
     createRoot(document.getElementById("root")!).render(
       <StrictMode>
         <LayoutContext value={"column"}>
-          <BentoRuntimeView runtime={runtime} environment={environment} />
+          <BentoRuntimeView runtime={runtime} />
         </LayoutContext>
       </StrictMode>,
     );

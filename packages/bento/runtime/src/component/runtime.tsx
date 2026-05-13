@@ -1,15 +1,9 @@
-import { Environment, EnvironmentContext } from "@ubento/bento.core";
+import { EnvironmentContext } from "@ubento/bento.core";
 import { BentoRuntime } from "../runtime/runtime";
 import { BentoBoardView } from "./board";
 import { BentoHomeView } from "./home";
 
-export function BentoRuntimeView({
-  runtime,
-  environment,
-}: {
-  runtime: BentoRuntime;
-  environment: Environment;
-}) {
+export function BentoRuntimeView({ runtime }: { runtime: BentoRuntime }) {
   const location = runtime.useState((s) => s.location);
 
   let content = <BentoHomeView runtime={runtime} />;
@@ -25,5 +19,9 @@ export function BentoRuntimeView({
     );
   }
 
-  return <EnvironmentContext value={environment}>{content}</EnvironmentContext>;
+  return (
+    <EnvironmentContext value={runtime.environment}>
+      {content}
+    </EnvironmentContext>
+  );
 }

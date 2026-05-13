@@ -51,6 +51,7 @@ export const boardSpecSchema = z.object({
   // data
   params: z.record(z.string(), boardParameterSpecSchema).optional(),
   state: stateSpecSchema.optional(),
+  initialState: z.record(z.string(), z.any()).optional(),
   store: storeSpecSchema.optional(),
   // view
   style: boardStyleSchema.optional(),

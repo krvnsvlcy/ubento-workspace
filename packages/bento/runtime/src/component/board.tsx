@@ -86,7 +86,9 @@ export function BentoBoardView({
 
   return (
     <div className="h-full overflow-y-auto bg-background">
-      <BoardView spec={board.spec.data}>{/* <Interactor /> */}</BoardView>
+      <BoardView spec={board.spec.data} params={params}>
+        {/* <Interactor /> */}
+      </BoardView>
     </div>
   );
 }

@@ -1,36 +1,27 @@
-import { PropsWithChildren } from "react";
-import { BoardSpec } from "../../spec/board.js";
-import { useBoardState } from "../renderer.js";
-import {
-  BoardRenderingContext,
-  useBoardRenderingContext,
-} from "../states/context.js";
-import { useWorkspaceState } from "../states/workspace.js";
+import { createContext, PropsWithChildren, useContext } from "react";
+import { SessionApi, WorkspaceApi } from "../../environment/environment.js";
 
-export function BoardRenderingContextProvider({
-  spec,
-  children,
-}: {
-  spec: BoardSpec;
-  children: React.ReactNode;
-}) {
-  const state = useBoardState();
-  const workspaceState = useWorkspaceState();
+export type BoardRenderingContextType = {
+  session: SessionApi;
+  workspace: WorkspaceApi;
+  params: Record<string, unknown>;
+  state: Record<string, unknown>;
+  store: Record<string, unknown>;
+};
 
-  return (
-    <BoardRenderingContext
-      value={{
-        workspace: {
-          state: workspaceState,
-        },
-        state,
-        store: {},
-      }}
-    >
-      {children}
-    </BoardRenderingContext>
-  );
-}
+export const BoardRenderingContext = createContext<
+  BoardRenderingContextType | undefined
+>(undefined);
+
+export const useBoardRenderingContext = () => {
+  const context = useContext(BoardRenderingContext);
+  if (!context) {
+    throw new Error(
+      "useBoardRenderingContext must be used within a BoardRenderingContext",
+    );
+  }
+  return context;
+};
 
 export function applyPatch<T = any>(
   obj: any,

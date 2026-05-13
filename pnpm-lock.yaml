@@ -556,6 +556,9 @@ importers:
       '@json-render/react':
         specifier: ^0.18.0
         version: 0.18.0(react@19.2.5)(zod@4.4.3)
+      '@tanstack/react-query':
+        specifier: ^5.100.9
+        version: 5.100.9(react@19.2.5)
       '@ubento/fabric':
         specifier: workspace:*
         version: link:../../utils/fabric

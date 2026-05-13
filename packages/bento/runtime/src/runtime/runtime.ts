@@ -1,3 +1,4 @@
+import { Component, createEnvironment, Environment } from "@ubento/bento.core";
 import { createStore } from "@ubento/fabric";
 import type { DuplexRpc } from "@ubento/rpc";
 import { createZustandStateController } from "@ubento/workspace.primitives";
@@ -23,9 +24,15 @@ export type BentoRuntimeState = {
 export function createBentoRuntime({
   initialState,
   rpc,
+  components,
+  fallbackComponent,
+  errorComponent,
 }: {
   initialState: BentoRuntimeState;
   rpc: DuplexRpc<BentoEngineRuntimeRpcInterface, BentoEngineHostRpcInterface>;
+  components?: Record<string, Component>;
+  fallbackComponent?: Component;
+  errorComponent?: Component;
 }) {
   const store = createZustandStore<BentoRuntimeState>(() => {
     return {
@@ -89,8 +96,38 @@ export function createBentoRuntime({
     },
   });
 
+  const environment: Environment = createEnvironment({
+    sessionApi: {
+      user: {
+        id: "",
+        name: "",
+        email: "",
+        picture: "",
+      },
+      team: {
+        id: "",
+        name: "",
+        picture: "",
+      },
+    },
+    workspaceApi: {
+      goTo: function (args: {
+        boardId: string;
+        params?: Record<string, string>;
+      }): void {
+        rpc.egress.goTo({
+          location: { boardId: args.boardId, params: args.params || {} },
+        });
+      },
+    },
+    components,
+    fallbackComponent,
+    errorComponent,
+  });
+
   return {
     ...controller,
+    environment,
     boardStore,
     goHome: () => {
       rpc.egress.goTo({ location: undefined });
