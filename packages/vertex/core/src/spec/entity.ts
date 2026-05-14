@@ -1,8 +1,9 @@
 import z from "zod";
-import { objectJsonSchema, refSchema } from "./schema";
+import { referenceSchema } from "./ref";
+import { objectSchemaSchema } from "./schema";
 
 export const entitySpecSchema = z.object({
   name: z.string(),
   primaryKey: z.string(),
-  schema: z.discriminatedUnion("type", [objectJsonSchema, refSchema]),
+  schema: z.union([objectSchemaSchema, referenceSchema]),
 });

@@ -1,7 +1,10 @@
 import { useSession } from "@/contexts/session";
 import { useUbento } from "@/engine/app/engine";
 import { useModalInstance } from "@/utils/modal-store";
-import { ConnectionProviderConfig } from "@ubento/vertex.core";
+import {
+  ConnectionCredentials,
+  ConnectionProviderConfig,
+} from "@ubento/vertex.core";
 import { Button, Heading, Text } from "@ubento/workspace.primitives";
 import { Globe, Plus, Trash2, X } from "lucide-react";
 import { useState } from "react";
@@ -48,15 +51,17 @@ export function ConnectionModal({
   );
 
   const handleSave = () => {
+    const credentials: ConnectionCredentials = {
+      type: "api_key",
+      token: apiKey,
+    };
     if (!providerData?.id) return;
     createConnection(
       {
         team_id: session.teamId || "",
         provider_id: providerData.id,
         name: connectionName,
-        auth: {
-          token: apiKey,
-        },
+        credentials,
       },
       {
         onSuccess: () => {

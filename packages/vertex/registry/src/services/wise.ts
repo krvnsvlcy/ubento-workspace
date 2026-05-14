@@ -47,24 +47,7 @@ export const spec: ServiceSpecV1 = {
       ]
     }
   },
-  entities: {
-    "profile": {
-      "name": "Profile",
-      "primaryKey": "id",
-      "schema": {
-        "type": "ref",
-        "ref": "profile"
-      }
-    },
-    "account": {
-      "name": "Account",
-      "primaryKey": "id",
-      "schema": {
-        "type": "ref",
-        "ref": "account"
-      }
-    }
-  },
+
   queries: {},
   actions: {}
 };

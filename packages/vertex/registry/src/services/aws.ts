@@ -9,7 +9,6 @@ export const spec: ServiceSpecV1 = {
     baseUrl: "https://aws.amazon.com",
   },
   schemas: {},
-  entities: {},
   queries: {},
   actions: {}
 };

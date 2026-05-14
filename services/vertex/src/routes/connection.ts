@@ -90,7 +90,7 @@ router.post(
       body: z.object({
         team_id: z.string().min(1),
         provider_id: z.string().min(1),
-        auth: z.unknown().optional(),
+        credentials: z.unknown().optional(),
       }),
     }),
     async (req: Request, res: Response) => {

@@ -54,7 +54,12 @@ function OverlayItem({ overlay }: { overlay: any }) {
 
   return (
     <div style={style}>
-      <Component.render ref={() => {}} props={overlay.inputs} />
+      <Component.render
+        ref={() => {}}
+        props={overlay.inputs}
+        bindings={{}}
+        emit={() => {}}
+      />
     </div>
   );
 }

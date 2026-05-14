@@ -6,6 +6,9 @@ export type BoardRenderingContextType = {
   workspace: WorkspaceApi;
   params: Record<string, unknown>;
   state: Record<string, unknown>;
+  setState: (
+    updater: Record<string, unknown> | ((d: Record<string, unknown>) => void),
+  ) => void;
   store: Record<string, unknown>;
 };
 
@@ -13,7 +16,7 @@ export const BoardRenderingContext = createContext<
   BoardRenderingContextType | undefined
 >(undefined);
 
-export const useBoardRenderingContext = () => {
+export const useBoardRenderingContext = (): BoardRenderingContextType => {
   const context = useContext(BoardRenderingContext);
   if (!context) {
     throw new Error(
@@ -64,7 +67,7 @@ export function BoardRenderingContextPatch({
   children,
 }: PropsWithChildren<{
   path: (string | number)[];
-  value: Record<string, unknown>;
+  value: unknown;
 }>) {
   const context = useBoardRenderingContext();
   const newContext = applyPatch(context, path, value);

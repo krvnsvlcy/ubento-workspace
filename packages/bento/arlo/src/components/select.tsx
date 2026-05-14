@@ -30,7 +30,7 @@ function getSelectStyle(
   props: SelectProps,
   layoutContext: LayoutContextType,
   isFocused: boolean,
-  isHovered: boolean
+  isHovered: boolean,
 ): React.CSSProperties {
   const { intent, size, disabled } = props;
   const themePrefix = `--color-${intent}`;
@@ -72,7 +72,7 @@ function getSelectStyle(
 }
 
 export const Select = createComponent({
-  schema: selectPropsSchema,
+  props: selectPropsSchema,
   summary: "Select component",
   render: ({ ref, props }) => {
     const layoutContext = useLayoutContext();
@@ -102,5 +102,5 @@ export const Select = createComponent({
         ))}
       </select>
     );
-  }
+  },
 });

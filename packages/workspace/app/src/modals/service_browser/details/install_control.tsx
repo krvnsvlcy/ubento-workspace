@@ -8,7 +8,7 @@ import { useModal } from "@/utils/modal-store";
 import { vertexClient } from "@ubento/services.sdk";
 import { ServiceSpecV1 } from "@ubento/vertex.core";
 import { Badge, Button } from "@ubento/workspace.primitives";
-import { Plus, Sparkles, Trash2 } from "lucide-react";
+import { Plus, Settings, Sparkles, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export function InstallControl({
@@ -88,107 +88,106 @@ export function InstallControl({
   // Case 2: One connection
   if (connections.length === 1) {
     return (
-      <div className="flex flex-col items-end gap-1">
-        <div className="flex items-center gap-2">
-          {isInstalledWithActiveConnection ? (
-            <>
-              <Badge
-                variant="outline"
-                className="bg-success/10 border-success/20 text-success text-[10px] font-bold uppercase px-2 py-0.5 rounded-full"
-              >
-                Installed
-              </Badge>
-              <Button
-                onClick={handleUninstall}
-                variant="destructive"
-                size="sm"
-                className="gap-2"
-              >
-                <Trash2 size={16} /> Uninstall
-              </Button>
-            </>
-          ) : (
+      <div className="flex items-center gap-2">
+        {isInstalledWithActiveConnection ? (
+          <>
+            <Badge
+              variant="outline"
+              className="bg-success/10 border-success/20 text-success text-[10px] font-bold uppercase px-2 py-0.5 rounded-full"
+            >
+              Installed
+            </Badge>
             <Button
-              onClick={() =>
-                workspaceEngine.installService(service.name, {
-                  id: service.id,
-                  channelId: activeChannelId || "",
-                  connectionId: activeConnection.id,
-                })
-              }
-              variant="primary"
+              onClick={handleUninstall}
+              variant="destructive"
+              size="sm"
               className="gap-2"
             >
-              <Sparkles size={16} /> Install
+              <Trash2 size={16} /> Uninstall
             </Button>
-          )}
-        </div>
-        <button
-          onClick={() => {
-            open(ConnectionModal, {
-              providerName: specData?.connection?.provider || "",
-            });
-          }}
-          className="text-[11px] text-neutral-content-muted hover:text-accent font-medium underline transition-colors"
-        >
-          Manage Connections
-        </button>
-      </div>
-    );
-  }
-
-  // Case 3: Multiple connections
-  return (
-    <div className="flex flex-col items-end gap-1">
-      <div className="flex items-center gap-2">
-        <select
-          value={selectedConnectionId ?? ""}
-          onChange={(e) => setSelectedConnectionId(e.target.value)}
-          className="bg-neutral-surface/50 border border-neutral-border/30 rounded-lg px-2 py-0.5 text-[12px] font-medium text-neutral-content focus:outline-none focus:ring-1 focus:ring-accent cursor-pointer"
-        >
-          {connections.map((c: any) => (
-            <option key={c.id} value={c.id}>
-              {c.name || c.id}
-            </option>
-          ))}
-        </select>
-
-        {isInstalledWithActiveConnection ? (
-          <Button
-            onClick={handleUninstall}
-            variant="destructive"
-            size="sm"
-            className="gap-2"
-          >
-            <Trash2 size={16} /> Uninstall
-          </Button>
+          </>
         ) : (
           <Button
-            onClick={() => {
-              alert(activeChannelId);
+            onClick={() =>
               workspaceEngine.installService(service.name, {
                 id: service.id,
                 channelId: activeChannelId || "",
                 connectionId: activeConnection.id,
-              });
-            }}
+              })
+            }
             variant="primary"
             className="gap-2"
           >
             <Sparkles size={16} /> Install
           </Button>
         )}
+        <Button
+          onClick={() => {
+            open(ConnectionModal, {
+              providerName: specData?.connection?.provider || "",
+            });
+          }}
+          variant="ghost"
+          size="icon"
+          title="Manage Connections"
+        >
+          <Settings size={16} />
+        </Button>
       </div>
-      <button
+    );
+  }
+
+  // Case 3: Multiple connections
+  return (
+    <div className="flex items-center gap-2">
+      <select
+        value={selectedConnectionId ?? ""}
+        onChange={(e) => setSelectedConnectionId(e.target.value)}
+        className="bg-neutral-surface/50 border border-neutral-border/30 rounded-lg px-2 py-0.5 text-[12px] font-medium text-neutral-content focus:outline-none focus:ring-1 focus:ring-accent cursor-pointer"
+      >
+        {connections.map((c: any) => (
+          <option key={c.id} value={c.id}>
+            {c.name || c.id}
+          </option>
+        ))}
+      </select>
+
+      {isInstalledWithActiveConnection ? (
+        <Button
+          onClick={handleUninstall}
+          variant="destructive"
+          size="sm"
+          className="gap-2"
+        >
+          <Trash2 size={16} /> Uninstall
+        </Button>
+      ) : (
+        <Button
+          onClick={() => {
+            workspaceEngine.installService(service.name, {
+              id: service.id,
+              channelId: activeChannelId || "",
+              connectionId: activeConnection.id,
+            });
+          }}
+          variant="primary"
+          className="gap-2"
+        >
+          <Sparkles size={16} /> Install
+        </Button>
+      )}
+      <Button
         onClick={() => {
           open(ConnectionModal, {
             providerName: specData?.connection?.provider || "",
           });
         }}
-        className="text-[11px] text-neutral-content-muted hover:text-accent font-medium underline transition-colors"
+        variant="ghost"
+        size="icon"
+        title="Manage Connections"
       >
-        Manage Connections
-      </button>
+        <Settings size={16} />
+      </Button>
     </div>
   );
 }

@@ -12,11 +12,12 @@
     "deploy": "scripts containerize vertex && scripts deploy vertex"
   },
   "dependencies": {
+    "@google-cloud/secret-manager": "^6.1.2",
+    "@google-cloud/storage": "^7.19.0",
     "@ubento/services.database": "workspace:*",
     "@ubento/services.primitives": "workspace:*",
     "@ubento/services.toolkit": "workspace:*",
     "@ubento/vertex.core": "workspace:*",
-    "@google-cloud/storage": "^7.19.0",
     "body-parser": "^2.2.0",
     "dotenv": "^16.3.1",
     "express": "^5",

@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { entitySpecSchema } from "./entity.js";
 import { operationSpecSchema } from "./operation.js";
 import {
   httpConnectionSpecSchema,
@@ -31,7 +30,6 @@ export function serviceSpecV1SchemaFactory<
     connection,
     // Types
     schemas: z.record(z.string(), schemaSchema).optional(),
-    entities: z.record(z.string(), entitySpecSchema).optional(),
     // Operations
     queries: z.record(z.string(), operationSpecSchema({ handler })).optional(),
     actions: z.record(z.string(), operationSpecSchema({ handler })).optional(),

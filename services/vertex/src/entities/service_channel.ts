@@ -4,7 +4,10 @@ import {
   ubentoEntities,
 } from "@ubento/services.primitives";
 import { NotFoundError, prismaListWithCursor } from "@ubento/services.toolkit";
-import { ServiceSpecV1 as ServiceSpec } from "@ubento/vertex.core";
+import {
+  ServiceSpecV1 as ServiceSpec,
+  ServiceSpecV1,
+} from "@ubento/vertex.core";
 import prisma from "../lib/prisma.js";
 import { serviceBucket, storagePaths } from "../lib/storage.js";
 
@@ -77,17 +80,15 @@ export async function deleteServiceChannel(id: string) {
 
 export async function getServiceChannelSpec(id: string): Promise<ServiceSpec> {
   const channel = await prisma.serviceChannel.findUnique({
-    where: { id },
-    include: { service: true },
+    where: { id, deleted_at: { isSet: false } },
   });
   if (!channel || channel.deleted_at) {
     throw new NotFoundError(`service_channel ${id}`);
   }
 
   const filePath = storagePaths.serviceSpecFile({
-    scope: channel.service.scope,
-    service: channel.service.name,
-    channel: channel.name,
+    serviceId: channel.service_id,
+    channelId: channel.id,
   });
 
   try {
@@ -104,20 +105,37 @@ export async function getServiceChannelSpec(id: string): Promise<ServiceSpec> {
 export async function uploadServiceChannelSpec(id: string, spec: ServiceSpec) {
   const channel = await prisma.serviceChannel.findUnique({
     where: { id },
-    include: { service: true },
   });
   if (!channel || channel.deleted_at) {
     throw new NotFoundError(`service_channel ${id}`);
   }
 
   const filePath = storagePaths.serviceSpecFile({
-    scope: channel.service.scope,
-    service: channel.service.name,
-    channel: channel.name,
+    serviceId: channel.service_id,
+    channelId: channel.id,
   });
+
+  console.log({ conn: spec.connection, filePath });
 
   const file = serviceBucket.file(filePath);
   await file.save(JSON.stringify(spec, null, 2), {
     contentType: "application/json",
   });
+}
+
+export async function getServiceSpec(
+  channel_id: string,
+): Promise<ServiceSpecV1> {
+  const channel = await prisma.serviceChannel.findUnique({
+    where: { id: channel_id },
+  });
+  if (!channel) throw new Error(`channel ${channel_id} not found`);
+
+  const filePath = storagePaths.serviceSpecFile({
+    serviceId: channel.service_id,
+    channelId: channel.id,
+  });
+
+  const [content] = await serviceBucket.file(filePath).download();
+  return JSON.parse(content.toString("utf-8")) as ServiceSpecV1;
 }

@@ -1,15 +1,29 @@
+import { SecretManagerServiceClient } from "@google-cloud/secret-manager";
 import crypto from "crypto";
-import { env } from "../env.js";
+import { env } from "../env";
 
+const client = new SecretManagerServiceClient();
 const ALGORITHM = "aes-256-gcm";
+let cachedMasterKey: Buffer | null = null;
 
 async function getMasterKey() {
-  const key = Buffer.from(env.AUTH_ENCRYPTION_KEY, "hex");
+  if (cachedMasterKey) return cachedMasterKey;
 
-  if (key.length !== 32) {
+  // Fetch the raw hex string from GSM instead of the local environment
+  const [version] = await client.accessSecretVersion({
+    name: `projects/${env.GCP_PROJECT_ID}/secrets/vertex-master-key/versions/latest`,
+  });
+
+  const payload = version.payload?.data?.toString();
+  if (!payload)
+    throw new Error("Failed to load master key from Secret Manager");
+
+  cachedMasterKey = Buffer.from(payload, "hex");
+
+  if (cachedMasterKey.length !== 32) {
     throw new Error("Elll Crypto: Master key must be exactly 32 bytes.");
   }
-  return key;
+  return cachedMasterKey;
 }
 
 export type EncryptedData = {

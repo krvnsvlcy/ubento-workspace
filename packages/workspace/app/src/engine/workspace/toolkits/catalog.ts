@@ -9,7 +9,7 @@ export const createCatalogToolkit = ({
   listComponents,
   describeComponents,
 }: {
-  listComponents: () => Promise<string[]>;
+  listComponents: () => Promise<unknown>;
   describeComponents: (names: string[]) => Promise<Record<string, unknown>>;
 }) => {
   const listComponentsTool: AgentTool = {

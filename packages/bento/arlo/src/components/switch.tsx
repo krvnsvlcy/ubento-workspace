@@ -17,7 +17,7 @@ export const switchPropsSchema = layoutElementStyleSchema.extend({
 export type SwitchProps = z.infer<typeof switchPropsSchema>;
 
 export const Switch = createComponent({
-  schema: switchPropsSchema,
+  props: switchPropsSchema,
   summary: "Switch component",
   render: ({ ref, props }) => {
     const layoutContext = useLayoutContext();
@@ -32,7 +32,9 @@ export const Switch = createComponent({
       width: "44px",
       height: "24px",
       borderRadius: "9999px",
-      background: checked ? `var(${themePrefix})` : `var(--color-neutral-surface-active)`,
+      background: checked
+        ? `var(${themePrefix})`
+        : `var(--color-neutral-surface-active)`,
       cursor: disabled ? "not-allowed" : "pointer",
       opacity: disabled ? 0.6 : 1,
       transition: "all 0.15s ease-in-out",
@@ -74,5 +76,5 @@ export const Switch = createComponent({
         <div style={thumbStyle} />
       </button>
     );
-  }
+  },
 });

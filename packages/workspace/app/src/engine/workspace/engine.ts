@@ -12,7 +12,6 @@ import {
   BentoEngineHostRpcInterface,
   BentoEngineRuntimeRpcInterface,
   BentoLocation,
-  BentoMode,
   BentoWorkspaceData,
   boardDataSchema,
   DropRect,
@@ -20,6 +19,7 @@ import {
 } from "@ubento/bento.runtime";
 import { createDuplexRpc, createWindowPort, DuplexRpc } from "@ubento/rpc";
 import { workspaceClient } from "@ubento/services.sdk";
+import { serviceSpecV1Schema } from "@ubento/vertex.core";
 import { createZustandStateController } from "@ubento/workspace.primitives";
 import { registerStore, unregisterStore } from "@ubento/zustand-devtool";
 import { dequal } from "dequal/lite";
@@ -63,7 +63,7 @@ export type WorkspaceState = {
   error?: any;
 
   // local state
-  mode: BentoMode;
+  mode: "edit" | "live";
   workspace: BentoWorkspaceData;
 
   // synced from runtime
@@ -312,14 +312,16 @@ export function createWorkspaceEngine({
   async function deepValidateBoard(
     parsed: BoardSpec,
   ): Promise<ParsedSpec<BoardSpec>> {
+    // Replace with your actual RPC call
     const components = (await rpc?.egress.getCatalog({})) as
-      | Record<string, { schema: any }>
+      | Record<string, { props: any; events?: any; bindings?: any }>
       | undefined;
+
     if (!components) {
       return { status: "valid", data: parsed };
     }
 
-    let errors: string[] = [];
+    const errors: string[] = [];
 
     for (const [elementId, element] of Object.entries(parsed.elements || {})) {
       const comp = components[element.component];
@@ -329,14 +331,41 @@ export function createWorkspaceEngine({
         );
         continue;
       }
-      const schema = z.fromJSONSchema(comp.schema);
-      const validated = schema.safeParse(element.props || {});
+
+      const schema = z.fromJSONSchema(comp.props);
+      const rawProps = element.props || {};
+      const validated = schema.safeParse(rawProps);
+
       if (!validated.success) {
-        errors.push(
-          ...validated.error.issues.map((e) => {
-            return `Error in element ${elementId}: ${e.message}`;
-          }),
-        );
+        for (const issue of validated.error.issues) {
+          // 1. Traverse the raw props object using Zod's error path
+          let valueAtPath: any = rawProps;
+          for (const key of issue.path) {
+            if (valueAtPath && typeof valueAtPath === "object") {
+              valueAtPath = valueAtPath[key];
+            } else {
+              valueAtPath = undefined;
+              break;
+            }
+          }
+
+          // 2. Check if the rejected value perfectly matches the Ubento directive shape
+          const isUseDirective =
+            valueAtPath &&
+            typeof valueAtPath === "object" &&
+            "$use" in valueAtPath &&
+            typeof valueAtPath.$use === "string" &&
+            Object.keys(valueAtPath).length === 1; // Strict check to prevent bloated objects
+
+          // 3. Only register the error if it is NOT a directive
+          if (!isUseDirective) {
+            const pathString =
+              issue.path.length > 0 ? ` at ${issue.path.join(".")}` : "";
+            errors.push(
+              `Error in element ${elementId}${pathString}: ${issue.message}`,
+            );
+          }
+        }
       }
     }
 
@@ -345,7 +374,6 @@ export function createWorkspaceEngine({
     }
     return { status: "valid", data: parsed };
   }
-
   // Update metadata
   async function updateBoardMetadata({
     boardId,
@@ -430,30 +458,54 @@ export function createWorkspaceEngine({
     store.setState({ selection });
   }
 
-  async function runQuery({
-    service,
-    query,
-    params,
-  }: {
-    service: string;
-    query: string;
-    params?: Record<string, unknown>;
-  }) {
-    alert(`runQuery: ${service}.${query}`);
-    throw new Error("runQuery not implemented");
+  async function getServiceSpec(channelId: string) {
+    const specData =
+      await appEngine.ubento.sdk.vertex.getServiceChannelSpec(channelId);
+    return parseSpecData(serviceSpecV1Schema, specData);
   }
 
-  async function runAction({
+  async function runServiceOperation({
     service,
-    action,
-    params,
+    type,
+    name,
+    args,
   }: {
     service: string;
-    action: string;
-    params?: Record<string, unknown>;
+    type: "query" | "action";
+    name: string;
+    args?: Record<string, unknown>;
   }) {
-    alert(`runAction: ${service}.${action}`);
-    throw new Error("runAction not implemented");
+    const workspaceSpec = readWorkspaceSpec();
+    if (!workspaceSpec) {
+      throw new Error("Workspace spec not found");
+    }
+
+    const serviceData = workspaceSpec.services?.[service];
+    if (!serviceData) {
+      throw new Error(`Service "${service}" not found`);
+    }
+
+    const channelId = serviceData.channelId;
+    const serviceSpec = await getServiceSpec(channelId);
+    if (serviceSpec.status === "invalid") {
+      throw new Error(`Invalid service spec for ${channelId}.`);
+    }
+
+    if (type === "query") {
+      return await appEngine.ubento.sdk.vertex.runQuery({
+        teamId: session.teamId,
+        serviceChannelId: channelId,
+        query: name,
+        args: args,
+      });
+    } else {
+      return await appEngine.ubento.sdk.vertex.runAction({
+        teamId: session.teamId,
+        serviceChannelId: channelId,
+        action: name,
+        args: args,
+      });
+    }
   }
 
   const persistWorkspace = debounce(async (data: BentoWorkspaceData) => {
@@ -642,6 +694,10 @@ export function createWorkspaceEngine({
     deleteBoard,
     createBoard,
     updateWorkspaceSpec,
+    setInteractionMode: async (mode: "edit" | "live") => {
+      await rpc?.egress.setInteractionMode({ mode });
+      store.setState({ mode });
+    },
 
     init: async (target: Window) => {
       rpc = createDuplexRpc<
@@ -658,8 +714,7 @@ export function createWorkspaceEngine({
           listBoards,
           boardUpdated,
           selectionUpdated,
-          runQuery,
-          runAction,
+          runServiceOperation,
         },
       });
 

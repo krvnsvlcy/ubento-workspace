@@ -1,6 +1,14 @@
 import { useCopilot } from "@/contexts/copilot";
 import { Button } from "@ubento/workspace.primitives";
-import { Box, Edit2, History, LayoutDashboard, Plus, Save, X } from "lucide-react";
+import {
+  Box,
+  Edit2,
+  History,
+  LayoutDashboard,
+  Plus,
+  Save,
+  X,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { WorkspaceEngine } from "../../../../../../engine/workspace/engine";
 import { BoardTab } from "./tabs/board";
@@ -44,11 +52,17 @@ function SelectionTab({ controller }: { controller: WorkspaceEngine }) {
     try {
       const parsed = JSON.parse(editText);
       setError(null);
-      
+
       const updatedElements = { ...elements, ...parsed };
-      const updatedSpec = { ...currentBoard.spec.data, elements: updatedElements };
-      
-      await controller.writeBoardSpec({ boardId: currentBoardId, spec: updatedSpec });
+      const updatedSpec = {
+        ...currentBoard.spec.data,
+        elements: updatedElements,
+      };
+
+      await controller.writeBoardSpec({
+        boardId: currentBoardId,
+        spec: updatedSpec,
+      });
       setIsEditing(false);
     } catch (e: any) {
       setError(e.message || "Invalid JSON");
@@ -118,13 +132,14 @@ function SelectionTab({ controller }: { controller: WorkspaceEngine }) {
         )}
       </div>
 
-      {!isEditing && selection.map(id => !elements[id]).some(b => b) && (
+      {!isEditing && selection.map((id) => !elements[id]).some((b) => b) && (
         <div className="p-2 bg-amber-500/10 text-amber-500 text-xs rounded-lg">
           Warning: Some selected IDs were not found in the board spec.
         </div>
       )}
     </div>
-  );}
+  );
+}
 
 export function ControlPanel({
   controller,
@@ -135,6 +150,7 @@ export function ControlPanel({
 }) {
   const copilot = useCopilot();
   const [activeTab, setActiveTab] = useState<string>("ai");
+  const mode = controller.useState((s) => s.mode);
 
   let content = <></>;
   let actions: Array<{
@@ -211,7 +227,18 @@ export function ControlPanel({
           ))}
         </div>
         <div className="flex gap-2">
-          <Button size="icon" shape="circle" onClick={onClose}>
+          <Button
+            variant="ghost"
+            size="icon"
+            shape="circle"
+            onClick={() => {
+              controller.setInteractionMode(mode === "live" ? "edit" : "live");
+            }}
+            title={`Switch to ${mode === "live" ? "edit" : "live"} mode`}
+          >
+            {mode === "live" ? <Edit2 size={16} /> : <LayoutDashboard size={16} />}
+          </Button>
+          <Button variant="ghost" size="icon" shape="circle" onClick={onClose}>
             <X size={16} />
           </Button>
         </div>

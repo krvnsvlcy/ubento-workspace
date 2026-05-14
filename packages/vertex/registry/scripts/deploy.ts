@@ -19,29 +19,31 @@ const tokenManager = createClientCredentialsTokenManager({
   issuerUrl: "https://auth.ubento.pro",
 });
 
-async function deploySpec(specName: string, sdk: UbentoSDK) {
-  const specFilePath = path.join(root, "src", "services", `${specName}.ts`);
+async function deploySpec(serviceName: string, sdk: UbentoSDK) {
+  const specFilePath = path.join(root, "src", "services", `${serviceName}.ts`);
   if (!fs.existsSync(specFilePath)) {
     console.error(`Error: Spec file not found at ${specFilePath}`);
     return;
   }
 
-  console.log(`🚀 Deploying spec: ${specName}`);
+  console.log(`🚀 Deploying spec: ${serviceName}`);
 
   // 1. Import the spec
   let spec: any;
   try {
     const module = await import(specFilePath);
-    spec = module.default || module.spec;
+    if (typeof module.getSpec === "function") {
+      spec = await module.getSpec();
+    } else {
+      spec = module.default || module.spec;
+    }
     if (!spec) {
       throw new Error(`No spec found in ${specFilePath}`);
     }
   } catch (err) {
-    console.error(`❌ Failed to import spec ${specName}:`, err);
+    console.error(`❌ Failed to import spec ${serviceName}:`, err);
     return;
   }
-
-  const serviceName = spec.name || specName;
 
   // 2. Find or create Service
   let serviceId: string;
@@ -63,7 +65,7 @@ async function deploySpec(specName: string, sdk: UbentoSDK) {
       const newService = await sdk.vertex.createService({
         team_id: teamId,
         name: serviceName,
-        display_name: serviceName,
+        display_name: spec.name || serviceName,
         scope: "private",
       });
       serviceId = newService.id;
@@ -74,9 +76,9 @@ async function deploySpec(specName: string, sdk: UbentoSDK) {
     return;
   }
 
-  // 3. Find or create Service Channel (default to "default")
+  // 3. Find or create Service Channel (default to "v0")
   let channelId: string;
-  const channelName = "default";
+  const channelName = "v0";
   try {
     const channelsResponse = await sdk.vertex.listServiceChannels(serviceId);
     const existingChannel = channelsResponse.data?.find(

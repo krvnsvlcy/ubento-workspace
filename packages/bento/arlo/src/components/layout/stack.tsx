@@ -84,7 +84,7 @@ function getStackStyle(
 }
 
 export const Stack = createComponent({
-  schema: stackPropsSchema,
+  props: stackPropsSchema,
   summary: "Stack component",
   render: ({ ref, props, children }) => {
     const parentLayoutContext = useLayoutContext();

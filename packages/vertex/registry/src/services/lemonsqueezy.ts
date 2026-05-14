@@ -112,32 +112,7 @@ export const spec: ServiceSpecV1 = {
       required: ["id", "type", "attributes"],
     },
   },
-  entities: {
-    order: {
-      name: "Order",
-      primaryKey: "id",
-      schema: {
-        type: "ref",
-        ref: "order",
-      },
-    },
-    store: {
-      name: "Store",
-      primaryKey: "id",
-      schema: {
-        type: "ref",
-        ref: "store",
-      },
-    },
-    customer: {
-      name: "Customer",
-      primaryKey: "id",
-      schema: {
-        type: "ref",
-        ref: "customer",
-      },
-    },
-  },
+
   queries: {
     useAuthenticatedUser: {
       name: "Get Authenticated User",

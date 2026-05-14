@@ -54,9 +54,9 @@ function ElementHandle({ id, rootRect }: { id: string; rootRect: DOMRect }) {
         width: `${rect.width}px`,
         height: `${rect.height}px`,
         outline: isSelected
-          ? "2px solid #6366f1"
+          ? "2px solid var(--color-accent)"
           : isHovered
-            ? "1px solid #6366f1"
+            ? "1px solid var(--color-accent)"
             : "none",
         backgroundColor: isSelected
           ? "rgba(99, 102, 241, 0.05)"
@@ -75,7 +75,7 @@ function ElementHandle({ id, rootRect }: { id: string; rootRect: DOMRect }) {
             position: "absolute",
             top: rect.y < 20 ? 0 : -18,
             left: -1,
-            backgroundColor: "#6366f1",
+            backgroundColor: "var(--color-accent)",
             color: "white",
             fontSize: "10px",
             fontWeight: "bold",
@@ -131,6 +131,8 @@ export function Interactor() {
         position: "absolute",
         inset: 0,
         zIndex: 9999,
+        boxShadow:
+          "inset 0 0 8px color-mix(in srgb, var(--color-accent), transparent 50%)",
       }}
     >
       {rootRect ? (

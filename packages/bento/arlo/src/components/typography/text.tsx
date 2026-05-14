@@ -33,7 +33,7 @@ export const textPropsSchema = z.object({
 export type TextProps = z.infer<typeof textPropsSchema>;
 
 export const Text = createComponent({
-  schema: textPropsSchema,
+  props: textPropsSchema,
   summary: "Text component",
   render: ({ props, ref, children }) => {
     const Tag = props.variant === "paragraph" ? "p" : "span";
@@ -80,5 +80,5 @@ export const Text = createComponent({
         {props.text || children}
       </Tag>
     );
-  }
+  },
 });

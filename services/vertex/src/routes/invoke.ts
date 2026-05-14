@@ -10,7 +10,7 @@ import { invokeHttpService, ServiceSpecV1 } from "@ubento/vertex.core";
 import { Router } from "express";
 import z from "zod";
 import { getTeamConnectionWithAuth } from "../entities/connection.js";
-import { getServiceSpec } from "../entities/service.js";
+import { getServiceSpec } from "../entities/service_channel.js";
 
 const invokeRouter: Router = Router();
 
@@ -21,8 +21,7 @@ function createInvokeRoute(operationType: "query" | "action") {
         team_id: z.string(),
       }),
       body: z.object({
-        service: z.string(),
-        channel: z.string().optional(),
+        service_channel_id: z.string(),
         [operationType]: z.string(),
         args: z.record(z.string(), z.unknown()).optional(),
       }),
@@ -38,33 +37,32 @@ function createInvokeRoute(operationType: "query" | "action") {
     }),
     async (req, res) => {
       const { team_id } = req.params;
-      const { service, channel, args } = req.body as {
-        service: string;
-        channel?: string;
+      const { service_channel_id, args } = req.body as {
+        service_channel_id: string;
         args?: Record<string, unknown>;
       };
       const operationName = req.body[operationType] as string;
 
-      const manifest: ServiceSpecV1 = await getServiceSpec(service, channel);
+      const spec: ServiceSpecV1 = await getServiceSpec(service_channel_id);
 
       const operation =
         operationType === "query"
-          ? manifest.queries?.[operationName]
-          : manifest.actions?.[operationName];
+          ? spec.queries?.[operationName]
+          : spec.actions?.[operationName];
 
       if (!operation)
         throw new ValidationError(
           `Unsupported ${operationType}: ${operationName}`,
         );
 
-      const connectionSpec = manifest.connection;
+      const connectionSpec = spec.connection;
 
       let connection;
       if (connectionSpec) {
         connection = await getTeamConnectionWithAuth(team_id, connectionSpec);
         if (!connection) {
           throw new AuthorizationError(
-            `No valid connection found for ${service}`,
+            `No valid connection found for service ${spec.name}`,
           );
         }
       }
@@ -94,7 +92,7 @@ function createInvokeRoute(operationType: "query" | "action") {
         }
       }
 
-      res.status(200).json({ data: result.data });
+      res.status(200).json(result.data);
     },
   );
 }

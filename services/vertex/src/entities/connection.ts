@@ -121,7 +121,12 @@ export async function getTeamConnectionWithAuth(
   connectionSpec: { provider: string },
 ): Promise<ConnectionWithAuth | undefined> {
   const connection = await prisma.connection.findFirst({
-    where: { provider_id: connectionSpec.provider, team_id },
+    where: {
+      provider: {
+        name: connectionSpec.provider,
+      },
+      team_id,
+    },
     include: { provider: true },
   });
   if (!connection) {
@@ -188,7 +193,7 @@ export async function createConnection({
     bareId: generateBareId(),
   });
 
-  if (!config.authStrategies || config.authStrategies.length === 0) {
+  if (!config.auth) {
     const result = await prisma.connection.create({
       data: {
         id: newConnectionId,
@@ -213,7 +218,14 @@ export async function createConnection({
     );
   }
   const authData = parsedAuthData.data;
-  const strategy = config.authStrategies.find((s) => s.type === authData.type);
+  const strategy =
+    parsedAuthData.data.type === "api_key"
+      ? config.auth?.apiKey
+      : parsedAuthData.data.type === "oauth2"
+        ? config.auth?.oauth2
+        : parsedAuthData.data.type === "basic"
+          ? config.auth?.basic
+          : null;
 
   if (!strategy) {
     throw new ValidationError(
@@ -271,14 +283,21 @@ export async function updateConnectionAuth(id: string, auth: unknown) {
 
   const config = connectionProviderConfigSchema.parse(provider.config);
 
-  if (!config.authStrategies || config.authStrategies.length === 0) {
+  if (!config.auth) {
     throw new ValidationError(
       `Connection provider ${provider.id} does not have auth`,
     );
   }
 
   const authData = connectionCredentialsSchema.parse(auth);
-  const strategy = config.authStrategies.find((s) => s.type === authData.type);
+  const strategy =
+    authData.type === "api_key"
+      ? config.auth?.apiKey
+      : authData.type === "oauth2"
+        ? config.auth?.oauth2
+        : authData.type === "basic"
+          ? config.auth?.basic
+          : null;
 
   if (!strategy) {
     throw new ValidationError(

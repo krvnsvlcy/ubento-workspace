@@ -23,28 +23,22 @@ export type BentoEngineHostRpcInterface = {
   selectionUpdated: ({ selection }: { selection: string[] }) => Promise<void>;
 
   // services
-  runQuery: ({
+  runServiceOperation: ({
     service,
-    query,
-    params,
+    type,
+    name,
+    args,
   }: {
     service: string;
-    query: string;
-    params?: Record<string, unknown>;
-  }) => Promise<unknown>;
-  runAction: ({
-    service,
-    action,
-    params,
-  }: {
-    service: string;
-    action: string;
-    params?: Record<string, unknown>;
+    type: "query" | "action";
+    name: string;
+    args?: Record<string, unknown>;
   }) => Promise<unknown>;
 };
 
 export type BentoEngineRuntimeRpcInterface = {
   setLocation: ({ location }: { location?: BentoLocation }) => Promise<void>;
+  setInteractionMode: ({ mode }: { mode: "edit" | "live" }) => Promise<void>;
 
   readBoard: ({
     boardId,

@@ -63,7 +63,7 @@ function getAlertStyle(
 }
 
 export const Alert = createComponent({
-  schema: alertPropsSchema,
+  props: alertPropsSchema,
   summary: "Alert component",
   render: ({ ref, props, children }) => {
     const layoutContext = useLayoutContext();

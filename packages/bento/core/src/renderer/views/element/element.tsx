@@ -7,14 +7,25 @@ import {
   useEnvironmentErrorComponent,
   useEnvironmentFallBackComponent,
 } from "../../states/environment";
-import { useResolvedValue } from "../../states/resolver";
+import {
+  useResolvedBindings,
+  useResolvedEventHandler,
+  useResolvedValue,
+} from "../../states/resolver";
 import { ErrorBoundary } from "./error_boundary";
 
 function FallbackElement({ ref }: { ref: RefHandler }) {
   const FallbackComponent = useEnvironmentFallBackComponent();
   if (!FallbackComponent) return <></>;
 
-  return <FallbackComponent.render ref={ref} props={{}} />;
+  return (
+    <FallbackComponent.render
+      ref={ref}
+      props={{}}
+      bindings={{}}
+      emit={() => {}}
+    />
+  );
 }
 
 function UnsafeElementView({
@@ -30,6 +41,11 @@ function UnsafeElementView({
   const Component = useEnvironmentComponent(element.component);
   const context = useBoardRenderingContext();
   const resolvedProps = useResolvedValue(element.props || {}, context);
+  const resolvedBindings = useResolvedBindings(element.bindings ?? {}, context);
+  const resolvedEventHandler = useResolvedEventHandler(
+    element.listeners ?? {},
+    context,
+  );
 
   if (!Component) {
     return <FallbackElement ref={handleRef} />;
@@ -40,7 +56,12 @@ function UnsafeElementView({
   ));
 
   return (
-    <Component.render props={resolvedProps} ref={handleRef}>
+    <Component.render
+      props={resolvedProps}
+      ref={handleRef}
+      bindings={resolvedBindings}
+      emit={resolvedEventHandler}
+    >
       {children}
     </Component.render>
   );

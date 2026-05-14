@@ -11,10 +11,12 @@ export async function listConnectionProviders({
   name,
   cursor,
   limit,
+  provider,
 }: {
   name?: string;
   cursor?: string;
   limit?: number;
+  provider?: string;
 } = {}) {
   return prismaListWithCursor(prisma.connectionProvider, {
     limit,
@@ -23,6 +25,11 @@ export async function listConnectionProviders({
     where: {
       ...(name && {
         name: { contains: name, mode: "insensitive" },
+      }),
+      ...(provider && {
+        provider: {
+          code: provider,
+        },
       }),
     },
     resolveCursor: (p) => ({ id: p.id }),

@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { PropsWithChildren } from "react";
 import { BoardSpec, BoardStyle } from "../../spec/board.js";
 import { BoardRenderingContext } from "../context/context.js";
@@ -5,6 +6,7 @@ import { BoardStateProvider } from "../context/state.js";
 import { StoreProvider } from "../context/store.js";
 import { useEnvironment } from "../renderer.js";
 import { BoardContext } from "../states/board.js";
+import { BoardErrorBoundary } from "./board_error_boundary.js";
 import { ElementView } from "./element/element.js";
 import { OverlayRenderer } from "./overlay-renderer.js";
 
@@ -51,7 +53,12 @@ export function BoardView({
   spec,
   children,
   params,
-}: PropsWithChildren<{ spec: BoardSpec; params: Record<string, unknown> }>) {
+  queryClient,
+}: PropsWithChildren<{
+  spec: BoardSpec;
+  params: Record<string, unknown>;
+  queryClient: QueryClient;
+}>) {
   const environment = useEnvironment();
   const content =
     spec.children?.map((child) => {
@@ -59,38 +66,43 @@ export function BoardView({
     }) ?? [];
 
   return (
-    <BoardContext value={{ spec, params }}>
-      <BoardRenderingContext
-        value={{
-          workspace: environment.workspaceApi,
-          session: environment.sessionApi,
-          params,
-          state: {},
-          store: {},
-        }}
-      >
-        <BoardStateProvider initialState={spec.initialState || {}}>
-          <StoreProvider store={spec.store || {}}>
-            <div
-              style={getBoardStyle({
-                ...(spec.style || {}),
-                // direction: "column",
-                // gap: 0,
-                // padding: {
-                //   top: 0,
-                //   left: 0,
-                //   right: 0,
-                //   bottom: 0,
-                // },
-              })}
-            >
-              {content}
-              {children}
-              <OverlayRenderer />
-            </div>
-          </StoreProvider>
-        </BoardStateProvider>
-      </BoardRenderingContext>
-    </BoardContext>
+    <BoardErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <BoardContext value={{ spec, params }}>
+          <BoardRenderingContext
+            value={{
+              workspace: environment.workspaceApi,
+              session: environment.sessionApi,
+              params,
+              state: {},
+              store: {},
+              setState: () => {},
+            }}
+          >
+            <BoardStateProvider initialState={spec.initialState || {}}>
+              <StoreProvider store={spec.store || {}}>
+                <div
+                  style={getBoardStyle({
+                    ...(spec.style || {}),
+                    // direction: "column",
+                    // gap: 0,
+                    // padding: {
+                    //   top: 0,
+                    //   left: 0,
+                    //   right: 0,
+                    //   bottom: 0,
+                    // },
+                  })}
+                >
+                  {content}
+                  {children}
+                  <OverlayRenderer />
+                </div>
+              </StoreProvider>
+            </BoardStateProvider>
+          </BoardRenderingContext>
+        </BoardContext>
+      </QueryClientProvider>
+    </BoardErrorBoundary>
   );
 }

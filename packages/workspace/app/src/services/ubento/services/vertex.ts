@@ -124,7 +124,7 @@ export function createUbentoVertexService({
       return useStoreEntities(connectionProviderStore, params, options);
     },
     useConnectionProviderByName: (name: string, options?: any) => {
-      return useQuery({
+      return useQuery<vertexClient.ConnectionProvider>({
         queryKey: ["connection-provider-by-name", name],
         queryFn: async () => {
           return await ubentoSdk.vertex.getProviderByName(name);

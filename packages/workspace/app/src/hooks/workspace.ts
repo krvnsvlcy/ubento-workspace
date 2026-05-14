@@ -34,12 +34,9 @@ export function useServiceWorkspaceState(
     queryFn: async () => {
       const result = await ubento.sdk.vertex.listConnections({
         team_id: session.teamId || "",
+        provider,
       });
-      const connectionsArray = result?.data || [];
-      return connectionsArray.filter(
-        (c: any) =>
-          c.provider?.name === provider || c.provider?.code === provider,
-      );
+      return result?.data || [];
     },
     enabled: !!session.teamId && !!provider,
   });

@@ -1,17 +1,12 @@
-import type { ServiceSpecV1 } from "@ubento/vertex.core";
+import { generateServiceSpecFromOpenApi } from "@ubento/vertex.core";
+import { getOpenApiSpec } from "../utils/openapi.js";
 
-export const spec: ServiceSpecV1 = {
-  spec: 1,
-  name: "supabase",
-  type: "http",
-  connection: {
-    provider: "supabase",
-    baseUrl: "https://api.supabase.com",
-  },
-  schemas: {},
-  entities: {},
-  queries: {},
-  actions: {}
-};
-
-export default spec;
+export async function getSpec() {
+  return generateServiceSpecFromOpenApi({
+    openapi: await getOpenApiSpec({ url: "https://api.supabase.com/api/v1/openapi.json" }),
+    template: {
+      name: "Supabase",
+      discover: true,
+    },
+  });
+}

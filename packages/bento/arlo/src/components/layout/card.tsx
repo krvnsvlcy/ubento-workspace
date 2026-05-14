@@ -57,7 +57,7 @@ function getCardStyle(
 }
 
 export const Card = createComponent({
-  schema: cardPropsSchema,
+  props: cardPropsSchema,
   summary: "Use this component to visualy group related items together.",
   instruction: [
     "You must provide proper padding values. The component does not provide any default padding.",

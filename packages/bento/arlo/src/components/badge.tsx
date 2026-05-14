@@ -1,4 +1,4 @@
-import { type ComponentProps, createComponent } from "@ubento/bento.core";
+import { createComponent } from "@ubento/bento.core";
 import * as React from "react";
 import { z } from "zod";
 import {
@@ -68,7 +68,7 @@ function getBadgeStyle(
 }
 
 export const Badge = createComponent({
-  schema: badgePropsSchema,
+  props: badgePropsSchema,
   summary: "Badge component",
   render: ({ ref, props, children }) => {
     const layoutContext = useLayoutContext();
@@ -77,5 +77,5 @@ export const Badge = createComponent({
         {props.label || children}
       </span>
     );
-  }
+  },
 });

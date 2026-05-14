@@ -9,6 +9,10 @@ export const env = defineEnv({
     type: "number",
     default: getServiceDefaultPort("vertex"),
   },
+  GCP_PROJECT_ID: {
+    type: "string",
+    required: true,
+  },
   DATABASE_URL: {
     type: "string",
     required: true,

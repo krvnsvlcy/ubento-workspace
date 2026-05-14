@@ -5,7 +5,6 @@ import {
   getLayoutElementStyle,
   layoutElementStyleSchema,
   useLayoutContext,
-  type LayoutContextType,
 } from "../lib/style";
 
 export const radioOptionSchema = z.object({
@@ -26,7 +25,7 @@ export const radioGroupPropsSchema = layoutElementStyleSchema.extend({
 export type RadioGroupProps = z.infer<typeof radioGroupPropsSchema>;
 
 export const RadioGroup = createComponent({
-  schema: radioGroupPropsSchema,
+  props: radioGroupPropsSchema,
   summary: "Radio group component",
   render: ({ ref, props }) => {
     const layoutContext = useLayoutContext();
@@ -45,32 +44,39 @@ export const RadioGroup = createComponent({
         {options.map((option) => {
           const isChecked = value === option.value;
           return (
-            <label key={option.value} style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              cursor: option.disabled ? "not-allowed" : "pointer",
-              fontSize: "14px",
-              opacity: option.disabled ? 0.6 : 1,
-              color: "var(--color-neutral-content)",
-            }}>
-              <div style={{
-                width: "18px",
-                height: "18px",
-                borderRadius: "50%",
-                border: `2px solid ${isChecked ? `var(${themePrefix})` : "var(--color-neutral-border-active)"}`,
+            <label
+              key={option.value}
+              style={{
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "center",
-                transition: "all 0.15s ease",
-              }}>
+                gap: "8px",
+                cursor: option.disabled ? "not-allowed" : "pointer",
+                fontSize: "14px",
+                opacity: option.disabled ? 0.6 : 1,
+                color: "var(--color-neutral-content)",
+              }}
+            >
+              <div
+                style={{
+                  width: "18px",
+                  height: "18px",
+                  borderRadius: "50%",
+                  border: `2px solid ${isChecked ? `var(${themePrefix})` : "var(--color-neutral-border-active)"}`,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  transition: "all 0.15s ease",
+                }}
+              >
                 {isChecked && (
-                  <div style={{
-                    width: "8px",
-                    height: "8px",
-                    borderRadius: "50%",
-                    background: `var(${themePrefix})`,
-                  }} />
+                  <div
+                    style={{
+                      width: "8px",
+                      height: "8px",
+                      borderRadius: "50%",
+                      background: `var(${themePrefix})`,
+                    }}
+                  />
                 )}
               </div>
               <input
@@ -79,7 +85,12 @@ export const RadioGroup = createComponent({
                 value={option.value}
                 checked={isChecked}
                 disabled={option.disabled}
-                style={{ position: "absolute", opacity: 0, width: 0, height: 0 }}
+                style={{
+                  position: "absolute",
+                  opacity: 0,
+                  width: 0,
+                  height: 0,
+                }}
                 readOnly
               />
               {option.label}
@@ -88,5 +99,5 @@ export const RadioGroup = createComponent({
         })}
       </div>
     );
-  }
+  },
 });

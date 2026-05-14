@@ -34,10 +34,10 @@ function getSkeletonStyle(
 }
 
 export const Skeleton = createComponent({
-  schema: skeletonPropsSchema,
+  props: skeletonPropsSchema,
   summary: "Skeleton component",
   render: ({ ref, props }) => {
     const layoutContext = useLayoutContext();
     return <div ref={ref} style={getSkeletonStyle(props, layoutContext)} />;
-  }
+  },
 });

@@ -6,6 +6,7 @@ import {
   StoreEntry,
 } from "../../spec/store.js";
 import { useEnvironment } from "../renderer.js";
+import { useResolvedValue } from "../states/resolver.js";
 import {
   BoardRenderingContext,
   BoardRenderingContextPatch,
@@ -21,13 +22,15 @@ export const QueryStoreEntryProvider = memo(function QueryStoreEntryProvider({
   entry: QueryStoreEntry;
 }>) {
   const environment = useEnvironment();
+  const context = useBoardRenderingContext();
+  const params = useResolvedValue(entry.params, context);
   const result = useQuery({
-    queryKey: [entry.service, name, entry.params],
+    queryKey: [entry.service, name, params],
     queryFn: () =>
       environment.serviceApi.runQuery({
         service: entry.service,
         query: entry.query,
-        params: entry.params,
+        args: params,
       }),
   });
 
@@ -44,6 +47,7 @@ export const QueryStoreEntryProvider = memo(function QueryStoreEntryProvider({
         fetchStatus: result.fetchStatus,
         isFetching: result.isFetching,
         isLoading: result.isLoading,
+        params,
       }}
     >
       {children}
@@ -65,7 +69,7 @@ export const ActionStoreEntryProvider = memo(function ActionStoreEntryProvider({
       environment.serviceApi.runAction({
         service: entry.service,
         action: entry.action,
-        params: { ...entry.params, ...variables },
+        args: { ...entry.params, ...variables },
       }),
   });
 
@@ -82,6 +86,7 @@ export const ActionStoreEntryProvider = memo(function ActionStoreEntryProvider({
         run: result.mutate,
         runAsync: result.mutateAsync,
         reset: result.reset,
+        params: entry.params,
       }}
     >
       {children}

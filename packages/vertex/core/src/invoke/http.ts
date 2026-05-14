@@ -57,6 +57,8 @@ export async function invokeHttpService({
   // 6. Resolve Body
   const bodyData = buildBody(request.body, headers);
 
+  console.log({ url: url.toString(), bodyData, request });
+
   // 7. Execute Upstream Request
   const response = await fetch(url.toString(), {
     method: request.method,

@@ -14,7 +14,7 @@ export const avatarPropsSchema = z.object({
 export type AvatarProps = z.infer<typeof avatarPropsSchema>;
 
 export const Avatar = createComponent({
-  schema: avatarPropsSchema,
+  props: avatarPropsSchema,
   summary: "Display user and entity avatar",
   render: ({ props, ref }) => {
     const { intent, size, src, alt, fallback } = props;

@@ -1,7 +1,5 @@
 import { z } from "zod";
 
-export type BentoMode = "live" | "edit" | "design" | "preview";
-
 export type ModuleReference = {
   id: string;
   versionId: string;

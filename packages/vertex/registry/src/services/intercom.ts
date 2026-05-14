@@ -9,7 +9,6 @@ export const spec: ServiceSpecV1 = {
     baseUrl: "https://api.intercom.io",
   },
   schemas: {},
-  entities: {},
   queries: {},
   actions: {},
 };

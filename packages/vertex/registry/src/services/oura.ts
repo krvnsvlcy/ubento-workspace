@@ -9,7 +9,6 @@ export const spec: ServiceSpecV1 = {
     baseUrl: "https://api.ouraring.com",
   },
   schemas: {},
-  entities: {},
   queries: {},
   actions: {}
 };

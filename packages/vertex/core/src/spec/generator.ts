@@ -1,20 +1,12 @@
 import { OperationSpec } from "./operation.js";
-import { HttpHandler } from "./protocols/http.js";
+import { HttpConnectionSpec, httpHandlerSchema } from "./protocols/http.js";
 import { ServiceSpecV1 } from "./service.js";
 
 export interface ServiceSpecTemplate {
   name: string;
   baseUrl?: string;
-  provider?: string;
+  connection: HttpConnectionSpec;
   discover?: boolean;
-  entities?: Record<
-    string,
-    {
-      name: string;
-      primaryKey: string;
-      schema: string;
-    }
-  >;
   queries?: Record<
     string,
     {
@@ -33,58 +25,128 @@ export interface ServiceSpecTemplate {
   >;
 }
 
-export function generateServiceSpec(
-  openapi: any,
-  template: ServiceSpecTemplate,
-): ServiceSpecV1 {
+/**
+ * Ensures a string is safely formatted as camelCase,
+ * stripping invalid characters from raw OpenAPI properties.
+ */
+function toCamelCase(str: string): string {
+  return str
+    .replace(/[^a-zA-Z0-9]+(.)/g, (_, chr) => chr.toUpperCase())
+    .replace(/^[A-Z]/, (chr) => chr.toLowerCase());
+}
+
+/**
+ * Specialized generator for operation names and IDs.
+ * Can be exported and tested independently.
+ */
+export function generateOperationName(
+  method: string,
+  path: string,
+  operation: any = {},
+): string {
+  // 1. Explicit operationId is the best source of truth, but must be sanitized
+  if (operation.operationId) {
+    return toCamelCase(operation.operationId);
+  }
+
+  // 2. Fallback: Map HTTP methods to standard action verbs
+  const methodActionMap: Record<string, string> = {
+    get: "get",
+    post: "create",
+    put: "update",
+    patch: "update",
+    delete: "delete",
+  };
+
+  const verb = methodActionMap[method.toLowerCase()] || method.toLowerCase();
+
+  // 3. Parse the path to generate a readable name
+  // Example: /workspaces/{workspaceId}/projects -> getWorkspacesByWorkspaceIdProjects
+  const segments = path.split("/").filter(Boolean);
+  const nameParts = [verb];
+
+  for (const segment of segments) {
+    if (segment.startsWith("{") && segment.endsWith("}")) {
+      // It's a path parameter
+      const paramName = segment.slice(1, -1);
+      nameParts.push("By", paramName);
+    } else {
+      // It's a static route segment (strip any weird chars just in case)
+      nameParts.push(segment.replace(/[^a-zA-Z0-9]/g, ""));
+    }
+  }
+
+  // Join everything into a single camelCase string
+  return toCamelCase(nameParts.join("-"));
+}
+
+export function generateServiceSpecFromOpenApi({
+  openapi,
+  template,
+}: {
+  openapi: any;
+  template: ServiceSpecTemplate;
+}): ServiceSpecV1 {
   const schemas: Record<string, any> = {};
 
-  function convertSchema(schema: any): any {
+  function sortObjectKeys<T extends Record<string, any>>(
+    obj: T | undefined,
+  ): T | undefined {
+    if (!obj) return obj;
+    const sorted: any = {};
+    for (const key of Object.keys(obj).sort()) {
+      sorted[key] = obj[key];
+    }
+    return sorted;
+  }
+
+  function processSchema(schema: any): any {
     if (!schema) return { type: "object" };
 
     if (schema.$ref) {
-      const refName = schema.$ref.replace("#/components/schemas/", "");
-      return { type: "ref", ref: refName };
+      const originalRef = schema.$ref;
+      if (originalRef.startsWith("#/components/schemas/")) {
+        const refName = schema.$ref.replace(
+          "#/components/schemas/",
+          "#/schemas/",
+        );
+        return { type: "$ref", ref: refName };
+      } else {
+        return {
+          type: "object",
+          properties: {
+            dynamicPayload: true,
+          },
+        };
+      }
     }
 
-    if (schema.allOf || schema.oneOf || schema.anyOf) {
-      // simplification: take the first one
-      const list = schema.allOf || schema.oneOf || schema.anyOf;
-      return convertSchema(list[0]);
-    }
-
-    const type = schema.type || "object";
+    const type = schema.type;
 
     if (type === "object") {
       const properties: Record<string, any> = {};
       if (schema.properties) {
         for (const [k, v] of Object.entries(schema.properties)) {
-          properties[k] = convertSchema(v);
+          properties[k] = processSchema(v);
         }
       }
-      const res: any = { type: "object", properties };
-      if (schema.required) res.required = schema.required;
-      return res;
+      return { ...schema, properties };
     }
 
     if (type === "array") {
       return {
-        type: "array",
-        items: convertSchema(schema.items),
+        ...schema,
+        items: processSchema(schema.items),
       };
     }
 
-    if (["string", "number", "integer", "boolean"].includes(type)) {
-      return { type: type === "integer" ? "number" : type };
-    }
-
-    return { type: "object" }; // fallback
+    return { ...schema };
   }
 
   // 1. Convert schemas
   if (openapi.components && openapi.components.schemas) {
     for (const [name, schema] of Object.entries(openapi.components.schemas)) {
-      schemas[name] = convertSchema(schema);
+      schemas[name] = processSchema(schema);
     }
   }
 
@@ -92,32 +154,17 @@ export function generateServiceSpec(
     spec: 1,
     name: template.name,
     type: "http",
-    connection: {
-      provider: template.provider || template.name,
-      baseUrl: template.baseUrl || openapi.servers?.[0]?.url || "",
-    },
+    connection: template.connection,
     schemas,
-    entities: {},
     queries: {},
     actions: {},
   };
-
-  // 2. Add entities
-  if (template.entities) {
-    for (const [key, entity] of Object.entries(template.entities)) {
-      spec.entities![key] = {
-        name: entity.name,
-        primaryKey: entity.primaryKey,
-        schema: { type: "ref", ref: entity.schema },
-      };
-    }
-  }
 
   function createOperation(
     path: string,
     method: string,
     tplOp: any = {},
-  ): OperationSpec<HttpHandler> | null {
+  ): OperationSpec<typeof httpHandlerSchema> | null {
     const pathObj = openapi.paths?.[path];
     if (!pathObj) return null;
 
@@ -138,7 +185,7 @@ export function generateServiceSpec(
       // Skip resolved/complex refs for now or handle them simply
       const argName = param.name;
       args[argName] = {
-        schema: convertSchema(param.schema),
+        schema: processSchema(param.schema),
         required: param.required || false,
       };
       if (param.in === "path") {
@@ -153,11 +200,11 @@ export function generateServiceSpec(
       const jsonContent = op.requestBody.content["application/json"];
       if (jsonContent && jsonContent.schema) {
         args["data"] = {
-          schema: convertSchema(jsonContent.schema),
+          schema: processSchema(jsonContent.schema),
           required: op.requestBody.required || false,
         };
         bodyMap = {
-          type: "json",
+          type: "json" as const,
           data: { $resolve: "args.data" },
         };
       }
@@ -167,12 +214,13 @@ export function generateServiceSpec(
     if (op.responses && op.responses["200"] && op.responses["200"].content) {
       const jsonContent = op.responses["200"].content["application/json"];
       if (jsonContent && jsonContent.schema) {
-        resSchema = convertSchema(jsonContent.schema);
+        resSchema = processSchema(jsonContent.schema);
       }
     }
 
     return {
-      name: tplOp.name || op.summary || op.operationId || `${method} ${path}`,
+      // Use the injected template name, or fall back to the new generator
+      name: tplOp.name || generateOperationName(method, path, op),
       schema: resSchema,
       args,
       handler: {
@@ -223,11 +271,15 @@ export function generateServiceSpec(
           continue;
         if (mappedPaths.has(`${method}:${path}`)) continue;
 
-        const opId =
-          (methods as any)[method].operationId ||
-          `${method}${path.replace(/[\/\{\}]/g, "_")}`;
         const op = createOperation(path, method);
         if (op) {
+          // Generate a safe, deterministic ID for discovered routes
+          const opId = generateOperationName(
+            method,
+            path,
+            (methods as any)[method],
+          );
+
           if (method === "get") {
             spec.queries![opId] = op;
           } else {
@@ -237,6 +289,10 @@ export function generateServiceSpec(
       }
     }
   }
+
+  spec.schemas = sortObjectKeys(spec.schemas);
+  spec.queries = sortObjectKeys(spec.queries);
+  spec.actions = sortObjectKeys(spec.actions);
 
   return spec;
 }

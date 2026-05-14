@@ -1,4 +1,4 @@
-import { type ComponentProps, createComponent } from "@ubento/bento.core";
+import { createComponent } from "@ubento/bento.core";
 import * as React from "react";
 import { z } from "zod";
 import {
@@ -97,9 +97,9 @@ function getButtonStyle(
 }
 
 export const Button = createComponent({
-  schema: buttonPropsSchema,
+  props: buttonPropsSchema,
   summary: "Button component",
-  render: ({ ref, props, children }) => {
+  render: ({ ref, props, children, emit }) => {
     const layoutContext = useLayoutContext();
     const [isHovered, setIsHovered] = React.useState(false);
     const [isActive, setIsActive] = React.useState(false);
@@ -127,9 +127,12 @@ export const Button = createComponent({
         }}
         onMouseDown={() => !props.disabled && setIsActive(true)}
         onMouseUp={() => setIsActive(false)}
+        onClick={() => {
+          emit("click", {});
+        }}
       >
         {props.label || children}
       </button>
     );
-  }
+  },
 });

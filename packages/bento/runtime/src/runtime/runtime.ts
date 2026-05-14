@@ -20,6 +20,7 @@ export type BentoRuntimeState = {
   user: BentoUserData;
   location?: BentoLocation;
   theme?: { css: string };
+  mode?: "edit" | "live";
 };
 
 export function createBentoRuntime({
@@ -90,6 +91,9 @@ export function createBentoRuntime({
     setLocation: async ({ location }) => {
       controller.setState({ location });
     },
+    setInteractionMode: async ({ mode }) => {
+      controller.setState({ mode });
+    },
     readBoard: async ({ boardId }) => {
       return boardStore.getCached(boardId);
     },
@@ -120,7 +124,9 @@ export function createBentoRuntime({
         if (comp) {
           result[name] = {
             name,
-            schema: comp.schema.toJSONSchema(),
+            props: comp.props.toJSONSchema(),
+            events: comp.events?.toJSONSchema(),
+            bindings: comp.bindings?.toJSONSchema(),
             summary: comp.summary,
             instruction: comp.instruction,
           };
@@ -130,10 +136,14 @@ export function createBentoRuntime({
     },
     getCatalog: async (args) => {
       return Object.fromEntries(
-        Object.entries(components || {}).map(([key, value]) => [
+        Object.entries(components || {}).map(([key, comp]) => [
           key,
           {
-            schema: value.schema.toJSONSchema(),
+            props: comp.props.toJSONSchema(),
+            events: comp.events?.toJSONSchema(),
+            bindings: comp.bindings?.toJSONSchema(),
+            summary: comp.summary,
+            instruction: comp.instruction,
           },
         ]),
       );
@@ -143,10 +153,20 @@ export function createBentoRuntime({
   const environment: Environment = createEnvironment({
     serviceApi: {
       runQuery: async (args) => {
-        return rpc.egress.runQuery(args);
+        return rpc.egress.runServiceOperation({
+          service: args.service,
+          type: "query",
+          name: args.query,
+          args: args.args,
+        });
       },
       runAction: async (args) => {
-        return rpc.egress.runAction(args);
+        return rpc.egress.runServiceOperation({
+          service: args.service,
+          type: "action",
+          name: args.action,
+          args: args.args,
+        });
       },
     },
     sessionApi: {

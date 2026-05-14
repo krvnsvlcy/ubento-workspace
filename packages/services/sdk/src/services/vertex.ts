@@ -107,6 +107,7 @@ export class VertexService {
       team_id?: string;
       limit?: number;
       cursor?: string;
+      provider?: string;
     } = {},
   ) {
     const result = await this.vertexClient.get("/vertex/connections", {
@@ -395,6 +396,53 @@ export class VertexService {
         body: spec as any,
       },
     );
+    return extractResponseData(result, true);
+  }
+
+  async runQuery({
+    teamId,
+    serviceChannelId,
+    query,
+    args = {},
+  }: {
+    teamId: string;
+    serviceChannelId: string;
+    query: string;
+    args?: Record<string, any>;
+  }) {
+    const result = await this.vertexClient.post("/vertex/{team_id}/query", {
+      params: {
+        path: { team_id: teamId },
+      },
+      body: {
+        service_channel_id: serviceChannelId,
+        query,
+        args: args as any,
+      },
+    });
+    return extractResponseData(result, true);
+  }
+  async runAction({
+    teamId,
+    serviceChannelId,
+    action,
+    args = {},
+  }: {
+    teamId: string;
+    serviceChannelId: string;
+    action: string;
+    args?: Record<string, any>;
+  }) {
+    const result = await this.vertexClient.post("/vertex/{team_id}/action", {
+      params: {
+        path: { team_id: teamId },
+      },
+      body: {
+        service_channel_id: serviceChannelId,
+        action,
+        args: args as any,
+      },
+    });
     return extractResponseData(result, true);
   }
 }

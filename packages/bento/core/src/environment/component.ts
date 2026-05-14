@@ -4,33 +4,65 @@ import { createStore as createZustandStore } from "zustand";
 
 export type RefHandler = (dom: HTMLElement | null) => (() => void) | void;
 
-export type ComponentProps<P = {}> = {
-  props: P;
+export type ComponentProps<
+  TProps extends z.ZodObject<any> = z.ZodObject<any>,
+  TEvents extends z.ZodObject<any> = z.ZodObject<any>,
+  TBindings extends z.ZodObject<any> = z.ZodObject<any>,
+> = {
+  props: z.infer<TProps>;
+  // 1. Extract the inferred type of TEvents before getting keys and payloads
+  emit: <E extends keyof z.infer<TEvents>>(
+    event: E,
+    payload: z.infer<TEvents>[E],
+  ) => void;
+  // 2. Extract the inferred type of TBindings for the two-way sync tuple
+  bindings: {
+    [K in keyof z.infer<TBindings>]: [
+      value: z.infer<TBindings>[K],
+      setValue: (value: z.infer<TBindings>[K]) => void,
+    ];
+  };
   ref: RefHandler;
   children?: React.ReactNode;
 };
 
-export type Component<S extends z.ZodType<any> = z.ZodAny> = {
-  schema: S;
-  render: React.ComponentType<ComponentProps<z.infer<S>>>;
+export type Component<
+  TProps extends z.ZodObject<any> = z.ZodObject<any>,
+  TEvents extends z.ZodObject<any> = z.ZodObject<any>,
+  TBindings extends z.ZodObject<any> = z.ZodObject<any>,
+> = {
+  props: TProps;
+  events?: TEvents;
+  bindings?: TBindings;
+  render: React.ComponentType<ComponentProps<TProps, TEvents, TBindings>>;
   summary: string;
   instruction?: string;
 };
 
-export function createComponent<S extends z.ZodType<any>>({
-  schema,
+export function createComponent<
+  TProps extends z.ZodObject<any>,
+  TEvents extends z.ZodObject<any> = z.ZodObject<any>,
+  TBindings extends z.ZodObject<any> = z.ZodObject<any>,
+>({
+  props,
+  events,
+  bindings,
   render,
   instruction,
   summary,
 }: {
-  schema: S;
+  props: TProps;
+  events?: TEvents;
+  bindings?: TBindings;
   summary: string;
-  render: React.ComponentType<ComponentProps<z.infer<S>>>;
+  render: React.ComponentType<ComponentProps<TProps, TEvents, TBindings>>;
   instruction?: string;
-}): Component<S> {
+}): Component<TProps, TEvents, TBindings> {
   return {
     summary,
-    schema,
+    props,
+    events,
+    bindings,
     render,
     instruction,
   };

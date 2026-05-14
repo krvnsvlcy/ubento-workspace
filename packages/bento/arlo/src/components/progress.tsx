@@ -5,7 +5,6 @@ import {
   getLayoutElementStyle,
   layoutElementStyleSchema,
   useLayoutContext,
-  type LayoutContextType,
 } from "../lib/style";
 
 export const progressPropsSchema = layoutElementStyleSchema.extend({
@@ -18,7 +17,7 @@ export const progressPropsSchema = layoutElementStyleSchema.extend({
 export type ProgressProps = z.infer<typeof progressPropsSchema>;
 
 export const Progress = createComponent({
-  schema: progressPropsSchema,
+  props: progressPropsSchema,
   summary: "Progress component",
   render: ({ ref, props }) => {
     const layoutContext = useLayoutContext();
@@ -35,7 +34,10 @@ export const Progress = createComponent({
       background: `var(${themePrefix}-surface)`,
     };
 
-    const percentage = value !== undefined ? Math.min(100, Math.max(0, (value / max) * 100)) : null;
+    const percentage =
+      value !== undefined
+        ? Math.min(100, Math.max(0, (value / max) * 100))
+        : null;
 
     const indicatorStyle: React.CSSProperties = {
       height: "100%",
@@ -43,7 +45,10 @@ export const Progress = createComponent({
       flex: 1,
       background: `var(${themePrefix})`,
       transition: "transform 0.2s ease-in-out",
-      transform: percentage !== null ? `translateX(-${100 - percentage}%)` : "translateX(-100%)",
+      transform:
+        percentage !== null
+          ? `translateX(-${100 - percentage}%)`
+          : "translateX(-100%)",
     };
 
     return (
@@ -58,5 +63,5 @@ export const Progress = createComponent({
         <div style={indicatorStyle} />
       </div>
     );
-  }
+  },
 });

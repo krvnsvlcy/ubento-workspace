@@ -11,7 +11,9 @@ import {
 export const inputPropsSchema = layoutElementStyleSchema.extend({
   value: z.string().optional(),
   placeholder: z.string().optional(),
-  type: z.enum(["text", "password", "email", "number", "tel", "url"]).default("text"),
+  type: z
+    .enum(["text", "password", "email", "number", "tel", "url"])
+    .default("text"),
   intent: z
     .enum(["accent", "neutral", "success", "warning", "info", "destructive"])
     .default("neutral"),
@@ -25,7 +27,7 @@ function getInputStyle(
   props: InputProps,
   layoutContext: LayoutContextType,
   isFocused: boolean,
-  isHovered: boolean
+  isHovered: boolean,
 ): React.CSSProperties {
   const { intent, size, disabled } = props;
   const themePrefix = `--color-${intent}`;
@@ -62,7 +64,7 @@ function getInputStyle(
 }
 
 export const Input = createComponent({
-  schema: inputPropsSchema,
+  props: inputPropsSchema,
   summary: "Input component",
   render: ({ ref, props }) => {
     const layoutContext = useLayoutContext();
@@ -84,5 +86,5 @@ export const Input = createComponent({
         style={getInputStyle(props, layoutContext, isFocused, isHovered)}
       />
     );
-  }
+  },
 });

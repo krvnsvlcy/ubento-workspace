@@ -34,7 +34,7 @@ function getSeparatorStyle(
 }
 
 export const Separator = createComponent({
-  schema: separatorPropsSchema,
+  props: separatorPropsSchema,
   summary: "Separator component",
   render: ({ ref, props }) => {
     const layoutContext = useLayoutContext();
@@ -46,5 +46,5 @@ export const Separator = createComponent({
         style={getSeparatorStyle(props, layoutContext)}
       />
     );
-  }
+  },
 });

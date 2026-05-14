@@ -75,10 +75,11 @@ export const createServicesToolkit = ({
         };
       }
 
+      const summarized = summarizeServiceSpec(parsed.data);
+
       return {
-        content: [
-          { type: "text", text: renderYaml(summarizeServiceSpec(parsed.data)) },
-        ],
+        content: [{ type: "text", text: renderYaml(summarized) }],
+        structuredContent: summarized,
       };
     },
   };
@@ -127,6 +128,7 @@ export const createServicesToolkit = ({
 
       return {
         content: [{ type: "text", text: renderYaml(result) }],
+        structuredContent: result,
       };
     },
   };
@@ -175,6 +177,7 @@ export const createServicesToolkit = ({
 
       return {
         content: [{ type: "text", text: renderYaml(result) }],
+        structuredContent: result,
       };
     },
   };
@@ -223,6 +226,7 @@ export const createServicesToolkit = ({
 
       return {
         content: [{ type: "text", text: renderYaml(result) }],
+        structuredContent: result,
       };
     },
   };

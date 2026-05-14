@@ -9,6 +9,7 @@ interface DetailsBodyProps {
   isLoadingSpec: boolean;
   specData: any;
   service: any;
+  searchQuery: string;
 }
 
 export function DetailsBody({
@@ -18,7 +19,32 @@ export function DetailsBody({
   isLoadingSpec,
   specData,
   service,
+  searchQuery,
 }: DetailsBodyProps) {
+  const filteredQueries = specData?.queries
+    ? Object.entries(specData.queries).reduce((acc, [key, query]: [string, any]) => {
+        if (
+          key.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          query.name?.toLowerCase().includes(searchQuery.toLowerCase())
+        ) {
+          acc[key] = query;
+        }
+        return acc;
+      }, {} as Record<string, any>)
+    : {};
+
+  const filteredActions = specData?.actions
+    ? Object.entries(specData.actions).reduce((acc, [key, action]: [string, any]) => {
+        if (
+          key.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          action.name?.toLowerCase().includes(searchQuery.toLowerCase())
+        ) {
+          acc[key] = action;
+        }
+        return acc;
+      }, {} as Record<string, any>)
+    : {};
+
   return (
     <>
 
@@ -29,18 +55,20 @@ export function DetailsBody({
         </div>
       ) : (
         <div className="space-y-8">
-          <AboutSection description={specData?.description || service.description} />
+          {(specData?.description || service.description) && (
+            <AboutSection description={specData?.description || service.description} />
+          )}
 
           {specData?.entities && Object.keys(specData.entities).length > 0 && (
             <EntitiesSection entities={specData.entities} />
           )}
 
-          {specData?.queries && Object.keys(specData.queries).length > 0 && (
-            <QueriesSection queries={specData.queries} />
+          {Object.keys(filteredQueries).length > 0 && (
+            <QueriesSection queries={filteredQueries} />
           )}
 
-          {specData?.actions && Object.keys(specData.actions).length > 0 && (
-            <ActionsSection actions={specData.actions} />
+          {Object.keys(filteredActions).length > 0 && (
+            <ActionsSection actions={filteredActions} />
           )}
 
           {!specData && !isLoadingSpec && (

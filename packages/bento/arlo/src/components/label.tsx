@@ -40,7 +40,7 @@ function getLabelStyle(
 }
 
 export const Label = createComponent({
-  schema: labelPropsSchema,
+  props: labelPropsSchema,
   summary: "Label component",
   render: ({ ref, props, children }) => {
     const layoutContext = useLayoutContext();
@@ -53,5 +53,5 @@ export const Label = createComponent({
         {props.text || children}
       </label>
     );
-  }
+  },
 });

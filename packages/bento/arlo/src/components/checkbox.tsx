@@ -21,7 +21,7 @@ function getCheckboxStyle(
   props: CheckboxProps,
   layoutContext: LayoutContextType,
   isFocused: boolean,
-  isHovered: boolean
+  isHovered: boolean,
 ): React.CSSProperties {
   const { intent, disabled, checked } = props;
   const themePrefix = `--color-${intent}`;
@@ -55,7 +55,7 @@ function getCheckboxStyle(
 }
 
 export const Checkbox = createComponent({
-  schema: checkboxPropsSchema,
+  props: checkboxPropsSchema,
   summary: "Checkbox component",
   render: ({ ref, props }) => {
     const layoutContext = useLayoutContext();
@@ -75,5 +75,5 @@ export const Checkbox = createComponent({
         style={getCheckboxStyle(props, layoutContext, isFocused, isHovered)}
       />
     );
-  }
+  },
 });

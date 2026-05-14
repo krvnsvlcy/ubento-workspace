@@ -2,19 +2,19 @@ import { WorkspaceEngine } from "@/engine/workspace/engine";
 import { vertexClient } from "@ubento/services.sdk";
 import { ServiceSpecV1 } from "@ubento/vertex.core";
 import { Button, Heading, Text } from "@ubento/workspace.primitives";
-import { ArrowLeft, Server } from "lucide-react";
+import { Search } from "lucide-react";
 import { InstallControl } from "./install_control";
 
 export function DetailsHeader({
-  onBack,
   service,
   specData,
   workspaceEngine,
   activeChannelId,
   channels,
   setActiveChannelId,
+  searchQuery,
+  onSearchChange,
 }: {
-  onBack: () => void;
   service: vertexClient.Service;
   specData?: ServiceSpecV1;
   isSpecLoading: boolean;
@@ -25,25 +25,13 @@ export function DetailsHeader({
   activeChannelId: string | null;
   channels?: any[];
   setActiveChannelId: (id: string) => void;
+  searchQuery: string;
+  onSearchChange: (value: string) => void;
 }) {
   return (
     <div className="space-y-4">
-      {/* Back Button */}
-      <Button onClick={onBack} variant="ghost">
-        <ArrowLeft size={16} />
-        Back to marketplace
-      </Button>
-
       {/* Header Content */}
       <div className="flex items-start gap-4">
-        {/* <Button onClick={onBack} variant="ghost" size="icon">
-          <ArrowLeft size={16} />
-        </Button> */}
-        {/* Service Icon */}
-        <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-lg border border-neutral-border/50 text-neutral-content backdrop-blur-sm">
-          <Server size={32} />
-        </div>
-
         {/* Service Info */}
         <div className="flex-1 space-y-1">
           <div className="flex items-center gap-2">
@@ -64,9 +52,6 @@ export function DetailsHeader({
               </select>
             )}
           </div>
-          <Text tone="subtle">
-            {specData?.description || service.description}
-          </Text>
         </div>
 
         {/* Actions Column */}
@@ -78,6 +63,18 @@ export function DetailsHeader({
             activeChannelId={activeChannelId}
           />
         </div>
+      </div>
+
+      {/* Search Bar */}
+      <div className="relative">
+        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-content-muted" />
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => onSearchChange(e.target.value)}
+          placeholder="Filter operations..."
+          className="w-full pl-10 pr-4 py-2 bg-neutral-surface/50 border border-neutral-border/30 rounded-lg text-sm text-neutral-content placeholder-neutral-content-muted focus:outline-none focus:ring-1 focus:ring-accent transition-colors"
+        />
       </div>
     </div>
   );

@@ -29,7 +29,7 @@ export const headingPropsSchema = z.object({
 export type HeadingProps = z.infer<typeof headingPropsSchema>;
 
 export const Heading = createComponent({
-  schema: headingPropsSchema,
+  props: headingPropsSchema,
   summary: "Heading component",
   render: ({ props, ref, children }) => {
     const Tag = props.level;
@@ -55,5 +55,5 @@ export const Heading = createComponent({
         {props.text || children}
       </Tag>
     );
-  }
+  },
 });

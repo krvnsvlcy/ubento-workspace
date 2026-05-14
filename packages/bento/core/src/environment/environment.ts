@@ -19,20 +19,20 @@ export type ServiceApi = {
   runQuery: ({
     service,
     query,
-    params,
+    args,
   }: {
     service: string;
     query: string;
-    params?: Record<string, unknown>;
+    args?: Record<string, unknown>;
   }) => Promise<unknown>;
   runAction: ({
     service,
     action,
-    params,
+    args,
   }: {
     service: string;
     action: string;
-    params?: Record<string, unknown>;
+    args?: Record<string, unknown>;
   }) => Promise<unknown>;
 };
 

@@ -17,9 +17,9 @@
     "@notionhq/client": "^2.2.15",
     "@supabase/supabase-js": "^2.46.1",
     "@ubento/bento.service": "workspace:*",
-    "@ubento/vertex.core": "workspace:*",
     "@ubento/fabric": "workspace:*",
     "@ubento/services.sdk": "workspace:*",
+    "@ubento/vertex.core": "workspace:*",
     "@vercel/client": "^17.4.0",
     "airtable": "^0.12.2",
     "aws-sdk": "^2.1691.0",
@@ -39,6 +39,7 @@
     "spotify-web-api-node": "^5.0.2",
     "stripe": "^17.4.0",
     "twitter-api-v2": "^1.18.1",
+    "yaml": "^2.8.4",
     "zod": "^3.23.8"
   },
   "devDependencies": {

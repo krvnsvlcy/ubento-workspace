@@ -17,7 +17,9 @@ export const textareaPropsSchema = layoutElementStyleSchema.extend({
   disabled: z.boolean().optional(),
   readOnly: z.boolean().optional(),
   rows: z.number().default(3),
-  resize: z.enum(["none", "vertical", "horizontal", "both"]).default("vertical"),
+  resize: z
+    .enum(["none", "vertical", "horizontal", "both"])
+    .default("vertical"),
 });
 export type TextareaProps = z.infer<typeof textareaPropsSchema>;
 
@@ -25,7 +27,7 @@ function getTextareaStyle(
   props: TextareaProps,
   layoutContext: LayoutContextType,
   isFocused: boolean,
-  isHovered: boolean
+  isHovered: boolean,
 ): React.CSSProperties {
   const { intent, disabled, resize } = props;
   const themePrefix = `--color-${intent}`;
@@ -59,7 +61,7 @@ function getTextareaStyle(
 }
 
 export const Textarea = createComponent({
-  schema: textareaPropsSchema,
+  props: textareaPropsSchema,
   summary: "Textarea component",
   render: ({ ref, props }) => {
     const layoutContext = useLayoutContext();
@@ -81,5 +83,5 @@ export const Textarea = createComponent({
         style={getTextareaStyle(props, layoutContext, isFocused, isHovered)}
       />
     );
-  }
+  },
 });

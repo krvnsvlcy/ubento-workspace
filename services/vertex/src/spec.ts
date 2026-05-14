@@ -719,6 +719,92 @@ export const spec = {
         },
       },
     },
+    "/vertex/{team_id}/query": {
+      parameters: [
+        {
+          name: "team_id",
+          in: "path",
+          schema: { type: "string" },
+          required: true,
+        },
+      ],
+      post: {
+        summary: "Invoke a query",
+        requestBody: {
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  service_channel_id: { type: "string" },
+                  query: { type: "string" },
+                  args: { type: "object", nullable: true },
+                },
+                required: ["service_channel_id", "query"],
+              },
+            },
+          },
+        },
+        responses: {
+          "200": {
+            description: "The result of the query",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    data: { type: "object" },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    "/vertex/{team_id}/action": {
+      parameters: [
+        {
+          name: "team_id",
+          in: "path",
+          schema: { type: "string" },
+          required: true,
+        },
+      ],
+      post: {
+        summary: "Invoke an action",
+        requestBody: {
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  service_channel_id: { type: "string" },
+                  action: { type: "string" },
+                  args: { type: "object", nullable: true },
+                },
+                required: ["service_channel_id", "action"],
+              },
+            },
+          },
+        },
+        responses: {
+          "200": {
+            description: "The result of the action",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    data: { type: "object" },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   },
   components: {
     schemas: {

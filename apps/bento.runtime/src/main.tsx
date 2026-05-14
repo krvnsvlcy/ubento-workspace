@@ -11,6 +11,7 @@ import {
   Input,
   Label,
   LayoutContext,
+  ObjectViewer,
   Progress,
   RadioGroup,
   Select,
@@ -19,6 +20,7 @@ import {
   Slider,
   Stack,
   Switch,
+  Table,
   Tabs,
   Text,
   Textarea,
@@ -67,6 +69,8 @@ while (!connected) {
         Tabs,
         Text,
         Textarea,
+        ObjectViewer,
+        Table,
       } as unknown as Record<string, Component>,
     });
     createRoot(document.getElementById("root")!).render(

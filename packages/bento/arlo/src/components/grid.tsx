@@ -1,4 +1,4 @@
-import { edgesSpec, createComponent } from "@ubento/bento.core";
+import { createComponent, edgesSpec } from "@ubento/bento.core";
 import * as React from "react";
 import { z } from "zod";
 import {
@@ -29,8 +29,17 @@ function getGridStyle(
   props: GridProps,
   layoutContext: LayoutContextType,
 ): React.CSSProperties {
-  const { columns, rows, gap, padding, align, justify, intent, border, radius } =
-    props;
+  const {
+    columns,
+    rows,
+    gap,
+    padding,
+    align,
+    justify,
+    intent,
+    border,
+    radius,
+  } = props;
   const themePrefix = intent ? `--color-${intent}` : null;
 
   return {
@@ -56,13 +65,15 @@ function getGridStyle(
     ),
     background: themePrefix ? `var(${themePrefix}-surface)` : undefined,
     border:
-      border && themePrefix ? `1px solid var(${themePrefix}-border)` : undefined,
+      border && themePrefix
+        ? `1px solid var(${themePrefix}-border)`
+        : undefined,
     borderRadius: radius ? `${radius}px` : undefined,
   };
 }
 
 export const Grid = createComponent({
-  schema: gridPropsSchema,
+  props: gridPropsSchema,
   summary: "Grid component",
   render: ({ ref, props, children }) => {
     const layoutContext = useLayoutContext();
@@ -71,5 +82,5 @@ export const Grid = createComponent({
         <LayoutContext.Provider value="grid">{children}</LayoutContext.Provider>
       </div>
     );
-  }
+  },
 });

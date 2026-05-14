@@ -1042,6 +1042,106 @@ export interface paths {
         };
         trace?: never;
     };
+    "/vertex/{team_id}/query": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                team_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Invoke a query */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    team_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        service_channel_id: string;
+                        query: string;
+                        args?: Record<string, never> | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description The result of the query */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data?: Record<string, never>;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/vertex/{team_id}/action": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                team_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Invoke an action */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    team_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        service_channel_id: string;
+                        action: string;
+                        args?: Record<string, never> | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description The result of the action */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data?: Record<string, never>;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {

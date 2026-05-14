@@ -21,7 +21,14 @@ export class ErrorBoundary extends React.Component<{
     const ErrorComponent = this.props.errorComponent;
     if (this.state.hasError) {
       if (ErrorComponent) {
-        return <ErrorComponent.render props={{}} ref={this.props.refHandler} />;
+        return (
+          <ErrorComponent.render
+            props={{}}
+            ref={this.props.refHandler}
+            bindings={{}}
+            emit={() => {}}
+          />
+        );
       }
       return (
         <div ref={this.props.refHandler}>

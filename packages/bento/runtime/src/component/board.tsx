@@ -1,6 +1,7 @@
 import { BoardView, Interactor } from "@ubento/bento.core";
 import { useStoreEntity } from "@ubento/fabric";
 import { AlertCircle, Loader2 } from "lucide-react";
+import { queryClient } from "../query";
 import { BentoRuntime } from "../runtime/runtime";
 
 export function BentoBoardView({
@@ -12,6 +13,7 @@ export function BentoBoardView({
   boardId: string;
   params: Record<string, unknown>;
 }) {
+  const mode = runtime.useState((s) => s.mode);
   const {
     data: board,
     status,
@@ -84,10 +86,16 @@ export function BentoBoardView({
     );
   }
 
+  const isEditMode = mode === "edit";
+
   return (
     <div className="h-full overflow-y-auto bg-background">
-      <BoardView spec={board.spec.data} params={params}>
-        <Interactor />
+      <BoardView
+        queryClient={queryClient}
+        spec={board.spec.data}
+        params={params}
+      >
+        {isEditMode ? <Interactor /> : <></>}
       </BoardView>
     </div>
   );

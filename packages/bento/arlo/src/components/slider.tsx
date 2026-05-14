@@ -5,7 +5,6 @@ import {
   getLayoutElementStyle,
   layoutElementStyleSchema,
   useLayoutContext,
-  type LayoutContextType,
 } from "../lib/style";
 
 export const sliderPropsSchema = layoutElementStyleSchema.extend({
@@ -21,7 +20,7 @@ export const sliderPropsSchema = layoutElementStyleSchema.extend({
 export type SliderProps = z.infer<typeof sliderPropsSchema>;
 
 export const Slider = createComponent({
-  schema: sliderPropsSchema,
+  props: sliderPropsSchema,
   summary: "Slider component",
   render: ({ ref, props }) => {
     const layoutContext = useLayoutContext();
@@ -43,20 +42,24 @@ export const Slider = createComponent({
 
     return (
       <div ref={ref} style={containerStyle}>
-        <div style={{
-          position: "absolute",
-          width: "100%",
-          height: "6px",
-          background: `var(${themePrefix}-surface-active)`,
-          borderRadius: "9999px",
-        }} />
-        <div style={{
-          position: "absolute",
-          width: `${percentage}%`,
-          height: "6px",
-          background: `var(${themePrefix})`,
-          borderRadius: "9999px",
-        }} />
+        <div
+          style={{
+            position: "absolute",
+            width: "100%",
+            height: "6px",
+            background: `var(${themePrefix}-surface-active)`,
+            borderRadius: "9999px",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            width: `${percentage}%`,
+            height: "6px",
+            background: `var(${themePrefix})`,
+            borderRadius: "9999px",
+          }}
+        />
         <input
           type="range"
           min={min}
@@ -74,19 +77,21 @@ export const Slider = createComponent({
           }}
           readOnly
         />
-        <div style={{
-          position: "absolute",
-          left: `calc(${percentage}% - 10px)`,
-          width: "20px",
-          height: "20px",
-          borderRadius: "9999px",
-          background: "var(--color-background)",
-          border: `2px solid var(${themePrefix})`,
-          boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-          pointerEvents: "none",
-          zIndex: 1,
-        }} />
+        <div
+          style={{
+            position: "absolute",
+            left: `calc(${percentage}% - 10px)`,
+            width: "20px",
+            height: "20px",
+            borderRadius: "9999px",
+            background: "var(--color-background)",
+            border: `2px solid var(${themePrefix})`,
+            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+            pointerEvents: "none",
+            zIndex: 1,
+          }}
+        />
       </div>
     );
-  }
+  },
 });

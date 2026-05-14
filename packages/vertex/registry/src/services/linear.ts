@@ -67,32 +67,7 @@ export const spec: ServiceSpecV1 = {
       required: ["id", "name", "key"],
     },
   },
-  entities: {
-    issue: {
-      name: "Issue",
-      primaryKey: "id",
-      schema: {
-        type: "ref",
-        ref: "issue",
-      },
-    },
-    project: {
-      name: "Project",
-      primaryKey: "id",
-      schema: {
-        type: "ref",
-        ref: "project",
-      },
-    },
-    team: {
-      name: "Team",
-      primaryKey: "id",
-      schema: {
-        type: "ref",
-        ref: "team",
-      },
-    },
-  },
+
   queries: {},
   actions: {},
 };
