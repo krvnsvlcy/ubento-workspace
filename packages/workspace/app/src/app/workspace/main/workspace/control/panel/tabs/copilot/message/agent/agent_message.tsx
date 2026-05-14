@@ -1,41 +1,71 @@
+import { useUbentoEngine } from "@/engine/app/engine";
 import { AgentActionData, AgentMessageData } from "@ubento/workspace.agent";
 import { Check, Copy, Loader2, Sparkles, Terminal, X } from "lucide-react";
-import { useState } from "react";
-import { useUbentoEngine } from "@/engine/app/engine";
+import { MouseEvent, useState } from "react";
 import { CopilotMessage } from "../message";
 
 function ActionLine({ action }: { action: AgentActionData }) {
   const [isOpen, setIsOpen] = useState(action.status === "pending");
+  const [copied, setCopied] = useState(false);
   const hasDetails = !!(action.input || action.output);
 
+  const handleCopy = (e: MouseEvent) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(JSON.stringify(action, null, 2));
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
-    <button
-      onClick={() => hasDetails && setIsOpen(!isOpen)}
-      className={`flex items-center gap-1 py-1 text-[12px] transition-colors`}
-    >
-      <div className="flex h-5 w-5 items-center justify-center rounded-lg bg-primary-500/10 text-primary-400">
-        {action.status === "completed" ? (
+    <div className="flex items-center gap-1 text-[12px]">
+      <button
+        onClick={() => hasDetails && setIsOpen(!isOpen)}
+        className="flex items-center gap-1 py-1 transition-colors"
+      >
+        <div className="flex h-5 w-5 items-center justify-center rounded-lg bg-primary-500/10 text-primary-400">
+          {action.status === "completed" ? (
+            <Check size={12} className="text-green-400" />
+          ) : action.status === "pending" ? (
+            <Loader2 size={12} className="animate-spin" />
+          ) : action.status === "failed" ? (
+            <X size={12} className="text-red-400" />
+          ) : (
+            <Terminal size={12} />
+          )}
+        </div>
+        <div className="flex flex-col items-start text-left">{action.tool}</div>
+      </button>
+
+      <button
+        onClick={handleCopy}
+        className="ml-1 flex items-center justify-center rounded p-1 hover:bg-surface-active transition-colors text-content-muted hover:text-content"
+        title="Copy action data"
+      >
+        {copied ? (
           <Check size={12} className="text-green-400" />
-        ) : action.status === "pending" ? (
-          <Loader2 size={12} className="animate-spin" />
-        ) : action.status === "failed" ? (
-          <X size={12} className="text-red-400" />
         ) : (
-          <Terminal size={12} />
+          <Copy size={12} />
         )}
-      </div>
-      <div className="flex flex-col items-start text-left">{action.tool}</div>
-    </button>
+      </button>
+    </div>
   );
 }
 function TaskActionView({ action }: { action: AgentActionData }) {
   const appEngine = useUbentoEngine();
   const threadId = action.structuredOutput?.threadId as string | undefined;
+  const [copied, setCopied] = useState(false);
 
   const { data: messages } = appEngine.ubento.intelligence.useMessages(
     { thread_id: threadId ?? "" },
     { enabled: !!threadId },
   );
+
+  const handleCopy = (e: MouseEvent) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(JSON.stringify(action, null, 2));
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   if (!threadId) {
     return <ActionLine action={action} />;
@@ -45,8 +75,21 @@ function TaskActionView({ action }: { action: AgentActionData }) {
     <div className="flex flex-col gap-2 border-l-2 border-primary-500/20 pl-4 ml-2 my-2">
       <div className="text-xs text-content-muted flex items-center gap-2">
         <Sparkles size={12} className="text-primary-400" />
-        <span className="font-medium">Task: {action.input?.title || "Specialized Agent"}</span>
+        <span className="font-medium">
+          Task: {action.input?.title || "Specialized Agent"}
+        </span>
         <span className="text-neutral-500">({action.status})</span>
+        <button
+          onClick={handleCopy}
+          className="ml-1 flex items-center justify-center rounded p-1 hover:bg-surface-active transition-colors text-content-muted hover:text-content"
+          title="Copy action data"
+        >
+          {copied ? (
+            <Check size={12} className="text-green-400" />
+          ) : (
+            <Copy size={12} />
+          )}
+        </button>
       </div>
       <div className="flex flex-col gap-4">
         {messages?.map((msg) => (
@@ -60,7 +103,6 @@ function TaskActionView({ action }: { action: AgentActionData }) {
 function ActionView({ action }: { action: AgentActionData }) {
   switch (action.tool) {
     case "message":
-    case "response":
       return (
         <div
           className="whitespace-pre-wrap text-sm leading-relaxed"

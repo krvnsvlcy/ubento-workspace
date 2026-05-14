@@ -130,8 +130,25 @@ export const createWorkspaceToolkit = ({
   });
   const updateBoardSpecTool: AgentTool<typeof updateBoardSpecArgs> = {
     name: "update_board_spec",
-    description:
+    description: [
       "Update the specification of a specific board using JSON Patch.",
+      "",
+      "Example patch to add an element and update children:",
+      "```json",
+      "[",
+      "  {",
+      "    \"op\": \"add\",",
+      "    \"path\": \"/elements/my_element\",",
+      "    \"value\": { \"component\": \"Card\" }",
+      "  },",
+      "  {",
+      "    \"op\": \"add\",",
+      "    \"path\": \"/children/-\",",
+      "    \"value\": \"my_element\"",
+      "  }",
+      "]",
+      "```",
+    ].join("\n"),
     args: updateBoardSpecArgs,
     run: async ({ args }) => {
       const result = await updateBoardSpec({

@@ -2,7 +2,7 @@ export type Agent = {
   name: string;
   description: string;
   instructions: string;
-  communicationInterface: "message" | "response";
+  enableMessage?: boolean;
   tools?: string[];
   agents?: string[];
 };

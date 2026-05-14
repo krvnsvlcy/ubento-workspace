@@ -3,7 +3,6 @@ import { renderYaml } from "../../../utils/format.js";
 import { cleanJsonSchema } from "../../../utils/zod.js";
 import { AgentTool } from "../../tool/tool.js";
 import { MessageTool } from "../../tools/message.js";
-import { ResponseTool } from "../../tools/response.js";
 import { TaskTool } from "../../tools/task.js";
 import {
   AgentOrchestratorOutputSchema as AgentManagerSchema,
@@ -12,7 +11,6 @@ import {
 
 export function outputFormat(tools: AgentTool[], hasAgents: boolean) {
   const hasMessage = tools.some((t) => t.name === MessageTool.toolName);
-  const hasResponse = tools.some((t) => t.name === ResponseTool.toolName);
 
   const examples: string[] = [];
 
@@ -25,22 +23,6 @@ export function outputFormat(tools: AgentTool[], hasAgents: boolean) {
             args: {
               content: "Hello, how can I assist you today?",
               after: "await_response",
-            },
-          },
-        ],
-      } satisfies AgentManagerSchema)}`,
-    );
-  }
-
-  if (hasResponse) {
-    examples.push(
-      `**Submit final response example**  \n${renderYaml({
-        actions: [
-          {
-            tool: ResponseTool.toolName,
-            args: {
-              content:
-                "I have successfully refactored the module and updated the tests.",
             },
           },
         ],
@@ -83,16 +65,11 @@ export function outputFormat(tools: AgentTool[], hasAgents: boolean) {
     );
   }
 
-  // Standalone finish example to reinforce the rule
+  // Standalone response example to reinforce the rule
   examples.push(
-    `**Finish task example (Send only after confirming all previous actions succeeded)**  \n${renderYaml(
+    `**Final response example (Send only after confirming all previous actions succeeded)**  \n${renderYaml(
       {
-        actions: [
-          {
-            tool: "finish",
-            args: null,
-          },
-        ],
+        response: "I have successfully completed the task and verified the results.",
       } satisfies AgentManagerSchema,
     )}`,
   );

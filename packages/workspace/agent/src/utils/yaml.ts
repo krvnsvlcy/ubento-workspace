@@ -40,6 +40,40 @@ const TRUE_ALIAS = new Set(["true", "True", "TRUE", "yes", "on", "y", "Y"]);
 const FALSE_ALIAS = new Set(["false", "False", "FALSE", "no", "off", "n", "N"]);
 const NULL_ALIAS = new Set(["null", "None", "NONE", "nil", "undefined", "~"]);
 
+// --- Helper Functions for Lexer ---
+
+// Safely find a colon that acts as a key separator (ignores colons inside quotes)
+function findKeyColon(line: string): number {
+  let inDoubleQuote = false;
+  let inSingleQuote = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (c === '"' && !inSingleQuote && (i === 0 || line[i - 1] !== "\\")) {
+      inDoubleQuote = !inDoubleQuote;
+    } else if (
+      c === "'" &&
+      !inDoubleQuote &&
+      (i === 0 || line[i - 1] !== "\\")
+    ) {
+      inSingleQuote = !inSingleQuote;
+    } else if (c === ":" && !inDoubleQuote && !inSingleQuote) {
+      if (i === line.length - 1 || line[i + 1] === " ") {
+        return i;
+      }
+    }
+  }
+  return -1;
+}
+
+function stripInlineComment(value: string): string {
+  // Use [\s\S] to support multiline matching just in case
+  if (/^["'][\s\S]*["']$/.test(value)) return value;
+
+  const commentIdx = value.indexOf(" #");
+  if (commentIdx > -1) return value.substring(0, commentIdx).trim();
+  return value;
+}
+
 // --- 2. The Tokenizer (Lexer) ---
 
 export function tokenize(input: string): Token[] {
@@ -56,7 +90,7 @@ export function tokenize(input: string): Token[] {
       continue;
     }
 
-    // 2. Skip full-line comments and empty lines (if not in a block scalar)
+    // 2. Skip full-line comments and empty lines
     if (/^\s*(#.*)?$/.test(rawLine) || rawLine.trim() === "") {
       continue;
     }
@@ -69,31 +103,63 @@ export function tokenize(input: string): Token[] {
       tokens.push({ type: TOKEN_TYPES.ARRAY_DASH, value: "-", indent });
       line = line.substring(1).trim();
 
-      // Implicitly indent the content following the dash so it becomes a child
       indent += 2;
-
       if (line === "") continue;
     }
 
-    // 4. Handle key: value pairs
-    const colonIdx = line.indexOf(":");
+    // 4. Handle key: value pairs safely
+    const colonIdx = findKeyColon(line);
 
-    // A colon must be followed by a space or be at the end of the line to separate a key
-    if (
-      colonIdx >= 0 &&
-      (colonIdx === line.length - 1 || line[colonIdx + 1] === " ")
-    ) {
+    if (colonIdx >= 0) {
       const key = line.substring(0, colonIdx).trim();
       const value = line.substring(colonIdx + 1).trim();
 
-      // Clean quoted keys
       const cleanKey = key.replace(/^["'](.*)["']$/, "$1");
       tokens.push({ type: TOKEN_TYPES.KEY, value: cleanKey, indent });
 
       if (value) {
-        const cleanValue = stripInlineComment(value);
+        const q = value[0];
+        // Check for explicitly quoted multiline strings
+        if (
+          (q === '"' || q === "'") &&
+          !(
+            value.length > 1 &&
+            value.endsWith(q) &&
+            value[value.length - 2] !== "\\"
+          )
+        ) {
+          let blockLines: string[] = [value];
+          let j = i + 1;
+          let closed = false;
 
-        // Block string check (>, >-, |, |-)
+          while (j < lines.length) {
+            const nextRawLine = lines[j];
+            if (nextRawLine.trim().startsWith("```")) break;
+            blockLines.push(nextRawLine);
+            const trimmedNext = nextRawLine.trim();
+
+            if (
+              trimmedNext.endsWith(q) &&
+              trimmedNext[trimmedNext.length - 2] !== "\\"
+            ) {
+              closed = true;
+              break;
+            }
+            j++;
+          }
+
+          if (closed) {
+            i = j; // Advance outer loop
+            tokens.push({
+              type: TOKEN_TYPES.VALUE,
+              value: blockLines.join("\n"),
+              indent,
+            });
+            continue;
+          }
+        }
+
+        const cleanValue = stripInlineComment(value);
         const blockMatch = cleanValue.match(/^([>|])([+-]?)$/);
 
         if (blockMatch) {
@@ -109,20 +175,19 @@ export function tokenize(input: string): Token[] {
               nextRawLine.match(/^\s*/)?.[0].replace(/\t/g, "  ").length || 0;
 
             if (nextRawLine.trim() !== "") {
-              if (nextIndent <= indent) break; // block ended
+              if (nextIndent <= indent) break;
               if (blockIndent === -1) blockIndent = nextIndent;
               blockLines.push(nextRawLine.substring(blockIndent));
             } else {
-              blockLines.push(""); // preserve empty lines inside block
+              blockLines.push("");
             }
             j++;
           }
 
-          i = j - 1; // Advance outer loop past the block
+          i = j - 1;
 
           let parsedString = "";
           if (type === ">") {
-            // Folded: Single newlines are replaced by spaces, paragraph breaks kept
             let foldedLines: string[] = [];
             let currentParagraph: string[] = [];
 
@@ -146,7 +211,6 @@ export function tokenize(input: string): Token[] {
               .replace(/\n{3,}/g, "\n\n")
               .trim();
           } else {
-            // Literal: Keep all newlines
             parsedString = blockLines.join("\n").trim();
           }
 
@@ -164,7 +228,43 @@ export function tokenize(input: string): Token[] {
         }
       }
     } else {
-      // 5. Just a value (scalar or multiline array item)
+      // 5. Just a value (scalar or array item)
+      const q = line[0];
+      if (
+        (q === '"' || q === "'") &&
+        !(line.length > 1 && line.endsWith(q) && line[line.length - 2] !== "\\")
+      ) {
+        let blockLines: string[] = [line];
+        let j = i + 1;
+        let closed = false;
+
+        while (j < lines.length) {
+          const nextRawLine = lines[j];
+          if (nextRawLine.trim().startsWith("```")) break;
+          blockLines.push(nextRawLine);
+          const trimmedNext = nextRawLine.trim();
+
+          if (
+            trimmedNext.endsWith(q) &&
+            trimmedNext[trimmedNext.length - 2] !== "\\"
+          ) {
+            closed = true;
+            break;
+          }
+          j++;
+        }
+
+        if (closed) {
+          i = j;
+          tokens.push({
+            type: TOKEN_TYPES.VALUE,
+            value: blockLines.join("\n"),
+            indent,
+          });
+          continue;
+        }
+      }
+
       tokens.push({
         type: TOKEN_TYPES.VALUE,
         value: stripInlineComment(line),
@@ -190,13 +290,11 @@ export function parse(tokens: Token[]): any {
   for (let i = 0; i < tokens.length; i++) {
     const token = tokens[i];
 
-    // 1. Reconcile stack indentation
     while (stack.length > 1) {
       const top = stack[stack.length - 1];
       if (token.indent < top.indent) {
         stack.pop();
       } else if (token.indent === top.indent) {
-        // Robustness: Pop if we see an array dash but we are inside an object at the same level
         if (
           token.type === TOKEN_TYPES.ARRAY_DASH &&
           top.type === CONTAINER_TYPES.OBJECT
@@ -212,9 +310,6 @@ export function parse(tokens: Token[]): any {
 
     let top = stack[stack.length - 1];
 
-    // 2. Process Pending Key flush logic
-    // If the next token doesn't dive deeper than the pending key, the pending key has no children.
-    // FIX: Only trigger flush if the token is NOT an inline value.
     if (
       pendingKey &&
       token.indent <= pendingKey.indent &&
@@ -224,7 +319,6 @@ export function parse(tokens: Token[]): any {
       pendingKey = null;
     }
 
-    // 3. Handle specific tokens
     if (token.type === TOKEN_TYPES.ARRAY_DASH) {
       if (pendingKey && top.type === CONTAINER_TYPES.OBJECT) {
         const newArr: any[] = [];
@@ -237,11 +331,9 @@ export function parse(tokens: Token[]): any {
         top = stack[stack.length - 1];
         pendingKey = null;
       }
-      // Flag that the array is ready to receive an item or an object
       pendingDashIndent = token.indent;
     } else if (token.type === TOKEN_TYPES.KEY) {
       if (pendingDashIndent !== null || top.type === CONTAINER_TYPES.ARRAY) {
-        // A key inside an array means we are starting an object inside that array item
         const newObj = {};
         if (top.type === CONTAINER_TYPES.ARRAY) {
           top.ref.push(newObj);
@@ -254,7 +346,6 @@ export function parse(tokens: Token[]): any {
         }
         pendingDashIndent = null;
       } else if (pendingKey && top.type === CONTAINER_TYPES.OBJECT) {
-        // A key strictly deeper than the pending key creates a child object
         const newObj = {};
         top.ref[pendingKey.name] = newObj;
         stack.push({
@@ -284,7 +375,6 @@ export function parse(tokens: Token[]): any {
     }
   }
 
-  // Auto-close dangling keys
   if (pendingKey && stack.length > 0) {
     const top = stack[stack.length - 1];
     if (top.type === CONTAINER_TYPES.OBJECT) {
@@ -292,7 +382,6 @@ export function parse(tokens: Token[]): any {
     }
   }
 
-  // Handle document root edge cases (if array was at root level)
   if (Object.keys(root).length === 1 && root[""] !== undefined) {
     return root[""];
   }
@@ -300,16 +389,7 @@ export function parse(tokens: Token[]): any {
   return root;
 }
 
-// --- Helper Functions ---
-
-function stripInlineComment(value: string): string {
-  // If quoted, ignore inline comments
-  if (/^["'].*["']$/.test(value)) return value;
-
-  const commentIdx = value.indexOf(" #");
-  if (commentIdx > -1) return value.substring(0, commentIdx).trim();
-  return value;
-}
+// --- 4. Scalar Parser ---
 
 function parseScalarValue(value: string): any {
   if (!value) return null;
@@ -319,7 +399,6 @@ function parseScalarValue(value: string): any {
   if (FALSE_ALIAS.has(lower)) return false;
   if (NULL_ALIAS.has(lower)) return null;
 
-  // Fault tolerance: LLMs sometimes hallucinate inline JSON arrays/objects inside YAML
   if (
     (value.startsWith("[") && value.endsWith("]")) ||
     (value.startsWith("{") && value.endsWith("}"))
@@ -327,11 +406,10 @@ function parseScalarValue(value: string): any {
     try {
       return JSON.parse(value);
     } catch {
-      // Fallback to string if JSON parse fails
+      // Fallback
     }
   }
 
-  // Numbers (Float, Integer, Exponential, Hexadecimal)
   if (/^[+-]?\d+(\.\d+)?([eE][+-]?\d+)?$/.test(value)) {
     return parseFloat(value);
   }
@@ -339,8 +417,8 @@ function parseScalarValue(value: string): any {
     return parseInt(value, 16);
   }
 
-  // Quoted Strings
-  if (/^["'].*["']$/.test(value)) {
+  // FIXED: [\s\S]* properly matches across newlines where .* fails.
+  if (/^["'][\s\S]*["']$/.test(value)) {
     return value
       .substring(1, value.length - 1)
       .replace(/\\"/g, '"')
@@ -352,7 +430,7 @@ function parseScalarValue(value: string): any {
   return value;
 }
 
-// --- 4. Main Export ---
+// --- 5. Main Export ---
 
 export function safeYamlParse<T = any>(input: unknown): T | null {
   if (typeof input !== "string" || !input.trim()) return null;

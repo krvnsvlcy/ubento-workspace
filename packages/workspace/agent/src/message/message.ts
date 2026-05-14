@@ -68,6 +68,13 @@ export function createAgentMessage({
     getAllActions() {
       return Object.values(actionData);
     },
+    writeAction(data: Omit<AgentActionData, "id">) {
+      const id = crypto.randomUUID();
+      actionData[id] = {
+        id,
+        ...data,
+      };
+    },
     createAction,
     updateAction,
     async startAction(id: string) {

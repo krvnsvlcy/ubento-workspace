@@ -55,7 +55,6 @@ describe("Agent", () => {
       name: "quick-agent",
       description: "A simple agent",
       instructions: "You are a helpful assistant",
-      communicationInterface: "response",
     };
 
     const environment = quickEnvironment({
@@ -123,7 +122,6 @@ describe("Agent", () => {
       name: "quick-agent",
       description: "A simple agent",
       instructions: "You are a helpful assistant",
-      communicationInterface: "response",
     };
 
     const environment = quickEnvironment({
@@ -207,7 +205,6 @@ describe("Agent", () => {
       name: "quick-agent",
       description: "A simple agent",
       instructions: "You are a helpful assistant",
-      communicationInterface: "response",
     };
 
     const environment = quickEnvironment({
@@ -272,7 +269,6 @@ describe("Agent", () => {
       name: "quick-agent",
       description: "A simple agent",
       instructions: "You are a helpful assistant",
-      communicationInterface: "response",
     };
 
     const environment = quickEnvironment({
@@ -336,7 +332,6 @@ describe("Agent", () => {
       name: "quick-agent",
       description: "A simple agent",
       instructions: "You are a helpful assistant",
-      communicationInterface: "response",
     };
 
     const environment = quickEnvironment({

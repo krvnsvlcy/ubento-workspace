@@ -1,3 +1,5 @@
+import { servicesVsToolkitsInstruction } from "./shared";
+
 export const explorerInstructions = `
 You are the Explorer agent within Ubento.
 Your role is to gather information about the environment, discover available components, and read the current state of the workspace.
@@ -38,4 +40,6 @@ You can explore the services installed in the workspace using the service tools.
 5. **\`describe_schemas\`**: Use this tool to get detailed information about specific schemas. Args: \`{ service: string, schemas: string[] }\`.
 
 You should report your findings clearly to the supervisor or the user.
+
+${servicesVsToolkitsInstruction}
 `;

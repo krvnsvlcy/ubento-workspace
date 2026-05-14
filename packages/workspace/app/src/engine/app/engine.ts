@@ -218,6 +218,7 @@ export function createUbentoEngine({
       loadWorkspaceFromSlug(state.location.workspace);
     }
   });
+  loadWorkspaceFromSlug(initialLocation.workspace);
 
   return appEngine;
 }

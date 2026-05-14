@@ -7,7 +7,6 @@ import { LanguageModel } from "../utils/models.js";
 import { ResourceType } from "@/context/resource.js";
 import { taskTool } from "@/execution/tools/task.js";
 import { messageTool } from "../execution/tools/message.js";
-import { responseTool } from "../execution/tools/response.js";
 import { describeToolTool, listToolsTool } from "../execution/tools/tools.js";
 import { AgentThread } from "../thread/thread.js";
 
@@ -59,7 +58,6 @@ export function createEnvironment({
 }): AgentEnvironment {
   const coreTools = new Map<string, AgentTool>([
     [messageTool.name, messageTool],
-    [responseTool.name, responseTool],
     [listToolsTool.name, listToolsTool],
     [describeToolTool.name, describeToolTool],
     [taskTool.name, taskTool],
@@ -108,13 +106,11 @@ export function createEnvironment({
       return undefined;
     },
     getAgentTools(agent: Agent) {
-      const tools = [...coreTools.values()].filter((t) => {
-        if (agent.communicationInterface === "message") {
-          return t.name !== responseTool.name;
-        } else {
-          return t.name !== messageTool.name;
-        }
-      });
+      let tools = [...coreTools.values()];
+      if (!agent.enableMessage) {
+        tools = tools.filter((t) => t.name !== messageTool.name);
+      }
+
       for (const name of agent.tools ?? []) {
         const tool = envTools.get(name);
         if (tool) {

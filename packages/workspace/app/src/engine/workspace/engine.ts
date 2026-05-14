@@ -330,7 +330,7 @@ export function createWorkspaceEngine({
         continue;
       }
       const schema = z.fromJSONSchema(comp.schema);
-      const validated = schema.safeParse(element.inputs || {});
+      const validated = schema.safeParse(element.props || {});
       if (!validated.success) {
         errors.push(
           ...validated.error.issues.map((e) => {
@@ -571,7 +571,7 @@ export function createWorkspaceEngine({
     description: "The primary WorkOS orchestration assistant (Supervisor)",
     instructions: copilotInstructions,
     tools: [workspaceToolkit.tools.goToTool.name],
-    communicationInterface: "message",
+    enableMessage: true,
   });
   environment.addAgent({
     name: "explorer",
@@ -590,7 +590,6 @@ export function createWorkspaceEngine({
       servicesToolkit.tools.describeQueries.name,
       servicesToolkit.tools.describeSchemas.name,
     ],
-    communicationInterface: "response",
   });
   environment.addAgent({
     name: "editor",
@@ -608,7 +607,6 @@ export function createWorkspaceEngine({
       workspaceToolkit.tools.createBoardTool.name,
       workspaceToolkit.tools.checkBoardTool.name,
     ],
-    communicationInterface: "response",
   });
 
   const copilot = createUbentoCopilot({

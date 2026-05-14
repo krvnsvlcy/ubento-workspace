@@ -209,7 +209,6 @@ export function createAgentExecution({
     instructions: string;
   }): Promise<{ shouldContinue: boolean }> {
     const agentMessage = await thread.startAgentMessage(model.id);
-
     const result = await model.generateText({
       system: instructions,
       messages: [{ role: "user", content: prompt }],
@@ -246,57 +245,68 @@ export function createAgentExecution({
 
     const output = parsed.data;
 
-    if (!output.actions?.length) {
-      await agentMessage.fail({
-        code: "response_schema_mismatch",
-        message: "No actions to take",
-        data: {
-          error: "Response schema mismatch",
-        },
-      });
-      return { shouldContinue: true };
-    }
-
-    let shouldContinue = true;
-    for (const act of output.actions) {
-      if (abortController.signal.aborted) break;
-      if (act.tool === "finish") {
-        shouldContinue = false;
-        break;
-      }
-
-      const tool = await environment.getTool(act.tool);
-      if (!tool) {
+    if ("actions" in output) {
+      if (!output.actions?.length) {
         await agentMessage.fail({
-          code: "tool_not_found",
-          message: `Unknown tool: ${act.tool}`,
-          data: { tool: act.tool },
+          code: "response_schema_mismatch",
+          message: "No actions to take",
+          data: {
+            error: "Response schema mismatch",
+          },
         });
-        break;
-      }
-
-      // Transition to working state before executing the tool action
-      store.setState({ status: "working" });
-
-      const result = await runAction({
-        tool,
-        message: agentMessage,
-        args: act.args,
-        model,
-      });
-
-      if (result.error) {
-        await agentMessage.fail(result.error);
         return { shouldContinue: true };
       }
-      if (result.shouldEnd) {
-        shouldContinue = false;
-        break;
-      }
-    }
 
-    await agentMessage.complete();
-    return { shouldContinue };
+      let shouldContinue = true;
+      for (const act of output.actions) {
+        if (abortController.signal.aborted) break;
+        if (act.tool === "finish") {
+          shouldContinue = false;
+          break;
+        }
+
+        const tool = await environment.getTool(act.tool);
+        if (!tool) {
+          await agentMessage.fail({
+            code: "tool_not_found",
+            message: `Unknown tool: ${act.tool}`,
+            data: { tool: act.tool },
+          });
+          break;
+        }
+
+        // Transition to working state before executing the tool action
+        store.setState({ status: "working" });
+
+        const result = await runAction({
+          tool,
+          message: agentMessage,
+          args: act.args,
+          model,
+        });
+
+        if (result.error) {
+          await agentMessage.fail(result.error);
+          return { shouldContinue: true };
+        }
+        if (result.shouldEnd) {
+          shouldContinue = false;
+          break;
+        }
+      }
+
+      await agentMessage.complete();
+      return { shouldContinue };
+    } else {
+      await context.setResponse(output.response);
+      agentMessage.writeAction({
+        tool: "message",
+        status: "completed",
+        input: { content: output.response },
+      });
+      await agentMessage.complete();
+      return { shouldContinue: false };
+    }
   }
 
   function normalizeError(
