@@ -32,14 +32,14 @@ const RadioCardItem = React.forwardRef<
         // base
         "group relative w-full rounded-md border p-4 text-left shadow-xs transition focus:outline-hidden",
         // background color
-        "bg-white dark:bg-gray-950",
+        "bg-neutral-surface",
         // border color
-        "border-gray-300 dark:border-gray-800",
+        "border-neutral-border",
         "data-[state=checked]:border-blue-500",
         "dark:data-[state=checked]:border-blue-500",
         // disabled
-        "data-disabled:border-gray-100 dark:data-disabled:border-gray-800",
-        "data-disabled:bg-gray-50 data-disabled:shadow-none dark:data-disabled:bg-gray-900",
+        "data-disabled:border-neutral-border",
+        "data-disabled:bg-neutral-surface data-disabled:shadow-none",
         focusInput,
         className,
       )}
@@ -62,14 +62,13 @@ const RadioCardIndicator = React.forwardRef<
         // base
         "relative flex size-4 shrink-0 appearance-none items-center justify-center rounded-full border shadow-xs outline-hidden",
         // border color
-        "border-gray-300 dark:border-gray-800",
+        "border-neutral-border",
         // background color
-        "bg-white dark:bg-gray-950",
+        "bg-neutral-surface",
         // checked
         "group-data-[state=checked]:border-0 group-data-[state=checked]:border-transparent group-data-[state=checked]:bg-blue-500",
         // disabled
-        "group-data-disabled:border-gray-300 group-data-disabled:bg-gray-100 group-data-disabled:text-gray-400",
-        "dark:group-data-disabled:border-gray-700 dark:group-data-disabled:bg-gray-800",
+        "group-data-disabled:border-neutral-border group-data-disabled:bg-neutral-surface group-data-disabled:text-neutral-content-muted",
         // focus
         focusRing,
         className,
@@ -85,9 +84,9 @@ const RadioCardIndicator = React.forwardRef<
             // base
             "size size-1.5 shrink-0 rounded-full",
             // indicator
-            "bg-white",
+            "bg-accent-contrast",
             // disabled
-            "group-data-disabled:bg-gray-400 dark:group-data-disabled:bg-gray-500",
+            "group-data-disabled:text-neutral-content-muted",
           )}
         />
       </RadioGroupPrimitives.Indicator>

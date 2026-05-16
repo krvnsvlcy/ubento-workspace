@@ -84,6 +84,12 @@
             "null"
           ]
         },
+        "index": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "name": {
           "type": "string"
         },

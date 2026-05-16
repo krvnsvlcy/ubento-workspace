@@ -9,40 +9,38 @@ const calloutVariants = tv({
   base: "flex flex-col overflow-hidden rounded-md p-4 text-sm",
   variants: {
     variant: {
-      default: [
-        // text color
-        "text-blue-900 dark:text-blue-400",
-        // background color
-        "bg-blue-50 dark:bg-blue-950/70",
+      accent: [
+        "text-accent-content",
+        "bg-accent-surface",
       ],
       success: [
-        // text color
-        "text-emerald-900 dark:text-emerald-500",
-        // background color
-        "bg-emerald-50 dark:bg-emerald-950/70",
+        "text-success-content",
+        "bg-success-surface",
       ],
-      error: [
-        // text color
-        "text-red-900 dark:text-red-500",
-        // background color
-        "bg-red-50 dark:bg-red-950/70",
+      destructive: [
+        "text-destructive-content",
+        "bg-destructive-surface",
       ],
       warning: [
-        // text color
-        "text-yellow-900 dark:text-yellow-500",
-        // background color
-        "bg-yellow-50 dark:bg-yellow-950/70",
+        "text-warning-content",
+        "bg-warning-surface",
       ],
       neutral: [
-        // text color
-        "text-gray-900 dark:text-gray-400",
-        // background color
-        "bg-gray-100 dark:bg-gray-800/70",
+        "text-neutral-content",
+        "bg-neutral-surface",
+      ],
+      info: [
+        "text-info-content",
+        "bg-info-surface",
+      ],
+      inverse: [
+        "text-inverse-content",
+        "bg-inverse-surface",
       ],
     },
   },
   defaultVariants: {
-    variant: "default",
+    variant: "accent",
   },
 });
 

@@ -43,10 +43,12 @@ model Workspace {
 }
 
 model Board {
-    id           String  @id @map("_id")
-    entity       String  @default("board")
+    id           String @id @map("_id")
+    entity       String @default("board")
     workspace_id String
-    parent_id    String?
+
+    parent_id String?
+    index     String?
 
     name String
     data Json
@@ -56,7 +58,7 @@ model Board {
     updated_at DateTime  @updatedAt
     deleted_at DateTime?
 
-    @@index([workspace_id, parent_id])
+    @@index([workspace_id, parent_id, index])
     @@map("boards")
 }
 

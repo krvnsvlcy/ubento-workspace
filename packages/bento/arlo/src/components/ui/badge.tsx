@@ -1,13 +1,20 @@
 import { createComponent } from "@ubento/bento.core";
 import { z } from "zod";
 import { Badge as CoreBadge } from "../../core/ui/badge.js";
-import * as React from "react";
 
 export const Badge = createComponent({
   props: z.object({
     label: z.string().optional(),
     variant: z
-      .enum(["default", "neutral", "success", "error", "warning"])
+      .enum([
+        "neutral",
+        "success",
+        "warning",
+        "accent",
+        "destructive",
+        "info",
+        "inverse",
+      ])
       .default("neutral"),
   }),
 
@@ -20,10 +27,7 @@ export const Badge = createComponent({
 
   render: ({ ref, props, children }) => {
     return (
-      <CoreBadge
-        ref={ref}
-        variant={props.variant}
-      >
+      <CoreBadge ref={ref} variant={props.variant}>
         {props.label || children}
       </CoreBadge>
     );

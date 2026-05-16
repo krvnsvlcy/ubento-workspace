@@ -98,6 +98,7 @@ boardsRouter.post(
         parent_id: z.string().optional(),
         name: z.string(),
         data: z.any(),
+        index: z.string(),
       }),
     }),
     enforce({
@@ -130,7 +131,7 @@ boardsRouter.patch(
         name: z.string().optional(),
         parent_id: z.string().nullable().optional(),
         data: z.any().optional(),
-        metadata: z.any().optional(),
+        index: z.string().optional(),
       }),
     }),
     enforce({

@@ -35,7 +35,7 @@ const badgeVariants = tv({
     },
   },
   defaultVariants: {
-    variant: "default",
+    variant: "accent",
   },
 });
 

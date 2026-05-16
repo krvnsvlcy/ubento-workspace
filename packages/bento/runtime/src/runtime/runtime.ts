@@ -97,8 +97,8 @@ export function createBentoRuntime({
     readBoard: async ({ boardId }) => {
       return boardStore.getCached(boardId);
     },
-    writeBoard: async ({ boardId, data }) => {
-      boardStore.update(boardId, data);
+    writeBoard: async ({ data }) => {
+      boardStore.push(data);
     },
     setTheme: async ({ css }) => {
       let styleTag = document.getElementById("theme-variables");

@@ -47,8 +47,7 @@ export const FileDropzone = React.forwardRef<HTMLDivElement, FileDropzoneProps>(
           {...getRootProps()}
           className={cx(
             "relative flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-10 transition-all",
-            "border-gray-300 bg-gray-50/50 hover:bg-gray-50",
-            "dark:border-gray-800 dark:bg-gray-950/50 dark:hover:bg-gray-900/50",
+            "border-neutral-border bg-neutral-surface/50 hover:bg-neutral-surface",
             isDragActive && "border-blue-500 bg-blue-50/50 dark:bg-blue-500/10",
             focusRing,
             className,
@@ -57,17 +56,17 @@ export const FileDropzone = React.forwardRef<HTMLDivElement, FileDropzoneProps>(
           <input {...getInputProps()} />
           <UploadCloud
             className={cx(
-              "mb-4 h-10 w-10 text-gray-400",
+              "mb-4 h-10 w-10 text-neutral-content-muted",
               isDragActive && "text-blue-500",
             )}
           />
           <div className="text-center">
-            <p className="text-sm font-medium text-gray-900 dark:text-gray-50">
+            <p className="text-sm font-medium text-neutral-content">
               {label ||
                 (isDragActive ? "Drop files here" : "Click or drag to upload")}
             </p>
             {description && (
-              <p className="mt-1 text-xs text-gray-500 dark:text-gray-500">
+              <p className="mt-1 text-xs text-neutral-content-muted">
                 {description}
               </p>
             )}
@@ -79,14 +78,14 @@ export const FileDropzone = React.forwardRef<HTMLDivElement, FileDropzoneProps>(
             {files.map((file, index) => (
               <li
                 key={index}
-                className="flex items-center justify-between rounded-md border border-gray-200 p-2 dark:border-gray-800"
+                className="flex items-center justify-between rounded-md border border-neutral-border p-2"
               >
                 <div className="flex items-center gap-2 overflow-hidden">
-                  <File className="h-4 w-4 shrink-0 text-gray-400" />
-                  <span className="truncate text-sm text-gray-900 dark:text-gray-50">
+                  <File className="h-4 w-4 shrink-0 text-neutral-content-muted" />
+                  <span className="truncate text-sm text-neutral-content">
                     {file.name}
                   </span>
-                  <span className="shrink-0 text-xs text-gray-500">
+                  <span className="shrink-0 text-xs text-neutral-content-muted">
                     ({(file.size / 1024).toFixed(1)} KB)
                   </span>
                 </div>

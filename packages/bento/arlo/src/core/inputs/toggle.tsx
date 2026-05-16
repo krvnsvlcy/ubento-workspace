@@ -10,16 +10,16 @@ import { cx, focusRing } from "@/lib/utils.js";
 const toggleStyles = [
   // base
   "group inline-flex h-9 min-w-9 items-center justify-center gap-2 rounded-md border px-2 text-sm font-medium shadow-xs transition-all duration-100 ease-in-out",
-  "border-gray-300 dark:border-gray-800",
+  "border-neutral-border",
   // text color
-  "text-gray-700 dark:text-gray-300",
+  "text-neutral-content",
   // background color
-  "bg-white dark:bg-gray-950",
+  "bg-neutral-surface",
   //hover color
-  "hover:bg-gray-50 dark:hover:bg-gray-900/60",
+  "hover:bg-neutral-surface-hover",
   // disabled
-  "disabled:pointer-events-none disabled:text-gray-400 dark:disabled:text-gray-600",
-  "data-[state=on]:bg-gray-100 data-[state=on]:text-gray-900 dark:data-[state=on]:bg-gray-800 dark:data-[state=on]:text-gray-50",
+  "disabled:pointer-events-none disabled:text-neutral-content-muted",
+  "data-[state=on]:bg-neutral-surface-hover data-[state=on]:text-neutral-content",
   focusRing,
 ];
 

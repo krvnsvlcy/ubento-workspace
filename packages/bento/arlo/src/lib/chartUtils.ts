@@ -54,10 +54,10 @@ export function getColorClassName(
       fill: "fill-amber-500",
     },
     gray: {
-      bg: "bg-gray-500",
-      stroke: "stroke-gray-500",
-      text: "text-gray-500",
-      fill: "fill-gray-500",
+      bg: "bg-neutral-content-muted",
+      stroke: "stroke-neutral-content-muted",
+      text: "text-neutral-content-muted",
+      fill: "fill-neutral-content-muted",
     },
     cyan: {
       bg: "bg-cyan-500",

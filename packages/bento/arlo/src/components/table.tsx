@@ -7,6 +7,7 @@ import {
   useLayoutContext,
   type LayoutContextType,
 } from "../lib/style.js";
+import { cx } from "../lib/utils.js";
 
 export const tablePropsSchema = layoutElementStyleSchema.extend({
   data: z.array(z.record(z.string(), z.any())).optional(),
@@ -73,29 +74,24 @@ export const Table = createComponent({
 
     return (
       <div
-        style={{
-          overflowX: "auto",
-          width: "100%",
-          borderRadius: "8px",
-          border: "1px solid var(--color-neutral-border)",
-          background: "var(--color-background)",
-        }}
+        ref={ref}
+        className="w-full overflow-auto rounded-lg border border-neutral-border bg-neutral-surface"
       >
-        <table ref={ref} style={getTableStyle(props, layoutContext)}>
+        <table
+          className="w-full border-collapse text-left"
+          style={{
+            fontSize: props.compact ? "13px" : "14px",
+            fontFamily: "var(--font-family, sans-serif)",
+          }}
+        >
           <thead>
-            <tr
-              style={{
-                borderBottom: "2px solid var(--color-neutral-border)",
-                background: "var(--color-neutral-surface)",
-              }}
-            >
+            <tr className="border-b-2 border-neutral-border bg-neutral-surface">
               {resolvedColumns.map((col) => (
                 <th
                   key={col.key}
+                  className="text-neutral-content font-semibold"
                   style={{
                     padding,
-                    fontWeight: 600,
-                    color: "var(--color-neutral-content-strong)",
                     width: col.width,
                   }}
                 >
@@ -108,28 +104,13 @@ export const Table = createComponent({
             {data.map((row, rowIndex) => (
               <tr
                 key={rowIndex}
-                style={{
-                  borderBottom: "1px solid var(--color-neutral-border-subtle)",
-                  backgroundColor:
-                    stripe && rowIndex % 2 === 1
-                      ? "var(--color-neutral-surface-subtle)"
-                      : "transparent",
-                  transition: "background-color 0.15s ease",
-                }}
-                onMouseEnter={(e) => {
-                  if (hover) {
-                    e.currentTarget.style.backgroundColor =
-                      "var(--color-neutral-surface-hover)";
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (hover) {
-                    e.currentTarget.style.backgroundColor =
-                      stripe && rowIndex % 2 === 1
-                        ? "var(--color-neutral-surface-subtle)"
-                        : "transparent";
-                  }
-                }}
+                className={cx(
+                  "border-b border-neutral-border transition-colors duration-150",
+                  stripe && rowIndex % 2 === 1
+                    ? "bg-neutral-surface"
+                    : "bg-transparent",
+                  hover && "hover:bg-neutral-surface-hover",
+                )}
                 onClick={() => {
                   emit("rowClick", { data: row });
                 }}
@@ -137,9 +118,9 @@ export const Table = createComponent({
                 {resolvedColumns.map((col) => (
                   <td
                     key={col.key}
+                    className="text-neutral-content"
                     style={{
                       padding,
-                      color: "var(--color-neutral-content)",
                     }}
                   >
                     {String(row[col.key] ?? "")}
@@ -151,11 +132,7 @@ export const Table = createComponent({
               <tr>
                 <td
                   colSpan={resolvedColumns.length}
-                  style={{
-                    padding: "32px",
-                    textAlign: "center",
-                    color: "var(--color-neutral-content-dimmed)",
-                  }}
+                  className="p-8 text-center text-neutral-content-muted"
                 >
                   No data available
                 </td>

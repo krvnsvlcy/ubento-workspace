@@ -8,7 +8,7 @@ import prisma from "../lib/prisma.js";
 
 export async function getBoard(id: string) {
   return await prisma.board.findUnique({
-    where: { id },
+    where: { id, deleted_at: { isSet: false } },
   });
 }
 
@@ -17,6 +17,7 @@ export async function createBoard(data: {
   parent_id?: string;
   name: string;
   data: any;
+  index: string;
 }) {
   const id = makeEntityId({
     code: ubentoEntities.board.code,
@@ -25,8 +26,8 @@ export async function createBoard(data: {
 
   return await prisma.board.create({
     data: {
-      id,
       ...data,
+      id,
     },
   });
 }
@@ -37,17 +38,18 @@ export async function updateBoard(
     name: string;
     parent_id: string | null;
     data: any;
+    index: string;
   }>,
 ) {
   return await prisma.board.update({
-    where: { id },
+    where: { id, deleted_at: { isSet: false } },
     data,
   });
 }
 
 export async function deleteBoard(id: string) {
   return await prisma.board.update({
-    where: { id },
+    where: { id, deleted_at: { isSet: false } },
     data: {
       deleted_at: new Date(),
     },
@@ -70,7 +72,7 @@ export async function listBoards(filters: {
     },
     limit: filters.limit,
     cursor: filters.cursor,
-    orderBy: { created_at: "desc" },
+    orderBy: { index: "asc" },
     resolveCursor: (i) => ({ id: i.id }),
   });
 }

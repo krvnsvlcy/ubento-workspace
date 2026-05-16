@@ -21,16 +21,14 @@ export const Input = createComponent({
   instructions: ["Use this component to capture user input."].join("\n"),
 
   render: ({ ref, props, bindings }) => {
-    const {
-      value: [value, setValue],
-    } = bindings;
+    const { value } = bindings;
 
     return (
       <CoreInput
         ref={ref}
         type={props.type}
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
+        value={value?.[0] as string}
+        onChange={(e) => value?.[1]?.(e.target.value)}
         placeholder={props.placeholder}
         disabled={props.disabled}
         readOnly={props.readOnly}

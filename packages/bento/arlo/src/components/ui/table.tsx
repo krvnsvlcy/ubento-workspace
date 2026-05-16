@@ -79,10 +79,8 @@ export const Table = createComponent({
               <TableRow
                 key={rowIndex}
                 className={cx(
-                  stripe &&
-                    rowIndex % 2 === 1 &&
-                    "bg-gray-50 dark:bg-gray-900/50",
-                  hover && "hover:bg-gray-100 dark:hover:bg-gray-800/50",
+                  stripe && rowIndex % 2 === 1 && "bg-neutral-surface",
+                  hover && "hover:bg-neutral-surface-hover",
                 )}
               >
                 {resolvedColumns.map((col) => (
@@ -96,7 +94,7 @@ export const Table = createComponent({
               <TableRow>
                 <TableCell
                   colSpan={resolvedColumns.length}
-                  className="text-center p-8 text-gray-500"
+                  className="text-center p-8 text-neutral-content-muted"
                 >
                   No data available
                 </TableCell>

@@ -38,11 +38,17 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   searchColumn?: string;
   searchPlaceholder?: string;
+  ref: React.ForwardedRef<HTMLDivElement>;
 }
 
+// 1. Stable reference to prevent memory leaks and infinite loops
+const DEFAULT_DATA: any[] = [];
+
 export function DataTable<TData, TValue>({
+  ref,
   columns,
-  data,
+  // 2. Cast the stable reference to the expected generic type
+  data = DEFAULT_DATA as unknown as TData[],
   searchColumn,
   searchPlaceholder = "Search...",
 }: DataTableProps<TData, TValue>) {
@@ -74,7 +80,7 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="w-full space-y-4">
+    <div ref={ref} className="w-full space-y-4">
       <div className="flex items-center justify-between gap-4">
         {searchColumn && (
           <Input
@@ -115,7 +121,7 @@ export function DataTable<TData, TValue>({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <TableRoot className="rounded-md border border-gray-200 dark:border-gray-800">
+      <TableRoot className="rounded-md border border-neutral-border">
         <Table>
           <TableHead>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -166,7 +172,7 @@ export function DataTable<TData, TValue>({
         </Table>
       </TableRoot>
       <div className="flex items-center justify-end space-x-2">
-        <div className="flex-1 text-sm text-gray-500 dark:text-gray-400">
+        <div className="flex-1 text-sm text-neutral-content-muted">
           {table.getFilteredSelectedRowModel().rows.length} of{" "}
           {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>

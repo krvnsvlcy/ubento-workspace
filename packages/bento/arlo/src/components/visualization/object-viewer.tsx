@@ -39,10 +39,10 @@ function UnsafeObjectViewer({
     string: { color: "#34d399" }, // Green
     number: { color: "#60a5fa" }, // Blue
     boolean: { color: "#f472b6" }, // Pink
-    null: { color: "#9ca3af" }, // Gray
-    undefined: { color: "#9ca3af" }, // Gray
-    bracket: { color: "#d1d5db" }, // Light gray
-    comma: { color: "#d1d5db" },
+    null: { color: "var(--color-neutral-content-muted)" }, // Gray
+    undefined: { color: "var(--color-neutral-content-muted)" }, // Gray
+    bracket: { color: "var(--color-neutral-content-subtle)" }, // Light gray
+    comma: { color: "var(--color-neutral-content-subtle)" },
     toggle: {
       cursor: "pointer",
       userSelect: "none" as const,
@@ -50,11 +50,11 @@ function UnsafeObjectViewer({
       display: "inline-block",
       width: "12px",
       textAlign: "center" as const,
-      color: "#9ca3af",
+      color: "var(--color-neutral-content-muted)",
       fontSize: "10px",
     },
     childrenContainer: {
-      borderLeft: "1px solid #e5e7eb",
+      borderLeft: "1px solid var(--color-neutral-border)",
       marginLeft: "4px",
       paddingLeft: "12px",
     },
@@ -234,7 +234,7 @@ export const ObjectViewer = createComponent({
       <div
         ref={ref}
         className={cx(
-          "overflow-auto p-4 bg-gray-50 dark:bg-gray-900 rounded-md",
+          "overflow-auto p-4 bg-neutral-surface rounded-md",
           props.className,
         )}
       >

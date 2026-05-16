@@ -6,7 +6,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../../core/inputs/dropdown-menu.js";
-import * as React from "react";
 
 export const DropdownMenu = createComponent({
   props: z.object({
@@ -35,11 +34,14 @@ export const DropdownMenu = createComponent({
   ].join("\n"),
 
   render: ({ ref, props, emit }) => {
-    const triggerElement = typeof props.trigger === "string" ? (
-      <button className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100">
-        {props.trigger}
-      </button>
-    ) : props.trigger;
+    const triggerElement =
+      typeof props.trigger === "string" ? (
+        <button className="text-sm font-medium text-neutral-content-muted hover:text-neutral-content">
+          {props.trigger}
+        </button>
+      ) : (
+        props.trigger
+      );
 
     return (
       <CoreDropdownMenu>

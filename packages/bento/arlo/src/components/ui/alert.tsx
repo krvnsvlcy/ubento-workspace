@@ -1,14 +1,21 @@
 import { createComponent } from "@ubento/bento.core";
 import { z } from "zod";
 import { Callout as CoreCallout } from "../../core/ui/callout.js";
-import * as React from "react";
 
 export const Alert = createComponent({
   props: z.object({
     title: z.string().optional(),
     variant: z
-      .enum(["default", "success", "error", "warning", "neutral"])
-      .default("default"),
+      .enum([
+        "success",
+        "warning",
+        "neutral",
+        "accent",
+        "destructive",
+        "info",
+        "inverse",
+      ])
+      .default("neutral"),
   }),
 
   summary: "An alert component to display important messages.",
@@ -20,11 +27,7 @@ export const Alert = createComponent({
 
   render: ({ ref, props, children }) => {
     return (
-      <CoreCallout
-        ref={ref}
-        title={props.title || ""}
-        variant={props.variant}
-      >
+      <CoreCallout ref={ref} title={props.title || ""} variant={props.variant}>
         {children}
       </CoreCallout>
     );

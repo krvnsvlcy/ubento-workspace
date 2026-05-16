@@ -7,10 +7,10 @@ export class ErrorBoundary extends React.Component<{
   errorComponent?: Component;
   refHandler: RefHandler;
 }> {
-  state = { hasError: false };
+  state = { hasError: false, error: undefined };
 
   static getDerivedStateFromError(error: any) {
-    return { hasError: true };
+    return { hasError: true, error };
   }
 
   componentDidCatch(error: any, errorInfo: any) {
@@ -33,6 +33,7 @@ export class ErrorBoundary extends React.Component<{
       return (
         <div ref={this.props.refHandler}>
           Error rendering element {this.props.elementId}.
+          <pre>{String(this.state.error)}</pre>
         </div>
       );
     }

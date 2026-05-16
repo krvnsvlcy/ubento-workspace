@@ -11,35 +11,29 @@ const switchVariants = tv({
     root: [
       // base
       "group relative isolate inline-flex shrink-0 cursor-pointer items-center rounded-full p-0.5 shadow-inner outline-hidden ring-1 ring-inset transition-all",
-      "bg-gray-200 dark:bg-gray-950",
+      "bg-neutral-border",
       // ring color
-      "ring-black/5 dark:ring-gray-800",
+      "ring-neutral-border",
       // checked
-      "data-[state=checked]:bg-blue-500 dark:data-[state=checked]:bg-blue-500",
+      "data-[state=checked]:bg-accent",
       // disabled
       "data-disabled:cursor-default",
       // disabled checked
-      "data-disabled:data-[state=checked]:bg-blue-200",
-      "data-disabled:data-[state=checked]:ring-gray-300",
-      // disabled checked dark
-      "dark:data-disabled:data-[state=checked]:ring-gray-900",
-      "dark:data-disabled:data-[state=checked]:bg-blue-900",
+      "data-disabled:data-[state=checked]:bg-accent-surface",
+      "data-disabled:data-[state=checked]:ring-accent-border",
       // disabled unchecked
-      "data-disabled:data-[state=unchecked]:ring-gray-300",
-      "data-disabled:data-[state=unchecked]:bg-gray-100",
-      // disabled unchecked dark
-      "dark:data-disabled:data-[state=unchecked]:ring-gray-700",
-      "dark:data-disabled:data-[state=unchecked]:bg-gray-800",
+      "data-disabled:data-[state=unchecked]:ring-neutral-border",
+      "data-disabled:data-[state=unchecked]:bg-neutral-surface",
       focusRing,
     ],
     thumb: [
       // base
       "pointer-events-none relative inline-block transform appearance-none rounded-full border-none shadow-lg outline-hidden transition-all duration-150 ease-in-out focus:border-none focus:outline-hidden focus:outline-transparent",
       // background color
-      "bg-white dark:bg-gray-50",
+      "bg-neutral-surface",
       // disabled
       "group-data-disabled:shadow-none",
-      "group-data-disabled:bg-gray-50 dark:group-data-disabled:bg-gray-500",
+      "group-data-disabled:bg-neutral-surface",
     ],
   },
   variants: {

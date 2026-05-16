@@ -17,16 +17,15 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           // base
           "flex min-h-[4rem] w-full rounded-md border px-3 py-1.5 shadow-xs outline-hidden transition-colors sm:text-sm",
           // text color
-          "text-gray-900 dark:text-gray-50",
+          "text-neutral-content",
           // border color
-          "border-gray-300 dark:border-gray-800",
+          "border-neutral-border",
           // background color
-          "bg-white dark:bg-gray-950",
+          "bg-neutral-surface",
           // placeholder color
-          "placeholder-gray-400 dark:placeholder-gray-500",
+          "placeholder-neutral-content-muted",
           // disabled
-          "disabled:border-gray-300 disabled:bg-gray-100 disabled:text-gray-300",
-          "dark:disabled:border-gray-700 dark:disabled:bg-gray-800 dark:disabled:text-gray-500",
+          "disabled:bg-neutral-surface disabled:text-neutral-content-muted",
           // focus
           focusInput,
           // error

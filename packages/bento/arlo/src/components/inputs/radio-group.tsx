@@ -58,9 +58,9 @@ export const RadioGroup = createComponent({
             <label
               htmlFor={option.value}
               className={cx(
-                "text-sm font-medium text-gray-700 dark:text-gray-300",
+                "text-sm font-medium text-neutral-content",
                 option.disabled &&
-                  "text-gray-400 dark:text-gray-600 cursor-not-allowed",
+                  "text-neutral-content-muted cursor-not-allowed",
               )}
             >
               {option.label}

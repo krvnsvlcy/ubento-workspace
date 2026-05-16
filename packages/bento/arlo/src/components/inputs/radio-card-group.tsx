@@ -52,11 +52,11 @@ export const RadioCardGroup = createComponent({
           >
             <RadioCardIndicator />
             <div className="flex flex-col">
-              <span className="text-sm font-medium text-gray-900 dark:text-gray-50">
+              <span className="text-sm font-medium text-neutral-content">
                 {opt.label}
               </span>
               {opt.description && (
-                <span className="text-sm text-gray-500 dark:text-gray-500">
+                <span className="text-sm text-neutral-content-muted">
                   {opt.description}
                 </span>
               )}

@@ -20,18 +20,17 @@ const selectTriggerStyles = [
     // base
     "group/trigger flex w-full select-none items-center justify-between gap-2 truncate rounded-md border px-3 py-2 shadow-xs outline-hidden transition sm:text-sm",
     // border color
-    "border-gray-300 dark:border-gray-800",
+    "border-neutral-border",
     // text color
-    "text-gray-900 dark:text-gray-50",
+    "text-neutral-content",
     // placeholder
-    "data-placeholder:text-gray-500 dark:data-placeholder:text-gray-500",
+    "data-placeholder:text-neutral-content-muted",
     // background color
-    "bg-white dark:bg-gray-950",
+    "bg-neutral-surface",
     // hover
-    "hover:bg-gray-50 dark:hover:bg-gray-950/50",
+    "hover:bg-neutral-surface-hover",
     // disabled
-    "data-disabled:bg-gray-100 data-disabled:text-gray-400",
-    "dark:data-disabled:border-gray-700 dark:data-disabled:bg-gray-800 dark:data-disabled:text-gray-500",
+    "data-disabled:bg-neutral-surface data-disabled:text-neutral-content-muted",
     focusInput,
     // invalid (optional)
     // "dark:aria-invalid:ring-red-400/20 aria-invalid:ring-2 aria-invalid:ring-red-200 aria-invalid:border-red-500 invalid:ring-2 invalid:ring-red-200 invalid:border-red-500"
@@ -62,9 +61,9 @@ const SelectTrigger = React.forwardRef<
             // base
             "size-4 shrink-0",
             // text color
-            "text-gray-400 dark:text-gray-600",
+            "text-neutral-content-muted",
             // disabled
-            "group-data-disabled/trigger:text-gray-300 dark:group-data-disabled/trigger:text-gray-600",
+            "group-data-disabled/trigger:text-neutral-content-muted",
           )}
         />
       </SelectPrimitives.Icon>
@@ -135,11 +134,11 @@ const SelectContent = React.forwardRef<
           // heights
           "max-h-(--radix-select-content-available-height)",
           // background color
-          "bg-white dark:bg-gray-950",
+          "bg-neutral-surface",
           // text color
-          "text-gray-900 dark:text-gray-50",
+          "text-neutral-content",
           // border color
-          "border-gray-200 dark:border-gray-800",
+          "border-neutral-border",
           // transition
           "will-change-[transform,opacity]",
           // "data-[state=open]:animate-slide-down-and-fade",
@@ -180,7 +179,7 @@ const SelectGroupLabel = React.forwardRef<
       // base
       "px-3 py-2 text-xs font-medium tracking-wide",
       // text color
-      "text-gray-500 dark:text-gray-500",
+      "text-neutral-content-muted",
       className,
     )}
     {...props}
@@ -200,13 +199,13 @@ const SelectItem = React.forwardRef<
         // base
         "grid cursor-pointer grid-cols-[1fr_20px] gap-x-2 rounded-sm px-3 py-2 outline-hidden transition-colors data-[state=checked]:font-semibold sm:text-sm",
         // text color
-        "text-gray-900 dark:text-gray-50",
+        "text-neutral-content",
         // disabled
-        "data-disabled:pointer-events-none data-disabled:text-gray-400 data-disabled:hover:bg-none dark:data-disabled:text-gray-600",
+        "data-disabled:pointer-events-none data-disabled:text-neutral-content-muted data-disabled:hover:bg-none",
         // focus
-        "focus-visible:bg-gray-100 dark:focus-visible:bg-gray-900",
+        "focus-visible:bg-neutral-surface-hover",
         // hover
-        "hover:bg-gray-100 dark:hover:bg-gray-900",
+        "hover:bg-neutral-surface-hover",
         className,
       )}
       {...props}
@@ -216,7 +215,7 @@ const SelectItem = React.forwardRef<
       </SelectPrimitives.ItemText>
       <SelectPrimitives.ItemIndicator>
         <Check
-          className="size-5 shrink-0 text-gray-800 dark:text-gray-200"
+          className="size-5 shrink-0 text-neutral-content"
           aria-hidden="true"
         />
       </SelectPrimitives.ItemIndicator>
@@ -236,7 +235,7 @@ const SelectSeparator = React.forwardRef<
       // base
       "-mx-1 my-1 h-px",
       // background color
-      "bg-gray-300 dark:bg-gray-700",
+      "bg-neutral-border",
       className,
     )}
     {...props}

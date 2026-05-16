@@ -45,18 +45,15 @@ const NavigationButton = React.forwardRef<
         disabled={disabled}
         className={cx(
           "flex size-8 shrink-0 select-none items-center justify-center rounded-sm border p-1 outline-hidden transition sm:size-[30px]",
-          // text color
-          "text-gray-600 hover:text-gray-800",
-          "dark:text-gray-400 dark:hover:text-gray-200",
+          "text-neutral-content-muted hover:text-neutral-content",
           // border color
-          "border-gray-300 dark:border-gray-800",
+          "border-neutral-border",
           // background color
-          "hover:bg-gray-50 active:bg-gray-100",
-          "dark:hover:bg-gray-900 dark:active:bg-gray-800",
+          "hover:bg-neutral-surface-hover active:bg-neutral-surface-hover",
           // disabled
           "disabled:pointer-events-none",
-          "disabled:border-gray-200 dark:disabled:border-gray-800",
-          "disabled:text-gray-400 dark:disabled:text-gray-600",
+          "disabled:border-neutral-border",
+          "disabled:text-neutral-content-muted",
           focusRing,
         )}
         onClick={onClick}
@@ -115,16 +112,16 @@ const Calendar = ({
         nav: "gap-1 flex items-center rounded-full size-full justify-between p-4",
         table: "w-full border-collapse space-y-1",
         head_cell:
-          "w-9 font-medium text-sm sm:text-xs text-center text-gray-400 dark:text-gray-600 pb-2",
+          "w-9 font-medium text-sm sm:text-xs text-center text-neutral-content-muted pb-2",
         row: "w-full mt-0.5",
         cell: cx(
           "relative p-0 text-center focus-within:relative",
-          "text-gray-900 dark:text-gray-50",
+          "text-neutral-content",
         ),
         day: cx(
           "size-9 rounded-sm text-sm focus:z-10",
-          "text-gray-900 dark:text-gray-50",
-          "hover:bg-gray-200 dark:hover:bg-gray-700",
+          "text-neutral-content",
+          "hover:bg-neutral-surface-hover",
           focusRing,
         ),
         day_today: "font-semibold",
@@ -134,12 +131,11 @@ const Calendar = ({
           "dark:aria-selected:bg-blue-500 dark:aria-selected:text-white",
         ),
         day_disabled:
-          "text-gray-300! dark:text-gray-700! line-through disabled:hover:bg-transparent",
-        day_outside: "text-gray-400 dark:text-gray-600",
+          "text-neutral-content-muted! line-through disabled:hover:bg-transparent",
+        day_outside: "text-neutral-content-muted",
         day_range_middle: cx(
           "rounded-none!",
-          "aria-selected:bg-gray-100! aria-selected:text-gray-900!",
-          "dark:aria-selected:bg-gray-900! dark:aria-selected:text-gray-50!",
+          "aria-selected:bg-neutral-surface! aria-selected:text-neutral-content!",
         ),
         day_range_start: "rounded-r-none rounded-l!",
         day_range_end: "rounded-l-none rounded-r!",
@@ -218,7 +214,7 @@ const Calendar = ({
               <div
                 role="presentation"
                 aria-live="polite"
-                className="text-sm font-medium capitalize tabular-nums text-gray-900 dark:text-gray-50"
+                className="text-sm font-medium capitalize tabular-nums text-neutral-content"
               >
                 {format(props.displayMonth, "LLLL yyy", { locale })}
               </div>
@@ -296,10 +292,10 @@ const Calendar = ({
                     "absolute inset-x-1/2 bottom-1.5 h-0.5 w-4 -translate-x-1/2 rounded-[2px]",
                     {
                       "bg-blue-500 dark:bg-blue-500": !selected,
-                      "bg-white! dark:bg-gray-950!": selected,
-                      "bg-gray-400! dark:bg-gray-600!":
+                      "bg-accent-contrast!": selected,
+                      "bg-neutral-content-muted!":
                         selected && range_middle,
-                      "bg-gray-400 text-gray-400 dark:bg-gray-400 dark:text-gray-600":
+                      "bg-neutral-content-muted text-neutral-content-muted":
                         disabled,
                     },
                   )}

@@ -22,6 +22,7 @@ export const DataTable = createComponent({
   render: ({ ref, props }) => {
     return (
       <CoreDataTable
+        ref={ref}
         columns={props.columns}
         data={props.data}
         searchColumn={props.searchColumn}

@@ -50,7 +50,7 @@ export type BentoEngineRuntimeRpcInterface = {
     data,
   }: {
     boardId: string;
-    data: Partial<BentoBoardData>;
+    data: BentoBoardData;
   }) => Promise<void>;
 
   setTheme: ({ css }: { css: string }) => Promise<void>;

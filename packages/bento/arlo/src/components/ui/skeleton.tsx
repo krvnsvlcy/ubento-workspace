@@ -19,7 +19,7 @@ export const Skeleton = createComponent({
       <div
         ref={ref}
         className={cx(
-          "animate-pulse rounded-md bg-gray-200 dark:bg-gray-800 w-full h-4",
+          "animate-pulse rounded-md bg-neutral-border w-full h-4",
           props.className,
         )}
         style={{

@@ -11,22 +11,21 @@ const inputStyles = tv({
     // base
     "relative block w-full appearance-none rounded-md border px-2.5 py-2 shadow-xs outline-hidden transition sm:text-sm",
     // border color
-    "border-gray-300 dark:border-gray-800",
+    "border-neutral-border",
     // text color
-    "text-gray-900 dark:text-gray-50",
+    "text-neutral-content",
     // placeholder color
-    "placeholder-gray-400 dark:placeholder-gray-500",
+    "placeholder-neutral-content-muted",
     // background color
-    "bg-white dark:bg-gray-950",
+    "bg-neutral-surface",
     // disabled
-    "disabled:border-gray-300 disabled:bg-gray-100 disabled:text-gray-400",
-    "dark:disabled:border-gray-700 dark:disabled:bg-gray-800 dark:disabled:text-gray-500",
+    "disabled:bg-neutral-surface disabled:text-neutral-content-muted",
     // file
     [
       "file:-my-2 file:-ml-2.5 file:cursor-pointer file:rounded-l-[5px] file:rounded-r-none file:border-0 file:px-3 file:py-2 file:outline-hidden focus:outline-hidden disabled:pointer-events-none file:disabled:pointer-events-none",
-      "file:border-solid file:border-gray-300 file:bg-gray-50 file:text-gray-500 file:hover:bg-gray-100 dark:file:border-gray-800 dark:file:bg-gray-950 dark:file:hover:bg-gray-900/20 dark:file:disabled:border-gray-700",
+      "file:border-solid file:border-neutral-border file:bg-neutral-surface file:text-neutral-content-muted file:hover:bg-neutral-surface-hover",
       "file:[border-inline-end-width:1px] file:[margin-inline-end:0.75rem]",
-      "file:disabled:bg-gray-100 file:disabled:text-gray-500 dark:file:disabled:bg-gray-800",
+      "file:disabled:bg-neutral-surface file:disabled:text-neutral-content-muted",
     ],
     // focus
     focusInput,
@@ -92,7 +91,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
               // base
               "pointer-events-none absolute bottom-0 left-2 flex h-full items-center justify-center",
               // text color
-              "text-gray-400 dark:text-gray-600",
+              "text-neutral-content-muted",
             )}
           >
             <Search className="size-[1.125rem] shrink-0" aria-hidden="true" />
@@ -110,9 +109,9 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
                 // base
                 "h-fit w-fit rounded-xs outline-hidden transition-all",
                 // text
-                "text-gray-400 dark:text-gray-600",
+                "text-neutral-content-muted",
                 // hover
-                "hover:text-gray-500 dark:hover:text-gray-500",
+                "hover:text-neutral-content",
                 focusRing,
               )}
               type="button"

@@ -431,8 +431,6 @@ export function createWorkspaceEngine({
       spec: validated,
     });
 
-    console.log("[workspace.updateBoardSpec]", { validated, data });
-
     return validated;
   }
   async function writeBoardSpec({
@@ -702,7 +700,11 @@ export function createWorkspaceEngine({
         const board = state.data[boardId];
         const prevBoard = prevState.data[boardId];
         if (board.name !== prevBoard?.name) {
-          rpc?.egress.writeBoard({ boardId, data: { title: board.name } });
+          const data = await readBoard({ boardId });
+          rpc?.egress.writeBoard({
+            boardId,
+            data: { ...data, title: board.name },
+          });
         }
       }
     },

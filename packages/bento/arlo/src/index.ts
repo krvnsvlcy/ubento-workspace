@@ -64,8 +64,7 @@ export * from "./components/visualization/spark-chart.js";
 export * from "./components/data-items/avatar.js";
 
 // Typography Components
-export * from "./components/typography/heading.js";
-export * from "./components/typography/text.js";
+export * from "./components/typography/typography.js";
 
 // Hooks
 export * from "./core/hooks/useOnWindowResize.js";

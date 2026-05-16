@@ -82,12 +82,7 @@ const SparkAreaChart = React.forwardRef<HTMLDivElement, SparkAreaChartProps>(
     };
 
     return (
-      <div
-        ref={forwardedRef}
-        className={cx("h-12 w-28", className)}
-        tremor-id="tremor-raw"
-        {...other}
-      >
+      <div ref={forwardedRef} className={cx("h-12 w-28", className)} {...other}>
         <ResponsiveContainer>
           <RechartsAreaChart
             data={data}

@@ -40,7 +40,7 @@ const TabNavigation = React.forwardRef<
         // base
         "flex items-center justify-start whitespace-nowrap border-b [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
         // border color
-        "border-gray-200 dark:border-gray-800",
+        "border-neutral-border",
         className,
       )}
     >
@@ -76,17 +76,16 @@ const TabNavigationLink = React.forwardRef<
             // base
             "-mb-px flex items-center justify-center whitespace-nowrap border-b-2 border-transparent px-3 pb-2 text-sm font-medium transition-all",
             // text color
-            "text-gray-500 dark:text-gray-500",
+            "text-neutral-content-muted",
             // hover
-            "group-hover:text-gray-700 dark:group-hover:text-gray-400",
+            "group-hover:text-neutral-content",
             // border hover
-            "group-hover:border-gray-300 dark:group-hover:border-gray-400",
+            "group-hover:border-neutral-border-hover",
             // selected
-            "group-data-active:border-blue-500 group-data-active:text-blue-500",
-            "dark:group-data-active:border-blue-500 dark:group-data-active:text-blue-500",
+            "group-data-active:border-accent group-data-active:text-accent",
             // disabled
             disabled
-              ? "pointer-events-none text-gray-300 dark:text-gray-700"
+              ? "pointer-events-none text-neutral-content-muted"
               : "",
             focusRing,
             className,

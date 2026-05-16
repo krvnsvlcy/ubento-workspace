@@ -5,7 +5,14 @@ import {
   SparkBarChart,
   SparkLineChart,
 } from "../../core/visualization/spack-chart.js";
-import * as React from "react";
+
+const tempData = [
+  { date: 1, sales: 120 },
+  { date: 2, sales: 100 },
+  { date: 3, sales: 80 },
+  { date: 4, sales: 200 },
+  { date: 5, sales: 50 },
+];
 
 export const SparkChart = createComponent({
   props: z.object({
@@ -35,9 +42,9 @@ export const SparkChart = createComponent({
     return (
       <ChartComponent
         ref={ref}
-        data={props.data}
-        index={props.index}
-        categories={props.categories}
+        data={tempData}
+        index={"date"}
+        categories={["sales"]}
         colors={props.colors as any}
         {...(props.type === "area" || props.type === "bar"
           ? { type: props.variant }
