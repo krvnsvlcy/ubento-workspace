@@ -65,6 +65,38 @@ export function outputFormat(tools: AgentTool[], hasAgents: boolean) {
     );
   }
 
+  examples.push(
+    `**Call a tool example**  \n${renderYaml({
+      actions: [
+        {
+          tool: "read_file",
+          args: {
+            path: "src/index.ts",
+          },
+        },
+      ],
+    } satisfies AgentManagerSchema)}`,
+  );
+
+  examples.push(
+    `**Call multiple tools in parallel example**  \n${renderYaml({
+      actions: [
+        {
+          tool: "read_file",
+          args: {
+            path: "src/index.ts",
+          },
+        },
+        {
+          tool: "get_file_status",
+          args: {
+            path: "src/index.ts",
+          },
+        },
+      ],
+    } satisfies AgentManagerSchema)}`,
+  );
+
   // Standalone response example to reinforce the rule
   examples.push(
     `**Final response example (Send only after confirming all previous actions succeeded)**  \n${renderYaml(

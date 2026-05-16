@@ -128,7 +128,7 @@ export function createBentoRuntime({
             events: comp.events?.toJSONSchema(),
             bindings: comp.bindings?.toJSONSchema(),
             summary: comp.summary,
-            instruction: comp.instruction,
+            instruction: comp.instructions,
           };
         }
       }
@@ -143,7 +143,7 @@ export function createBentoRuntime({
             events: comp.events?.toJSONSchema(),
             bindings: comp.bindings?.toJSONSchema(),
             summary: comp.summary,
-            instruction: comp.instruction,
+            instruction: comp.instructions,
           },
         ]),
       );

@@ -27,11 +27,11 @@ function getBoardStyle(style: BoardStyle): React.CSSProperties {
   return {
     position: "relative",
     width:
-      layout === "row" ? (flow === "fixed" ? "100%" : "fit-content") : "100%",
+      layout === "row" ? (flow === "fixed" ? "100vw" : "fit-content") : "100vw",
     height:
       layout === "column"
         ? flow === "fixed"
-          ? "100%"
+          ? "100vh"
           : "fit-content"
         : "100%",
     minHeight: "100vh",

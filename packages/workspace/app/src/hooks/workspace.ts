@@ -5,8 +5,9 @@ import { useQuery } from "@tanstack/react-query";
 
 export function useWorkspaceServices(workspaceEngine: WorkspaceEngine) {
   const workspaceSpec = workspaceEngine.useState((s) => s.workspace.spec) || {};
-  const installedServices =
-    workspaceSpec.status === "valid" ? workspaceSpec.data?.services || {} : {};
+  const installedServices = workspaceSpec.isValid
+    ? workspaceSpec.data?.services || {}
+    : {};
   const installedServiceIds = new Set(
     Object.values(installedServices).map((s) => s.id),
   );

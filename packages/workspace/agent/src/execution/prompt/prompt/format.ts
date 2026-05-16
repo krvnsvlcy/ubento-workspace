@@ -33,7 +33,7 @@ export async function formatUserMessage(
     }
   }
 
-  return parts;
+  return [...parts, { type: "text", text: "\n\n" }];
 }
 
 function formatAction(action: AgentActionData): string {
@@ -116,7 +116,7 @@ export function formatAgentMessage(
   if (actionsText) parts.push(actionsText);
   if (errorText) parts.push(errorText);
 
-  return parts.join("\n\n");
+  return parts.join("\n\n") + "\n\n";
 }
 
 export function messagePartsToMarkdown(parts: MessagePart[]): string {

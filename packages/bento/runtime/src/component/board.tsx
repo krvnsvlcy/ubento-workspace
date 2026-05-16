@@ -54,7 +54,7 @@ export function BentoBoardView({
     );
   }
 
-  if (board.spec.status === "invalid") {
+  if (!board.spec.isValid) {
     return (
       <div className="h-full flex flex-col items-center justify-center bg-neutral-surface/20 p-6">
         <div className="w-20 h-20 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-500 mb-6">
@@ -68,10 +68,11 @@ export function BentoBoardView({
             Validation Errors:
           </p>
           <ul className="space-y-2">
-            {board.spec.errors.map((err, i) => (
+            {board.spec.issues.map((issue, i) => (
               <li key={i} className="text-sm text-red-500 flex gap-2">
                 <span className="opacity-50">•</span>
-                <span className="font-mono">{err}</span>
+                <span className="font-mono">{issue.location.join(".")}</span>
+                <span className="font-mono">{issue.message}</span>
               </li>
             ))}
           </ul>

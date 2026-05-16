@@ -1,3 +1,5 @@
+export * from "./checker/checker.js";
+export * from "./context/context.js";
 export * from "./environment/component.js";
 export * from "./environment/environment.js";
 export * from "./renderer/renderer.js";

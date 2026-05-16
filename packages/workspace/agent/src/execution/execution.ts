@@ -77,8 +77,8 @@ export function createAgentExecution({
       agent,
     });
     const tools = environment.getAgentTools(agent);
+    const agents = environment.getAgentSubAgents(agent);
     const toolkits = environment.listToolkits?.() ?? [];
-    const agents = environment.listAgents?.() ?? [];
 
     const instructions = buildAgentOrchestratorInstructions({
       agent,

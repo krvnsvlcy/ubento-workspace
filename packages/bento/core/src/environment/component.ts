@@ -36,7 +36,7 @@ export type Component<
   bindings?: TBindings;
   render: React.ComponentType<ComponentProps<TProps, TEvents, TBindings>>;
   summary: string;
-  instruction?: string;
+  instructions?: string;
 };
 
 export function createComponent<
@@ -48,7 +48,7 @@ export function createComponent<
   events,
   bindings,
   render,
-  instruction,
+  instructions,
   summary,
 }: {
   props: TProps;
@@ -56,7 +56,7 @@ export function createComponent<
   bindings?: TBindings;
   summary: string;
   render: React.ComponentType<ComponentProps<TProps, TEvents, TBindings>>;
-  instruction?: string;
+  instructions?: string;
 }): Component<TProps, TEvents, TBindings> {
   return {
     summary,
@@ -64,7 +64,7 @@ export function createComponent<
     events,
     bindings,
     render,
-    instruction,
+    instructions: instructions,
   };
 }
 

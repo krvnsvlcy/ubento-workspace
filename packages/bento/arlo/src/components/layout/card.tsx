@@ -7,7 +7,7 @@ import {
   layoutElementStyleSchema,
   useLayoutContext,
   type LayoutContextType,
-} from "../../lib/style";
+} from "../../lib/style.js";
 
 export const cardPropsSchema = layoutElementStyleSchema.extend({
   padding: z.union([edgesSpec(z.number()), z.number()]).optional(),
@@ -59,7 +59,7 @@ function getCardStyle(
 export const Card = createComponent({
   props: cardPropsSchema,
   summary: "Use this component to visualy group related items together.",
-  instruction: [
+  instructions: [
     "You must provide proper padding values. The component does not provide any default padding.",
     "Also this component does not layout children. For internal layouting eg spacing between items or aligning them, you must wrap the content in a layout component such as a stack or grid.",
   ].join("\n"),

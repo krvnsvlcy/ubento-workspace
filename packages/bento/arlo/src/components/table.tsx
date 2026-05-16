@@ -6,7 +6,7 @@ import {
   layoutElementStyleSchema,
   useLayoutContext,
   type LayoutContextType,
-} from "../lib/style";
+} from "../lib/style.js";
 
 export const tablePropsSchema = layoutElementStyleSchema.extend({
   data: z.array(z.record(z.string(), z.any())).optional(),
@@ -44,7 +44,7 @@ function getTableStyle(
 export const Table = createComponent({
   props: tablePropsSchema,
   summary: "Table component for displaying structured data",
-  instruction: [
+  instructions: [
     "The component accepts `data` as an array of objects to display in the table.",
     "If `columns` are not provided, they will be automatically inferred from the keys of the first item in the `data` array.",
     "You can explicitly define `columns` to control which fields are shown, their header labels, and column widths.",

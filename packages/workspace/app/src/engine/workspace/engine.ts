@@ -1,8 +1,11 @@
 import { UbentoEngine, UbentoEngineState } from "@/engine/app/engine";
 import { JsonPatch } from "@/utils/json";
 import {
+  resolveBoardContextSchema as __resolveBoardContextSchema,
   BoardSpec,
   boardSpecSchema,
+  FunctionSchema,
+  ObjectNodeSchema,
   ServiceData,
   WorkspaceSpec,
   workspaceSpecSchema,
@@ -16,10 +19,11 @@ import {
   boardDataSchema,
   DropRect,
   ParsedSpec,
+  SpecIssue,
 } from "@ubento/bento.runtime";
 import { createDuplexRpc, createWindowPort, DuplexRpc } from "@ubento/rpc";
 import { workspaceClient } from "@ubento/services.sdk";
-import { serviceSpecV1Schema } from "@ubento/vertex.core";
+import { OperationSpec, serviceSpecV1Schema } from "@ubento/vertex.core";
 import { createZustandStateController } from "@ubento/workspace.primitives";
 import { registerStore, unregisterStore } from "@ubento/zustand-devtool";
 import { dequal } from "dequal/lite";
@@ -28,9 +32,10 @@ import debounce from "lodash.debounce";
 import z from "zod";
 import { createStore as createZustandStore } from "zustand/vanilla";
 import { UbentoSession } from "../app/session";
+import { contextBuilderInstructions } from "../copilot/agents/context-builder";
 import { copilotInstructions } from "../copilot/agents/copilot";
-import { editorInstructions } from "../copilot/agents/editor";
 import { explorerInstructions } from "../copilot/agents/explorer";
+import { uiBuilderInstructions } from "../copilot/agents/ui-builder";
 import { createUbentoCopilot } from "../copilot/copilot";
 import { createCopilotAgentEnvironment } from "../copilot/environment/environment";
 import { generateInitialBoardSpec } from "./init";
@@ -45,15 +50,116 @@ function parseSpecData<S extends z.ZodTypeAny>(
   const spec = schema.safeParse(data);
   if (!spec.success) {
     return {
-      status: "invalid",
+      isValid: false,
       data: data,
-      errors: [String(spec.error)],
+      issues: spec.error.issues.map((issue) => ({
+        location: issue.path.map((p) => String(p)),
+        message: issue.message,
+      })),
     };
   } else {
     return {
-      status: "valid",
+      isValid: true,
       data: spec.data,
     };
+  }
+}
+
+export function extractBoardContext(spec: ParsedSpec<BoardSpec>) {
+  const contextFields = new Set(["params", "state", "initialState", "store"]);
+  let contextData = {};
+  if (spec.data && typeof spec.data === "object") {
+    contextData = {
+      params: (spec.data as any)?.params,
+      state: (spec.data as any)?.state,
+      initialState: (spec.data as any)?.initialState,
+      store: (spec.data as any)?.store,
+    };
+  }
+
+  let contextIssues: SpecIssue[] = [];
+  if (spec.issues) {
+    contextIssues = spec.issues.filter((issue: SpecIssue) =>
+      contextFields.has(issue.location[0]),
+    );
+  }
+
+  return {
+    isValid: contextIssues.length === 0,
+    data: contextData,
+    issues: contextIssues,
+  };
+}
+
+export function resolveOperationSchema<THandlerSpec extends z.ZodType>(
+  spec: OperationSpec<THandlerSpec>,
+): FunctionSchema {
+  const parameters: ObjectNodeSchema = {
+    type: "object",
+    properties: {},
+    required: [],
+  };
+
+  // 1. Map args to parameter properties
+  if (spec.args) {
+    for (const [argName, argDef] of Object.entries(spec.args)) {
+      // Cast the inferred schema to your standard schema AST type
+      parameters.properties![argName] = argDef.schema as any;
+
+      // By default, treat arguments as required unless explicitly marked false
+      if (argDef.required !== false) {
+        parameters.required!.push(argName);
+      }
+    }
+  }
+
+  // Clean up empty required arrays to keep the AST clean
+  if (parameters.required && parameters.required.length === 0) {
+    delete parameters.required;
+  }
+
+  // 2. Construct and return the FunctionSchema
+  return {
+    type: "function",
+    parameters:
+      Object.keys(parameters.properties || {}).length > 0
+        ? parameters
+        : { type: "object", properties: {} },
+    returns: spec.schema as any,
+  };
+}
+
+/**
+ * Pre-flights JSON patches to ensure all intermediate parent paths exist.
+ * Mutates the provided document directly.
+ */
+function ensureDeepPaths(document: any, patch: any) {
+  // Ensure we are iterating over an array of operations
+  const ops = Array.isArray(patch) ? patch : [patch];
+
+  for (const op of ops) {
+    // We only need to auto-populate for 'add' and 'replace' operations
+    if (op.op === "add" || op.op === "replace") {
+      // Split the path (e.g., "/settings/ui/theme" -> ["settings", "ui", "theme"])
+      const parts = op.path.split("/").filter(Boolean);
+      let current = document;
+
+      // Iterate up to the second-to-last element (the parent of the target key)
+      for (let i = 0; i < parts.length - 1; i++) {
+        const part = parts[i];
+
+        // If the current level is missing, initialize it
+        if (current[part] === undefined || current[part] === null) {
+          // Smart heuristic: if the *next* key is a number, assume an array.
+          // Otherwise, assume an object.
+          const nextPart = parts[i + 1];
+          current[part] = !isNaN(Number(nextPart)) ? [] : {};
+        }
+
+        // Move deeper into the tree
+        current = current[part];
+      }
+    }
   }
 }
 
@@ -249,6 +355,29 @@ export function createWorkspaceEngine({
     await rpc?.egress.writeBoard({ boardId: data.id, data });
   }
 
+  async function resolveBoardContextSchema({ boardId }: { boardId: string }) {
+    const board = await readBoardSpec({ boardId });
+    const context = extractBoardContext(board);
+    return __resolveBoardContextSchema({
+      spec: context.data,
+      getServiceOperationSchema: async ({ type, name, service }) => {
+        const serviceSpec = await getServiceSpecForService(service);
+        if (!serviceSpec || !serviceSpec.isValid) return { type: "function" };
+        const specData = serviceSpec.data;
+        if (type === "query") {
+          const operationSchema = specData.queries?.[name];
+          if (!operationSchema) return { type: "function" };
+          return resolveOperationSchema(operationSchema);
+        } else if (type === "action") {
+          const operationSchema = specData.actions?.[name];
+          if (!operationSchema) return { type: "function" };
+          return resolveOperationSchema(operationSchema);
+        }
+        return { type: "function" };
+      },
+    });
+  }
+
   // update spec
 
   async function readBoardSpec({ boardId }: { boardId: string }) {
@@ -259,7 +388,7 @@ export function createWorkspaceEngine({
   async function checkBoard({ boardId }: { boardId: string }) {
     const data = await readBoard({ boardId });
     const spec = data.spec;
-    if (spec.status === "valid") {
+    if (spec.isValid) {
       return await deepValidateBoard(spec.data);
     }
     return spec;
@@ -269,22 +398,41 @@ export function createWorkspaceEngine({
     patch,
   }: {
     boardId: string;
-    patch: JsonPatch;
+    patch: JsonPatch; // Assuming this is an array of patch operations
   }) {
     const data = await readBoard({ boardId });
-    const updatedSpec = applyPatch(data.spec.data, patch).newDocument;
+
+    // 1. Deep clone the data to avoid mutating the original read cache
+    // (structuredClone is native in Node 17+ and modern browsers)
+    const draftSpec =
+      typeof structuredClone === "function"
+        ? structuredClone(data.spec.data)
+        : JSON.parse(JSON.stringify(data.spec.data));
+
+    // 2. Pre-fill any missing intermediate paths
+    ensureDeepPaths(draftSpec, patch);
+
+    // 3. Safely apply the patch now that the tree structure is guaranteed
+    const updatedSpec = applyPatch(draftSpec, patch).newDocument;
+
+    // 4. Proceed with your existing parsing and validation logic
     const parsed = parseSpecData(boardSpecSchema, {
       ...(updatedSpec as any),
       id: boardId,
       title: data.title,
     });
-    const validated =
-      parsed.status === "valid" ? await deepValidateBoard(parsed.data) : parsed;
+
+    const validated = parsed.isValid
+      ? await deepValidateBoard(parsed.data)
+      : parsed;
 
     await writeBoard({
       ...data,
       spec: validated,
     });
+
+    console.log("[workspace.updateBoardSpec]", { validated, data });
+
     return validated;
   }
   async function writeBoardSpec({
@@ -300,8 +448,9 @@ export function createWorkspaceEngine({
       id: boardId,
       title: data.title,
     });
-    const validated =
-      parsed.status === "valid" ? await deepValidateBoard(parsed.data) : parsed;
+    const validated = parsed.isValid
+      ? await deepValidateBoard(parsed.data)
+      : parsed;
 
     await writeBoard({
       ...data,
@@ -318,17 +467,18 @@ export function createWorkspaceEngine({
       | undefined;
 
     if (!components) {
-      return { status: "valid", data: parsed };
+      return { isValid: true, data: parsed, issues: [] };
     }
 
-    const errors: string[] = [];
+    const issues: SpecIssue[] = [];
 
     for (const [elementId, element] of Object.entries(parsed.elements || {})) {
       const comp = components[element.component];
       if (!comp) {
-        errors.push(
-          `Component ${element.component} used by element ${elementId} not found`,
-        );
+        issues.push({
+          location: ["elements", elementId],
+          message: `Component ${element.component} used by element ${elementId} not found`,
+        });
         continue;
       }
 
@@ -359,30 +509,29 @@ export function createWorkspaceEngine({
 
           // 3. Only register the error if it is NOT a directive
           if (!isUseDirective) {
-            const pathString =
-              issue.path.length > 0 ? ` at ${issue.path.join(".")}` : "";
-            errors.push(
-              `Error in element ${elementId}${pathString}: ${issue.message}`,
-            );
+            issues.push({
+              location: ["elements", elementId, ...issue.path.map(String)],
+              message: issue.message,
+            });
           }
         }
       }
     }
 
-    if (errors.length > 0) {
-      return { status: "invalid", errors, data: parsed };
+    if (issues.length > 0) {
+      return { isValid: false, issues: issues, data: parsed };
     }
-    return { status: "valid", data: parsed };
+    return { isValid: true, data: parsed };
   }
   // Update metadata
-  async function updateBoardMetadata({
+  async function updateBoard({
     boardId,
-    metadata,
+    update,
   }: {
     boardId: string;
-    metadata: Partial<Pick<BentoBoardData, "title">>;
+    update: Partial<Pick<BentoBoardData, "title">>;
   }) {
-    await workspaceService.updateBoard(boardId, { name: metadata.title });
+    await workspaceService.updateBoard(boardId, { name: update.title });
   }
 
   // delete board
@@ -392,51 +541,33 @@ export function createWorkspaceEngine({
 
   // create board
   async function createBoard({
-    name,
+    title,
     parentId,
     spec,
   }: {
-    name: string;
+    title: string;
     parentId?: string;
     spec?: any;
-  }) {
+  }): Promise<ParsedSpec<BoardSpec>> {
     const state = store.getState();
     const workspaceId = state.workspace.id;
 
-    const result = await workspaceService.createBoard({
-      name,
+    const parsed = parseSpecData(boardSpecSchema, {
+      ...(spec || generateInitialBoardSpec({ title: title })),
+      title: title,
+    });
+    const validated = parsed.isValid
+      ? await deepValidateBoard(parsed.data)
+      : parsed;
+
+    await workspaceService.createBoard({
+      name: title,
       parentId,
       workspace_id: workspaceId,
-      data: generateInitialBoardSpec({ title: name }),
+      data: validated.data as any,
     });
 
-    if (spec) {
-      const parsed = parseSpecData(boardSpecSchema, {
-        ...(spec as any),
-        id: result.id,
-        title: name,
-      });
-      const validated =
-        parsed.status === "valid"
-          ? await deepValidateBoard(parsed.data)
-          : parsed;
-
-      await workspaceService.updateBoard(result.id, {
-        name,
-        data: validated.data as any,
-      });
-
-      return {
-        id: result.id,
-        status: validated.status,
-        errors: "errors" in validated ? (validated as any).errors : undefined,
-      };
-    }
-
-    return {
-      id: result.id,
-      status: "valid",
-    };
+    return validated;
   }
 
   const persistBoard = debounce(async (data: BentoBoardData) => {
@@ -464,6 +595,14 @@ export function createWorkspaceEngine({
     return parseSpecData(serviceSpecV1Schema, specData);
   }
 
+  async function getServiceSpecForService(serviceName: string) {
+    const workspaceSpec = readWorkspaceSpec();
+    if (!workspaceSpec) return null;
+    const serviceData = workspaceSpec.services?.[serviceName];
+    if (!serviceData) return null;
+    return getServiceSpec(serviceData.channelId);
+  }
+
   async function runServiceOperation({
     service,
     type,
@@ -487,7 +626,7 @@ export function createWorkspaceEngine({
 
     const channelId = serviceData.channelId;
     const serviceSpec = await getServiceSpec(channelId);
-    if (serviceSpec.status === "invalid") {
+    if (!serviceSpec.isValid) {
       throw new Error(`Invalid service spec for ${channelId}.`);
     }
 
@@ -521,7 +660,7 @@ export function createWorkspaceEngine({
   function readWorkspaceSpec() {
     const state = store.getState();
     const spec = state.workspace.spec;
-    if (spec.status === "valid") {
+    if (spec.isValid) {
       return spec.data;
     }
     return undefined;
@@ -575,10 +714,10 @@ export function createWorkspaceEngine({
     listBoards,
     readBoardSpec,
     updateBoardSpec,
-    updateBoardMetadata,
+    updateBoard,
     deleteBoard,
     createBoard,
-    checkBoard,
+    resolveBoardContextSchema,
   });
   const catalogToolkit = createCatalogToolkit({
     listComponents,
@@ -602,13 +741,24 @@ export function createWorkspaceEngine({
     tools: [
       workspaceToolkit.tools.goToTool,
       workspaceToolkit.tools.getBoardTool,
-      workspaceToolkit.tools.listBoardsTool,
-      workspaceToolkit.tools.readBoardSpecTool,
       workspaceToolkit.tools.updateBoardSpecTool,
-      workspaceToolkit.tools.updateBoardMetadataTool,
+      workspaceToolkit.tools.updateBoardTool,
       workspaceToolkit.tools.deleteBoardTool,
       workspaceToolkit.tools.createBoardTool,
+      // context
+      workspaceToolkit.tools.updateBoardContextTool,
+      workspaceToolkit.tools.checkBoardContextTool,
+      workspaceToolkit.tools.readBoardContextTool,
+      // ui
+      workspaceToolkit.tools.readBoardUiTool,
+      workspaceToolkit.tools.updateBoardUiTool,
+      workspaceToolkit.tools.checkBoardUiTool,
+      // spec
+      workspaceToolkit.tools.listBoardsTool,
+      workspaceToolkit.tools.readBoardSpecTool,
       workspaceToolkit.tools.checkBoardTool,
+      //context
+      workspaceToolkit.tools.getResolvedBoardContextTool,
       catalogToolkit.tools.listComponents,
       catalogToolkit.tools.describeComponents,
       servicesToolkit.tools.listServices,
@@ -622,7 +772,15 @@ export function createWorkspaceEngine({
     name: "copilot",
     description: "The primary WorkOS orchestration assistant (Supervisor)",
     instructions: copilotInstructions,
-    tools: [workspaceToolkit.tools.goToTool.name],
+    tools: [
+      workspaceToolkit.tools.goToTool.name,
+      workspaceToolkit.tools.getBoardTool.name,
+      workspaceToolkit.tools.listBoardsTool.name,
+      workspaceToolkit.tools.createBoardTool.name,
+      workspaceToolkit.tools.updateBoardTool.name,
+      workspaceToolkit.tools.deleteBoardTool.name,
+    ],
+    agents: ["explorer", "context-builder", "ui-builder"],
     enableMessage: true,
   });
   environment.addAgent({
@@ -644,20 +802,37 @@ export function createWorkspaceEngine({
     ],
   });
   environment.addAgent({
-    name: "editor",
-    description: "Agent to edit the workspace and modify board specifications",
-    instructions: editorInstructions,
+    name: "context-builder",
+    description:
+      "Agent to build the board context including params, state, store, and services integration",
+    instructions: contextBuilderInstructions,
     tools: [
-      catalogToolkit.tools.listComponents.name,
-      catalogToolkit.tools.describeComponents.name,
       workspaceToolkit.tools.getBoardTool.name,
       workspaceToolkit.tools.listBoardsTool.name,
-      workspaceToolkit.tools.readBoardSpecTool.name,
-      workspaceToolkit.tools.updateBoardSpecTool.name,
-      workspaceToolkit.tools.updateBoardMetadataTool.name,
-      workspaceToolkit.tools.deleteBoardTool.name,
-      workspaceToolkit.tools.createBoardTool.name,
-      workspaceToolkit.tools.checkBoardTool.name,
+      workspaceToolkit.tools.readBoardContextTool.name,
+      workspaceToolkit.tools.updateBoardContextTool.name,
+      workspaceToolkit.tools.checkBoardContextTool.name,
+      servicesToolkit.tools.listServices.name,
+      servicesToolkit.tools.describeService.name,
+      servicesToolkit.tools.describeActions.name,
+      servicesToolkit.tools.describeQueries.name,
+      servicesToolkit.tools.describeSchemas.name,
+    ],
+  });
+  environment.addAgent({
+    name: "ui-builder",
+    description:
+      "Agent to build the board UI including elements and context integration",
+    instructions: uiBuilderInstructions,
+    tools: [
+      workspaceToolkit.tools.getBoardTool.name,
+      workspaceToolkit.tools.listBoardsTool.name,
+      catalogToolkit.tools.listComponents.name,
+      catalogToolkit.tools.describeComponents.name,
+      workspaceToolkit.tools.readBoardUiTool.name,
+      workspaceToolkit.tools.updateBoardUiTool.name,
+      workspaceToolkit.tools.checkBoardUiTool.name,
+      workspaceToolkit.tools.getResolvedBoardContextTool.name,
     ],
   });
 
@@ -690,10 +865,11 @@ export function createWorkspaceEngine({
     checkBoard,
     updateBoardSpec,
     writeBoardSpec,
-    updateBoardMetadata,
+    updateBoard,
     deleteBoard,
     createBoard,
     updateWorkspaceSpec,
+    resolveBoardContextSchema,
     setInteractionMode: async (mode: "edit" | "live") => {
       await rpc?.egress.setInteractionMode({ mode });
       store.setState({ mode });

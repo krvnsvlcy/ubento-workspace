@@ -25,6 +25,7 @@ export type AgentEnvironment = {
 
   listToolkits: () => Toolkit[];
   listAgents: () => Agent[];
+  getAgentSubAgents: (agent: Agent) => Agent[];
   addAgent: (agent: Agent) => void;
   removeAgent: (name: string) => void;
   getAgent: (name: string) => Agent | undefined;
@@ -87,6 +88,17 @@ export function createEnvironment({
       agents.delete(name);
     },
     getAgent: (name: string) => agents.get(name),
+    getAgentSubAgents(agent: Agent) {
+      let subAgents = [];
+
+      for (const name of agent.agents ?? []) {
+        const agent = agents.get(name);
+        if (agent) {
+          subAgents.push(agent);
+        }
+      }
+      return subAgents;
+    },
 
     async getTool(name: string) {
       const builtIn = allTools.get(name);
@@ -106,9 +118,18 @@ export function createEnvironment({
       return undefined;
     },
     getAgentTools(agent: Agent) {
-      let tools = [...coreTools.values()];
-      if (!agent.enableMessage) {
-        tools = tools.filter((t) => t.name !== messageTool.name);
+      let tools: AgentTool[] = [];
+
+      if (agent.enableMessage) {
+        tools.push(messageTool);
+      }
+      const toolkits = listToolkits();
+      if (toolkits.length > 0) {
+        tools.push(listToolsTool, describeToolTool);
+      }
+
+      if (agent.agents?.length) {
+        tools.push(taskTool);
       }
 
       for (const name of agent.tools ?? []) {

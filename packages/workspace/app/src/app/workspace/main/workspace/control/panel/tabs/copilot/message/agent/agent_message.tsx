@@ -76,7 +76,7 @@ function TaskActionView({ action }: { action: AgentActionData }) {
       <div className="text-xs text-content-muted flex items-center gap-2">
         <Sparkles size={12} className="text-primary-400" />
         <span className="font-medium">
-          Task: {action.input?.title || "Specialized Agent"}
+          Task: {action.input?.title || "Specialized Agent"} ({action.input?.agent})
         </span>
         <span className="text-neutral-500">({action.status})</span>
         <button

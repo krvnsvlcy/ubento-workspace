@@ -32,35 +32,11 @@ export function toolsSection({
         })),
       };
     }),
-    {
-      name: "finish",
-      description:
-        "Call this to indicate that the task is complete. Must be called alone after verifying previous actions succeeded.",
-      args: null,
-    },
   ];
 
-  let toolkitsDoc = `There are no external toolkits currently available.`;
-
-  if (toolkits.length) {
-    toolkitsDoc = `
-**Available Toolkits**
-
-${renderYaml(
-  toolkits.map((e) => ({
-    name: e.name,
-    description: e.description,
-  })),
-)}`.trim();
-  }
-
-  return `
-# Tools
-
-Following are the tools you have access to perform actions and interact with the system:
-
-${renderYaml(toolList)}
-
+  const externalToolsDoc =
+    toolkits.length > 0
+      ? `
 ## External Tools
 
 In addition to the tools above, You can load additional tools from external toolkits to achieve more advanced capabilities. 
@@ -70,8 +46,24 @@ In addition to the tools above, You can load additional tools from external tool
   (e.g., if the toolkit is 'postgres' and the tool is 'run_query', call \`postgres:run_query\` as the tool name).
 - Always explore toolkits if you need capabilities not provided by your built-in tools.
 
-${toolkitsDoc}
+**Available Toolkits**
 
+${renderYaml(
+  toolkits.map((e) => ({
+    name: e.name,
+    description: e.description,
+  })),
+)}
+`.trim()
+      : "";
+
+  return `
+# Tools
+
+Following are the tools you have access to perform actions and interact with the system:
+
+${renderYaml(toolList)}
+${externalToolsDoc ? `\n${externalToolsDoc}\n` : ""}
 ## Tool Usage Guidelines
 
 - Don't ask permission to use tools.
@@ -82,7 +74,5 @@ ${toolkitsDoc}
 - Break down vague requests and explore the workspace to gather necessary context.
 - Don't repeat yourself after tool calls — Continue from where you left off.
 - Always check the latest actions for failures and handle them before continuing.
-- When finishing, wait for the latest actions to complete and confirm they have succeeded before calling "finish".
-- Send the "finish" command in a single message with no other actions.
 `.trim();
 }

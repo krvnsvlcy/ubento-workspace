@@ -8,7 +8,7 @@ import {
   layoutElementStyleSchema,
   useLayoutContext,
   type LayoutContextType,
-} from "../../lib/style";
+} from "../../lib/style.js";
 
 export const stackPropsSchema = layoutElementStyleSchema.extend({
   direction: z.enum(["row", "column"]),

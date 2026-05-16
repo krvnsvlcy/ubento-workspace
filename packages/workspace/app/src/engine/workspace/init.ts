@@ -7,7 +7,7 @@ export function generateInitialBoardSpec({
 }): BoardSpec {
   return {
     style: {
-      direction: "column",
+      layout: "column",
       gap: 16,
       flow: "scroll",
       padding: { top: 32, right: 32, bottom: 32, left: 32 },
@@ -16,7 +16,7 @@ export function generateInitialBoardSpec({
     elements: {
       header: {
         component: "Heading",
-        inputs: {
+        props: {
           text: title,
           level: "h1",
           size: 32,
@@ -26,7 +26,7 @@ export function generateInitialBoardSpec({
       },
       description: {
         component: "Text",
-        inputs: {
+        props: {
           text: "Welcome to your new board! This is a starting point for your interface. You can add more components and configure their behavior.",
           size: 16,
           color: "#64748b",

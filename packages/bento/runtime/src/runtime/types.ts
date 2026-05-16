@@ -1,14 +1,19 @@
 import { BoardSpec, WorkspaceSpec } from "@ubento/bento.core";
 
+export type SpecIssue = {
+  location: string[];
+  message: string;
+};
 export type ParsedSpec<T> =
   | {
-      status: "valid";
+      isValid: true;
       data: T;
+      issues?: SpecIssue[];
     }
   | {
-      status: "invalid";
+      isValid: false;
       data: unknown;
-      errors: string[];
+      issues: SpecIssue[];
     };
 
 export type BentoBoardData = {

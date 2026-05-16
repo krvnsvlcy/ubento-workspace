@@ -60,11 +60,14 @@ function BoardsSection({
                 icon: "edit",
                 title: "Rename",
                 handler: async () => {
-                  const newName = window.prompt("Enter new board name:", board.name);
+                  const newName = window.prompt(
+                    "Enter new board name:",
+                    board.name,
+                  );
                   if (newName && newName !== board.name) {
-                    await workspaceEngine.updateBoardMetadata({
+                    await workspaceEngine.updateBoard({
                       boardId: board.id,
-                      metadata: { title: newName },
+                      update: { title: newName },
                     });
                   }
                 },
@@ -73,7 +76,11 @@ function BoardsSection({
                 icon: "trash",
                 title: "Delete",
                 handler: async () => {
-                  if (window.confirm(`Are you sure you want to delete board "${board.name}"?`)) {
+                  if (
+                    window.confirm(
+                      `Are you sure you want to delete board "${board.name}"?`,
+                    )
+                  ) {
                     await workspaceEngine.deleteBoard({ boardId: board.id });
                   }
                 },
@@ -92,7 +99,7 @@ function ServicesSection() {
   const workspaceEngine = useWorkspaceEngine();
   const services = workspaceEngine.useState((s) => {
     const spec = s.workspace.spec;
-    if (spec.status === "valid") {
+    if (spec.isValid) {
       return spec.data.services ?? {};
     } else {
       return {};
