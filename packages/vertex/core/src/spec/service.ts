@@ -27,7 +27,7 @@ export function serviceSpecV1SchemaFactory<
     name: z.string(),
     description: z.string().optional(),
     // Connection
-    connection,
+    connection: connection.optional(),
     // Types
     schemas: z.record(z.string(), schemaSchema).optional(),
     // Operations

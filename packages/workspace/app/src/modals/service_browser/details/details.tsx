@@ -3,6 +3,7 @@ import { useUbento } from "@/engine/app/engine";
 import { WorkspaceEngine } from "@/engine/workspace/engine";
 import { serviceSpecV1Schema } from "@ubento/vertex.core";
 import {
+  Button,
   Content,
   ContentBody,
   ContentHeader,
@@ -10,8 +11,6 @@ import {
   RailLayout,
   RailLayoutMain,
   RailLayoutSide,
-  Button,
-  Heading,
   Text,
 } from "@ubento/workspace.primitives";
 import { ArrowLeft, Server } from "lucide-react";
@@ -122,11 +121,9 @@ export function ServiceDetails({
           </ContentHeader>
           <ContentBody className="overflow-auto pt-6">
             <DetailsBody
-              serviceId={serviceId}
-              activeChannelId={activeChannelId}
-              setActiveChannelId={setActiveChannelId}
               isLoadingSpec={isLoadingSpec}
               specData={specData}
+              specError={parsedSpec?.error?.message}
               service={serviceData}
               searchQuery={searchQuery}
             />

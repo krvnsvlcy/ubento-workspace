@@ -119,21 +119,23 @@ async function deploySpec(serviceName: string, sdk: UbentoSDK) {
 }
 
 async function deployProvider(providerName: string, sdk: UbentoSDK) {
-  const providerPath = path.join(
-    root,
-    "src",
-    "providers",
-    `${providerName}.ts`,
-  );
-  if (!fs.existsSync(providerPath)) {
-    console.error(`Error: Provider spec not found at ${providerPath}`);
+  const providersPath = path.join(root, "providers.json");
+  if (!fs.existsSync(providersPath)) {
+    console.error(`Error: providers.json not found at ${providersPath}`);
     return;
   }
 
-  const { config } = await import(providerPath);
-  const code = providerName;
-  const name = providerName;
-  const description = `${providerName} connection provider`;
+  const providers = JSON.parse(fs.readFileSync(providersPath, "utf-8"));
+  const config = providers[providerName];
+
+  if (!config) {
+    console.error(`Error: Provider ${providerName} not found in providers.json`);
+    return;
+  }
+
+  const code = config.code || providerName;
+  const name = config.name || providerName;
+  const description = config.description || `${name} connection provider`;
 
   console.log(`🚀 Deploying provider: ${name}`);
 
@@ -158,7 +160,7 @@ async function deployProvider(providerName: string, sdk: UbentoSDK) {
       console.log(`- Creating new provider: ${name}...`);
       const newProvider = await sdk.vertex.createConnectionProvider({
         code,
-        type: "http",
+        type: config.type || "http",
         name,
         description,
         config: config as any,
@@ -208,19 +210,16 @@ async function run() {
       console.log("done here ------------------------------");
     }
   } else if (command === "deploy-provider") {
-    const providersDir = path.join(root, "src", "providers");
+    const providersPath = path.join(root, "providers.json");
     if (specName === "--all") {
-      if (!fs.existsSync(providersDir)) {
+      if (!fs.existsSync(providersPath)) {
         console.error(
-          `Error: Providers directory not found at ${providersDir}`,
+          `Error: providers.json not found at ${providersPath}`,
         );
         return;
       }
-      const files = fs
-        .readdirSync(providersDir)
-        .filter((f) => f.endsWith(".ts"));
-      for (const file of files) {
-        const name = path.basename(file, ".ts");
+      const providers = JSON.parse(fs.readFileSync(providersPath, "utf-8"));
+      for (const name of Object.keys(providers)) {
         await deployProvider(name, sdk);
       }
     } else {

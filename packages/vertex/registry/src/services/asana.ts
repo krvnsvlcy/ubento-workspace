@@ -1,9 +1,12 @@
 import { generateServiceSpecFromOpenApi } from "@ubento/vertex.core";
 import { getOpenApiSpec } from "../utils/openapi.js";
 
+
 export async function getSpec() {
   return generateServiceSpecFromOpenApi({
-    openapi: await getOpenApiSpec({ url: "https://raw.githubusercontent.com/Asana/openapi/master/defs/asana_oas.yaml" }),
+    openapi: await getOpenApiSpec({
+      url: "https://raw.githubusercontent.com/Asana/openapi/master/defs/asana_oas.yaml",
+    }),
     template: {
       name: "Asana",
       discover: true,
