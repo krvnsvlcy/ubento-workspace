@@ -129,50 +129,49 @@ async function deployProvider(providerName: string, sdk: UbentoSDK) {
   const config = providers[providerName];
 
   if (!config) {
-    console.error(`Error: Provider ${providerName} not found in providers.json`);
+    console.error(
+      `Error: Provider ${providerName} not found in providers.json`,
+    );
     return;
   }
 
   const code = config.code || providerName;
-  const name = config.name || providerName;
-  const description = config.description || `${name} connection provider`;
 
-  console.log(`🚀 Deploying provider: ${name}`);
+  console.log(`🚀 Deploying provider: ${code}`);
 
   try {
-    const providersResponse = await sdk.vertex.listConnectionProviders({
-      name: name,
-    });
-    const existingProvider = providersResponse.data?.find(
-      (p: any) => p.name === name,
-    );
+    const providersResponse = await sdk.vertex.getProviderByCode(code);
+    const existingProvider = providersResponse;
 
     if (existingProvider) {
       console.log(
-        `✅ Found existing provider: ${name} (${existingProvider.id})`,
+        `✅ Found existing provider: ${code} (${existingProvider.id})`,
       );
-      console.log(`- Updating provider config: ${name}...`);
+      console.log(`- Updating provider config: ${code}...`);
       await sdk.vertex.updateConnectionProvider(existingProvider.id, {
+        type: config.type || "http",
+        name: config.name,
+        description: config.description,
         config: config as any,
       });
-      console.log(`✅ Updated provider config: ${name}`);
+      console.log(`✅ Updated provider config: ${code}`);
     } else {
-      console.log(`- Creating new provider: ${name}...`);
+      console.log(`- Creating new provider: ${code}...`);
       const newProvider = await sdk.vertex.createConnectionProvider({
         code,
         type: config.type || "http",
-        name,
-        description,
+        name: config.name,
+        description: config.description,
         config: config as any,
       });
-      console.log(`✅ Created provider: ${name} (${newProvider.id})`);
+      console.log(`✅ Created provider: ${code} (${newProvider.id})`);
     }
   } catch (err) {
-    console.error(`❌ Failed to find or create provider ${name}:`, err);
+    console.error(`❌ Failed to find or create provider ${code}:`, err);
     return;
   }
 
-  console.log(`✨ Deployment completed for provider ${name}`);
+  console.log(`✨ Deployment completed for provider ${code}`);
 }
 
 async function run() {
@@ -213,9 +212,7 @@ async function run() {
     const providersPath = path.join(root, "providers.json");
     if (specName === "--all") {
       if (!fs.existsSync(providersPath)) {
-        console.error(
-          `Error: providers.json not found at ${providersPath}`,
-        );
+        console.error(`Error: providers.json not found at ${providersPath}`);
         return;
       }
       const providers = JSON.parse(fs.readFileSync(providersPath, "utf-8"));

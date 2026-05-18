@@ -38,16 +38,15 @@ function WorkspaceOverlay({ engine }: { engine: WorkspaceEngine }) {
 }
 
 function InvalidSpecOverlay({ engine }: { engine: WorkspaceEngine }) {
-  const specStatus = engine.useState((state) => state.workspace.spec.status);
-  const specErrors = engine.useState((state) => {
+  const specIssues = engine.useState((state) => {
     const spec = state.workspace.spec;
-    if (spec.status === "invalid") {
-      return spec.errors;
+    if (!spec.isValid) {
+      return spec.issues;
     }
     return undefined;
   });
 
-  if (specStatus !== "invalid") {
+  if (!specIssues?.length) {
     return null;
   }
 
@@ -75,9 +74,9 @@ function InvalidSpecOverlay({ engine }: { engine: WorkspaceEngine }) {
       <ErrorView
         message="Workspace specification is invalid"
         details={
-          specErrors && specErrors.length > 0 ? (
+          specIssues && specIssues.length > 0 ? (
             <pre className="max-w-[600px] max-h-[200px] overflow-auto text-[12px] whitespace-pre-wrap text-left">
-              {specErrors.join("\n")}
+              {specIssues.join("\n")}
             </pre>
           ) : undefined
         }

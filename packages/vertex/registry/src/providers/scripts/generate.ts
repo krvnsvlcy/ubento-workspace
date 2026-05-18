@@ -123,6 +123,58 @@ export function groupNangoProviders(
 
 // --- 4. Pipeline Step 2: Generation & Validation ---
 
+interface ProviderOverride {
+  code?: string;
+  name?: string;
+  auth?: Partial<HttpConnectionProviderConfig["auth"]>;
+  customFields?: Record<string, any>;
+}
+
+const providerOverrides: Record<string, ProviderOverride> = {
+  activecampaign: { name: "ActiveCampaign" },
+  "amplitude-event-streaming-api": { code: "amplitude", name: "Amplitude" },
+  "apollo-oauth": { code: "apollo", name: "Apollo" },
+  "asana-scim-api": { code: "asana", name: "Asana" },
+  ashby: { name: "Ashby" },
+  auth0: { name: "Auth0" },
+  "aws-iam": { code: "aws", name: "AWS" },
+  "aws-scim": { code: "aws", name: "AWS" },
+  aws: { code: "aws", name: "AWS" },
+  "bamboo-hr": { name: "BambooHR" },
+  "brex-staging-oauth": { code: "brex", name: "Brex" },
+  "cal-com-v1": { code: "cal-com", name: "Cal.com" },
+  "cal-com-v2": { code: "cal-com", name: "Cal.com" },
+  "clari-copilot": { name: "Clari Copilot" },
+  "customer-io": { name: "Customer.io" },
+  datadog: { name: "Datadog" },
+  discord: { name: "Discord" },
+  "eleven-labs": { code: "elevenlabs", name: "ElevenLabs" },
+  "figma-scim": { code: "figma", name: "Figma" },
+  "github-app": { code: "github", name: "GitHub" },
+  gitlab: { name: "GitLab" },
+  "gong-basic-auth": { code: "gong", name: "Gong" },
+  "google-gemini": { code: "google-gemini", name: "Google Gemini" },
+  "google-maps": { code: "google-maps", name: "Google Maps" },
+  "greenhouse-job-board-api": { code: "greenhouse", name: "Greenhouse" },
+  "gusto-demo": { code: "gusto", name: "Gusto" },
+  "hibob-service-user": { code: "hibob", name: "HiBob" },
+  hubspot: { name: "HubSpot" },
+  "jira-basic-auth": { code: "jira", name: "Jira" },
+  "jira-oauth": { code: "jira", name: "Jira" },
+  "loops-so": { code: "loops", name: "Loops" },
+  mailchimp: { name: "Mailchimp" },
+  "microsoft-tenant": { code: "microsoft", name: "Microsoft" },
+  "openai-admin": { code: "openai", name: "OpenAI" },
+  posthog: { name: "PostHog" },
+  recharge: { name: "Recharge" },
+  "reply-io": { code: "reply", name: "Reply" },
+  "sage-hr": { code: "sage", name: "Sage" },
+  "sap-s-4hana-cloud-basic-auth": { code: "sap", name: "SAP" },
+  "shopify-partner": { code: "shopify", name: "Shopify" },
+  "smartlead-ai": { code: "smartlead", name: "Smartlead" },
+  "stripe-connect": { code: "stripe", name: "Stripe" },
+};
+
 export function buildUbentoProviders(
   groupedMap: Record<string, GroupedNangoProvider>,
   nangoMap: Record<string, NangoProviderConfig>,
@@ -137,11 +189,18 @@ export function buildUbentoProviders(
 
     const primaryNangoConfig = nangoMap[primaryNangoKey];
 
-    // Generate a safe unique code
-    let code = primaryNangoConfig.display_name
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "");
+    // Resolve overrides by initial generated code or original primary nango key
+    const override =
+      providerOverrides[groupKey] || providerOverrides[primaryNangoKey];
+
+    let code = override?.code ? override.code : groupKey;
+    let name = override?.name ? override.name : primaryNangoConfig.display_name;
+
+    name = name
+      .replace("(Basic Auth)", "")
+      .replace("(OAuth)", "")
+      .replace("(API Key)", "")
+      .trim();
 
     // Collision handling
     if (ubentoProviders[code]) {
@@ -151,7 +210,8 @@ export function buildUbentoProviders(
     const provider: HttpConnectionProviderConfig = {
       type: "http",
       code,
-      name: primaryNangoConfig.display_name,
+      name,
+      baseUrl: group.proxyUrl,
       auth: {},
       customFields: {},
     };
@@ -197,6 +257,22 @@ export function buildUbentoProviders(
             disablePkce: nangoConfig.disable_pkce ?? false,
           };
         }
+      }
+    }
+
+    // Apply any explicit overrides for auth or customFields
+    if (override) {
+      if (override.auth) {
+        provider.auth = {
+          ...provider.auth,
+          ...override.auth,
+        };
+      }
+      if (override.customFields) {
+        provider.customFields = {
+          ...provider.customFields,
+          ...override.customFields,
+        };
       }
     }
 

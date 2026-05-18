@@ -1,8 +1,9 @@
 {
-  "grafana": {
+  "1password-events": {
     "type": "http",
-    "code": "grafana",
-    "name": "Grafana",
+    "code": "1password-events",
+    "name": "1Password (Events API)",
+    "baseUrl": "https://${connectionConfig.domain}",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -13,20 +14,19 @@
     "customFields": {
       "domain": {
         "type": "string",
-        "title": "Domain",
-        "description": "Your Grafana domain",
-        "example": "example.grafana.net",
-        "prefix": "https://",
-        "format": "hostname",
+        "title": "Events API Domain",
+        "description": "The regional Events API domain for your 1Password account.",
+        "example": "events.1password.com",
         "order": 1,
-        "doc_section": "#step-1-finding-your-domain"
+        "pattern": "^events\\.1password\\.(com|ca|eu)$"
       }
     }
   },
-  "loom-scim": {
+  "1password-scim": {
     "type": "http",
-    "code": "loom-scim",
-    "name": "Loom (SCIM)",
+    "code": "1password-scim",
+    "name": "1Password (SCIM)",
+    "baseUrl": "https://${connectionConfig.domain}/scim",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -37,12 +37,12 @@
     "customFields": {
       "domain": {
         "type": "string",
-        "title": "Loom SCIM Bridge URL",
-        "description": "The domain for your Loom SCIM Bridge",
+        "title": "1Password SCIM Bridge URL",
+        "description": "The domain for your 1Password SCIM Bridge. Note this URL is a service hosted in your infrastructure so needs to be setup already by your IT team. Please see the instructions for more info.",
         "example": "scim.example.com",
         "pattern": "^[a-zA-Z0-9.-]+$",
         "prefix": "https://",
-        "doc_section": "#step-4-get-your-scim-bridge-url"
+        "doc_section": "#step-2-get-your-scim-bridge-url"
       }
     }
   },
@@ -50,6 +50,7 @@
     "type": "http",
     "code": "absorb-lms",
     "name": "Absorb LMS",
+    "baseUrl": "https://${connectionConfig.portalRoute}",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -105,6 +106,7 @@
     "type": "http",
     "code": "accelo",
     "name": "Accelo",
+    "baseUrl": "https://${connectionConfig.subdomain}.api.accelo.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -140,57 +142,28 @@
       }
     }
   },
-  "ukg-pro-workforce-management": {
+  "active-campaign": {
     "type": "http",
-    "code": "ukg-pro-workforce-management",
-    "name": "UKG Pro (Workforce Management)",
+    "code": "active-campaign",
+    "name": "ActiveCampaign",
+    "baseUrl": "https://${connectionConfig.hostname}/api",
     "auth": {
       "apiKey": {
         "location": "header",
         "name": "Authorization",
         "template": "Bearer {{key}}"
-      },
-      "oauth2": {
-        "type": "oauth2",
-        "authorize": {
-          "request": {
-            "method": "GET",
-            "path": "/authorize",
-            "baseUrl": "https://welcome-us.ukg.net",
-            "query": {
-              "response_type": "code",
-              "audience": "https://wfm.ukg.net/api",
-              "realm": "${connectionConfig.tenantName}"
-            }
-          }
-        },
-        "token": {
-          "request": {
-            "method": "POST",
-            "path": "/oauth/token",
-            "baseUrl": "https://welcome-us.ukg.net"
-          }
-        },
-        "disablePkce": false
       }
     },
     "customFields": {
       "hostname": {
         "type": "string",
-        "title": "Tenant URL",
-        "description": "The tenant URL of your UKG Pro instance",
+        "title": "Hostname",
+        "description": "The Hostname for your ActiveCampaign account",
         "format": "hostname",
-        "example": "wfm.us1.ukg.com",
-        "suffix": "/api",
         "prefix": "https://",
-        "doc_section": "#step-1-finding-your-tenant-url-and-tenant-name"
-      },
-      "tenantName": {
-        "type": "string",
-        "title": "Tenant Name",
-        "description": "The tenant name of your UKG Pro instance",
-        "example": "wfm",
-        "doc_section": "#step-1-finding-your-tenant-url-and-tenant-name"
+        "example": "company.activehosted.com",
+        "doc_section": "#step-1-finding-your-hostname",
+        "order": 1
       }
     }
   },
@@ -198,6 +171,7 @@
     "type": "http",
     "code": "acuity-scheduling",
     "name": "Acuity Scheduling",
+    "baseUrl": "https://acuityscheduling.com/api/v1",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -222,11 +196,13 @@
       }
     }
   },
-  "addepar-oauth": {
+  "addepar": {
     "type": "http",
-    "code": "addepar-oauth",
-    "name": "Addepar (OAuth)",
+    "code": "addepar",
+    "name": "Addepar",
+    "baseUrl": "https://api.addepar.com",
     "auth": {
+      "basic": {},
       "oauth2": {
         "type": "oauth2",
         "authorize": {
@@ -250,23 +226,6 @@
       }
     },
     "customFields": {
-      "firmId": {
-        "type": "string",
-        "title": "Firm ID",
-        "description": "Your Addepar Firm ID",
-        "pattern": "^[0-9]+$",
-        "doc_section": "#step-1-finding-your-firm-id"
-      }
-    }
-  },
-  "addepar-basic-auth": {
-    "type": "http",
-    "code": "addepar-basic-auth",
-    "name": "Addepar (Basic Auth)",
-    "auth": {
-      "basic": {}
-    },
-    "customFields": {
       "subdomain": {
         "type": "string",
         "title": "Firm Domain",
@@ -281,8 +240,7 @@
         "title": "Firm ID",
         "description": "Your Addepar Firm ID",
         "pattern": "^[0-9]+$",
-        "order": 2,
-        "doc_section": "#step-2-finding-your-firm-id"
+        "doc_section": "#step-1-finding-your-firm-id"
       }
     }
   },
@@ -290,6 +248,7 @@
     "type": "http",
     "code": "adobe",
     "name": "Adobe",
+    "baseUrl": "https://ims-na1.adobelogin.com/ims",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -321,6 +280,7 @@
     "type": "http",
     "code": "adobe-workfront",
     "name": "Adobe Workfront",
+    "baseUrl": "https://${connectionConfig.hostname}/attask/api",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -359,6 +319,7 @@
     "type": "http",
     "code": "adobe-commerce",
     "name": "Adobe Commerce",
+    "baseUrl": "https://${connectionConfig.storeDomain}/rest/${connectionConfig.storeCode}",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -391,6 +352,7 @@
     "type": "http",
     "code": "adyen",
     "name": "Adyen",
+    "baseUrl": "https://${connectionConfig.resource}-${connectionConfig.environment}.adyen.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -433,12 +395,21 @@
       }
     }
   },
+  "affinity": {
+    "type": "http",
+    "code": "affinity",
+    "name": "Affinity (v1)",
+    "baseUrl": "https://api.affinity.co",
+    "auth": {
+      "basic": {}
+    }
+  },
   "affinity-v2": {
     "type": "http",
     "code": "affinity-v2",
     "name": "Affinity (v2)",
+    "baseUrl": "https://api.affinity.co",
     "auth": {
-      "basic": {},
       "apiKey": {
         "location": "header",
         "name": "Authorization",
@@ -446,10 +417,11 @@
       }
     }
   },
-  "aimfox-oauth": {
+  "aimfox": {
     "type": "http",
-    "code": "aimfox-oauth",
-    "name": "Aimfox (OAuth)",
+    "code": "aimfox",
+    "name": "Aimfox",
+    "baseUrl": "https://api.aimfox.com/api",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -479,10 +451,11 @@
       }
     }
   },
-  "aircall-oauth": {
+  "aircall": {
     "type": "http",
-    "code": "aircall-oauth",
-    "name": "Aircall (OAuth)",
+    "code": "aircall",
+    "name": "Aircall",
+    "baseUrl": "https://api.aircall.io",
     "auth": {
       "basic": {},
       "oauth2": {
@@ -513,12 +486,8 @@
     "type": "http",
     "code": "airtable",
     "name": "Airtable",
+    "baseUrl": "https://api.airtable.com",
     "auth": {
-      "apiKey": {
-        "location": "header",
-        "name": "Authorization",
-        "template": "Bearer {{key}}"
-      },
       "oauth2": {
         "type": "oauth2",
         "authorize": {
@@ -539,10 +508,24 @@
       }
     }
   },
+  "airtable-pat": {
+    "type": "http",
+    "code": "airtable-pat",
+    "name": "Airtable (Personal Access Token)",
+    "baseUrl": "https://api.airtable.com",
+    "auth": {
+      "apiKey": {
+        "location": "header",
+        "name": "Authorization",
+        "template": "Bearer {{key}}"
+      }
+    }
+  },
   "autodesk": {
     "type": "http",
     "code": "autodesk",
     "name": "Autodesk",
+    "baseUrl": "https://developer.api.autodesk.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -571,6 +554,7 @@
     "type": "http",
     "code": "autotask",
     "name": "AutoTask",
+    "baseUrl": "https://${connectionConfig.subdomain}.autotask.net/atservicesrest",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -608,6 +592,7 @@
     "type": "http",
     "code": "algolia",
     "name": "Algolia",
+    "baseUrl": "https://${connectionConfig.APP_ID}.algolia.net",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -631,6 +616,7 @@
     "type": "http",
     "code": "amazon",
     "name": "Amazon",
+    "baseUrl": "https://api.amazon.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -668,6 +654,7 @@
     "type": "http",
     "code": "amazon-selling-partner",
     "name": "Amazon Selling Partner",
+    "baseUrl": "https://${connectionConfig.subdomain}-${connectionConfig.region}.amazon.com || https://sellingpartnerapi-${connectionConfig.region}.amazon.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -738,6 +725,7 @@
     "type": "http",
     "code": "amazon-selling-partner-beta",
     "name": "Amazon Selling Partner (Beta)",
+    "baseUrl": "https://sandbox.sellingpartnerapi-${connectionConfig.region}.amazon.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -800,6 +788,7 @@
     "type": "http",
     "code": "anrok",
     "name": "Anrok",
+    "baseUrl": "https://api.anrok.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -808,10 +797,11 @@
       }
     }
   },
-  "amplitude-event-streaming-api": {
+  "amplitude": {
     "type": "http",
-    "code": "amplitude-event-streaming-api",
+    "code": "amplitude",
     "name": "Amplitude (Event Streaming API)",
+    "baseUrl": "https://${connectionConfig.hostname} || https://amplitude.com",
     "auth": {
       "basic": {}
     },
@@ -826,10 +816,33 @@
       }
     }
   },
-  "anthropic-administrator": {
+  "anthropic": {
     "type": "http",
-    "code": "anthropic-administrator",
+    "code": "anthropic",
+    "name": "Anthropic",
+    "baseUrl": "https://api.anthropic.com",
+    "auth": {
+      "apiKey": {
+        "location": "header",
+        "name": "Authorization",
+        "template": "Bearer {{key}}"
+      }
+    },
+    "customFields": {
+      "version": {
+        "type": "string",
+        "title": "API Version",
+        "description": "The version of the Anthropic API to use",
+        "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+        "example": "2023-06-01"
+      }
+    }
+  },
+  "anthropic-admin": {
+    "type": "http",
+    "code": "anthropic-admin",
     "name": "Anthropic Administrator",
+    "baseUrl": "https://api.anthropic.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -851,6 +864,7 @@
     "type": "http",
     "code": "anvil",
     "name": "Anvil",
+    "baseUrl": "https://app.useanvil.com",
     "auth": {
       "basic": {}
     }
@@ -859,6 +873,7 @@
     "type": "http",
     "code": "apaleo",
     "name": "Apaleo",
+    "baseUrl": "https://api.apaleo.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -887,6 +902,7 @@
     "type": "http",
     "code": "apify",
     "name": "Apify",
+    "baseUrl": "https://api.apify.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -895,10 +911,11 @@
       }
     }
   },
-  "apollo-oauth": {
+  "apollo": {
     "type": "http",
-    "code": "apollo-oauth",
-    "name": "Apollo (OAuth)",
+    "code": "apollo",
+    "name": "Apollo",
+    "baseUrl": "https://app.apollo.io/api",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -932,6 +949,7 @@
     "type": "http",
     "code": "appstle-subscriptions",
     "name": "Appstle Subscriptions",
+    "baseUrl": "https://subscription-admin.appstle.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -944,6 +962,7 @@
     "type": "http",
     "code": "asana",
     "name": "Asana",
+    "baseUrl": "https://app.asana.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -968,10 +987,11 @@
       }
     }
   },
-  "asana-scim-api": {
+  "asana-scim": {
     "type": "http",
-    "code": "asana-scim-api",
+    "code": "asana-scim",
     "name": "Asana (SCIM API)",
+    "baseUrl": "https://app.asana.com/api",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -984,6 +1004,7 @@
     "type": "http",
     "code": "ashby",
     "name": "Ashby",
+    "baseUrl": "https://api.ashbyhq.com",
     "auth": {
       "basic": {}
     }
@@ -992,6 +1013,7 @@
     "type": "http",
     "code": "atlas-so",
     "name": "Atlas.so",
+    "baseUrl": "https://api.atlas.so/v1",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -1000,17 +1022,12 @@
       }
     }
   },
-  "jira-oauth": {
+  "atlassian": {
     "type": "http",
-    "code": "jira-oauth",
-    "name": "Jira (OAuth)",
+    "code": "atlassian",
+    "name": "Atlassian",
+    "baseUrl": "https://api.atlassian.com",
     "auth": {
-      "basic": {},
-      "apiKey": {
-        "location": "header",
-        "name": "Authorization",
-        "template": "Bearer {{key}}"
-      },
       "oauth2": {
         "type": "oauth2",
         "authorize": {
@@ -1019,6 +1036,7 @@
             "path": "/authorize",
             "baseUrl": "https://auth.atlassian.com",
             "query": {
+              "response_type": "code",
               "audience": "api.atlassian.com",
               "prompt": "consent"
             }
@@ -1036,17 +1054,21 @@
         ],
         "disablePkce": false
       }
+    }
+  },
+  "atlassian-admin": {
+    "type": "http",
+    "code": "atlassian-admin",
+    "name": "Atlassian Cloud Admin",
+    "baseUrl": "https://api.atlassian.com",
+    "auth": {
+      "apiKey": {
+        "location": "header",
+        "name": "Authorization",
+        "template": "Bearer {{key}}"
+      }
     },
     "customFields": {
-      "cloudId": {
-        "type": "string",
-        "title": "Cloud ID",
-        "description": "Your Atlassian Cloud ID",
-        "example": "12345678-1234-1234-1234-123456789012",
-        "format": "uuid",
-        "doc_section": "#step-1-finding-your-cloud-id",
-        "order": 1
-      },
       "organizationId": {
         "type": "string",
         "title": "Atlassian Organization Id",
@@ -1055,16 +1077,6 @@
         "pattern": "^[a-f0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}$",
         "example": "9fa3d2b7-k9l3-4bq1-z3d8-7x1m0a9e2b76",
         "doc_section": "#step-1-generating-your-api-key"
-      },
-      "subdomain": {
-        "type": "string",
-        "title": "Subdomain",
-        "optional": true,
-        "description": "The subdomain of your Attlassian account",
-        "pattern": "^[a-zA-Z0-9.-]+$",
-        "example": "subdomain",
-        "suffix": ".atlassian.net",
-        "prefix": "https://"
       }
     }
   },
@@ -1072,6 +1084,7 @@
     "type": "http",
     "code": "atlassian-government-cloud",
     "name": "Atlassian Government Cloud",
+    "baseUrl": "https://api.atlassian-us-gov-mod.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -1112,10 +1125,31 @@
       }
     }
   },
+  "atlassian-service-account-api-token": {
+    "type": "http",
+    "code": "atlassian-service-account-api-token",
+    "name": "Atlassian Service Account (API Token)",
+    "baseUrl": "https://api.atlassian.com",
+    "auth": {
+      "basic": {}
+    },
+    "customFields": {
+      "cloudId": {
+        "type": "string",
+        "title": "Cloud ID",
+        "description": "Your Atlassian Cloud ID",
+        "example": "12345678-1234-1234-1234-123456789012",
+        "format": "uuid",
+        "doc_section": "#step-1-finding-your-cloud-id",
+        "order": 1
+      }
+    }
+  },
   "attention": {
     "type": "http",
     "code": "attention",
     "name": "Attention",
+    "baseUrl": "https://api.attention.tech",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -1128,6 +1162,7 @@
     "type": "http",
     "code": "attio",
     "name": "Attio",
+    "baseUrl": "https://api.attio.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -1153,6 +1188,7 @@
     "type": "http",
     "code": "auth0",
     "name": "Auth0",
+    "baseUrl": "https://${connectionConfig.subdomain}.auth0.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -1193,6 +1229,7 @@
     "type": "http",
     "code": "auvik",
     "name": "Auvik",
+    "baseUrl": "https://auvikapi.${connectionConfig.region}.my.auvik.com",
     "auth": {
       "basic": {}
     },
@@ -1211,6 +1248,7 @@
     "type": "http",
     "code": "avalara",
     "name": "Avalara",
+    "baseUrl": "https://rest.avatax.com/api/v2",
     "auth": {
       "basic": {}
     },
@@ -1227,6 +1265,7 @@
     "type": "http",
     "code": "avalara-sandbox",
     "name": "Avalara (Sandbox)",
+    "baseUrl": "https://sandbox-rest.avatax.com/api/v2",
     "auth": {
       "basic": {}
     },
@@ -1243,6 +1282,7 @@
     "type": "http",
     "code": "avoma",
     "name": "Avoma",
+    "baseUrl": "https://api.avoma.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -1255,6 +1295,7 @@
     "type": "http",
     "code": "axiom",
     "name": "Axiom",
+    "baseUrl": "https://${connectionConfig.subdomain}.axiom.co",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -1280,6 +1321,7 @@
     "type": "http",
     "code": "aws",
     "name": "AWS",
+    "baseUrl": "https://cognito-${apiSubdomain}.amazonaws.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -1333,10 +1375,11 @@
       }
     }
   },
-  "aws-iam": {
+  "aws-vtyi": {
     "type": "http",
-    "code": "aws-iam",
-    "name": "AWS IAM",
+    "code": "aws-vtyi",
+    "name": "AWS",
+    "baseUrl": "https://iam.amazonaws.com",
     "auth": {
       "basic": {}
     },
@@ -1355,6 +1398,7 @@
     "type": "http",
     "code": "aws-inspector2",
     "name": "AWS Inspector2",
+    "baseUrl": "https://inspector2.${connectionConfig.region}.amazonaws.com",
     "auth": {
       "basic": {}
     },
@@ -1374,6 +1418,7 @@
     "type": "http",
     "code": "aws-multi-service",
     "name": "AWS Multi-Service",
+    "baseUrl": "https://${connectionConfig.service}.${connectionConfig.region}.amazonaws.com",
     "auth": {
       "basic": {}
     },
@@ -1396,10 +1441,11 @@
       }
     }
   },
-  "aws-scim": {
+  "aws-s29v": {
     "type": "http",
-    "code": "aws-scim",
-    "name": "AWS (SCIM)",
+    "code": "aws-s29v",
+    "name": "AWS",
+    "baseUrl": "${connectionConfig.scimEndpoint}",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -1424,6 +1470,7 @@
     "type": "http",
     "code": "azure-devops",
     "name": "Azure DevOps",
+    "baseUrl": "https://${connectionConfig.organizationUrl}",
     "auth": {
       "basic": {}
     },
@@ -1438,10 +1485,11 @@
       }
     }
   },
-  "bamboohr-oauth": {
+  "bamboohr": {
     "type": "http",
-    "code": "bamboohr-oauth",
-    "name": "BambooHR (OAuth)",
+    "code": "bamboohr",
+    "name": "BambooHR",
+    "baseUrl": "https://api.bamboohr.com/api/gateway.php/${connectionConfig.subdomain}",
     "auth": {
       "basic": {},
       "oauth2": {
@@ -1484,6 +1532,7 @@
     "type": "http",
     "code": "basecamp",
     "name": "Basecamp",
+    "baseUrl": "https://3.basecampapi.com/${connectionConfig.accountId}",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -1525,37 +1574,49 @@
       }
     }
   },
-  "yahoo": {
+  "battlenet": {
     "type": "http",
-    "code": "yahoo",
-    "name": "Yahoo",
+    "code": "battlenet",
+    "name": "Battle.net",
+    "baseUrl": "https://${connectionConfig.apiDomain}",
     "auth": {
       "oauth2": {
         "type": "oauth2",
         "authorize": {
           "request": {
             "method": "GET",
-            "path": "/oauth2/request_auth",
-            "baseUrl": "https://api.login.yahoo.com"
+            "path": "/authorize",
+            "baseUrl": "https://oauth.battle.${connectionconfig.extension}",
+            "query": {
+              "response_type": "code"
+            }
           }
         },
         "token": {
           "request": {
             "method": "POST",
-            "path": "/oauth2/get_token",
-            "baseUrl": "https://api.login.yahoo.com"
+            "path": "/token",
+            "baseUrl": "https://oauth.battle.${connectionconfig.extension}"
           }
         },
         "disablePkce": false
       }
     },
     "customFields": {
+      "extension": {
+        "type": "string",
+        "title": "Domain Extension",
+        "description": "The domain extension of your Battle.net account",
+        "example": "com",
+        "pattern": "^[a-z.]+$",
+        "order": 1
+      },
       "apiDomain": {
         "type": "string",
         "title": "API Domain",
-        "description": "The domain to the API you want to connect to",
-        "format": "hostname",
-        "example": "fantasysports.yahooapis.com",
+        "description": "The domain to where you will access your API",
+        "example": "us.api.blizzard.com",
+        "pattern": "^[a-z.]+$",
         "prefix": "https://"
       }
     }
@@ -1564,6 +1625,7 @@
     "type": "http",
     "code": "beehiiv",
     "name": "Beehiiv",
+    "baseUrl": "https://api.beehiiv.com/v2/publications/${connectionConfig.publicationId}",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -1585,6 +1647,7 @@
     "type": "http",
     "code": "bettercontact",
     "name": "BetterContact",
+    "baseUrl": "https://app.bettercontact.rocks",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -1597,6 +1660,7 @@
     "type": "http",
     "code": "bigcommerce",
     "name": "BigCommerce",
+    "baseUrl": "https://api.bigcommerce.com/stores/${connectionConfig.storeHash}",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -1642,6 +1706,7 @@
     "type": "http",
     "code": "bing-webmasters",
     "name": "Bing Webmasters",
+    "baseUrl": "https://www.bing.com/webmaster/api.svc/json",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -1670,6 +1735,7 @@
     "type": "http",
     "code": "bitbucket",
     "name": "Bitbucket",
+    "baseUrl": "https://api.bitbucket.org",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -1695,6 +1761,7 @@
     "type": "http",
     "code": "bitdefender",
     "name": "Bitdefender",
+    "baseUrl": "${connectionConfig.ACCESS_URL}",
     "auth": {
       "basic": {}
     },
@@ -1714,6 +1781,7 @@
     "type": "http",
     "code": "bitly",
     "name": "Bitly",
+    "baseUrl": "https://api-ssl.bitly.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -1742,7 +1810,9 @@
     "type": "http",
     "code": "blackbaud",
     "name": "Blackbaud",
+    "baseUrl": "https://api.sky.blackbaud.com",
     "auth": {
+      "basic": {},
       "oauth2": {
         "type": "oauth2",
         "authorize": {
@@ -1764,56 +1834,16 @@
         },
         "disablePkce": false
       }
-    }
-  },
-  "maximizer-on-premise": {
-    "type": "http",
-    "code": "maximizer-on-premise",
-    "name": "Maximizer (On-Premise)",
-    "auth": {
-      "basic": {},
-      "apiKey": {
-        "location": "header",
-        "name": "Authorization",
-        "template": "Bearer {{key}}"
-      },
-      "oauth2": {
-        "type": "oauth2",
-        "authorize": {
-          "request": {
-            "method": "GET",
-            "path": "/MaximizerWebAuthentication/OAuth2/Authorize",
-            "baseUrl": "https://${connectionconfig.hostname}",
-            "query": {
-              "response_type": "code"
-            }
-          }
-        },
-        "token": {
-          "request": {
-            "method": "POST",
-            "path": "/MaximizerWebAuthentication/OAuth2/Token",
-            "baseUrl": "https://${connectionconfig.hostname}"
-          }
-        },
-        "disablePkce": true
-      }
     },
     "customFields": {
-      "customerApiKey": {
+      "hostName": {
         "type": "string",
-        "order": 2,
-        "title": "Customer API Key",
-        "description": "Your UKG Pro Customer API Key found in Service Account Administration",
-        "doc_section": "#step-1-finding-your-customer-api-key",
-        "secret": true
-      },
-      "hostname": {
-        "type": "string",
-        "title": "Hostname",
-        "description": "The hostname of your Maximizer on premise instance.",
-        "example": "maximizer.mycompany.com",
-        "format": "hostname"
+        "title": "Host Name",
+        "description": "Your Blackbaud host name",
+        "example": "https://altrurig01bo3.blackbaudhosting.com",
+        "pattern": "^https?:\\/\\/[a-z0-9.-]+(:\\d+)?(\\/.*)?$",
+        "order": 1,
+        "doc_section": "#step-1-finding-your-host-name"
       }
     }
   },
@@ -1821,6 +1851,7 @@
     "type": "http",
     "code": "blandai",
     "name": "BlandAI",
+    "baseUrl": "https://api.bland.ai",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -1833,6 +1864,7 @@
     "type": "http",
     "code": "bird",
     "name": "Bird",
+    "baseUrl": "https://${connectionConfig.subdomain}.bird.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -1866,6 +1898,7 @@
     "type": "http",
     "code": "boldsign",
     "name": "BoldSign",
+    "baseUrl": "https://api.boldsign.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -1894,6 +1927,7 @@
     "type": "http",
     "code": "box",
     "name": "Box",
+    "baseUrl": "https://api.box.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -1919,6 +1953,7 @@
     "type": "http",
     "code": "booking-com",
     "name": "Booking.com",
+    "baseUrl": "https://${connectionConfig.environmentType}-xml.booking.com",
     "auth": {
       "basic": {}
     },
@@ -1938,6 +1973,7 @@
     "type": "http",
     "code": "braintree",
     "name": "Braintree",
+    "baseUrl": "https://api.braintreegateway.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -1963,6 +1999,7 @@
     "type": "http",
     "code": "braintree-sandbox",
     "name": "Braintree (Sandbox)",
+    "baseUrl": "https://api.sandbox.braintreegateway.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -1988,6 +2025,7 @@
     "type": "http",
     "code": "braze",
     "name": "Braze",
+    "baseUrl": "https://rest.${connectionConfig.instanceUrl}",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -2012,6 +2050,7 @@
     "type": "http",
     "code": "brevo",
     "name": "Brevo",
+    "baseUrl": "https://api.brevo.com/v3",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -2020,10 +2059,11 @@
       }
     }
   },
-  "brex-oauth": {
+  "brex": {
     "type": "http",
-    "code": "brex-oauth",
-    "name": "Brex (OAuth)",
+    "code": "brex",
+    "name": "Brex",
+    "baseUrl": "https://platform.brexapis.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -2054,10 +2094,11 @@
       }
     }
   },
-  "brex-staging-oauth": {
+  "brex-staging": {
     "type": "http",
-    "code": "brex-staging-oauth",
+    "code": "brex-staging",
     "name": "Brex (Staging OAuth)",
+    "baseUrl": "https://platform.staging.brexapps.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -2079,10 +2120,61 @@
       }
     }
   },
+  "builder-io-private": {
+    "type": "http",
+    "code": "builder-io-private",
+    "name": "Builder.io (Private)",
+    "baseUrl": "https://${connectionConfig.domain}",
+    "auth": {
+      "apiKey": {
+        "location": "header",
+        "name": "Authorization",
+        "template": "Bearer {{key}}"
+      }
+    },
+    "customFields": {
+      "domain": {
+        "type": "string",
+        "title": "Domain",
+        "description": "The domain used to access your Builder.io write API.",
+        "example": "builder.io",
+        "format": "hostname",
+        "prefix": "https://",
+        "order": 1,
+        "doc_section": "#step-1-finding-your-api-domain"
+      }
+    }
+  },
+  "builder-io-public": {
+    "type": "http",
+    "code": "builder-io-public",
+    "name": "Builder.io (Public)",
+    "baseUrl": "https://${connectionConfig.domain}",
+    "auth": {
+      "apiKey": {
+        "location": "header",
+        "name": "Authorization",
+        "template": "Bearer {{key}}"
+      }
+    },
+    "customFields": {
+      "domain": {
+        "type": "string",
+        "title": "Domain",
+        "description": "The domain used to access your Builder.io content API.",
+        "example": "cdn.builder.io",
+        "format": "hostname",
+        "prefix": "https://",
+        "order": 1,
+        "doc_section": "#step-1-finding-your-api-domain"
+      }
+    }
+  },
   "buildium": {
     "type": "http",
     "code": "buildium",
     "name": "Buildium",
+    "baseUrl": "https://api.buildium.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -2106,6 +2198,7 @@
     "type": "http",
     "code": "builtwith",
     "name": "BuiltWith",
+    "baseUrl": "https://api.builtwith.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -2118,6 +2211,7 @@
     "type": "http",
     "code": "buffer",
     "name": "Buffer",
+    "baseUrl": "https://api.buffer.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -2150,6 +2244,7 @@
     "type": "http",
     "code": "bullhorn",
     "name": "Bullhorn",
+    "baseUrl": "${connectionConfig.restUrl}",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -2198,10 +2293,11 @@
       }
     }
   },
-  "cal-com-v1": {
+  "cal-com": {
     "type": "http",
-    "code": "cal-com-v1",
-    "name": "Cal.com (v1)",
+    "code": "cal-com",
+    "name": "Cal.com",
+    "baseUrl": "https://api.cal.com/v1",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -2210,10 +2306,11 @@
       }
     }
   },
-  "cal-com-v2": {
+  "cal-com-1wjt": {
     "type": "http",
-    "code": "cal-com-v2",
-    "name": "Cal.com (v2)",
+    "code": "cal-com-1wjt",
+    "name": "Cal.com",
+    "baseUrl": "https://api.cal.com/v2",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -2222,10 +2319,11 @@
       }
     }
   },
-  "cal-com-oauth": {
+  "cal-com-3tye": {
     "type": "http",
-    "code": "cal-com-oauth",
-    "name": "Cal.com (OAuth)",
+    "code": "cal-com-3tye",
+    "name": "Cal.com",
+    "baseUrl": "https://api.cal.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -2251,6 +2349,7 @@
     "type": "http",
     "code": "calendly",
     "name": "Calendly",
+    "baseUrl": "https://api.calendly.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -2279,6 +2378,7 @@
     "type": "http",
     "code": "callrail",
     "name": "Callrail",
+    "baseUrl": "https://api.callrail.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -2291,6 +2391,7 @@
     "type": "http",
     "code": "canny",
     "name": "Canny",
+    "baseUrl": "https://canny.io/api/v1",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -2303,6 +2404,7 @@
     "type": "http",
     "code": "candis",
     "name": "Candis",
+    "baseUrl": "https://api.candis.io",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -2331,6 +2433,7 @@
     "type": "http",
     "code": "canva",
     "name": "Canva",
+    "baseUrl": "https://api.canva.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -2355,10 +2458,52 @@
       }
     }
   },
-  "canva-scim-api": {
+  "canvas-lms": {
     "type": "http",
-    "code": "canva-scim-api",
+    "code": "canvas-lms",
+    "name": "Canvas LMS",
+    "baseUrl": "https://${connectionConfig.hostname}",
+    "auth": {
+      "oauth2": {
+        "type": "oauth2",
+        "authorize": {
+          "request": {
+            "method": "GET",
+            "path": "/login/oauth2/auth",
+            "baseUrl": "https://${connectionconfig.hostname}",
+            "query": {
+              "response_type": "code"
+            }
+          }
+        },
+        "token": {
+          "request": {
+            "method": "POST",
+            "path": "/login/oauth2/token",
+            "baseUrl": "https://${connectionconfig.hostname}"
+          }
+        },
+        "disablePkce": false
+      }
+    },
+    "customFields": {
+      "hostname": {
+        "type": "string",
+        "title": "Canvas Install URL",
+        "description": "The base URL of your Canvas instance",
+        "example": "canvas.instructure.com",
+        "format": "hostname",
+        "prefix": "https://",
+        "order": 1,
+        "doc_section": "#step-1-finding-your-canvas-install-url"
+      }
+    }
+  },
+  "canva-scim": {
+    "type": "http",
+    "code": "canva-scim",
     "name": "Canva (SCIM API)",
+    "baseUrl": "https://www.canva.com/_scim",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -2371,6 +2516,7 @@
     "type": "http",
     "code": "certn",
     "name": "Certn",
+    "baseUrl": "https://api.certn.co",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -2383,6 +2529,7 @@
     "type": "http",
     "code": "chargebee",
     "name": "Chargebee",
+    "baseUrl": "https://${connectionConfig.subdomain}.chargebee.com",
     "auth": {
       "basic": {}
     },
@@ -2403,6 +2550,7 @@
     "type": "http",
     "code": "chattermill",
     "name": "Chattermill",
+    "baseUrl": "https://${connectionConfig.subdomain}.chattermill.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -2422,10 +2570,11 @@
       }
     }
   },
-  "check": {
+  "checkhq": {
     "type": "http",
-    "code": "check",
+    "code": "checkhq",
     "name": "Check",
+    "baseUrl": "https://api.checkhq.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -2438,6 +2587,7 @@
     "type": "http",
     "code": "checkr-partner",
     "name": "Checkr Partner",
+    "baseUrl": "https://api.checkr.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -2470,6 +2620,7 @@
     "type": "http",
     "code": "checkr-partner-staging",
     "name": "Checkr Partner (Staging)",
+    "baseUrl": "https://api.checkr-staging.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -2502,6 +2653,7 @@
     "type": "http",
     "code": "chorus",
     "name": "Chorus",
+    "baseUrl": "https://chorus.ai",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -2514,6 +2666,7 @@
     "type": "http",
     "code": "cin7-core",
     "name": "Cin7 Core",
+    "baseUrl": "https://inventory.dearsystems.com/externalapi",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -2536,6 +2689,7 @@
     "type": "http",
     "code": "circle-so",
     "name": "Circle.so",
+    "baseUrl": "https://app.circle.so",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -2548,6 +2702,7 @@
     "type": "http",
     "code": "clari-copilot",
     "name": "Clari Copilot",
+    "baseUrl": "https://rest-api.copilot.clari.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -2567,6 +2722,7 @@
     "type": "http",
     "code": "clay",
     "name": "Clay",
+    "baseUrl": "https://api.clay.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -2589,6 +2745,7 @@
     "type": "http",
     "code": "cleverreach",
     "name": "CleverReach",
+    "baseUrl": "https://rest.cleverreach.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -2618,6 +2775,7 @@
     "type": "http",
     "code": "clickhouse",
     "name": "ClickHouse",
+    "baseUrl": "https://api.clickhouse.cloud",
     "auth": {
       "basic": {}
     }
@@ -2626,6 +2784,7 @@
     "type": "http",
     "code": "clicksend",
     "name": "ClickSend",
+    "baseUrl": "https://rest.clicksend.com",
     "auth": {
       "basic": {}
     }
@@ -2634,6 +2793,7 @@
     "type": "http",
     "code": "clickup",
     "name": "ClickUp",
+    "baseUrl": "https://api.clickup.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -2655,10 +2815,54 @@
       }
     }
   },
+  "clio": {
+    "type": "http",
+    "code": "clio",
+    "name": "Clio",
+    "baseUrl": "https://${connectionConfig.hostname}",
+    "auth": {
+      "oauth2": {
+        "type": "oauth2",
+        "authorize": {
+          "request": {
+            "method": "GET",
+            "path": "/oauth/authorize",
+            "baseUrl": "https://${connectionconfig.hostname}",
+            "query": {
+              "response_type": "code"
+            }
+          }
+        },
+        "token": {
+          "request": {
+            "method": "POST",
+            "path": "/oauth/token",
+            "baseUrl": "https://${connectionconfig.hostname}"
+          }
+        },
+        "disablePkce": false
+      }
+    },
+    "customFields": {
+      "hostname": {
+        "type": "string",
+        "title": "Hostname",
+        "description": "The hostname for your Clio region (e.g. app.clio.com for US, eu.app.clio.com for EU, ca.app.clio.com for CA, au.app.clio.com for AU)",
+        "example": "app.clio.com",
+        "default_value": "app.clio.com",
+        "format": "hostname",
+        "pattern": "^(app\\.clio\\.com|eu\\.app\\.clio\\.com|ca\\.app\\.clio\\.com|au\\.app\\.clio\\.com)$",
+        "prefix": "https://",
+        "order": 1,
+        "doc_section": "#step-1-finding-your-hostname"
+      }
+    }
+  },
   "cloudbeds": {
     "type": "http",
     "code": "cloudbeds",
     "name": "Cloudbeds",
+    "baseUrl": "https://api.cloudbeds.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -2687,6 +2891,7 @@
     "type": "http",
     "code": "cloudtalk",
     "name": "CloudTalk",
+    "baseUrl": "https://my.cloudtalk.io/api",
     "auth": {
       "basic": {}
     }
@@ -2695,6 +2900,7 @@
     "type": "http",
     "code": "clerk",
     "name": "Clerk",
+    "baseUrl": "https://api.clerk.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -2707,6 +2913,7 @@
     "type": "http",
     "code": "cloudflare",
     "name": "Cloudflare",
+    "baseUrl": "https://api.cloudflare.com/client",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -2719,6 +2926,7 @@
     "type": "http",
     "code": "clover",
     "name": "Clover",
+    "baseUrl": "https://${connectionConfig.apiHost}",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -2763,6 +2971,7 @@
     "type": "http",
     "code": "close",
     "name": "Close",
+    "baseUrl": "https://api.close.com/api",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -2794,6 +3003,7 @@
     "type": "http",
     "code": "coda",
     "name": "Coda",
+    "baseUrl": "https://coda.io/apis/v1",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -2802,10 +3012,34 @@
       }
     }
   },
+  "codeclimate": {
+    "type": "http",
+    "code": "codeclimate",
+    "name": "Code Climate",
+    "baseUrl": "https://${connectionConfig.domain}",
+    "auth": {
+      "apiKey": {
+        "location": "header",
+        "name": "Authorization",
+        "template": "Bearer {{key}}"
+      }
+    },
+    "customFields": {
+      "domain": {
+        "type": "string",
+        "title": "Domain",
+        "description": "The domain of your Code Climate account",
+        "format": "hostname",
+        "prefix": "https://",
+        "doc_section": "#step-1-obtaining-the-domain-url"
+      }
+    }
+  },
   "codegen": {
     "type": "http",
     "code": "codegen",
     "name": "Codegen",
+    "baseUrl": "https://api.codegen.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -2818,6 +3052,7 @@
     "type": "http",
     "code": "companycam",
     "name": "CompanyCam",
+    "baseUrl": "https://api.companycam.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -2830,6 +3065,7 @@
     "type": "http",
     "code": "constant-contact",
     "name": "Constant Contact",
+    "baseUrl": "https://api.cc.email",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -2854,10 +3090,11 @@
       }
     }
   },
-  "copper-oauth": {
+  "copper": {
     "type": "http",
-    "code": "copper-oauth",
-    "name": "Copper (OAuth)",
+    "code": "copper",
+    "name": "Copper",
+    "baseUrl": "https://api.copper.com/developer_api",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -2901,6 +3138,7 @@
     "type": "http",
     "code": "connectwise-psa",
     "name": "ConnectWise PSA",
+    "baseUrl": "https://${connectionConfig.hostname}/v4_6_release/apis/3.0 || https://${connectionConfig.subdomain}.myconnectwise.net/v4_6_release/apis/3.0",
     "auth": {
       "basic": {}
     },
@@ -2937,6 +3175,7 @@
     "type": "http",
     "code": "connectwise-psa-staging",
     "name": "ConnectWise PSA (Staging)",
+    "baseUrl": "https://api-staging.connectwisedev.com/v4_6_release/apis/3.0",
     "auth": {
       "basic": {}
     },
@@ -2957,6 +3196,7 @@
     "type": "http",
     "code": "conta-azul",
     "name": "Conta Azul",
+    "baseUrl": "https://api-v2.contaazul.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -2981,20 +3221,21 @@
       }
     }
   },
-  "jira-basic-auth": {
+  "confluence": {
     "type": "http",
-    "code": "jira-basic-auth",
-    "name": "Jira (Basic Auth)",
+    "code": "confluence",
+    "name": "Confluence",
+    "baseUrl": "https://${connectionConfig.subdomain}.atlassian.net",
     "auth": {
       "basic": {}
     },
     "customFields": {
       "subdomain": {
         "type": "string",
-        "title": "Jira Domain",
-        "description": "The subdomain of your Jira account",
+        "title": "Confluence Subdomain",
+        "description": "The subdomain of your Confluence account",
         "pattern": "^[a-z0-9_-]+$",
-        "example": "domain",
+        "example": "subdomain",
         "suffix": ".atlassian.net",
         "prefix": "https://",
         "order": 1,
@@ -3006,6 +3247,7 @@
     "type": "http",
     "code": "contentful",
     "name": "Contentful",
+    "baseUrl": "https://${connectionConfig.subdomain}.contentful.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -3041,10 +3283,64 @@
       }
     }
   },
+  "contentstack": {
+    "type": "http",
+    "code": "contentstack",
+    "name": "Contentstack",
+    "baseUrl": "https://${connectionConfig.apiDomain}",
+    "auth": {
+      "oauth2": {
+        "type": "oauth2",
+        "authorize": {
+          "request": {
+            "method": "GET",
+            "path": "/apps/${connectionConfig.appId}/authorize",
+            "baseUrl": "https://${connectionconfig.subdomain}.contentstack.com"
+          }
+        },
+        "token": {
+          "request": {
+            "method": "POST",
+            "path": "/apps-api/apps/token",
+            "baseUrl": "https://${connectionconfig.subdomain}.contentstack.com"
+          }
+        },
+        "disablePkce": false
+      }
+    },
+    "customFields": {
+      "subdomain": {
+        "type": "string",
+        "title": "Contentstack Domain",
+        "description": "The subdomain of your Contentstack account",
+        "pattern": "^[a-z0-9_-]+$",
+        "example": "domain",
+        "suffix": ".contentstack.com",
+        "prefix": "https://",
+        "order": 2
+      },
+      "appId": {
+        "type": "string",
+        "title": "App ID",
+        "description": "The app ID of your Contentstack account",
+        "order": 1
+      },
+      "apiDomain": {
+        "type": "string",
+        "title": "API Domain",
+        "description": "The domain to where you will access your API",
+        "pattern": "^[a-z0-9_-]+$",
+        "example": "eu-api.contentstack.com",
+        "prefix": "https://",
+        "order": 3
+      }
+    }
+  },
   "coros": {
     "type": "http",
     "code": "coros",
     "name": "Coros",
+    "baseUrl": "https://open.coros.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -3073,6 +3369,7 @@
     "type": "http",
     "code": "coros-sandbox",
     "name": "Coros (Sandbox)",
+    "baseUrl": "https://opentest.coros.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -3101,6 +3398,7 @@
     "type": "http",
     "code": "cyberimpact",
     "name": "Cyberimpact",
+    "baseUrl": "https://api.cyberimpact.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -3113,6 +3411,7 @@
     "type": "http",
     "code": "customer-io",
     "name": "Customer.io",
+    "baseUrl": "https://${connectionConfig.subdomain}.customer.io",
     "auth": {
       "basic": {}
     },
@@ -3132,8 +3431,8 @@
     "type": "http",
     "code": "cursor",
     "name": "Cursor",
+    "baseUrl": "https://api.cursor.com",
     "auth": {
-      "basic": {},
       "apiKey": {
         "location": "header",
         "name": "Authorization",
@@ -3141,10 +3440,20 @@
       }
     }
   },
+  "cursor-admin": {
+    "type": "http",
+    "code": "cursor-admin",
+    "name": "Cursor Admin",
+    "baseUrl": "https://api.cursor.com",
+    "auth": {
+      "basic": {}
+    }
+  },
   "datev": {
     "type": "http",
     "code": "datev",
     "name": "Datev",
+    "baseUrl": "https://api.datev.de",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -3178,6 +3487,7 @@
     "type": "http",
     "code": "datacandy",
     "name": "DataCandy",
+    "baseUrl": "https://${connectionConfig.application_url}/api2",
     "auth": {
       "basic": {}
     },
@@ -3207,6 +3517,7 @@
     "type": "http",
     "code": "datadog",
     "name": "Datadog",
+    "baseUrl": "https://api.${connectionConfig.siteParameter}/api",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -3238,6 +3549,7 @@
     "type": "http",
     "code": "datto-rmm",
     "name": "Datto RMM",
+    "baseUrl": "https://${connectionConfig.platform}-api.centrastage.net/api",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -3279,6 +3591,7 @@
     "type": "http",
     "code": "deel",
     "name": "Deel",
+    "baseUrl": "https://api.letsdeel.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -3307,6 +3620,7 @@
     "type": "http",
     "code": "deel-sandbox",
     "name": "Deel (Sandbox)",
+    "baseUrl": "https://api-sandbox.demo.deel.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -3335,6 +3649,7 @@
     "type": "http",
     "code": "devin",
     "name": "Devin",
+    "baseUrl": "https://api.devin.ai",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -3347,6 +3662,7 @@
     "type": "http",
     "code": "demodesk",
     "name": "DemoDesk",
+    "baseUrl": "https://demodesk.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -3359,6 +3675,7 @@
     "type": "http",
     "code": "dialpad",
     "name": "Dialpad",
+    "baseUrl": "https://dialpad.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -3387,6 +3704,7 @@
     "type": "http",
     "code": "dialpad-sandbox",
     "name": "Dialpad (Sandbox)",
+    "baseUrl": "https://sandbox.dialpad.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -3415,6 +3733,7 @@
     "type": "http",
     "code": "digitalocean",
     "name": "DigitalOcean",
+    "baseUrl": "https://api.digitalocean.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -3443,6 +3762,7 @@
     "type": "http",
     "code": "digits",
     "name": "Digits",
+    "baseUrl": "https://connect.digits.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -3471,6 +3791,7 @@
     "type": "http",
     "code": "discord",
     "name": "Discord",
+    "baseUrl": "https://discord.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -3499,6 +3820,7 @@
     "type": "http",
     "code": "discourse",
     "name": "Discourse",
+    "baseUrl": "https://${connectionConfig.defaultHost}",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -3525,6 +3847,7 @@
     "type": "http",
     "code": "crisp",
     "name": "Crisp",
+    "baseUrl": "https://api.crisp.chat",
     "auth": {
       "basic": {}
     }
@@ -3533,6 +3856,7 @@
     "type": "http",
     "code": "crunchbase",
     "name": "Crunchbase",
+    "baseUrl": "https://api.crunchbase.com/",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -3545,6 +3869,7 @@
     "type": "http",
     "code": "dixa",
     "name": "Dixa",
+    "baseUrl": "https://${connectionConfig.apiType}.dixa.io",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -3566,6 +3891,7 @@
     "type": "http",
     "code": "document360",
     "name": "Document360",
+    "baseUrl": "https://api.document360.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -3578,6 +3904,7 @@
     "type": "http",
     "code": "docusign",
     "name": "DocuSign",
+    "baseUrl": "https://www.docusign.net",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -3606,6 +3933,7 @@
     "type": "http",
     "code": "docusign-sandbox",
     "name": "DocuSign (Sandbox)",
+    "baseUrl": "https://demo.docusign.net",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -3634,6 +3962,7 @@
     "type": "http",
     "code": "dropbox",
     "name": "Dropbox",
+    "baseUrl": "https://api.dropboxapi.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -3662,6 +3991,7 @@
     "type": "http",
     "code": "dropbox-sign",
     "name": "Dropbox Sign",
+    "baseUrl": "https://api.hellosign.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -3690,6 +4020,7 @@
     "type": "http",
     "code": "drchrono",
     "name": "DrChrono",
+    "baseUrl": "https://app.drchrono.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -3718,6 +4049,7 @@
     "type": "http",
     "code": "drata",
     "name": "Drata",
+    "baseUrl": "https://public-api.drata.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -3726,10 +4058,30 @@
       }
     }
   },
+  "cisco-duo-admin": {
+    "type": "http",
+    "code": "cisco-duo-admin",
+    "name": "Cisco Duo Admin API",
+    "baseUrl": "https://${connectionConfig.hostname}",
+    "auth": {
+      "basic": {}
+    },
+    "customFields": {
+      "hostname": {
+        "type": "string",
+        "title": "API Hostname",
+        "description": "Your Duo API hostname.",
+        "example": "api-xxxxxxxx.duosecurity.com",
+        "pattern": "api-[a-z0-9]+\\.duosecurity\\.com",
+        "order": 1
+      }
+    }
+  },
   "contactout": {
     "type": "http",
     "code": "contactout",
     "name": "ContactOut",
+    "baseUrl": "https://api.contactout.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -3742,6 +4094,7 @@
     "type": "http",
     "code": "employment-hero",
     "name": "Employment Hero",
+    "baseUrl": "https://api.employmenthero.com/api",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -3770,6 +4123,7 @@
     "type": "http",
     "code": "ebay",
     "name": "eBay",
+    "baseUrl": "https://api.ebay.com/",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -3798,6 +4152,7 @@
     "type": "http",
     "code": "ebay-sandbox",
     "name": "eBay (Sandbox)",
+    "baseUrl": "https://api.sandbox.ebay.com/",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -3826,6 +4181,7 @@
     "type": "http",
     "code": "easypost",
     "name": "EasyPost",
+    "baseUrl": "https://api.easypost.com",
     "auth": {
       "basic": {}
     }
@@ -3834,6 +4190,7 @@
     "type": "http",
     "code": "e-conomic",
     "name": "e-conomic",
+    "baseUrl": "https://restapi.e-conomic.com",
     "auth": {
       "basic": {}
     }
@@ -3842,6 +4199,7 @@
     "type": "http",
     "code": "egnyte",
     "name": "Egnyte",
+    "baseUrl": "https://${connectionConfig.subdomain}.egnyte.com/pubapi",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -3877,10 +4235,11 @@
       }
     }
   },
-  "eleven-labs": {
+  "elevenlabs": {
     "type": "http",
-    "code": "eleven-labs",
+    "code": "elevenlabs",
     "name": "Eleven Labs",
+    "baseUrl": "https://api.elevenlabs.io",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -3893,6 +4252,7 @@
     "type": "http",
     "code": "elevio",
     "name": "Elevio",
+    "baseUrl": "https://api.elev.io",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -3913,6 +4273,7 @@
     "type": "http",
     "code": "entrata",
     "name": "Entrata",
+    "baseUrl": "https://${connectionConfig.subdomain}.entrata.com",
     "auth": {
       "basic": {}
     },
@@ -3932,6 +4293,7 @@
     "type": "http",
     "code": "envoy",
     "name": "Envoy",
+    "baseUrl": "https://api.envoy.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -3956,10 +4318,11 @@
       }
     }
   },
-  "energy-performance-certificates-gov-uk": {
+  "epc-gov-uk": {
     "type": "http",
-    "code": "energy-performance-certificates-gov-uk",
+    "code": "epc-gov-uk",
     "name": "Energy Performance Certificates (Gov.UK)",
+    "baseUrl": "https://api.get-energy-performance-data.communities.gov.uk",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -3972,6 +4335,7 @@
     "type": "http",
     "code": "epic-games",
     "name": "Epic Games",
+    "baseUrl": "https://api.epicgames.dev",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -3997,6 +4361,7 @@
     "type": "http",
     "code": "evaluagent",
     "name": "EvaluAgent",
+    "baseUrl": "https://${connectionConfig.region}.evaluagent.com",
     "auth": {
       "basic": {}
     },
@@ -4014,6 +4379,7 @@
     "type": "http",
     "code": "eventbrite",
     "name": "Eventbrite",
+    "baseUrl": "https://www.eventbriteapi.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -4042,6 +4408,7 @@
     "type": "http",
     "code": "etsy",
     "name": "Etsy",
+    "baseUrl": "https://api.etsy.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -4070,6 +4437,7 @@
     "type": "http",
     "code": "exa",
     "name": "Exa",
+    "baseUrl": "https://api.exa.ai",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -4082,6 +4450,7 @@
     "type": "http",
     "code": "exact-online",
     "name": "Exact Online",
+    "baseUrl": "https://start.exactonline.${connectionConfig.extension}/",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -4119,6 +4488,7 @@
     "type": "http",
     "code": "exist",
     "name": "Exist",
+    "baseUrl": "https://exist.io/",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -4147,6 +4517,7 @@
     "type": "http",
     "code": "expensify",
     "name": "Expensify",
+    "baseUrl": "https://integrations.expensify.com/Integration-Server/",
     "auth": {
       "basic": {}
     }
@@ -4155,6 +4526,7 @@
     "type": "http",
     "code": "factorial",
     "name": "Factorial",
+    "baseUrl": "https://api.factorialhr.com/api",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -4180,6 +4552,7 @@
     "type": "http",
     "code": "fairing",
     "name": "Fairing",
+    "baseUrl": "https://app.fairing.co/api",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -4192,12 +4565,8 @@
     "type": "http",
     "code": "facebook",
     "name": "Facebook",
+    "baseUrl": "https://graph.facebook.com",
     "auth": {
-      "apiKey": {
-        "location": "header",
-        "name": "Authorization",
-        "template": "Bearer {{key}}"
-      },
       "oauth2": {
         "type": "oauth2",
         "authorize": {
@@ -4222,6 +4591,7 @@
     "type": "http",
     "code": "fanvue",
     "name": "Fanvue",
+    "baseUrl": "https://api.fanvue.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -4262,6 +4632,7 @@
     "type": "http",
     "code": "fiber-ai",
     "name": "Fiber AI",
+    "baseUrl": "https://api.fiber.ai",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -4270,10 +4641,11 @@
       }
     }
   },
-  "fathom-oauth": {
+  "fathom": {
     "type": "http",
-    "code": "fathom-oauth",
-    "name": "Fathom (OAuth)",
+    "code": "fathom",
+    "name": "Fathom",
+    "baseUrl": "https://api.fathom.ai",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -4307,6 +4679,7 @@
     "type": "http",
     "code": "fellow",
     "name": "Fellow",
+    "baseUrl": "https://${connectionConfig.subdomain}.fellow.app/api",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -4326,82 +4699,28 @@
       }
     }
   },
-  "practicefusion": {
+  "fern": {
     "type": "http",
-    "code": "practicefusion",
-    "name": "PracticeFusion",
+    "code": "fern",
+    "name": "Fern (Public API)",
+    "baseUrl": "https://${connectionConfig.baseUrl}",
     "auth": {
-      "basic": {},
       "apiKey": {
         "location": "header",
         "name": "Authorization",
         "template": "Bearer {{key}}"
-      },
-      "oauth2": {
-        "type": "oauth2",
-        "authorize": {
-          "request": {
-            "method": "GET",
-            "path": "/authorize",
-            "baseUrl": "https://${connectionconfig.baseurl}",
-            "query": {
-              "response_type": "code",
-              "aud": "https://${connectionConfig.baseUrl}",
-              "launch": "${connectionConfig.launch}"
-            }
-          }
-        },
-        "token": {
-          "request": {
-            "method": "POST",
-            "path": "/token",
-            "baseUrl": "https://${connectionconfig.baseurl}"
-          }
-        },
-        "disablePkce": false
       }
     },
     "customFields": {
       "baseUrl": {
         "type": "string",
-        "title": "Base URL",
-        "description": "The base URL for your Practice authorization server",
-        "pattern": "^[a-zA-Z0-9.-]+\\.(practice|patient)fusion\\.com/.*$",
+        "title": "Docs URL",
+        "description": "The domain of your Fern docs site.",
+        "example": "docs.example.com",
+        "format": "hostname",
         "prefix": "https://",
-        "example": "api.patientfusion.com/fhir/r4/v1/118b460b-8390-4754-8e4a-1dd5ee20f599/",
-        "doc_section": "#step-1-find-your-base-url",
-        "order": 1
-      },
-      "projectRef": {
-        "type": "string",
-        "title": "Project Ref",
-        "description": "Your Trigger.dev project identifier.",
-        "example": "proj_1234567890",
-        "optional": true,
-        "doc_section": "#step-2-find-your-project-ref"
-      },
-      "environment": {
-        "type": "string",
-        "title": "Environment",
-        "description": "The target environment.",
-        "example": "prod",
-        "optional": true,
-        "doc_section": "#step-3-find-your-environment"
-      },
-      "triggerBranch": {
-        "type": "string",
-        "title": "Preview Branch",
-        "description": "Target a specific preview branch for environment variable operations.",
-        "example": "feature-xyz",
-        "optional": true,
-        "doc_section": "#step-5-set-your-preview-branch"
-      },
-      "launch": {
-        "type": "string",
-        "title": "",
-        "description": "",
-        "default_value": "",
-        "hidden": true
+        "order": 1,
+        "doc_section": "#step-2-find-your-docs-url"
       }
     }
   },
@@ -4409,6 +4728,7 @@
     "type": "http",
     "code": "freeagent",
     "name": "FreeAgent",
+    "baseUrl": "https://api.freeagent.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -4437,6 +4757,7 @@
     "type": "http",
     "code": "freeagent-sandbox",
     "name": "FreeAgent (Sandbox)",
+    "baseUrl": "https://api.sandbox.freeagent.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -4465,6 +4786,7 @@
     "type": "http",
     "code": "freepik",
     "name": "Freepik",
+    "baseUrl": "https://api.freepik.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -4477,6 +4799,7 @@
     "type": "http",
     "code": "figma",
     "name": "Figma",
+    "baseUrl": "https://api.figma.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -4498,10 +4821,11 @@
       }
     }
   },
-  "figma-scim": {
+  "figma-j3rq": {
     "type": "http",
-    "code": "figma-scim",
-    "name": "Figma (SCIM)",
+    "code": "figma-j3rq",
+    "name": "Figma",
+    "baseUrl": "https://${connectionConfig.host}/scim/v2/${connectionConfig.tenantId}",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -4530,10 +4854,11 @@
       }
     }
   },
-  "fal-ai": {
+  "falai": {
     "type": "http",
-    "code": "fal-ai",
+    "code": "falai",
     "name": "fal.ai",
+    "baseUrl": "https://queue.fal.run",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -4546,6 +4871,7 @@
     "type": "http",
     "code": "findymail",
     "name": "FindyMail",
+    "baseUrl": "https://app.findymail.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -4558,6 +4884,7 @@
     "type": "http",
     "code": "fireflies",
     "name": "Fireflies",
+    "baseUrl": "https://api.fireflies.ai",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -4570,6 +4897,7 @@
     "type": "http",
     "code": "firstbase",
     "name": "Firstbase",
+    "baseUrl": "https://apipub.firstbasehq.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -4578,10 +4906,11 @@
       }
     }
   },
-  "fiserv-api-key": {
+  "fiserv": {
     "type": "http",
-    "code": "fiserv-api-key",
-    "name": "Fiserv (API Key)",
+    "code": "fiserv",
+    "name": "Fiserv",
+    "baseUrl": "https://prod.emea.api.fiservapps.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -4594,6 +4923,7 @@
     "type": "http",
     "code": "fitbit",
     "name": "Fitbit",
+    "baseUrl": "https://api.fitbit.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -4615,11 +4945,17 @@
       }
     }
   },
-  "fillout-oauth": {
+  "fillout": {
     "type": "http",
-    "code": "fillout-oauth",
+    "code": "fillout",
     "name": "Fillout (Oauth)",
+    "baseUrl": "https://${connectionConfig.hostname}",
     "auth": {
+      "apiKey": {
+        "location": "header",
+        "name": "Authorization",
+        "template": "Bearer {{key}}"
+      },
       "oauth2": {
         "type": "oauth2",
         "authorize": {
@@ -4640,6 +4976,15 @@
       }
     },
     "customFields": {
+      "hostname": {
+        "type": "string",
+        "title": "Hostname",
+        "description": "The hostname of your Fillout account",
+        "example": "api.fillout.com",
+        "prefix": "https://",
+        "order": 1,
+        "doc_section": "#step-1-finding-your-hostname-and-api-key"
+      },
       "base_url": {
         "type": "string",
         "title": "",
@@ -4652,6 +4997,7 @@
     "type": "http",
     "code": "float",
     "name": "Float",
+    "baseUrl": "https://api.float.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -4672,6 +5018,7 @@
     "type": "http",
     "code": "folk",
     "name": "Folk",
+    "baseUrl": "https://api.folk.app",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -4684,6 +5031,7 @@
     "type": "http",
     "code": "fortnox",
     "name": "Fortnox",
+    "baseUrl": "https://api.fortnox.se/3",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -4713,6 +5061,7 @@
     "type": "http",
     "code": "freshbooks",
     "name": "FreshBooks",
+    "baseUrl": "https://api.freshbooks.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -4741,6 +5090,7 @@
     "type": "http",
     "code": "freshdesk",
     "name": "FreshDesk",
+    "baseUrl": "https://${connectionConfig.subdomain}.freshdesk.com",
     "auth": {
       "basic": {}
     },
@@ -4761,6 +5111,7 @@
     "type": "http",
     "code": "freshsales",
     "name": "Freshsales",
+    "baseUrl": "https://${connectionConfig.bundleAlias} || https://${connectionConfig.subdomain}.freshsales.io",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -4790,6 +5141,7 @@
     "type": "http",
     "code": "freshservice",
     "name": "Freshservice",
+    "baseUrl": "https://${connectionConfig.subdomain}.freshservice.com",
     "auth": {
       "basic": {}
     },
@@ -4810,6 +5162,7 @@
     "type": "http",
     "code": "freshteam",
     "name": "Freshteam",
+    "baseUrl": "https://${connectionConfig.accountName}.freshteam.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -4835,6 +5188,7 @@
     "type": "http",
     "code": "freshworks",
     "name": "Freshworks",
+    "baseUrl": "https://${connectionConfig.bundleAlias}",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -4883,6 +5237,7 @@
     "type": "http",
     "code": "front",
     "name": "Front",
+    "baseUrl": "https://api2.frontapp.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -4913,6 +5268,7 @@
     "type": "http",
     "code": "fullenrich",
     "name": "FullEnrich",
+    "baseUrl": "https://app.fullenrich.com/api",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -4925,6 +5281,7 @@
     "type": "http",
     "code": "google-gemini",
     "name": "Google Gemini",
+    "baseUrl": "https://generativelanguage.googleapis.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -4937,6 +5294,7 @@
     "type": "http",
     "code": "gem",
     "name": "Gem",
+    "baseUrl": "https://api.gem.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -4953,27 +5311,22 @@
       }
     }
   },
-  "prtg-classic": {
+  "gerrit": {
     "type": "http",
-    "code": "prtg-classic",
-    "name": "PRTG Classic",
+    "code": "gerrit",
+    "name": "Gerrit",
+    "baseUrl": "https://${connectionConfig.host}",
     "auth": {
-      "basic": {},
-      "apiKey": {
-        "location": "header",
-        "name": "Authorization",
-        "template": "Bearer {{key}}"
-      }
+      "basic": {}
     },
     "customFields": {
       "host": {
         "type": "string",
-        "title": "Instance Host",
-        "description": "The host of your PRTG instance",
-        "pattern": "^[A-Za-z0-9.-]+(:\\d+)?$",
-        "example": "monitor.example.com",
-        "prefix": "https://",
-        "doc_section": "#step-1-finding-your-instance-host",
+        "title": "Gerrit Host",
+        "description": "The host to where you Gerrit instance is hosted",
+        "pattern": "^https?:\\/\\/[a-z0-9.-]+(:\\d+)?(\\/.*)?$",
+        "example": "http://localhost:8080",
+        "doc_section": "#step-1-finding-your-host",
         "order": 1
       }
     }
@@ -4982,6 +5335,7 @@
     "type": "http",
     "code": "getty-images",
     "name": "Getty Images",
+    "baseUrl": "https://api.gettyimages.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -5010,6 +5364,7 @@
     "type": "http",
     "code": "grammarly-scim",
     "name": "Grammarly SCIM",
+    "baseUrl": "https://sso.grammarly.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -5022,6 +5377,7 @@
     "type": "http",
     "code": "granola",
     "name": "Granola",
+    "baseUrl": "https://public-api.granola.ai",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -5034,6 +5390,7 @@
     "type": "http",
     "code": "guru",
     "name": "Guru",
+    "baseUrl": "https://api.getguru.com/api/v1",
     "auth": {
       "basic": {}
     }
@@ -5042,20 +5399,17 @@
     "type": "http",
     "code": "guru-scim",
     "name": "Guru (SCIM)",
+    "baseUrl": "https://api.getguru.com/api/scim",
     "auth": {
       "basic": {}
     }
   },
-  "github-user-oauth": {
+  "github": {
     "type": "http",
-    "code": "github-user-oauth",
+    "code": "github",
     "name": "GitHub (User OAuth)",
+    "baseUrl": "https://api.github.com",
     "auth": {
-      "apiKey": {
-        "location": "header",
-        "name": "Authorization",
-        "template": "Bearer {{key}}"
-      },
       "oauth2": {
         "type": "oauth2",
         "authorize": {
@@ -5074,20 +5428,13 @@
         },
         "disablePkce": false
       }
-    },
-    "customFields": {
-      "version": {
-        "type": "string",
-        "title": "",
-        "description": "",
-        "automated": true
-      }
     }
   },
-  "github-app": {
+  "github-7usm": {
     "type": "http",
-    "code": "github-app",
-    "name": "GitHub (App)",
+    "code": "github-7usm",
+    "name": "GitHub",
+    "baseUrl": "",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -5113,10 +5460,32 @@
       }
     }
   },
+  "github-pat": {
+    "type": "http",
+    "code": "github-pat",
+    "name": "Github (Personal Access Token)",
+    "baseUrl": "https://api.github.com",
+    "auth": {
+      "apiKey": {
+        "location": "header",
+        "name": "Authorization",
+        "template": "Bearer {{key}}"
+      }
+    },
+    "customFields": {
+      "version": {
+        "type": "string",
+        "title": "",
+        "description": "",
+        "automated": true
+      }
+    }
+  },
   "gitlab": {
     "type": "http",
     "code": "gitlab",
     "name": "GitLab",
+    "baseUrl": "https://gitlab.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -5141,10 +5510,35 @@
       }
     }
   },
-  "ghost-content-api": {
+  "gitlab-pat": {
     "type": "http",
-    "code": "ghost-content-api",
+    "code": "gitlab-pat",
+    "name": "GitLab  (Personal Access Token)",
+    "baseUrl": "https://${connectionConfig.hostname}",
+    "auth": {
+      "apiKey": {
+        "location": "header",
+        "name": "Authorization",
+        "template": "Bearer {{key}}"
+      }
+    },
+    "customFields": {
+      "hostname": {
+        "type": "string",
+        "title": "Hostname",
+        "description": "The hostname of your Gitlab instance",
+        "format": "hostname",
+        "example": "gitlab.com",
+        "doc_section": "#step-1-finding-your-hostname",
+        "order": 1
+      }
+    }
+  },
+  "ghost-content": {
+    "type": "http",
+    "code": "ghost-content",
     "name": "Ghost (Content API)",
+    "baseUrl": "https://${connectionConfig.adminDomain}/ghost/api/content/",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -5169,19 +5563,13 @@
       }
     }
   },
-  "gong-basic-auth": {
+  "gong": {
     "type": "http",
-    "code": "gong-basic-auth",
-    "name": "Gong (Basic Auth)",
-    "auth": {
-      "basic": {}
-    }
-  },
-  "gong-oauth": {
-    "type": "http",
-    "code": "gong-oauth",
+    "code": "gong",
     "name": "Gong (Oauth)",
+    "baseUrl": "https://api.gong.io",
     "auth": {
+      "basic": {},
       "oauth2": {
         "type": "oauth2",
         "authorize": {
@@ -5220,6 +5608,7 @@
     "type": "http",
     "code": "glyphic",
     "name": "Glyphic",
+    "baseUrl": "https://api.glyphic.ai",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -5232,6 +5621,7 @@
     "type": "http",
     "code": "gamma",
     "name": "Gamma",
+    "baseUrl": "https://public-api.gamma.app",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -5244,6 +5634,7 @@
     "type": "http",
     "code": "google",
     "name": "Google",
+    "baseUrl": "https://www.googleapis.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -5274,6 +5665,7 @@
     "type": "http",
     "code": "google-maps",
     "name": "Google Maps",
+    "baseUrl": "https://maps.googleapis.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -5286,6 +5678,7 @@
     "type": "http",
     "code": "google-play",
     "name": "Google Play",
+    "baseUrl": "https://play.googleapis.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -5316,6 +5709,7 @@
     "type": "http",
     "code": "gorgias",
     "name": "Gorgias",
+    "baseUrl": "https://${connectionConfig.subdomain}.gorgias.com",
     "auth": {
       "basic": {},
       "oauth2": {
@@ -5355,10 +5749,36 @@
       }
     }
   },
-  "grain-oauth": {
+  "grafana": {
     "type": "http",
-    "code": "grain-oauth",
-    "name": "Grain (OAuth)",
+    "code": "grafana",
+    "name": "Grafana",
+    "baseUrl": "https://${connectionConfig.domain}",
+    "auth": {
+      "apiKey": {
+        "location": "header",
+        "name": "Authorization",
+        "template": "Bearer {{key}}"
+      }
+    },
+    "customFields": {
+      "domain": {
+        "type": "string",
+        "title": "Domain",
+        "description": "Your Grafana domain",
+        "example": "example.grafana.net",
+        "prefix": "https://",
+        "format": "hostname",
+        "order": 1,
+        "doc_section": "#step-1-finding-your-domain"
+      }
+    }
+  },
+  "grain": {
+    "type": "http",
+    "code": "grain",
+    "name": "Grain",
+    "baseUrl": "https://api.grain.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -5388,10 +5808,11 @@
       }
     }
   },
-  "greenhouse-oauth": {
+  "greenhouse": {
     "type": "http",
-    "code": "greenhouse-oauth",
-    "name": "Greenhouse (OAuth)",
+    "code": "greenhouse",
+    "name": "Greenhouse",
+    "baseUrl": "https://${connectionConfig.resource}.greenhouse.io",
     "auth": {
       "basic": {},
       "oauth2": {
@@ -5426,12 +5847,21 @@
       }
     }
   },
-  "greenhouse-harvest-partner-v3": {
+  "greenhouse-harvest": {
     "type": "http",
-    "code": "greenhouse-harvest-partner-v3",
-    "name": "Greenhouse Harvest Partner (V3)",
+    "code": "greenhouse-harvest",
+    "name": "Greenhouse (Harvest API)",
+    "baseUrl": "https://harvest.greenhouse.io",
     "auth": {
-      "basic": {},
+      "basic": {}
+    }
+  },
+  "greenhouse-harvest-partner": {
+    "type": "http",
+    "code": "greenhouse-harvest-partner",
+    "name": "Greenhouse Harvest Partner (V3)",
+    "baseUrl": "https://harvest.greenhouse.io",
+    "auth": {
       "oauth2": {
         "type": "oauth2",
         "authorize": {
@@ -5455,10 +5885,11 @@
       }
     }
   },
-  "greenhouse-job-board-api": {
+  "greenhouse-job-board": {
     "type": "http",
-    "code": "greenhouse-job-board-api",
+    "code": "greenhouse-job-board",
     "name": "Greenhouse (Job Board API)",
+    "baseUrl": "https://boards-api.greenhouse.io",
     "auth": {
       "basic": {}
     },
@@ -5472,10 +5903,33 @@
       }
     }
   },
-  "greenhouse-ingestion-api": {
+  "greenhouse-assessment": {
     "type": "http",
-    "code": "greenhouse-ingestion-api",
+    "code": "greenhouse-assessment",
+    "name": "Greenhouse (Assessment API)",
+    "baseUrl": "https://${connectionConfig.baseUrl}",
+    "auth": {
+      "basic": {}
+    },
+    "customFields": {
+      "baseUrl": {
+        "type": "string",
+        "title": "Assessment Base Url",
+        "description": "The Assessment API Base Url you want to connect to",
+        "pattern": "^[a-z0-9_-]+$",
+        "example": "www.testing-partner.com",
+        "prefix": "https://",
+        "format": "hostname",
+        "order": 1,
+        "doc_section": "#step-1-obtaining-your-assessment-base-url"
+      }
+    }
+  },
+  "greenhouse-ingestion": {
+    "type": "http",
+    "code": "greenhouse-ingestion",
     "name": "Greenhouse (Ingestion API)",
+    "baseUrl": "https://api.greenhouse.io",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -5497,10 +5951,11 @@
       }
     }
   },
-  "greenhouse-onboarding-api": {
+  "greenhouse-onboarding": {
     "type": "http",
-    "code": "greenhouse-onboarding-api",
+    "code": "greenhouse-onboarding",
     "name": "Greenhouse (Onboarding API)",
+    "baseUrl": "https://onboarding-api.greenhouse.io",
     "auth": {
       "basic": {}
     }
@@ -5509,6 +5964,7 @@
     "type": "http",
     "code": "grist",
     "name": "Grist",
+    "baseUrl": "https://${connectionConfig.environment}.getgrist.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -5532,6 +5988,7 @@
     "type": "http",
     "code": "gumroad",
     "name": "Gumroad",
+    "baseUrl": "https://api.gumroad.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -5560,6 +6017,7 @@
     "type": "http",
     "code": "gusto",
     "name": "Gusto",
+    "baseUrl": "https://api.gusto.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -5584,10 +6042,11 @@
       }
     }
   },
-  "gusto-demo": {
+  "gusto-ndkv": {
     "type": "http",
-    "code": "gusto-demo",
-    "name": "Gusto (Demo)",
+    "code": "gusto-ndkv",
+    "name": "Gusto",
+    "baseUrl": "https://api.gusto-demo.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -5616,6 +6075,7 @@
     "type": "http",
     "code": "hackerrank-work",
     "name": "HackerRank Work",
+    "baseUrl": "https://www.hackerrank.com",
     "auth": {
       "basic": {}
     }
@@ -5624,6 +6084,7 @@
     "type": "http",
     "code": "harvest",
     "name": "Harvest",
+    "baseUrl": "https://api.harvestapp.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -5660,6 +6121,7 @@
     "type": "http",
     "code": "health-gorilla",
     "name": "Health Gorilla",
+    "baseUrl": "https://healthgorilla.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -5688,6 +6150,7 @@
     "type": "http",
     "code": "hex",
     "name": "Hex",
+    "baseUrl": "https://${connectionConfig.subdomain}.hex.tech/api",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -5710,6 +6173,7 @@
     "type": "http",
     "code": "heyreach",
     "name": "HeyReach",
+    "baseUrl": "https://api.heyreach.io/api",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -5718,10 +6182,11 @@
       }
     }
   },
-  "hibob-service-user": {
+  "hibob": {
     "type": "http",
-    "code": "hibob-service-user",
-    "name": "Hibob Service User",
+    "code": "hibob",
+    "name": "HiBob",
+    "baseUrl": "https://api.hibob.com",
     "auth": {
       "basic": {}
     }
@@ -5730,6 +6195,7 @@
     "type": "http",
     "code": "heygen",
     "name": "HeyGen",
+    "baseUrl": "https://api2.heygen.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -5751,10 +6217,37 @@
       }
     }
   },
-  "highlevel-leadconnector": {
+  "highlevel": {
     "type": "http",
-    "code": "highlevel-leadconnector",
+    "code": "highlevel",
+    "name": "HighLevel",
+    "baseUrl": "https://services.leadconnectorhq.com",
+    "auth": {
+      "oauth2": {
+        "type": "oauth2",
+        "authorize": {
+          "request": {
+            "method": "GET",
+            "path": "/oauth/chooselocation",
+            "baseUrl": "https://marketplace.gohighlevel.com"
+          }
+        },
+        "token": {
+          "request": {
+            "method": "POST",
+            "path": "/oauth/token",
+            "baseUrl": "https://services.leadconnectorhq.com"
+          }
+        },
+        "disablePkce": true
+      }
+    }
+  },
+  "highlevel-white-label": {
+    "type": "http",
+    "code": "highlevel-white-label",
     "name": "HighLevel (LeadConnector)",
+    "baseUrl": "https://services.leadconnectorhq.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -5780,6 +6273,7 @@
     "type": "http",
     "code": "holded",
     "name": "Holded",
+    "baseUrl": "https://api.holded.com/api",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -5792,6 +6286,7 @@
     "type": "http",
     "code": "hover",
     "name": "Hover",
+    "baseUrl": "https://api.hover.to",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -5820,6 +6315,7 @@
     "type": "http",
     "code": "huntress",
     "name": "Huntress",
+    "baseUrl": "https://api.huntress.io",
     "auth": {
       "basic": {}
     }
@@ -5828,6 +6324,7 @@
     "type": "http",
     "code": "hubspot",
     "name": "HubSpot",
+    "baseUrl": "https://api.hubapi.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -5853,6 +6350,7 @@
     "type": "http",
     "code": "incident-io",
     "name": "Incident.io",
+    "baseUrl": "https://api.incident.io",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -5865,6 +6363,7 @@
     "type": "http",
     "code": "insightly",
     "name": "Insightly",
+    "baseUrl": "https://api.${connectionConfig.pod}.insightly.com",
     "auth": {
       "basic": {}
     },
@@ -5884,6 +6383,7 @@
     "type": "http",
     "code": "instantly",
     "name": "Instantly",
+    "baseUrl": "https://api.instantly.ai/api",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -5896,6 +6396,7 @@
     "type": "http",
     "code": "instagram",
     "name": "Instagram",
+    "baseUrl": "https://graph.instagram.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -5921,6 +6422,7 @@
     "type": "http",
     "code": "icypeas",
     "name": "Icypeas",
+    "baseUrl": "https://app.icypeas.com/api",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -5929,10 +6431,11 @@
       }
     }
   },
-  "it-glue": {
+  "itglue": {
     "type": "http",
-    "code": "it-glue",
+    "code": "itglue",
     "name": "IT Glue",
+    "baseUrl": "https://${connectionConfig.subdomain}.itglue.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -5956,6 +6459,7 @@
     "type": "http",
     "code": "intercom",
     "name": "Intercom",
+    "baseUrl": "https://api.${connectionConfig.region}.intercom.io || https://api.intercom.io",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -5988,10 +6492,11 @@
       }
     }
   },
-  "quickbooks": {
+  "intuit": {
     "type": "http",
-    "code": "quickbooks",
-    "name": "Quickbooks",
+    "code": "intuit",
+    "name": "Intuit",
+    "baseUrl": "https://quickbooks.api.intuit.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -6011,23 +6516,13 @@
         },
         "disablePkce": false
       }
-    },
-    "customFields": {
-      "realmId": {
-        "type": "string",
-        "title": "Quickbooks Realm ID",
-        "optional": true,
-        "description": "The realmId of your quickbooks company",
-        "pattern": "^\\d{10,19}$",
-        "example": "9341453474484455",
-        "doc_section": "#step-1-finding-your-realm-id"
-      }
     }
   },
   "ironclad": {
     "type": "http",
     "code": "ironclad",
     "name": "Ironclad",
+    "baseUrl": "https://${connectionConfig.subdomain}.ironcladapp.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -6068,6 +6563,7 @@
     "type": "http",
     "code": "jazzhr",
     "name": "JazzHR",
+    "baseUrl": "https://api.resumatorapi.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -6080,6 +6576,7 @@
     "type": "http",
     "code": "jiminny",
     "name": "Jiminny",
+    "baseUrl": "https://app.jiminny.${connectionConfig.region}/customer/api",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -6098,10 +6595,57 @@
       }
     }
   },
+  "jira": {
+    "type": "http",
+    "code": "jira",
+    "name": "Jira",
+    "baseUrl": "https://api.atlassian.com",
+    "auth": {
+      "basic": {},
+      "oauth2": {
+        "type": "oauth2",
+        "authorize": {
+          "request": {
+            "method": "GET",
+            "path": "/authorize",
+            "baseUrl": "https://auth.atlassian.com",
+            "query": {
+              "audience": "api.atlassian.com",
+              "prompt": "consent"
+            }
+          }
+        },
+        "token": {
+          "request": {
+            "method": "POST",
+            "path": "/oauth/token",
+            "baseUrl": "https://auth.atlassian.com"
+          }
+        },
+        "defaultScopes": [
+          "offline_access"
+        ],
+        "disablePkce": false
+      }
+    },
+    "customFields": {
+      "subdomain": {
+        "type": "string",
+        "title": "Subdomain",
+        "optional": true,
+        "description": "The subdomain of your Attlassian account",
+        "pattern": "^[a-zA-Z0-9.-]+$",
+        "example": "subdomain",
+        "suffix": ".atlassian.net",
+        "prefix": "https://"
+      }
+    }
+  },
   "justworks": {
     "type": "http",
     "code": "justworks",
     "name": "Justworks",
+    "baseUrl": "https://public-api.justworks.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -6130,7 +6674,14 @@
     "type": "http",
     "code": "jira-data-center",
     "name": "Jira Data Center",
+    "baseUrl": "https://${connectionConfig.endpointURL}/rest/api/latest",
     "auth": {
+      "basic": {},
+      "apiKey": {
+        "location": "header",
+        "name": "Authorization",
+        "template": "Bearer {{key}}"
+      },
       "oauth2": {
         "type": "oauth2",
         "authorize": {
@@ -6154,6 +6705,15 @@
       }
     },
     "customFields": {
+      "baseUrl": {
+        "type": "string",
+        "title": "Instance Base Url",
+        "description": "The base Url for your Jira Data Center instance",
+        "pattern": "^(https?:\\/\\/)?[A-Za-z0-9.-]+(:\\d+)?(\\/[A-Za-z0-9._-]*)?$",
+        "example": "https://foobar.atlassian.net",
+        "doc_section": "#step-1-finding-your-instance-base-url",
+        "order": 1
+      },
       "endpointURL": {
         "type": "string",
         "title": "Domain",
@@ -6164,34 +6724,11 @@
       }
     }
   },
-  "jira-data-center-api-key": {
-    "type": "http",
-    "code": "jira-data-center-api-key",
-    "name": "Jira Data Center (API Key)",
-    "auth": {
-      "basic": {},
-      "apiKey": {
-        "location": "header",
-        "name": "Authorization",
-        "template": "Bearer {{key}}"
-      }
-    },
-    "customFields": {
-      "baseUrl": {
-        "type": "string",
-        "title": "Instance Base Url",
-        "description": "The base Url for your Jira Data Center instance",
-        "pattern": "^(https?:\\/\\/)?[A-Za-z0-9.-]+(:\\d+)?(\\/[A-Za-z0-9._-]*)?$",
-        "example": "https://foobar.atlassian.net",
-        "doc_section": "#step-1-finding-your-instance-base-url",
-        "order": 1
-      }
-    }
-  },
   "jobadder": {
     "type": "http",
     "code": "jobadder",
     "name": "Jobadder",
+    "baseUrl": "https://api.jobadder.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -6223,6 +6760,7 @@
     "type": "http",
     "code": "jobber",
     "name": "Jobber",
+    "baseUrl": "https://api.getjobber.com/api",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -6259,6 +6797,7 @@
     "type": "http",
     "code": "jobvite",
     "name": "Jobvite",
+    "baseUrl": "https://api.jobvite.com/api",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -6280,6 +6819,7 @@
     "type": "http",
     "code": "jotform",
     "name": "Jotform",
+    "baseUrl": "https://api.jotform.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -6292,6 +6832,7 @@
     "type": "http",
     "code": "jumpcloud",
     "name": "JumpCloud",
+    "baseUrl": "https://console.jumpcloud.com/api",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -6300,18 +6841,20 @@
       }
     }
   },
-  "help-scout-docs": {
+  "helpscout-docs": {
     "type": "http",
-    "code": "help-scout-docs",
+    "code": "helpscout-docs",
     "name": "Help Scout Docs",
+    "baseUrl": "https://docsapi.helpscout.net",
     "auth": {
       "basic": {}
     }
   },
-  "help-scout-mailbox": {
+  "helpscout-mailbox": {
     "type": "http",
-    "code": "help-scout-mailbox",
+    "code": "helpscout-mailbox",
     "name": "Help Scout Mailbox",
+    "baseUrl": "https://api.helpscout.net",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -6340,6 +6883,7 @@
     "type": "http",
     "code": "kandji",
     "name": "Kandji",
+    "baseUrl": "https://${connectionConfig.subdomain}.kandji.io",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -6361,6 +6905,7 @@
     "type": "http",
     "code": "keap",
     "name": "Keap",
+    "baseUrl": "https://api.infusionsoft.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -6389,6 +6934,7 @@
     "type": "http",
     "code": "keeper-scim",
     "name": "Keeper (SCIM)",
+    "baseUrl": "https://keepersecurity.com/api/rest/scim/v2/${connectionConfig.node}",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -6411,12 +6957,8 @@
     "type": "http",
     "code": "kintone",
     "name": "Kintone",
+    "baseUrl": "https://${connectionConfig.subdomain}.kintone.com",
     "auth": {
-      "apiKey": {
-        "location": "header",
-        "name": "Authorization",
-        "template": "Bearer {{key}}"
-      },
       "oauth2": {
         "type": "oauth2",
         "authorize": {
@@ -6450,10 +6992,35 @@
       }
     }
   },
+  "kintone-user-api": {
+    "type": "http",
+    "code": "kintone-user-api",
+    "name": "Kintone User API",
+    "baseUrl": "https://${connectionConfig.subdomain}.kintone.com",
+    "auth": {
+      "apiKey": {
+        "location": "header",
+        "name": "Authorization",
+        "template": "Bearer {{key}}"
+      }
+    },
+    "customFields": {
+      "subdomain": {
+        "type": "string",
+        "title": "Subdomain",
+        "description": "The subdomain for your Kintone account",
+        "doc_section": "#step-1-finding-your-subdomain",
+        "example": "urdzw8p24agp",
+        "order": 1,
+        "pattern": "^[a-z0-9_-]+$"
+      }
+    }
+  },
   "knowbe4": {
     "type": "http",
     "code": "knowbe4",
     "name": "KnowBe4",
+    "baseUrl": "https://${connectionConfig.subdomain}.knowbe4.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -6477,6 +7044,7 @@
     "type": "http",
     "code": "klipfolio",
     "name": "Klipfolio",
+    "baseUrl": "https://app.klipfolio.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -6485,10 +7053,11 @@
       }
     }
   },
-  "klaviyo-oauth": {
+  "klaviyo": {
     "type": "http",
-    "code": "klaviyo-oauth",
-    "name": "Klaviyo (OAuth)",
+    "code": "klaviyo",
+    "name": "Klaviyo",
+    "baseUrl": "https://a.klaviyo.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -6522,6 +7091,7 @@
     "type": "http",
     "code": "klicktipp",
     "name": "KlickTipp",
+    "baseUrl": "https://api.klicktipp.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -6534,6 +7104,7 @@
     "type": "http",
     "code": "kustomer",
     "name": "Kustomer",
+    "baseUrl": "https://${connectionConfig.extension}.kustomerapp.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -6553,10 +7124,11 @@
       }
     }
   },
-  "la-growth-machine": {
+  "lagrowthmachine": {
     "type": "http",
-    "code": "la-growth-machine",
+    "code": "lagrowthmachine",
     "name": "La Growth Machine",
+    "baseUrl": "https://apiv2.lagrowthmachine.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -6569,6 +7141,7 @@
     "type": "http",
     "code": "lastpass",
     "name": "LastPass",
+    "baseUrl": "https://lastpass.com",
     "auth": {
       "basic": {}
     }
@@ -6577,6 +7150,7 @@
     "type": "http",
     "code": "lattice",
     "name": "Lattice",
+    "baseUrl": "https://api.latticehq.com/",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -6589,6 +7163,7 @@
     "type": "http",
     "code": "leadmagic",
     "name": "LeadMagic",
+    "baseUrl": "https://api.leadmagic.io",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -6601,6 +7176,7 @@
     "type": "http",
     "code": "lessonly",
     "name": "Lessonly",
+    "baseUrl": "https://api.lessonly.com/api",
     "auth": {
       "basic": {}
     }
@@ -6609,14 +7185,16 @@
     "type": "http",
     "code": "lemlist",
     "name": "lemlist",
+    "baseUrl": "https://api.lemlist.com",
     "auth": {
       "basic": {}
     }
   },
-  "lever-oauth": {
+  "lever": {
     "type": "http",
-    "code": "lever-oauth",
-    "name": "Lever (OAuth)",
+    "code": "lever",
+    "name": "Lever",
+    "baseUrl": "https://api.lever.co",
     "auth": {
       "basic": {},
       "oauth2": {
@@ -6643,10 +7221,11 @@
       }
     }
   },
-  "lever-oauth-sandbox": {
+  "lever-sandbox": {
     "type": "http",
-    "code": "lever-oauth-sandbox",
+    "code": "lever-sandbox",
     "name": "Lever (OAuth Sandbox)",
+    "baseUrl": "https://api.sandbox.lever.co",
     "auth": {
       "basic": {},
       "oauth2": {
@@ -6674,10 +7253,11 @@
       }
     }
   },
-  "lightspeed-retail-x-series": {
+  "lightspeed-retail": {
     "type": "http",
-    "code": "lightspeed-retail-x-series",
+    "code": "lightspeed-retail",
     "name": "Lightspeed Retail (X-Series)",
+    "baseUrl": "https://${connectionConfig.domain_prefix}.retail.lightspeed.app",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -6714,6 +7294,7 @@
     "type": "http",
     "code": "linear",
     "name": "Linear",
+    "baseUrl": "https://api.linear.app",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -6742,6 +7323,7 @@
     "type": "http",
     "code": "linkedin",
     "name": "LinkedIn",
+    "baseUrl": "https://api.linkedin.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -6767,6 +7349,7 @@
     "type": "http",
     "code": "linkhut",
     "name": "LinkHut",
+    "baseUrl": "https://api.ln.ht",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -6792,6 +7375,7 @@
     "type": "http",
     "code": "lokalise",
     "name": "Lokalise",
+    "baseUrl": "https://api.lokalise.com/api2",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -6813,10 +7397,35 @@
       }
     }
   },
-  "loops-so": {
+  "loom-scim": {
     "type": "http",
-    "code": "loops-so",
-    "name": "Loops.so",
+    "code": "loom-scim",
+    "name": "Loom (SCIM)",
+    "baseUrl": "https://${connectionConfig.domain}/scim",
+    "auth": {
+      "apiKey": {
+        "location": "header",
+        "name": "Authorization",
+        "template": "Bearer {{key}}"
+      }
+    },
+    "customFields": {
+      "domain": {
+        "type": "string",
+        "title": "Loom SCIM Bridge URL",
+        "description": "The domain for your Loom SCIM Bridge",
+        "example": "scim.example.com",
+        "pattern": "^[a-zA-Z0-9.-]+$",
+        "prefix": "https://",
+        "doc_section": "#step-4-get-your-scim-bridge-url"
+      }
+    }
+  },
+  "loops": {
+    "type": "http",
+    "code": "loops",
+    "name": "Loops",
+    "baseUrl": "https://app.loops.so/api",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -6829,6 +7438,7 @@
     "type": "http",
     "code": "loop-returns",
     "name": "Loop Returns",
+    "baseUrl": "https://api.loopreturns.com/api",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -6837,10 +7447,11 @@
       }
     }
   },
-  "looker-oauth": {
+  "looker": {
     "type": "http",
-    "code": "looker-oauth",
-    "name": "Looker (OAuth)",
+    "code": "looker",
+    "name": "Looker",
+    "baseUrl": "https://${connectionConfig.apiHostname}/api",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -6894,6 +7505,7 @@
     "type": "http",
     "code": "lucid-scim",
     "name": "Lucid (SCIM)",
+    "baseUrl": "https://users.lucid.app/scim",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -6906,6 +7518,7 @@
     "type": "http",
     "code": "luma",
     "name": "Luma",
+    "baseUrl": "https://api.lu.ma",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -6918,6 +7531,7 @@
     "type": "http",
     "code": "lumos",
     "name": "Lumos",
+    "baseUrl": "https://api.lumos.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -6930,6 +7544,7 @@
     "type": "http",
     "code": "listmonk",
     "name": "Listmonk",
+    "baseUrl": "https://${connectionConfig.domain}/api",
     "auth": {
       "basic": {}
     },
@@ -6947,6 +7562,7 @@
     "type": "http",
     "code": "lob",
     "name": "Lob",
+    "baseUrl": "https://api.lob.com",
     "auth": {
       "basic": {}
     }
@@ -6955,6 +7571,7 @@
     "type": "http",
     "code": "make",
     "name": "Make",
+    "baseUrl": "https://${connectionConfig.environmentUrl}/api/v2",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -6977,6 +7594,7 @@
     "type": "http",
     "code": "mailgun",
     "name": "Mailgun",
+    "baseUrl": "https://${connectionConfig.region}.mailgun.net",
     "auth": {
       "basic": {}
     },
@@ -6995,6 +7613,7 @@
     "type": "http",
     "code": "mailchimp",
     "name": "Mailchimp",
+    "baseUrl": "https://${connectionConfig.dc}.api.mailchimp.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -7033,6 +7652,7 @@
     "type": "http",
     "code": "mailjet",
     "name": "Mailjet",
+    "baseUrl": "https://api.mailjet.com",
     "auth": {
       "basic": {}
     }
@@ -7041,6 +7661,7 @@
     "type": "http",
     "code": "manatal",
     "name": "Manatal",
+    "baseUrl": "https://api.manatal.com/open/v3",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -7053,6 +7674,7 @@
     "type": "http",
     "code": "metabase",
     "name": "Metabase",
+    "baseUrl": "https://${connectionConfig.hostname} || https://${connectionConfig.domain}.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -7084,6 +7706,7 @@
     "type": "http",
     "code": "mercury",
     "name": "Mercury",
+    "baseUrl": "https://api.mercury.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -7108,43 +7731,74 @@
       }
     }
   },
-  "microsoft-tenant": {
+  "microsoft": {
     "type": "http",
-    "code": "microsoft-tenant",
-    "name": "Microsoft (Tenant)",
+    "code": "microsoft",
+    "name": "Microsoft",
+    "baseUrl": "https://graph.microsoft.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
         "authorize": {
           "request": {
             "method": "GET",
-            "path": "/${connectionConfig.tenant}/oauth2/v2.0/authorize",
+            "path": "/common/oauth2/v2.0/authorize",
             "baseUrl": "https://login.microsoftonline.com",
             "query": {
               "response_type": "code",
-              "response_mode": "query",
-              "prompt": "consent"
+              "response_mode": "query"
             }
           }
         },
         "token": {
           "request": {
             "method": "POST",
-            "path": "/${connectionConfig.tenant}/oauth2/v2.0/token",
+            "path": "/common/oauth2/v2.0/token",
             "baseUrl": "https://login.microsoftonline.com"
           }
         },
         "defaultScopes": [
-          "offline_access"
+          "offline_access",
+          ".default"
         ],
         "disablePkce": true
       }
+    }
+  },
+  "microsoft-admin": {
+    "type": "http",
+    "code": "microsoft-admin",
+    "name": "Microsoft (Admin)",
+    "baseUrl": "https://graph.microsoft.com",
+    "auth": {
+      "oauth2": {
+        "type": "oauth2",
+        "authorize": {
+          "request": {
+            "method": "GET",
+            "path": "/${connectionConfig.tenantId}/adminconsent",
+            "baseUrl": "https://login.microsoftonline.com"
+          }
+        },
+        "token": {
+          "request": {
+            "method": "POST",
+            "path": "/${connectionConfig.tenantId}/oauth2/v2.0/token",
+            "baseUrl": "https://login.microsoftonline.com"
+          }
+        },
+        "disablePkce": false
+      }
     },
     "customFields": {
-      "tenant": {
+      "tenantId": {
         "type": "string",
-        "title": "Tenant",
-        "description": "The tenant of your Microsoft account"
+        "title": "Tenant ID",
+        "description": "The unique identifier for your organization that uses Microsoft services",
+        "format": "uuid",
+        "example": "a1b2c3d4-e5f6-47a8-9b0c-d1234567890f",
+        "doc_section": "#step-1-finding-your-tenant-id",
+        "order": 1
       }
     }
   },
@@ -7152,6 +7806,7 @@
     "type": "http",
     "code": "microsoft-teams-bot",
     "name": "Microsoft Teams Bot",
+    "baseUrl": "https://smba.trafficmanager.net/teams",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -7198,10 +7853,52 @@
       }
     }
   },
-  "maximizer-cloud": {
+  "microsoft-tenant-specific": {
     "type": "http",
-    "code": "maximizer-cloud",
+    "code": "microsoft-tenant-specific",
+    "name": "Microsoft (Tenant)",
+    "baseUrl": "https://graph.microsoft.com",
+    "auth": {
+      "oauth2": {
+        "type": "oauth2",
+        "authorize": {
+          "request": {
+            "method": "GET",
+            "path": "/${connectionConfig.tenant}/oauth2/v2.0/authorize",
+            "baseUrl": "https://login.microsoftonline.com",
+            "query": {
+              "response_type": "code",
+              "response_mode": "query",
+              "prompt": "consent"
+            }
+          }
+        },
+        "token": {
+          "request": {
+            "method": "POST",
+            "path": "/${connectionConfig.tenant}/oauth2/v2.0/token",
+            "baseUrl": "https://login.microsoftonline.com"
+          }
+        },
+        "defaultScopes": [
+          "offline_access"
+        ],
+        "disablePkce": true
+      }
+    },
+    "customFields": {
+      "tenant": {
+        "type": "string",
+        "title": "Tenant",
+        "description": "The tenant of your Microsoft account"
+      }
+    }
+  },
+  "maximizer": {
+    "type": "http",
+    "code": "maximizer",
     "name": "Maximizer (Cloud)",
+    "baseUrl": "https://${connectionConfig.region}.maximizercrmlive.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -7241,10 +7938,70 @@
       }
     }
   },
+  "maximizer-on-premise": {
+    "type": "http",
+    "code": "maximizer-on-premise",
+    "name": "Maximizer (On-Premise)",
+    "baseUrl": "https://${connectionConfig.hostname}",
+    "auth": {
+      "oauth2": {
+        "type": "oauth2",
+        "authorize": {
+          "request": {
+            "method": "GET",
+            "path": "/MaximizerWebAuthentication/OAuth2/Authorize",
+            "baseUrl": "https://${connectionconfig.hostname}",
+            "query": {
+              "response_type": "code"
+            }
+          }
+        },
+        "token": {
+          "request": {
+            "method": "POST",
+            "path": "/MaximizerWebAuthentication/OAuth2/Token",
+            "baseUrl": "https://${connectionconfig.hostname}"
+          }
+        },
+        "disablePkce": true
+      }
+    },
+    "customFields": {
+      "hostname": {
+        "type": "string",
+        "title": "Hostname",
+        "description": "The hostname of your Maximizer on premise instance.",
+        "example": "maximizer.mycompany.com",
+        "format": "hostname"
+      }
+    }
+  },
+  "maxio": {
+    "type": "http",
+    "code": "maxio",
+    "name": "Maxio",
+    "baseUrl": "https://${connectionConfig.hostname}",
+    "auth": {
+      "basic": {}
+    },
+    "customFields": {
+      "hostname": {
+        "type": "string",
+        "title": "Hostname",
+        "description": "Your Maxio site hostname.",
+        "pattern": "^[a-zA-Z0-9-]+\\.(chargify\\.com|ebilling\\.maxio\\.com)$",
+        "example": "acme.chargify.com",
+        "prefix": "https://",
+        "order": 1,
+        "doc_section": "#step-1-finding-your-hostname"
+      }
+    }
+  },
   "mindbody": {
     "type": "http",
     "code": "mindbody",
     "name": "Mindbody",
+    "baseUrl": "https://api.mindbodyonline.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -7275,6 +8032,7 @@
     "type": "http",
     "code": "minimax",
     "name": "MiniMax",
+    "baseUrl": "https://api.minimaxi.chat",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -7297,6 +8055,7 @@
     "type": "http",
     "code": "mixpanel",
     "name": "Mixpanel",
+    "baseUrl": "https://mixpanel.com",
     "auth": {
       "basic": {}
     }
@@ -7305,6 +8064,7 @@
     "type": "http",
     "code": "miro",
     "name": "Miro",
+    "baseUrl": "https://api.miro.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -7329,10 +8089,11 @@
       }
     }
   },
-  "miro-scim-api": {
+  "miro-scim": {
     "type": "http",
-    "code": "miro-scim-api",
+    "code": "miro-scim",
     "name": "Miro (SCIM API)",
+    "baseUrl": "https://miro.com/api",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -7345,6 +8106,7 @@
     "type": "http",
     "code": "missive",
     "name": "Missive",
+    "baseUrl": "https://missiveapp.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -7357,6 +8119,7 @@
     "type": "http",
     "code": "juniper-mist",
     "name": "Juniper Mist",
+    "baseUrl": "https://${connectionConfig.subdomain}.mist.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -7379,6 +8142,7 @@
     "type": "http",
     "code": "monday",
     "name": "Monday",
+    "baseUrl": "https://api.monday.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -7407,6 +8171,7 @@
     "type": "http",
     "code": "momentum-io",
     "name": "Momentum.io",
+    "baseUrl": "https://api.momentum.io",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -7419,6 +8184,7 @@
     "type": "http",
     "code": "modjo-ai",
     "name": "Modjo AI",
+    "baseUrl": "https://api.modjo.ai",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -7431,6 +8197,7 @@
     "type": "http",
     "code": "mollie",
     "name": "Mollie",
+    "baseUrl": "https://api.mollie.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -7459,6 +8226,7 @@
     "type": "http",
     "code": "mural",
     "name": "Mural",
+    "baseUrl": "https://app.mural.co",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -7487,6 +8255,7 @@
     "type": "http",
     "code": "nationbuilder",
     "name": "NationBuilder",
+    "baseUrl": "https://${connectionConfig.accountId}.nationbuilder.com/api",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -7525,12 +8294,8 @@
     "type": "http",
     "code": "namely",
     "name": "Namely",
+    "baseUrl": "https://${connectionConfig.company}.namely.com/api",
     "auth": {
-      "apiKey": {
-        "location": "header",
-        "name": "Authorization",
-        "template": "Bearer {{key}}"
-      },
       "oauth2": {
         "type": "oauth2",
         "authorize": {
@@ -7563,10 +8328,34 @@
       }
     }
   },
-  "netsuite-oauth": {
+  "namely-pat": {
     "type": "http",
-    "code": "netsuite-oauth",
-    "name": "NetSuite (OAuth)",
+    "code": "namely-pat",
+    "name": "Namely (PAT)",
+    "baseUrl": "https://${connectionConfig.company}.namely.com/api",
+    "auth": {
+      "apiKey": {
+        "location": "header",
+        "name": "Authorization",
+        "template": "Bearer {{key}}"
+      }
+    },
+    "customFields": {
+      "company": {
+        "type": "string",
+        "title": "Company Name",
+        "description": "The name of your Namely company",
+        "example": "example",
+        "order": 1,
+        "doc_section": "#step-1-finding-your-company-name"
+      }
+    }
+  },
+  "netsuite": {
+    "type": "http",
+    "code": "netsuite",
+    "name": "NetSuite",
+    "baseUrl": "https://${connectionConfig.accountId}.suitetalk.api.netsuite.com/services/rest/record/v1",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -7607,6 +8396,7 @@
     "type": "http",
     "code": "next-cloud-ocs",
     "name": "Next Cloud OCS",
+    "baseUrl": "https://${connectionConfig.domain}/ocs/v1.php",
     "auth": {
       "basic": {}
     },
@@ -7621,10 +8411,11 @@
       }
     }
   },
-  "ninjaone-rmm-oauth2": {
+  "ninjaone-rmm2": {
     "type": "http",
-    "code": "ninjaone-rmm-oauth2",
+    "code": "ninjaone-rmm2",
     "name": "NinjaOne RMM (OAuth2)",
+    "baseUrl": "https://app.ninjarmm.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -7652,10 +8443,11 @@
       }
     }
   },
-  "nocrm-io": {
+  "nocrm": {
     "type": "http",
-    "code": "nocrm-io",
+    "code": "nocrm",
     "name": "nocrm.io",
+    "baseUrl": "https://${connectionConfig.subdomain}.nocrm.io",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -7681,6 +8473,7 @@
     "type": "http",
     "code": "northbeam",
     "name": "Northbeam",
+    "baseUrl": "https://${connectionConfig.subdomain}.northbeam.io",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -7712,6 +8505,7 @@
     "type": "http",
     "code": "notion",
     "name": "Notion",
+    "baseUrl": "https://api.notion.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -7737,10 +8531,11 @@
       }
     }
   },
-  "notion-scim-api": {
+  "notion-scim": {
     "type": "http",
-    "code": "notion-scim-api",
+    "code": "notion-scim",
     "name": "Notion (SCIM API)",
+    "baseUrl": "https://api.notion.com/scim",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -7753,6 +8548,7 @@
     "type": "http",
     "code": "nyne-ai",
     "name": "Nyne AI",
+    "baseUrl": "https://api.nyne.ai",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -7776,6 +8572,7 @@
     "type": "http",
     "code": "ocean-io",
     "name": "Ocean.io",
+    "baseUrl": "https://api.ocean.io",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -7784,10 +8581,11 @@
       }
     }
   },
-  "odoo-oauth": {
+  "odoo": {
     "type": "http",
-    "code": "odoo-oauth",
-    "name": "Odoo (OAuth)",
+    "code": "odoo",
+    "name": "Odoo",
+    "baseUrl": "https://${connectionConfig.serverUrl}",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -7825,6 +8623,7 @@
     "type": "http",
     "code": "okta",
     "name": "Okta",
+    "baseUrl": "https://${connectionConfig.subdomain}.okta.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -7865,6 +8664,7 @@
     "type": "http",
     "code": "onlogist",
     "name": "Onlogist",
+    "baseUrl": "https://dev.portal.onlogist.com/api",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -7873,10 +8673,11 @@
       }
     }
   },
-  "onedrive-personal": {
+  "one-drive-personal": {
     "type": "http",
-    "code": "onedrive-personal",
+    "code": "one-drive-personal",
     "name": "OneDrive Personal",
+    "baseUrl": "https://api.onedrive.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -7909,6 +8710,7 @@
     "type": "http",
     "code": "oomnitza",
     "name": "Oomnitza",
+    "baseUrl": "https://${connectionConfig.subdomain}.oomnitza.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -7929,10 +8731,24 @@
       }
     }
   },
-  "openai-admin": {
+  "openai": {
     "type": "http",
-    "code": "openai-admin",
-    "name": "OpenAI (Admin)",
+    "code": "openai",
+    "name": "OpenAI",
+    "baseUrl": "https://api.openai.com",
+    "auth": {
+      "apiKey": {
+        "location": "header",
+        "name": "Authorization",
+        "template": "Bearer {{key}}"
+      }
+    }
+  },
+  "openai-ghup": {
+    "type": "http",
+    "code": "openai-ghup",
+    "name": "OpenAI",
+    "baseUrl": "https://api.openai.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -7945,6 +8761,7 @@
     "type": "http",
     "code": "open-hands",
     "name": "Open Hands",
+    "baseUrl": "https://app.all-hands.dev",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -7953,10 +8770,11 @@
       }
     }
   },
-  "oracle-fusion-cloud-hcm": {
+  "oracle-hcm": {
     "type": "http",
-    "code": "oracle-fusion-cloud-hcm",
+    "code": "oracle-hcm",
     "name": "Oracle Fusion Cloud (HCM)",
+    "baseUrl": "https://${connectionConfig.restServerUrl}",
     "auth": {
       "basic": {}
     },
@@ -7977,6 +8795,7 @@
     "type": "http",
     "code": "ordinal",
     "name": "Ordinal",
+    "baseUrl": "https://app.tryordinal.com/api",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -7989,6 +8808,7 @@
     "type": "http",
     "code": "osu",
     "name": "Osu",
+    "baseUrl": "https://osu.ppy.sh",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -8020,6 +8840,7 @@
     "type": "http",
     "code": "oura",
     "name": "Oura",
+    "baseUrl": "https://api.ouraring.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -8048,6 +8869,7 @@
     "type": "http",
     "code": "outreach",
     "name": "Outreach",
+    "baseUrl": "https://api.outreach.io",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -8076,6 +8898,7 @@
     "type": "http",
     "code": "pagerduty",
     "name": "PagerDuty",
+    "baseUrl": "https://api.pagerduty.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -8101,6 +8924,7 @@
     "type": "http",
     "code": "paligo",
     "name": "Paligo",
+    "baseUrl": "https://${connectionConfig.subdomain}.paligoapp.com",
     "auth": {
       "basic": {}
     },
@@ -8121,6 +8945,7 @@
     "type": "http",
     "code": "pandadoc",
     "name": "Pandadoc",
+    "baseUrl": "https://api.pandadoc.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -8154,6 +8979,7 @@
     "type": "http",
     "code": "paddle",
     "name": "Paddle",
+    "baseUrl": "https://${connectionConfig.subdomain}.paddle.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -8179,6 +9005,7 @@
     "type": "http",
     "code": "paycor",
     "name": "Paycor",
+    "baseUrl": "https://apis.paycor.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -8230,6 +9057,7 @@
     "type": "http",
     "code": "paycor-sandbox",
     "name": "Paycor (Sandbox)",
+    "baseUrl": "https://apis-sandbox.paycor.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -8281,6 +9109,7 @@
     "type": "http",
     "code": "paycom",
     "name": "Paycom",
+    "baseUrl": "https://api.paycomonline.net",
     "auth": {
       "basic": {}
     }
@@ -8289,6 +9118,7 @@
     "type": "http",
     "code": "payfit",
     "name": "Payfit",
+    "baseUrl": "https://partner-api.payfit.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -8317,6 +9147,7 @@
     "type": "http",
     "code": "paypal",
     "name": "Paypal",
+    "baseUrl": "https://api-m.paypal.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -8345,6 +9176,7 @@
     "type": "http",
     "code": "paypal-sandbox",
     "name": "Paypal (Sandbox)",
+    "baseUrl": "https://api-m.sandbox.paypal.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -8373,6 +9205,7 @@
     "type": "http",
     "code": "pendo",
     "name": "Pendo",
+    "baseUrl": "https://app.pendo.io",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -8385,12 +9218,8 @@
     "type": "http",
     "code": "pennylane",
     "name": "Pennylane",
+    "baseUrl": "https://app.pennylane.com",
     "auth": {
-      "apiKey": {
-        "location": "header",
-        "name": "Authorization",
-        "template": "Bearer {{key}}"
-      },
       "oauth2": {
         "type": "oauth2",
         "authorize": {
@@ -8414,10 +9243,24 @@
       }
     }
   },
-  "people-data-labs": {
+  "pennylane-company-api": {
     "type": "http",
-    "code": "people-data-labs",
+    "code": "pennylane-company-api",
+    "name": "Pennylane (Company API)",
+    "baseUrl": "https://app.pennylane.com",
+    "auth": {
+      "apiKey": {
+        "location": "header",
+        "name": "Authorization",
+        "template": "Bearer {{key}}"
+      }
+    }
+  },
+  "peopledatalabs": {
+    "type": "http",
+    "code": "peopledatalabs",
     "name": "People Data Labs",
+    "baseUrl": "https://api.peopledatalabs.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -8430,6 +9273,7 @@
     "type": "http",
     "code": "perdoo",
     "name": "Perdoo",
+    "baseUrl": "https://eu.perdoo.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -8442,6 +9286,7 @@
     "type": "http",
     "code": "perplexity",
     "name": "Perplexity",
+    "baseUrl": "https://api.perplexity.ai",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -8454,6 +9299,7 @@
     "type": "http",
     "code": "personio-recruiting",
     "name": "Personio Recruiting",
+    "baseUrl": "https://api.personio.de/v1",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -8488,6 +9334,7 @@
     "type": "http",
     "code": "pingone",
     "name": "PingOne",
+    "baseUrl": "https://api.pingone.${connectionConfig.tld}",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -8535,6 +9382,7 @@
     "type": "http",
     "code": "pinterest",
     "name": "Pinterest",
+    "baseUrl": "https://api.pinterest.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -8563,6 +9411,7 @@
     "type": "http",
     "code": "rocketlane",
     "name": "Rocketlane",
+    "baseUrl": "https://api.rocketlane.com/api",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -8575,6 +9424,7 @@
     "type": "http",
     "code": "pipedrive",
     "name": "Pipedrive",
+    "baseUrl": "${connectionConfig.api_domain}/api",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -8608,6 +9458,7 @@
     "type": "http",
     "code": "pylon",
     "name": "Pylon",
+    "baseUrl": "https://api.usepylon.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -8616,10 +9467,11 @@
       }
     }
   },
-  "pipedream-api-key": {
+  "pipedream": {
     "type": "http",
-    "code": "pipedream-api-key",
-    "name": "Pipedream (API Key)",
+    "code": "pipedream",
+    "name": "Pipedream",
+    "baseUrl": "https://api.pipedream.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -8628,10 +9480,11 @@
       }
     }
   },
-  "pivotal-tracker": {
+  "pivotaltracker": {
     "type": "http",
-    "code": "pivotal-tracker",
+    "code": "pivotaltracker",
     "name": "Pivotal Tracker",
+    "baseUrl": "https://www.pivotaltracker.com/services/v5",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -8644,6 +9497,7 @@
     "type": "http",
     "code": "plain",
     "name": "Plain",
+    "baseUrl": "https://core-api.uk.plain.com/graphql",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -8656,6 +9510,7 @@
     "type": "http",
     "code": "pleo",
     "name": "Pleo",
+    "baseUrl": "https://${connectionConfig.apiSubdomain}.pleo.io",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -8704,6 +9559,7 @@
     "type": "http",
     "code": "podium",
     "name": "Podium",
+    "baseUrl": "https://api.podium.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -8739,6 +9595,7 @@
     "type": "http",
     "code": "podscribe",
     "name": "Podscribe",
+    "baseUrl": "https://backend.podscribe.ai",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -8747,10 +9604,11 @@
       }
     }
   },
-  "posthog-oauth": {
+  "posthog": {
     "type": "http",
-    "code": "posthog-oauth",
-    "name": "PostHog (OAuth)",
+    "code": "posthog",
+    "name": "PostHog",
+    "baseUrl": "https://${connectionConfig.subdomain}.posthog.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -8794,6 +9652,7 @@
     "type": "http",
     "code": "prive",
     "name": "Prive",
+    "baseUrl": "https://subs.api.tryprive.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -8806,6 +9665,7 @@
     "type": "http",
     "code": "prospeo",
     "name": "Prospeo",
+    "baseUrl": "https://api.prospeo.io",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -8814,23 +9674,58 @@
       }
     }
   },
-  "private-api-bearer-auth": {
+  "prtg-classic": {
     "type": "http",
-    "code": "private-api-bearer-auth",
-    "name": "Private API (Bearer Auth)",
+    "code": "prtg-classic",
+    "name": "PRTG Classic",
+    "baseUrl": "https://${connectionConfig.host}",
     "auth": {
-      "basic": {},
       "apiKey": {
         "location": "header",
         "name": "Authorization",
         "template": "Bearer {{key}}"
       }
+    },
+    "customFields": {
+      "host": {
+        "type": "string",
+        "title": "Instance Host",
+        "description": "The host of your PRTG instance",
+        "pattern": "^[A-Za-z0-9.-]+(:\\d+)?$",
+        "example": "monitor.example.com",
+        "prefix": "https://",
+        "doc_section": "#step-1-finding-your-instance-host",
+        "order": 1
+      }
+    }
+  },
+  "private-api-bearer": {
+    "type": "http",
+    "code": "private-api-bearer",
+    "name": "Private API (Bearer Auth)",
+    "baseUrl": "https://my-private-api",
+    "auth": {
+      "apiKey": {
+        "location": "header",
+        "name": "Authorization",
+        "template": "Bearer {{key}}"
+      }
+    }
+  },
+  "private-api": {
+    "type": "http",
+    "code": "private-api",
+    "name": "Private API",
+    "baseUrl": "https://my-private-api",
+    "auth": {
+      "basic": {}
     }
   },
   "precisefp": {
     "type": "http",
     "code": "precisefp",
     "name": "PreciseFP",
+    "baseUrl": "https://app.precisefp.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -8856,10 +9751,61 @@
       }
     }
   },
+  "practicefusion": {
+    "type": "http",
+    "code": "practicefusion",
+    "name": "PracticeFusion",
+    "baseUrl": "https://${connectionConfig.baseUrl}",
+    "auth": {
+      "oauth2": {
+        "type": "oauth2",
+        "authorize": {
+          "request": {
+            "method": "GET",
+            "path": "/authorize",
+            "baseUrl": "https://${connectionconfig.baseurl}",
+            "query": {
+              "response_type": "code",
+              "aud": "https://${connectionConfig.baseUrl}",
+              "launch": "${connectionConfig.launch}"
+            }
+          }
+        },
+        "token": {
+          "request": {
+            "method": "POST",
+            "path": "/token",
+            "baseUrl": "https://${connectionconfig.baseurl}"
+          }
+        },
+        "disablePkce": false
+      }
+    },
+    "customFields": {
+      "baseUrl": {
+        "type": "string",
+        "title": "Base URL",
+        "description": "The base URL for your Practice authorization server",
+        "pattern": "^[a-zA-Z0-9.-]+\\.(practice|patient)fusion\\.com/.*$",
+        "prefix": "https://",
+        "example": "api.patientfusion.com/fhir/r4/v1/118b460b-8390-4754-8e4a-1dd5ee20f599/",
+        "doc_section": "#step-1-find-your-base-url",
+        "order": 1
+      },
+      "launch": {
+        "type": "string",
+        "title": "",
+        "description": "",
+        "default_value": "",
+        "hidden": true
+      }
+    }
+  },
   "productboard": {
     "type": "http",
     "code": "productboard",
     "name": "Productboard",
+    "baseUrl": "https://api.productboard.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -8888,6 +9834,7 @@
     "type": "http",
     "code": "printful",
     "name": "Printful",
+    "baseUrl": "https://api.printful.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -8916,6 +9863,7 @@
     "type": "http",
     "code": "procore",
     "name": "Procore",
+    "baseUrl": "https://api.procore.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -8954,6 +9902,7 @@
     "type": "http",
     "code": "provenexpert",
     "name": "ProvenExpert",
+    "baseUrl": "https://www.provenexpert.com/api/",
     "auth": {
       "basic": {}
     }
@@ -8962,6 +9911,7 @@
     "type": "http",
     "code": "qualtrics",
     "name": "Qualtrics",
+    "baseUrl": "https://${connectionConfig.subdomain}.qualtrics.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -8998,6 +9948,7 @@
     "type": "http",
     "code": "quentn",
     "name": "Quentn",
+    "baseUrl": "https://${connectionConfig.subdomain}.quentn.com/public/api",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -9023,6 +9974,7 @@
     "type": "http",
     "code": "quickbase",
     "name": "Quickbase",
+    "baseUrl": "https://api.quickbase.com/v1/",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -9051,6 +10003,7 @@
     "type": "http",
     "code": "qualia",
     "name": "Qualia",
+    "baseUrl": "https://${connectionConfig.subdomain}.qualia.io/api",
     "auth": {
       "basic": {}
     },
@@ -9066,10 +10019,48 @@
       }
     }
   },
+  "quickbooks": {
+    "type": "http",
+    "code": "quickbooks",
+    "name": "Quickbooks",
+    "baseUrl": "https://quickbooks.api.intuit.com",
+    "auth": {
+      "oauth2": {
+        "type": "oauth2",
+        "authorize": {
+          "request": {
+            "method": "GET",
+            "path": "/connect/oauth2",
+            "baseUrl": "https://appcenter.intuit.com"
+          }
+        },
+        "token": {
+          "request": {
+            "method": "POST",
+            "path": "/oauth2/v1/tokens/bearer",
+            "baseUrl": "https://oauth.platform.intuit.com"
+          }
+        },
+        "disablePkce": false
+      }
+    },
+    "customFields": {
+      "realmId": {
+        "type": "string",
+        "title": "Quickbooks Realm ID",
+        "optional": true,
+        "description": "The realmId of your quickbooks company",
+        "pattern": "^\\d{10,19}$",
+        "example": "9341453474484455",
+        "doc_section": "#step-1-finding-your-realm-id"
+      }
+    }
+  },
   "quipteams": {
     "type": "http",
     "code": "quipteams",
     "name": "Quipteams",
+    "baseUrl": "https://api.quipteams.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -9078,10 +10069,11 @@
       }
     }
   },
-  "ragie-ai": {
+  "ragieai": {
     "type": "http",
-    "code": "ragie-ai",
+    "code": "ragieai",
     "name": "Ragie AI",
+    "baseUrl": "https://api.ragie.ai",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -9094,6 +10086,7 @@
     "type": "http",
     "code": "ramp",
     "name": "Ramp",
+    "baseUrl": "https://api.ramp.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -9119,6 +10112,7 @@
     "type": "http",
     "code": "ramp-sandbox",
     "name": "Ramp (Sandbox)",
+    "baseUrl": "https://demo-api.ramp.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -9144,6 +10138,7 @@
     "type": "http",
     "code": "rapidapi",
     "name": "RapidAPI",
+    "baseUrl": "https://${connectionConfig.subdomain}.p.rapidapi.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -9167,6 +10162,7 @@
     "type": "http",
     "code": "razorpay",
     "name": "Razorpay",
+    "baseUrl": "https://api.razorpay.com",
     "auth": {
       "basic": {}
     }
@@ -9175,6 +10171,7 @@
     "type": "http",
     "code": "readwise",
     "name": "Readwise",
+    "baseUrl": "https://readwise.io/api/v2",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -9187,6 +10184,7 @@
     "type": "http",
     "code": "readwise-reader",
     "name": "Readwise Reader",
+    "baseUrl": "https://readwise.io/api/v3",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -9199,6 +10197,7 @@
     "type": "http",
     "code": "recharge",
     "name": "Recharge",
+    "baseUrl": "https://api.rechargeapps.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -9211,6 +10210,7 @@
     "type": "http",
     "code": "recall-ai",
     "name": "Recall.ai",
+    "baseUrl": "https://${connectionConfig.region}.recall.ai",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -9236,6 +10236,7 @@
     "type": "http",
     "code": "recruitcrm",
     "name": "Recruitcrm",
+    "baseUrl": "https://api.recruitcrm.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -9248,6 +10249,7 @@
     "type": "http",
     "code": "recruitee",
     "name": "Recruitee",
+    "baseUrl": "https://api.recruitee.com/c/${connectionConfig.companyId}",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -9279,6 +10281,7 @@
     "type": "http",
     "code": "recruiterflow",
     "name": "Recruiterflow",
+    "baseUrl": "https://api.recruiterflow.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -9291,6 +10294,7 @@
     "type": "http",
     "code": "render-mcp",
     "name": "Render (MCP)",
+    "baseUrl": "https://mcp.render.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -9303,6 +10307,7 @@
     "type": "http",
     "code": "reddit",
     "name": "Reddit",
+    "baseUrl": "https://oauth.reddit.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -9331,6 +10336,7 @@
     "type": "http",
     "code": "refiner",
     "name": "Refiner",
+    "baseUrl": "https://api.refiner.io/v1",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -9343,6 +10349,7 @@
     "type": "http",
     "code": "replicate",
     "name": "Replicate",
+    "baseUrl": "https://api.replicate.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -9351,10 +10358,11 @@
       }
     }
   },
-  "reply-io": {
+  "reply": {
     "type": "http",
-    "code": "reply-io",
-    "name": "Reply.io",
+    "code": "reply",
+    "name": "Reply",
+    "baseUrl": "https://api.reply.io",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -9367,6 +10375,7 @@
     "type": "http",
     "code": "resend",
     "name": "Resend",
+    "baseUrl": "https://api.resend.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -9379,6 +10388,7 @@
     "type": "http",
     "code": "retell-ai",
     "name": "Retell AI",
+    "baseUrl": "https://api.retellai.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -9387,10 +10397,11 @@
       }
     }
   },
-  "ringcentral": {
+  "ring-central": {
     "type": "http",
-    "code": "ringcentral",
+    "code": "ring-central",
     "name": "RingCentral",
+    "baseUrl": "https://platform.ringcentral.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -9415,10 +10426,11 @@
       }
     }
   },
-  "ringcentral-sandbox": {
+  "ring-central-sandbox": {
     "type": "http",
-    "code": "ringcentral-sandbox",
+    "code": "ring-central-sandbox",
     "name": "RingCentral (Sandbox)",
+    "baseUrl": "https://platform.devtest.ringcentral.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -9447,6 +10459,7 @@
     "type": "http",
     "code": "ringover",
     "name": "Ringover",
+    "baseUrl": "https://public-api.ringover.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -9459,6 +10472,7 @@
     "type": "http",
     "code": "rippling",
     "name": "Rippling",
+    "baseUrl": "https://rest.ripplingapis.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -9471,6 +10485,7 @@
     "type": "http",
     "code": "rippling-shop-app",
     "name": "Rippling Shop App",
+    "baseUrl": "https://api.rippling.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -9503,10 +10518,11 @@
       }
     }
   },
-  "roam-scim-api": {
+  "roam-scim": {
     "type": "http",
-    "code": "roam-scim-api",
+    "code": "roam-scim",
     "name": "Roam (SCIM API)",
+    "baseUrl": "https://api.ro.am/scim",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -9519,6 +10535,7 @@
     "type": "http",
     "code": "rock-gym-pro",
     "name": "Rock Gym Pro",
+    "baseUrl": "https://api.rockgympro.com",
     "auth": {
       "basic": {}
     }
@@ -9527,6 +10544,7 @@
     "type": "http",
     "code": "rocketreach",
     "name": "RocketReach",
+    "baseUrl": "https://api.rocketreach.co",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -9539,6 +10557,7 @@
     "type": "http",
     "code": "rootly",
     "name": "Rootly",
+    "baseUrl": "https://api.rootly.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -9547,10 +10566,11 @@
       }
     }
   },
-  "reapit-connect": {
+  "reapit": {
     "type": "http",
-    "code": "reapit-connect",
+    "code": "reapit",
     "name": "Reapit Connect",
+    "baseUrl": "https://platform.reapit.cloud",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -9587,6 +10607,7 @@
     "type": "http",
     "code": "segment",
     "name": "Segment",
+    "baseUrl": "https://api.segment.io",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -9612,6 +10633,7 @@
     "type": "http",
     "code": "sage",
     "name": "Sage",
+    "baseUrl": "https://api.accounting.sage.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -9636,10 +10658,11 @@
       }
     }
   },
-  "sage-hr": {
+  "sage-j6lx": {
     "type": "http",
-    "code": "sage-hr",
-    "name": "Sage HR",
+    "code": "sage-j6lx",
+    "name": "Sage",
+    "baseUrl": "https://${connectionConfig.subdomain}.sage.hr",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -9659,10 +10682,11 @@
       }
     }
   },
-  "sage-intacct-oauth": {
+  "sage-intacct": {
     "type": "http",
-    "code": "sage-intacct-oauth",
-    "name": "Sage Intacct (OAuth)",
+    "code": "sage-intacct",
+    "name": "Sage Intacct",
+    "baseUrl": "https://api.intacct.com/ia/api",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -9691,6 +10715,7 @@
     "type": "http",
     "code": "sage-people",
     "name": "Sage People",
+    "baseUrl": "https://${connectionConfig.instance_url}/services/apexrest/spapi",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -9729,10 +10754,102 @@
       }
     }
   },
+  "salesforce": {
+    "type": "http",
+    "code": "salesforce",
+    "name": "Salesforce",
+    "baseUrl": "${connectionConfig.instance_url}",
+    "auth": {
+      "oauth2": {
+        "type": "oauth2",
+        "authorize": {
+          "request": {
+            "method": "GET",
+            "path": "/services/oauth2/authorize",
+            "baseUrl": "https://${connectionconfig.hostname}",
+            "query": {
+              "prompt": "consent"
+            }
+          }
+        },
+        "token": {
+          "request": {
+            "method": "POST",
+            "path": "/services/oauth2/token",
+            "baseUrl": "https://${connectionconfig.hostname}"
+          }
+        },
+        "defaultScopes": [
+          "offline_access"
+        ],
+        "disablePkce": false
+      }
+    },
+    "customFields": {
+      "instance_url": {
+        "type": "string",
+        "title": "Instance URL",
+        "description": "The instance URL of your Salesforce account",
+        "format": "uri",
+        "pattern": "^https?://.*$",
+        "automated": true
+      },
+      "hostname": {
+        "type": "string",
+        "title": "Hostname",
+        "description": "The hostname to your Salesforce instance",
+        "pattern": "^(?!(?:.*\\.)?[Ll][Ii][Gg][Hh][Tt][Nn][Ii][Nn][Gg]\\.([Ff][Oo][Rr][Cc][Ee]|[Ss][Aa][Ll][Ee][Ss][Ff][Oo][Rr][Cc][Ee])\\.[Cc][Oo][Mm]$)[a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?(\\.[a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?)*$",
+        "example": "acme.my.salesforce.com",
+        "prefix": "https://",
+        "optional": true,
+        "doc_section": "#step-1-finding-your-hostname"
+      }
+    }
+  },
+  "salesforce-sandbox": {
+    "type": "http",
+    "code": "salesforce-sandbox",
+    "name": "Salesforce (Sandbox)",
+    "baseUrl": "${connectionConfig.instance_url}",
+    "auth": {
+      "oauth2": {
+        "type": "oauth2",
+        "authorize": {
+          "request": {
+            "method": "GET",
+            "path": "/services/oauth2/authorize",
+            "baseUrl": "https://test.salesforce.com"
+          }
+        },
+        "token": {
+          "request": {
+            "method": "POST",
+            "path": "/services/oauth2/token",
+            "baseUrl": "https://test.salesforce.com"
+          }
+        },
+        "defaultScopes": [
+          "offline_access"
+        ],
+        "disablePkce": false
+      }
+    },
+    "customFields": {
+      "instance_url": {
+        "type": "string",
+        "title": "Instance URL",
+        "description": "The instance URL of your Salesforce account",
+        "format": "uri",
+        "pattern": "^https?://.*$",
+        "automated": true
+      }
+    }
+  },
   "salesforce-experience-cloud": {
     "type": "http",
     "code": "salesforce-experience-cloud",
     "name": "Salesforce Experience Cloud",
+    "baseUrl": "${connectionConfig.instance_url}",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -9776,10 +10893,11 @@
       }
     }
   },
-  "salesmsg-oauth2": {
+  "salesmsg2": {
     "type": "http",
-    "code": "salesmsg-oauth2",
+    "code": "salesmsg2",
     "name": "Salesmsg (OAuth2)",
+    "baseUrl": "https://api.salesmessage.com/pub/",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -9804,10 +10922,11 @@
       }
     }
   },
-  "sap-s-4hana-cloud-basic-auth": {
+  "sap-odata": {
     "type": "http",
-    "code": "sap-s-4hana-cloud-basic-auth",
-    "name": "SAP S/4HANA Cloud (Basic Auth)",
+    "code": "sap-odata",
+    "name": "SAP S/4HANA Cloud",
+    "baseUrl": "https://${connectionConfig.apiServer}",
     "auth": {
       "basic": {}
     },
@@ -9828,6 +10947,7 @@
     "type": "http",
     "code": "schwab",
     "name": "Schwab",
+    "baseUrl": "https://api.schwabapi.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -9852,10 +10972,11 @@
       }
     }
   },
-  "scrape-do": {
+  "scrapedo": {
     "type": "http",
-    "code": "scrape-do",
+    "code": "scrapedo",
     "name": "Scrape.do",
+    "baseUrl": "https://api.scrape.do",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -9868,6 +10989,7 @@
     "type": "http",
     "code": "salesloft",
     "name": "Salesloft",
+    "baseUrl": "https://api.salesloft.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -9893,6 +11015,7 @@
     "type": "http",
     "code": "sendgrid",
     "name": "SendGrid",
+    "baseUrl": "https://api.sendgrid.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -9901,10 +11024,11 @@
       }
     }
   },
-  "semrush-v3": {
+  "semrush": {
     "type": "http",
-    "code": "semrush-v3",
+    "code": "semrush",
     "name": "Semrush (v3)",
+    "baseUrl": "https://api.semrush.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -9913,10 +11037,74 @@
       }
     }
   },
-  "sedna-basic-auth": {
+  "sentinelone": {
     "type": "http",
-    "code": "sedna-basic-auth",
-    "name": "Sedna (Basic Auth)",
+    "code": "sentinelone",
+    "name": "SentinelOne",
+    "baseUrl": "https://${connectionConfig.hostname}",
+    "auth": {
+      "apiKey": {
+        "location": "header",
+        "name": "Authorization",
+        "template": "Bearer {{key}}"
+      }
+    },
+    "customFields": {
+      "hostname": {
+        "type": "string",
+        "title": "Hostname",
+        "description": "The hostname of your SentinelOne management console",
+        "format": "hostname",
+        "prefix": "https://",
+        "example": "your-tenant.sentinelone.net",
+        "doc_section": "#step-2-find-your-hostname",
+        "order": 1
+      }
+    }
+  },
+  "sentry": {
+    "type": "http",
+    "code": "sentry",
+    "name": "Sentry (Public Integrations)",
+    "baseUrl": "https://${connectionConfig.hostname}/api",
+    "auth": {
+      "apiKey": {
+        "location": "header",
+        "name": "Authorization",
+        "template": "Bearer {{key}}"
+      }
+    },
+    "customFields": {
+      "hostname": {
+        "type": "string",
+        "title": "Hostname",
+        "description": "The Hostname of your Sentry account",
+        "example": "us.sentry.io",
+        "format": "hostname",
+        "pattern": "^[a-z0-9_-]+\\.sentry\\.io|^sentry\\.io$",
+        "prefix": "https://",
+        "order": 1,
+        "doc_section": "#step-1-finding-your-hostname"
+      },
+      "actor": {
+        "type": "string",
+        "title": "User ID",
+        "description": "The unique identifier of the user who will accept and install the public integration",
+        "doc_section": "#step-2-finding-your-user-id"
+      },
+      "installation.uuid": {
+        "type": "string",
+        "title": "",
+        "description": "",
+        "automated": true
+      }
+    }
+  },
+  "sedna": {
+    "type": "http",
+    "code": "sedna",
+    "name": "Sedna",
+    "baseUrl": "https://${connectionConfig.tenant}.sednanetwork.com/platform",
     "auth": {
       "basic": {}
     },
@@ -9932,6 +11120,7 @@
     "type": "http",
     "code": "sellsy",
     "name": "Sellsy",
+    "baseUrl": "https://api.sellsy.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -9960,6 +11149,7 @@
     "type": "http",
     "code": "servicem8",
     "name": "ServiceM8",
+    "baseUrl": "https://api.servicem8.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -9988,6 +11178,7 @@
     "type": "http",
     "code": "signnow",
     "name": "SignNow",
+    "baseUrl": "https://api.signnow.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -10016,6 +11207,7 @@
     "type": "http",
     "code": "signnow-sandbox",
     "name": "SignNow (Sandbox)",
+    "baseUrl": "https://api-eval.signnow.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -10044,6 +11236,7 @@
     "type": "http",
     "code": "servicenow",
     "name": "ServiceNow",
+    "baseUrl": "https://${connectionConfig.subdomain}.service-now.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -10083,6 +11276,7 @@
     "type": "http",
     "code": "skio",
     "name": "Skio",
+    "baseUrl": "https://graphql.skio.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -10091,10 +11285,11 @@
       }
     }
   },
-  "shipbob-personal-access-token": {
+  "shipbob-pat": {
     "type": "http",
-    "code": "shipbob-personal-access-token",
+    "code": "shipbob-pat",
     "name": "ShipBob (Personal Access Token)",
+    "baseUrl": "https://${connectionConfig.apiSubdomain}.shipbob.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -10119,6 +11314,7 @@
     "type": "http",
     "code": "shippo",
     "name": "Shippo",
+    "baseUrl": "https://api.goshippo.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -10127,10 +11323,11 @@
       }
     }
   },
-  "shipstation-v1": {
+  "shipstation": {
     "type": "http",
-    "code": "shipstation-v1",
+    "code": "shipstation",
     "name": "Shipstation (v1)",
+    "baseUrl": "https://ssapi.shipstation.com",
     "auth": {
       "basic": {}
     }
@@ -10139,6 +11336,7 @@
     "type": "http",
     "code": "shipstation-v2",
     "name": "Shipstation (v2)",
+    "baseUrl": "https://api.shipstation.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -10147,10 +11345,11 @@
       }
     }
   },
-  "shopify-oauth": {
+  "shopify": {
     "type": "http",
-    "code": "shopify-oauth",
-    "name": "Shopify (OAuth)",
+    "code": "shopify",
+    "name": "Shopify",
+    "baseUrl": "https://${connectionConfig.subdomain}.myshopify.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -10189,10 +11388,11 @@
       }
     }
   },
-  "shopify-partner": {
+  "shopify-0d6v": {
     "type": "http",
-    "code": "shopify-partner",
-    "name": "Shopify Partner",
+    "code": "shopify-0d6v",
+    "name": "Shopify",
+    "baseUrl": "https://partners.shopify.com/${connectionConfig.partnerId}/api/",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -10208,10 +11408,11 @@
       }
     }
   },
-  "shopify-scim-api": {
+  "shopify-scim": {
     "type": "http",
-    "code": "shopify-scim-api",
+    "code": "shopify-scim",
     "name": "Shopify (SCIM API)",
+    "baseUrl": "https://shopifyscim.com/scim",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -10224,6 +11425,7 @@
     "type": "http",
     "code": "slab",
     "name": "Slab",
+    "baseUrl": "https://api.slab.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -10236,6 +11438,7 @@
     "type": "http",
     "code": "shortcut",
     "name": "Shortcut",
+    "baseUrl": "https://api.app.shortcut.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -10248,6 +11451,7 @@
     "type": "http",
     "code": "simpro",
     "name": "simPRO",
+    "baseUrl": "https://${connectionConfig.build}.simprosuite.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -10288,6 +11492,7 @@
     "type": "http",
     "code": "slack",
     "name": "Slack",
+    "baseUrl": "https://slack.com/api",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -10309,10 +11514,11 @@
       }
     }
   },
-  "smartlead-ai": {
+  "smartlead": {
     "type": "http",
-    "code": "smartlead-ai",
-    "name": "Smartlead.ai",
+    "code": "smartlead",
+    "name": "Smartlead",
+    "baseUrl": "https://server.smartlead.ai/api",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -10325,6 +11531,7 @@
     "type": "http",
     "code": "smartrecruiters",
     "name": "Smartrecruiters",
+    "baseUrl": "https://api.smartrecruiters.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -10337,6 +11544,7 @@
     "type": "http",
     "code": "smartsheet",
     "name": "Smartsheet",
+    "baseUrl": "https://api.${connectionConfig.domain}",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -10371,10 +11579,11 @@
       }
     }
   },
-  "snapchat-ads-api": {
+  "snapchat": {
     "type": "http",
-    "code": "snapchat-ads-api",
+    "code": "snapchat",
     "name": "Snapchat (Ads API)",
+    "baseUrl": "https://adsapi.snapchat.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -10403,6 +11612,7 @@
     "type": "http",
     "code": "snowflake",
     "name": "Snowflake",
+    "baseUrl": "https://${connectionConfig.snowflake_account_url}",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -10440,6 +11650,7 @@
     "type": "http",
     "code": "splitwise",
     "name": "Splitwise",
+    "baseUrl": "https://secure.splitwise.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -10461,10 +11672,11 @@
       }
     }
   },
-  "spotify-oauth": {
+  "spotify": {
     "type": "http",
-    "code": "spotify-oauth",
-    "name": "Spotify (OAuth)",
+    "code": "spotify",
+    "name": "Spotify",
+    "baseUrl": "https://api.spotify.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -10493,6 +11705,7 @@
     "type": "http",
     "code": "squarespace",
     "name": "Squarespace",
+    "baseUrl": "https://api.squarespace.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -10528,6 +11741,7 @@
     "type": "http",
     "code": "squareup",
     "name": "Squareup",
+    "baseUrl": "https://connect.squareup.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -10557,6 +11771,7 @@
     "type": "http",
     "code": "squareup-sandbox",
     "name": "Squareup (Sandbox)",
+    "baseUrl": "https://connect.squareupsandbox.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -10582,10 +11797,11 @@
       }
     }
   },
-  "stack-exchange": {
+  "stackexchange": {
     "type": "http",
-    "code": "stack-exchange",
+    "code": "stackexchange",
     "name": "Stack Exchange",
+    "baseUrl": "https://api.stackexchange.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -10610,10 +11826,36 @@
       }
     }
   },
+  "statamic": {
+    "type": "http",
+    "code": "statamic",
+    "name": "Statamic",
+    "baseUrl": "https://${connectionConfig.baseUrl}",
+    "auth": {
+      "apiKey": {
+        "location": "header",
+        "name": "Authorization",
+        "template": "Bearer {{key}}"
+      }
+    },
+    "customFields": {
+      "baseUrl": {
+        "type": "string",
+        "title": "Base URL",
+        "description": "The hostname of your Statamic site.",
+        "example": "mysite.example.com",
+        "format": "hostname",
+        "prefix": "https://",
+        "order": 1,
+        "doc_section": "#step-2-find-your-base-url"
+      }
+    }
+  },
   "statista": {
     "type": "http",
     "code": "statista",
     "name": "Statista",
+    "baseUrl": "https://api.statista.ai",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -10626,6 +11868,7 @@
     "type": "http",
     "code": "stay-ai",
     "name": "Stay AI",
+    "baseUrl": "https://api.retextion.com/api",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -10638,6 +11881,7 @@
     "type": "http",
     "code": "store-leads",
     "name": "Store Leads",
+    "baseUrl": "https://storeleads.app/json/api",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -10646,10 +11890,41 @@
       }
     }
   },
+  "strava": {
+    "type": "http",
+    "code": "strava",
+    "name": "Strava (Mobile)",
+    "baseUrl": "https://www.strava.com",
+    "auth": {
+      "oauth2": {
+        "type": "oauth2",
+        "authorize": {
+          "request": {
+            "method": "GET",
+            "path": "/oauth/mobile/authorize",
+            "baseUrl": "https://www.strava.com",
+            "query": {
+              "response_type": "code",
+              "approval_prompt": "auto"
+            }
+          }
+        },
+        "token": {
+          "request": {
+            "method": "POST",
+            "path": "/api/v3/oauth/token",
+            "baseUrl": "https://www.strava.com"
+          }
+        },
+        "disablePkce": false
+      }
+    }
+  },
   "strava-web": {
     "type": "http",
     "code": "strava-web",
     "name": "Strava (Web)",
+    "baseUrl": "https://www.strava.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -10679,16 +11954,107 @@
     "type": "http",
     "code": "streak",
     "name": "Streak",
+    "baseUrl": "https://api.streak.com/api",
     "auth": {
       "basic": {}
+    }
+  },
+  "stripe": {
+    "type": "http",
+    "code": "stripe",
+    "name": "Stripe Connect",
+    "baseUrl": "https://api.stripe.com",
+    "auth": {
+      "basic": {},
+      "oauth2": {
+        "type": "oauth2",
+        "authorize": {
+          "request": {
+            "method": "GET",
+            "path": "/oauth/authorize",
+            "baseUrl": "https://connect.stripe.com"
+          }
+        },
+        "token": {
+          "request": {
+            "method": "POST",
+            "path": "/oauth/token",
+            "baseUrl": "https://connect.stripe.com"
+          }
+        },
+        "disablePkce": false
+      }
+    },
+    "customFields": {
+      "context": {
+        "type": "string",
+        "title": "Stripe Context",
+        "description": "The Stripe account context",
+        "optional": true,
+        "example": "acct_1aTnTtAAB0hHJ26p",
+        "pattern": "^acct_[A-Za-z0-9]{16}(\\/acct_[A-Za-z0-9]{16})?$",
+        "doc_section": "#step-2-finding-your-stripe-context"
+      }
+    }
+  },
+  "stripe-express": {
+    "type": "http",
+    "code": "stripe-express",
+    "name": "Stripe Express",
+    "baseUrl": "https://api.stripe.com",
+    "auth": {
+      "oauth2": {
+        "type": "oauth2",
+        "authorize": {
+          "request": {
+            "method": "GET",
+            "path": "/express/oauth/authorize",
+            "baseUrl": "https://connect.stripe.com"
+          }
+        },
+        "token": {
+          "request": {
+            "method": "POST",
+            "path": "/oauth/token",
+            "baseUrl": "https://connect.stripe.com"
+          }
+        },
+        "disablePkce": false
+      }
+    }
+  },
+  "stripe-app": {
+    "type": "http",
+    "code": "stripe-app",
+    "name": "Stripe App",
+    "baseUrl": "https://api.stripe.com",
+    "auth": {
+      "oauth2": {
+        "type": "oauth2",
+        "authorize": {
+          "request": {
+            "method": "GET",
+            "path": "/oauth/v2/authorize",
+            "baseUrl": "https://marketplace.stripe.com"
+          }
+        },
+        "token": {
+          "request": {
+            "method": "POST",
+            "path": "/v1/oauth/token",
+            "baseUrl": "https://api.stripe.com"
+          }
+        },
+        "disablePkce": true
+      }
     }
   },
   "stripe-app-sandbox": {
     "type": "http",
     "code": "stripe-app-sandbox",
     "name": "Stripe App (Sandbox)",
+    "baseUrl": "https://api.stripe.com",
     "auth": {
-      "basic": {},
       "oauth2": {
         "type": "oauth2",
         "authorize": {
@@ -10709,15 +12075,6 @@
       }
     },
     "customFields": {
-      "context": {
-        "type": "string",
-        "title": "Stripe Context",
-        "description": "The Stripe account context",
-        "optional": true,
-        "example": "acct_1aTnTtAAB0hHJ26p",
-        "pattern": "^acct_[A-Za-z0-9]{16}(\\/acct_[A-Za-z0-9]{16})?$",
-        "doc_section": "#step-2-finding-your-stripe-context"
-      },
       "appDomain": {
         "type": "string",
         "title": "App Domain",
@@ -10730,6 +12087,7 @@
     "type": "http",
     "code": "supabase",
     "name": "Supabase",
+    "baseUrl": "https://${connectionConfig.projectUrl}",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -10753,6 +12111,7 @@
     "type": "http",
     "code": "supabase-mcp",
     "name": "Supabase (MCP)",
+    "baseUrl": "https://mcp.supabase.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -10771,10 +12130,11 @@
       }
     }
   },
-  "surveymonkey": {
+  "survey-monkey": {
     "type": "http",
-    "code": "surveymonkey",
+    "code": "survey-monkey",
     "name": "SurveyMonkey",
+    "baseUrl": "https://api.surveymonkey.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -10799,10 +12159,11 @@
       }
     }
   },
-  "tailscale-api-key": {
+  "tailscale": {
     "type": "http",
-    "code": "tailscale-api-key",
-    "name": "Tailscale (API Key)",
+    "code": "tailscale",
+    "name": "Tailscale",
+    "baseUrl": "https://api.tailscale.com/api",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -10825,6 +12186,7 @@
     "type": "http",
     "code": "talentlms",
     "name": "TalentLMS",
+    "baseUrl": "https://${connectionConfig.subdomain}.talentlms.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -10857,6 +12219,7 @@
     "type": "http",
     "code": "tally",
     "name": "Tally",
+    "baseUrl": "https://api.tally.so",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -10869,6 +12232,7 @@
     "type": "http",
     "code": "teamtailor",
     "name": "Teamtailor",
+    "baseUrl": "https://${connectionConfig.extension}.teamtailor.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -10888,10 +12252,11 @@
       }
     }
   },
-  "teamleader-focus": {
+  "teamleader": {
     "type": "http",
-    "code": "teamleader-focus",
+    "code": "teamleader",
     "name": "Teamleader Focus",
+    "baseUrl": "https://api.focus.teamleader.eu",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -10920,6 +12285,7 @@
     "type": "http",
     "code": "teamwork",
     "name": "Teamwork",
+    "baseUrl": "${connectionConfig.installation.apiEndPoint}",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -10945,6 +12311,7 @@
     "type": "http",
     "code": "telegram",
     "name": "Telegram",
+    "baseUrl": "https://api.telegram.org/bot${apiKey}",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -10957,6 +12324,7 @@
     "type": "http",
     "code": "terraform",
     "name": "Terraform",
+    "baseUrl": "https://app.terraform.io",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -10969,6 +12337,7 @@
     "type": "http",
     "code": "ticktick",
     "name": "TickTick",
+    "baseUrl": "https://api.ticktick.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -10990,10 +12359,40 @@
       }
     }
   },
+  "tiktok-accounts": {
+    "type": "http",
+    "code": "tiktok-accounts",
+    "name": "TikTok Accounts",
+    "baseUrl": "https://business-api.tiktok.com/open_api/v1.3/",
+    "auth": {
+      "oauth2": {
+        "type": "oauth2",
+        "authorize": {
+          "request": {
+            "method": "GET",
+            "path": "/v2/auth/authorize/",
+            "baseUrl": "https://www.tiktok.com",
+            "query": {
+              "response_type": "code"
+            }
+          }
+        },
+        "token": {
+          "request": {
+            "method": "POST",
+            "path": "/open_api/v1.3/tt_user/oauth2/token/",
+            "baseUrl": "https://business-api.tiktok.com"
+          }
+        },
+        "disablePkce": false
+      }
+    }
+  },
   "tiktok-ads": {
     "type": "http",
     "code": "tiktok-ads",
     "name": "TikTok Ads",
+    "baseUrl": "https://business-api.tiktok.com/open_api/v1.3/",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -11019,6 +12418,7 @@
     "type": "http",
     "code": "tiktok-personal",
     "name": "TikTok Personal",
+    "baseUrl": "https://open.tiktokapis.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -11047,6 +12447,7 @@
     "type": "http",
     "code": "timely",
     "name": "Timely",
+    "baseUrl": "https://api.timelyapp.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -11071,10 +12472,11 @@
       }
     }
   },
-  "thrivecart-oauth": {
+  "thrivecart": {
     "type": "http",
-    "code": "thrivecart-oauth",
-    "name": "ThriveCart (OAuth)",
+    "code": "thrivecart",
+    "name": "ThriveCart",
+    "baseUrl": "https://thrivecart.com/api/external",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -11105,6 +12507,7 @@
     "type": "http",
     "code": "trakstar-hire",
     "name": "Trakstar Hire",
+    "baseUrl": "https://api.recruiterbox.com",
     "auth": {
       "basic": {}
     }
@@ -11113,6 +12516,7 @@
     "type": "http",
     "code": "tremendous",
     "name": "Tremendous",
+    "baseUrl": "https://api.tremendous.com/api/v2",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -11141,6 +12545,7 @@
     "type": "http",
     "code": "tremendous-sandbox",
     "name": "Tremendous (Sandbox)",
+    "baseUrl": "https://testflight.tremendous.com/api/v2",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -11169,6 +12574,7 @@
     "type": "http",
     "code": "perk",
     "name": "Perk",
+    "baseUrl": "https://api.travelperk.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -11193,10 +12599,11 @@
       }
     }
   },
-  "trello-scim-api": {
+  "trello-scim": {
     "type": "http",
-    "code": "trello-scim-api",
+    "code": "trello-scim",
     "name": "Trello (SCIM API)",
+    "baseUrl": "https://trello.com/scim",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -11205,15 +12612,65 @@
       }
     }
   },
-  "tl-dv": {
+  "tldv": {
     "type": "http",
-    "code": "tl-dv",
+    "code": "tldv",
     "name": "tl;dv",
+    "baseUrl": "https://pasta.tldv.io",
     "auth": {
       "apiKey": {
         "location": "header",
         "name": "Authorization",
         "template": "Bearer {{key}}"
+      }
+    }
+  },
+  "trigger-dev": {
+    "type": "http",
+    "code": "trigger-dev",
+    "name": "Trigger.dev",
+    "baseUrl": "https://${connectionConfig.baseUrl}",
+    "auth": {
+      "apiKey": {
+        "location": "header",
+        "name": "Authorization",
+        "template": "Bearer {{key}}"
+      }
+    },
+    "customFields": {
+      "baseUrl": {
+        "type": "string",
+        "title": "Hostname",
+        "description": "The API hostname.",
+        "example": "api.trigger.dev",
+        "format": "hostname",
+        "prefix": "https://",
+        "order": 1,
+        "doc_section": "#step-4-set-your-base-url"
+      },
+      "projectRef": {
+        "type": "string",
+        "title": "Project Ref",
+        "description": "Your Trigger.dev project identifier.",
+        "example": "proj_1234567890",
+        "optional": true,
+        "doc_section": "#step-2-find-your-project-ref"
+      },
+      "environment": {
+        "type": "string",
+        "title": "Environment",
+        "description": "The target environment.",
+        "example": "prod",
+        "optional": true,
+        "doc_section": "#step-3-find-your-environment"
+      },
+      "triggerBranch": {
+        "type": "string",
+        "title": "Preview Branch",
+        "description": "Target a specific preview branch for environment variable operations.",
+        "example": "feature-xyz",
+        "optional": true,
+        "doc_section": "#step-5-set-your-preview-branch"
       }
     }
   },
@@ -11221,6 +12678,7 @@
     "type": "http",
     "code": "triple-whale",
     "name": "Triple Whale",
+    "baseUrl": "https://api.triplewhale.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -11229,10 +12687,11 @@
       }
     }
   },
-  "tsheets": {
+  "tsheetsteam": {
     "type": "http",
-    "code": "tsheets",
+    "code": "tsheetsteam",
     "name": "TSheets",
+    "baseUrl": "https://rest.tsheets.com/api/v1",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -11261,6 +12720,7 @@
     "type": "http",
     "code": "todoist",
     "name": "Todoist",
+    "baseUrl": "https://api.todoist.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -11282,10 +12742,11 @@
       }
     }
   },
-  "toggl-track": {
+  "toggl": {
     "type": "http",
-    "code": "toggl-track",
+    "code": "toggl",
     "name": "Toggl Track",
+    "baseUrl": "https://api.track.toggl.com",
     "auth": {
       "basic": {}
     }
@@ -11294,6 +12755,7 @@
     "type": "http",
     "code": "torii",
     "name": "Torii",
+    "baseUrl": "https://api.toriihq.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -11306,6 +12768,7 @@
     "type": "http",
     "code": "tumblr",
     "name": "Tumblr",
+    "baseUrl": "https://api.tumblr.com/v2",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -11334,6 +12797,7 @@
     "type": "http",
     "code": "twitch",
     "name": "Twitch",
+    "baseUrl": "https://api.twitch.tv",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -11363,6 +12827,7 @@
     "type": "http",
     "code": "twitter-v2",
     "name": "Twitter (v2)",
+    "baseUrl": "https://api.twitter.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -11395,6 +12860,7 @@
     "type": "http",
     "code": "twinfield",
     "name": "Twinfield",
+    "baseUrl": "https://${connectionConfig.cluster}.twinfield.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -11442,6 +12908,7 @@
     "type": "http",
     "code": "twenty-crm",
     "name": "Twenty CRM",
+    "baseUrl": "https://api.twenty.com/rest",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -11454,6 +12921,7 @@
     "type": "http",
     "code": "twenty-crm-self-hosted",
     "name": "Twenty CRM (Self Hosted)",
+    "baseUrl": "https://${connectionConfig.domain}/rest",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -11475,6 +12943,7 @@
     "type": "http",
     "code": "twilio",
     "name": "Twilio",
+    "baseUrl": "https://api.twilio.com",
     "auth": {
       "basic": {}
     }
@@ -11483,6 +12952,7 @@
     "type": "http",
     "code": "typeform",
     "name": "Typeform",
+    "baseUrl": "https://api.typeform.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -11510,10 +12980,24 @@
       }
     }
   },
-  "typefully-api-v2": {
+  "typefully": {
     "type": "http",
-    "code": "typefully-api-v2",
+    "code": "typefully",
+    "name": "Typefully",
+    "baseUrl": "https://api.typefully.com",
+    "auth": {
+      "apiKey": {
+        "location": "header",
+        "name": "Authorization",
+        "template": "Bearer {{key}}"
+      }
+    }
+  },
+  "typefully-v2": {
+    "type": "http",
+    "code": "typefully-v2",
     "name": "Typefully (API v2)",
+    "baseUrl": "https://api.typefully.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -11526,6 +13010,7 @@
     "type": "http",
     "code": "uber",
     "name": "Uber",
+    "baseUrl": "https://api.uber.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -11550,10 +13035,90 @@
       }
     }
   },
+  "ukg-pro-wfm": {
+    "type": "http",
+    "code": "ukg-pro-wfm",
+    "name": "UKG Pro (Workforce Management)",
+    "baseUrl": "https://${connectionConfig.hostname}/api",
+    "auth": {
+      "oauth2": {
+        "type": "oauth2",
+        "authorize": {
+          "request": {
+            "method": "GET",
+            "path": "/authorize",
+            "baseUrl": "https://welcome-us.ukg.net",
+            "query": {
+              "response_type": "code",
+              "audience": "https://wfm.ukg.net/api",
+              "realm": "${connectionConfig.tenantName}"
+            }
+          }
+        },
+        "token": {
+          "request": {
+            "method": "POST",
+            "path": "/oauth/token",
+            "baseUrl": "https://welcome-us.ukg.net"
+          }
+        },
+        "disablePkce": false
+      }
+    },
+    "customFields": {
+      "hostname": {
+        "type": "string",
+        "title": "Tenant URL",
+        "description": "The tenant URL of your UKG Pro instance",
+        "format": "hostname",
+        "example": "wfm.us1.ukg.com",
+        "suffix": "/api",
+        "prefix": "https://",
+        "doc_section": "#step-1-finding-your-tenant-url-and-tenant-name"
+      },
+      "tenantName": {
+        "type": "string",
+        "title": "Tenant Name",
+        "description": "The tenant name of your UKG Pro instance",
+        "example": "wfm",
+        "doc_section": "#step-1-finding-your-tenant-url-and-tenant-name"
+      }
+    }
+  },
+  "ukg-pro": {
+    "type": "http",
+    "code": "ukg-pro",
+    "name": "UKG Pro",
+    "baseUrl": "https://${connectionConfig.hostname}",
+    "auth": {
+      "basic": {}
+    },
+    "customFields": {
+      "customerApiKey": {
+        "type": "string",
+        "order": 2,
+        "title": "Customer API Key",
+        "description": "Your UKG Pro Customer API Key found in Service Account Administration",
+        "doc_section": "#step-1-finding-your-customer-api-key",
+        "secret": true
+      },
+      "hostname": {
+        "type": "string",
+        "order": 1,
+        "title": "Hostname",
+        "description": "The tenant URL of your UKG Pro instance",
+        "format": "hostname",
+        "example": "servicet.ultipro.com",
+        "prefix": "https://",
+        "doc_section": "#step-3-finding-your-hostname"
+      }
+    }
+  },
   "unanet": {
     "type": "http",
     "code": "unanet",
     "name": "Unanet",
+    "baseUrl": "https://compass.cosential.com",
     "auth": {
       "basic": {}
     },
@@ -11577,6 +13142,7 @@
     "type": "http",
     "code": "unipile",
     "name": "Unipile",
+    "baseUrl": "https://${connectionConfig.subdomain}.unipile.com:${connectionConfig.port}",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -11607,6 +13173,7 @@
     "type": "http",
     "code": "upsales",
     "name": "Upsales",
+    "baseUrl": "https://integration.upsales.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -11619,6 +13186,7 @@
     "type": "http",
     "code": "vercel",
     "name": "Vercel",
+    "baseUrl": "https://api.vercel.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -11627,10 +13195,11 @@
       }
     }
   },
-  "vimeo-oauth": {
+  "vimeo": {
     "type": "http",
-    "code": "vimeo-oauth",
-    "name": "Vimeo (OAuth)",
+    "code": "vimeo",
+    "name": "Vimeo",
+    "baseUrl": "https://api.vimeo.com",
     "auth": {
       "basic": {},
       "oauth2": {
@@ -11656,10 +13225,11 @@
       }
     }
   },
-  "valley-api-key": {
+  "valley": {
     "type": "http",
-    "code": "valley-api-key",
-    "name": "Valley (API Key)",
+    "code": "valley",
+    "name": "Valley",
+    "baseUrl": "https://api.joinvalley.co/api",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -11672,6 +13242,7 @@
     "type": "http",
     "code": "vtex",
     "name": "VTEX",
+    "baseUrl": "https://${connectionConfig.accountName}.vtexcommercestable.com.br",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -11707,6 +13278,7 @@
     "type": "http",
     "code": "videoask",
     "name": "VideoAsk",
+    "baseUrl": "https://api.videoask.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -11742,6 +13314,7 @@
     "type": "http",
     "code": "wakatime",
     "name": "Wakatime",
+    "baseUrl": "https://wakatime.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -11767,6 +13340,7 @@
     "type": "http",
     "code": "wave-accounting",
     "name": "Wave Accounting",
+    "baseUrl": "https://gql.waveapps.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -11792,6 +13366,7 @@
     "type": "http",
     "code": "wealthbox",
     "name": "Wealthbox",
+    "baseUrl": "https://api.crmworkspace.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -11820,6 +13395,7 @@
     "type": "http",
     "code": "webflow",
     "name": "Webflow",
+    "baseUrl": "https://api.webflow.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -11848,6 +13424,7 @@
     "type": "http",
     "code": "webex",
     "name": "Webex",
+    "baseUrl": "https://webexapis.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -11876,6 +13453,7 @@
     "type": "http",
     "code": "webinarjam",
     "name": "WebinarJam",
+    "baseUrl": "https://api.webinarjam.com/webinarjam",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -11884,10 +13462,24 @@
       }
     }
   },
-  "wejam-ai": {
+  "wejam": {
     "type": "http",
-    "code": "wejam-ai",
+    "code": "wejam",
     "name": "WeJam AI",
+    "baseUrl": "https://api.wejam.ai",
+    "auth": {
+      "apiKey": {
+        "location": "header",
+        "name": "Authorization",
+        "template": "Bearer {{key}}"
+      }
+    }
+  },
+  "whatsapp-business": {
+    "type": "http",
+    "code": "whatsapp-business",
+    "name": "WhatsApp Business",
+    "baseUrl": "https://graph.facebook.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -11900,6 +13492,7 @@
     "type": "http",
     "code": "whoop",
     "name": "Whoop",
+    "baseUrl": "https://api.prod.whoop.com/",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -11928,6 +13521,7 @@
     "type": "http",
     "code": "wildix-pbx",
     "name": "Wildix PBX",
+    "baseUrl": "https://${connectionConfig.subdomain}.wildixin.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -11967,6 +13561,7 @@
     "type": "http",
     "code": "wiza",
     "name": "Wiza",
+    "baseUrl": "https://wiza.co/api",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -11979,6 +13574,7 @@
     "type": "http",
     "code": "wordpress",
     "name": "WordPress",
+    "baseUrl": "https://public-api.wordpress.com/rest/v1",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -12007,6 +13603,7 @@
     "type": "http",
     "code": "wiseagent",
     "name": "Wiseagent",
+    "baseUrl": "https://sync.thewiseagent.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -12035,6 +13632,7 @@
     "type": "http",
     "code": "woocommerce",
     "name": "WooCommerce",
+    "baseUrl": "https://${connectionConfig.storeURL}",
     "auth": {
       "basic": {}
     },
@@ -12046,10 +13644,11 @@
       }
     }
   },
-  "workable-oauth": {
+  "workable": {
     "type": "http",
-    "code": "workable-oauth",
-    "name": "Workable (OAuth)",
+    "code": "workable",
+    "name": "Workable",
+    "baseUrl": "https://${connectionConfig.subdomain}.workable.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -12094,43 +13693,9 @@
     "type": "http",
     "code": "workday",
     "name": "Workday",
+    "baseUrl": "https://${connectionConfig.hostname}/ccx/service/${connectionConfig.tenant}",
     "auth": {
-      "basic": {}
-    },
-    "customFields": {
-      "hostname": {
-        "type": "string",
-        "title": "Hostname",
-        "description": "The hostname of your Workday account",
-        "format": "hostname",
-        "example": "wd3-impl-services1.workday.com",
-        "prefix": "https://",
-        "order": 1,
-        "doc_section": "#step-1-finding-your-hostname"
-      },
-      "tenant": {
-        "type": "string",
-        "title": "Tenant",
-        "description": "The tenant of your Workday account",
-        "example": "acme",
-        "order": 2,
-        "doc_section": "#step-2-finding-your-tenant"
-      }
-    }
-  },
-  "workday-adaptive-planning-basic-auth": {
-    "type": "http",
-    "code": "workday-adaptive-planning-basic-auth",
-    "name": "Workday Adaptive Planning (Basic Auth)",
-    "auth": {
-      "basic": {}
-    }
-  },
-  "workday-oauth": {
-    "type": "http",
-    "code": "workday-oauth",
-    "name": "Workday (OAuth)",
-    "auth": {
+      "basic": {},
       "oauth2": {
         "type": "oauth2",
         "authorize": {
@@ -12154,6 +13719,24 @@
       }
     },
     "customFields": {
+      "hostname": {
+        "type": "string",
+        "title": "Hostname",
+        "description": "The hostname of your Workday account",
+        "format": "hostname",
+        "example": "wd3-impl-services1.workday.com",
+        "prefix": "https://",
+        "order": 1,
+        "doc_section": "#step-1-finding-your-hostname"
+      },
+      "tenant": {
+        "type": "string",
+        "title": "Tenant",
+        "description": "The tenant of your Workday account",
+        "example": "yourtenant",
+        "order": 2,
+        "doc_section": "#step-3-finding-your-tenant"
+      },
       "authorizationDomain": {
         "type": "string",
         "title": "Authorization Domain",
@@ -12175,21 +13758,23 @@
         "order": 2,
         "suffix": "/ccx",
         "doc_section": "#step-2-finding-your-token-domain"
-      },
-      "tenant": {
-        "type": "string",
-        "title": "Tenant",
-        "description": "The tenant of your Workday account",
-        "example": "yourtenant",
-        "order": 2,
-        "doc_section": "#step-3-finding-your-tenant"
       }
+    }
+  },
+  "workday-adaptive-planning": {
+    "type": "http",
+    "code": "workday-adaptive-planning",
+    "name": "Workday Adaptive Planning",
+    "baseUrl": "https://api.adaptiveplanning.com/api/rest",
+    "auth": {
+      "basic": {}
     }
   },
   "workos": {
     "type": "http",
     "code": "workos",
     "name": "WorkOS",
+    "baseUrl": "https://api.workos.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -12202,6 +13787,7 @@
     "type": "http",
     "code": "workpath",
     "name": "Workpath",
+    "baseUrl": "https://connect.workpath.com/api",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -12214,6 +13800,7 @@
     "type": "http",
     "code": "wrike",
     "name": "Wrike",
+    "baseUrl": "https://${connectionConfig.host}/api/v4",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -12247,10 +13834,11 @@
       }
     }
   },
-  "wise-api-key": {
+  "wise": {
     "type": "http",
-    "code": "wise-api-key",
-    "name": "Wise (API Key)",
+    "code": "wise",
+    "name": "Wise",
+    "baseUrl": "https://api.wise.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -12263,6 +13851,7 @@
     "type": "http",
     "code": "xai",
     "name": "xAI",
+    "baseUrl": "https://api.x.ai",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -12275,6 +13864,7 @@
     "type": "http",
     "code": "xero",
     "name": "Xero",
+    "baseUrl": "https://api.xero.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -12303,10 +13893,47 @@
       }
     }
   },
+  "yahoo": {
+    "type": "http",
+    "code": "yahoo",
+    "name": "Yahoo",
+    "baseUrl": "https://${connectionConfig.apiDomain}",
+    "auth": {
+      "oauth2": {
+        "type": "oauth2",
+        "authorize": {
+          "request": {
+            "method": "GET",
+            "path": "/oauth2/request_auth",
+            "baseUrl": "https://api.login.yahoo.com"
+          }
+        },
+        "token": {
+          "request": {
+            "method": "POST",
+            "path": "/oauth2/get_token",
+            "baseUrl": "https://api.login.yahoo.com"
+          }
+        },
+        "disablePkce": false
+      }
+    },
+    "customFields": {
+      "apiDomain": {
+        "type": "string",
+        "title": "API Domain",
+        "description": "The domain to the API you want to connect to",
+        "format": "hostname",
+        "example": "fantasysports.yahooapis.com",
+        "prefix": "https://"
+      }
+    }
+  },
   "yandex": {
     "type": "http",
     "code": "yandex",
     "name": "Yandex",
+    "baseUrl": "https://translate.yandex.net",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -12335,6 +13962,7 @@
     "type": "http",
     "code": "zapier",
     "name": "Zapier",
+    "baseUrl": "https://api.zapier.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -12364,6 +13992,7 @@
     "type": "http",
     "code": "zapier-nla",
     "name": "Zapier NLA",
+    "baseUrl": "https://nla.zapier.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -12385,10 +14014,11 @@
       }
     }
   },
-  "zapier-scim-api": {
+  "zapier-scim": {
     "type": "http",
-    "code": "zapier-scim-api",
+    "code": "zapier-scim",
     "name": "Zapier (SCIM API)",
+    "baseUrl": "https://zapier.com/scim/v2",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -12401,6 +14031,7 @@
     "type": "http",
     "code": "zendesk",
     "name": "Zendesk",
+    "baseUrl": "https://${connectionConfig.subdomain}.zendesk.com",
     "auth": {
       "basic": {},
       "oauth2": {
@@ -12439,6 +14070,7 @@
     "type": "http",
     "code": "zendesk-sell",
     "name": "Zendesk Sell",
+    "baseUrl": "https://api.getbase.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -12467,6 +14099,7 @@
     "type": "http",
     "code": "zenefits",
     "name": "Zenefits",
+    "baseUrl": "https://api.zenefits.com",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -12495,6 +14128,7 @@
     "type": "http",
     "code": "zigpoll",
     "name": "Zigpoll",
+    "baseUrl": "https://v1.zigpoll.com",
     "auth": {
       "apiKey": {
         "location": "header",
@@ -12507,6 +14141,7 @@
     "type": "http",
     "code": "zoho",
     "name": "Zoho",
+    "baseUrl": "https://www.zohoapis.${connectionConfig.extension} || ${connectionConfig.api_domain}",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -12554,6 +14189,7 @@
     "type": "http",
     "code": "zoom",
     "name": "Zoom",
+    "baseUrl": "https://api.zoom.us/v2",
     "auth": {
       "oauth2": {
         "type": "oauth2",
@@ -12578,10 +14214,37 @@
       }
     }
   },
+  "snipe-it": {
+    "type": "http",
+    "code": "snipe-it",
+    "name": "Snipe-IT",
+    "baseUrl": "https://${connectionConfig.hostname}/api/",
+    "auth": {
+      "apiKey": {
+        "location": "header",
+        "name": "Authorization",
+        "template": "Bearer {{key}}"
+      }
+    },
+    "customFields": {
+      "hostname": {
+        "type": "string",
+        "title": "Domain",
+        "format": "hostname",
+        "description": "Your Snipe-IT hostname (e.g., yourcompany)",
+        "example": "yourcompany",
+        "suffix": ".snipe-it.io",
+        "prefix": "https://",
+        "doc_section": "#step-2-finding-your-domain",
+        "order": 1
+      }
+    }
+  },
   "zorus": {
     "type": "http",
     "code": "zorus",
     "name": "Zorus",
+    "baseUrl": "https://developer.zorustech.com",
     "auth": {
       "apiKey": {
         "location": "header",

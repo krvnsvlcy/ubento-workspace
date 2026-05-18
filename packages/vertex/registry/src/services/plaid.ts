@@ -7,6 +7,10 @@ export async function getSpec() {
     template: {
       name: "Plaid",
       discover: true,
+      connection: {
+        provider: "plaid",
+        baseUrl: "https://production.plaid.com",
+      },
     },
   });
 }

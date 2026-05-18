@@ -7,6 +7,10 @@ export async function getSpec() {
     template: {
       name: "Pipedrive",
       discover: true,
+      connection: {
+        provider: "pipedrive",
+        baseUrl: "${connectionConfig.api_domain}/api",
+      },
     },
   });
 }

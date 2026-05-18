@@ -1,1 +1,1 @@
-export { ConnectionModal } from "@/modals/connection";
+export { ConnectionModal } from "@/modals/connection/connection";

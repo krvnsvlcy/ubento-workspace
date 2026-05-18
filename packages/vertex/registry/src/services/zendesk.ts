@@ -7,6 +7,10 @@ export async function getSpec() {
     template: {
       name: "Zendesk",
       discover: true,
+      connection: {
+        provider: "zendesk",
+        baseUrl: "https://${connectionConfig.subdomain}.zendesk.com",
+      },
     },
   });
 }

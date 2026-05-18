@@ -1,0 +1,5257 @@
+{
+  "1password-events": {
+    "proxyUrl": "https://${connectionConfig.domain}",
+    "allProxyUrls": [
+      "https://${connectionConfig.domain}"
+    ],
+    "auth": {
+      "apiKey": "1password-events"
+    }
+  },
+  "1password-scim": {
+    "proxyUrl": "https://${connectionConfig.domain}/scim",
+    "allProxyUrls": [
+      "https://${connectionConfig.domain}/scim"
+    ],
+    "auth": {
+      "apiKey": "1password-scim"
+    }
+  },
+  "absorb-lms": {
+    "proxyUrl": "https://${connectionConfig.portalRoute}",
+    "allProxyUrls": [
+      "https://${connectionConfig.portalRoute}"
+    ],
+    "auth": {
+      "oauth2": "absorb-lms"
+    }
+  },
+  "accelo": {
+    "proxyUrl": "https://${connectionConfig.subdomain}.api.accelo.com",
+    "allProxyUrls": [
+      "https://${connectionConfig.subdomain}.api.accelo.com"
+    ],
+    "auth": {
+      "oauth2": "accelo"
+    }
+  },
+  "active-campaign": {
+    "proxyUrl": "https://${connectionConfig.hostname}/api",
+    "allProxyUrls": [
+      "https://${connectionConfig.hostname}/api"
+    ],
+    "auth": {
+      "apiKey": "active-campaign"
+    }
+  },
+  "acuity-scheduling": {
+    "proxyUrl": "https://acuityscheduling.com/api/v1",
+    "allProxyUrls": [
+      "https://acuityscheduling.com/api/v1"
+    ],
+    "auth": {
+      "oauth2": "acuity-scheduling"
+    }
+  },
+  "addepar": {
+    "proxyUrl": "https://api.addepar.com",
+    "allProxyUrls": [
+      "https://api.addepar.com",
+      "https://${connectionConfig.subdomain}.addepar.com/api"
+    ],
+    "auth": {
+      "oauth2": "addepar",
+      "basic": "addepar-basic"
+    }
+  },
+  "adobe": {
+    "proxyUrl": "https://ims-na1.adobelogin.com/ims",
+    "allProxyUrls": [
+      "https://ims-na1.adobelogin.com/ims"
+    ],
+    "auth": {
+      "oauth2": "adobe"
+    }
+  },
+  "adobe-workfront": {
+    "proxyUrl": "https://${connectionConfig.hostname}/attask/api",
+    "allProxyUrls": [
+      "https://${connectionConfig.hostname}/attask/api"
+    ],
+    "auth": {
+      "oauth2": "adobe-workfront"
+    }
+  },
+  "adobe-commerce": {
+    "proxyUrl": "https://${connectionConfig.storeDomain}/rest/${connectionConfig.storeCode}",
+    "allProxyUrls": [
+      "https://${connectionConfig.storeDomain}/rest/${connectionConfig.storeCode}"
+    ],
+    "auth": {
+      "apiKey": "adobe-commerce"
+    }
+  },
+  "adyen": {
+    "proxyUrl": "https://${connectionConfig.resource}-${connectionConfig.environment}.adyen.com",
+    "allProxyUrls": [
+      "https://${connectionConfig.resource}-${connectionConfig.environment}.adyen.com"
+    ],
+    "auth": {
+      "oauth2": "adyen"
+    }
+  },
+  "affinity": {
+    "proxyUrl": "https://api.affinity.co",
+    "allProxyUrls": [
+      "https://api.affinity.co"
+    ],
+    "auth": {
+      "basic": "affinity"
+    }
+  },
+  "affinity-v2": {
+    "proxyUrl": "https://api.affinity.co",
+    "allProxyUrls": [
+      "https://api.affinity.co"
+    ],
+    "auth": {
+      "apiKey": "affinity-v2"
+    }
+  },
+  "aimfox": {
+    "proxyUrl": "https://api.aimfox.com/api",
+    "allProxyUrls": [
+      "https://api.aimfox.com/api",
+      "https://api.aimfox.com/api"
+    ],
+    "auth": {
+      "apiKey": "aimfox",
+      "oauth2": "aimfox-oauth"
+    }
+  },
+  "aircall": {
+    "proxyUrl": "https://api.aircall.io",
+    "allProxyUrls": [
+      "https://api.aircall.io",
+      "https://api.aircall.io"
+    ],
+    "auth": {
+      "oauth2": "aircall",
+      "basic": "aircall-basic"
+    }
+  },
+  "airtable": {
+    "proxyUrl": "https://api.airtable.com",
+    "allProxyUrls": [
+      "https://api.airtable.com"
+    ],
+    "auth": {
+      "oauth2": "airtable"
+    }
+  },
+  "airtable-pat": {
+    "proxyUrl": "https://api.airtable.com",
+    "allProxyUrls": [
+      "https://api.airtable.com"
+    ],
+    "auth": {
+      "apiKey": "airtable-pat"
+    }
+  },
+  "autodesk": {
+    "proxyUrl": "https://developer.api.autodesk.com",
+    "allProxyUrls": [
+      "https://developer.api.autodesk.com"
+    ],
+    "auth": {
+      "oauth2": "autodesk"
+    }
+  },
+  "autotask": {
+    "proxyUrl": "https://${connectionConfig.subdomain}.autotask.net/atservicesrest",
+    "allProxyUrls": [
+      "https://${connectionConfig.subdomain}.autotask.net/atservicesrest"
+    ],
+    "auth": {
+      "apiKey": "autotask"
+    }
+  },
+  "algolia": {
+    "proxyUrl": "https://${connectionConfig.APP_ID}.algolia.net",
+    "allProxyUrls": [
+      "https://${connectionConfig.APP_ID}.algolia.net"
+    ],
+    "auth": {
+      "apiKey": "algolia"
+    }
+  },
+  "amazon": {
+    "proxyUrl": "https://api.amazon.com",
+    "allProxyUrls": [
+      "https://api.amazon.com"
+    ],
+    "auth": {
+      "oauth2": "amazon"
+    }
+  },
+  "amazon-selling-partner": {
+    "proxyUrl": "https://${connectionConfig.subdomain}-${connectionConfig.region}.amazon.com || https://sellingpartnerapi-${connectionConfig.region}.amazon.com",
+    "allProxyUrls": [
+      "https://${connectionConfig.subdomain}-${connectionConfig.region}.amazon.com || https://sellingpartnerapi-${connectionConfig.region}.amazon.com"
+    ],
+    "auth": {
+      "oauth2": "amazon-selling-partner"
+    }
+  },
+  "amazon-selling-partner-beta": {
+    "proxyUrl": "https://sandbox.sellingpartnerapi-${connectionConfig.region}.amazon.com",
+    "allProxyUrls": [
+      "https://sandbox.sellingpartnerapi-${connectionConfig.region}.amazon.com"
+    ],
+    "auth": {
+      "oauth2": "amazon-selling-partner-beta"
+    }
+  },
+  "anrok": {
+    "proxyUrl": "https://api.anrok.com",
+    "allProxyUrls": [
+      "https://api.anrok.com"
+    ],
+    "auth": {
+      "apiKey": "anrok"
+    }
+  },
+  "amplitude": {
+    "proxyUrl": "https://${connectionConfig.hostname} || https://amplitude.com",
+    "allProxyUrls": [
+      "https://${connectionConfig.hostname} || https://amplitude.com"
+    ],
+    "auth": {
+      "basic": "amplitude"
+    }
+  },
+  "anthropic": {
+    "proxyUrl": "https://api.anthropic.com",
+    "allProxyUrls": [
+      "https://api.anthropic.com"
+    ],
+    "auth": {
+      "apiKey": "anthropic"
+    }
+  },
+  "anthropic-admin": {
+    "proxyUrl": "https://api.anthropic.com",
+    "allProxyUrls": [
+      "https://api.anthropic.com"
+    ],
+    "auth": {
+      "apiKey": "anthropic-admin"
+    }
+  },
+  "anvil": {
+    "proxyUrl": "https://app.useanvil.com",
+    "allProxyUrls": [
+      "https://app.useanvil.com"
+    ],
+    "auth": {
+      "basic": "anvil"
+    }
+  },
+  "apaleo": {
+    "proxyUrl": "https://api.apaleo.com",
+    "allProxyUrls": [
+      "https://api.apaleo.com"
+    ],
+    "auth": {
+      "oauth2": "apaleo"
+    }
+  },
+  "apify": {
+    "proxyUrl": "https://api.apify.com",
+    "allProxyUrls": [
+      "https://api.apify.com"
+    ],
+    "auth": {
+      "apiKey": "apify"
+    }
+  },
+  "apollo": {
+    "proxyUrl": "https://app.apollo.io/api",
+    "allProxyUrls": [
+      "https://app.apollo.io/api",
+      "https://app.apollo.io/api"
+    ],
+    "auth": {
+      "apiKey": "apollo",
+      "oauth2": "apollo-oauth"
+    }
+  },
+  "appstle-subscriptions": {
+    "proxyUrl": "https://subscription-admin.appstle.com",
+    "allProxyUrls": [
+      "https://subscription-admin.appstle.com"
+    ],
+    "auth": {
+      "apiKey": "appstle-subscriptions"
+    }
+  },
+  "asana": {
+    "proxyUrl": "https://app.asana.com",
+    "allProxyUrls": [
+      "https://app.asana.com"
+    ],
+    "auth": {
+      "oauth2": "asana"
+    }
+  },
+  "asana-scim": {
+    "proxyUrl": "https://app.asana.com/api",
+    "allProxyUrls": [
+      "https://app.asana.com/api"
+    ],
+    "auth": {
+      "apiKey": "asana-scim"
+    }
+  },
+  "ashby": {
+    "proxyUrl": "https://api.ashbyhq.com",
+    "allProxyUrls": [
+      "https://api.ashbyhq.com"
+    ],
+    "auth": {
+      "basic": "ashby"
+    }
+  },
+  "atlas-so": {
+    "proxyUrl": "https://api.atlas.so/v1",
+    "allProxyUrls": [
+      "https://api.atlas.so/v1"
+    ],
+    "auth": {
+      "apiKey": "atlas-so"
+    }
+  },
+  "atlassian": {
+    "proxyUrl": "https://api.atlassian.com",
+    "allProxyUrls": [
+      "https://api.atlassian.com"
+    ],
+    "auth": {
+      "oauth2": "atlassian"
+    }
+  },
+  "atlassian-admin": {
+    "proxyUrl": "https://api.atlassian.com",
+    "allProxyUrls": [
+      "https://api.atlassian.com"
+    ],
+    "auth": {
+      "apiKey": "atlassian-admin"
+    }
+  },
+  "atlassian-government-cloud": {
+    "proxyUrl": "https://api.atlassian-us-gov-mod.com",
+    "allProxyUrls": [
+      "https://api.atlassian-us-gov-mod.com"
+    ],
+    "auth": {
+      "oauth2": "atlassian-government-cloud"
+    }
+  },
+  "atlassian-service-account-api-token": {
+    "proxyUrl": "https://api.atlassian.com",
+    "allProxyUrls": [
+      "https://api.atlassian.com"
+    ],
+    "auth": {
+      "basic": "atlassian-service-account-api-token"
+    }
+  },
+  "attention": {
+    "proxyUrl": "https://api.attention.tech",
+    "allProxyUrls": [
+      "https://api.attention.tech"
+    ],
+    "auth": {
+      "apiKey": "attention"
+    }
+  },
+  "attio": {
+    "proxyUrl": "https://api.attio.com",
+    "allProxyUrls": [
+      "https://api.attio.com"
+    ],
+    "auth": {
+      "oauth2": "attio"
+    }
+  },
+  "auth0": {
+    "proxyUrl": "https://${connectionConfig.subdomain}.auth0.com",
+    "allProxyUrls": [
+      "https://${connectionConfig.subdomain}.auth0.com"
+    ],
+    "auth": {
+      "oauth2": "auth0"
+    }
+  },
+  "auvik": {
+    "proxyUrl": "https://auvikapi.${connectionConfig.region}.my.auvik.com",
+    "allProxyUrls": [
+      "https://auvikapi.${connectionConfig.region}.my.auvik.com"
+    ],
+    "auth": {
+      "basic": "auvik"
+    }
+  },
+  "avalara": {
+    "proxyUrl": "https://rest.avatax.com/api/v2",
+    "allProxyUrls": [
+      "https://rest.avatax.com/api/v2"
+    ],
+    "auth": {
+      "basic": "avalara"
+    }
+  },
+  "avalara-sandbox": {
+    "proxyUrl": "https://sandbox-rest.avatax.com/api/v2",
+    "allProxyUrls": [
+      "https://sandbox-rest.avatax.com/api/v2"
+    ],
+    "auth": {
+      "basic": "avalara-sandbox"
+    }
+  },
+  "avoma": {
+    "proxyUrl": "https://api.avoma.com",
+    "allProxyUrls": [
+      "https://api.avoma.com"
+    ],
+    "auth": {
+      "apiKey": "avoma"
+    }
+  },
+  "axiom": {
+    "proxyUrl": "https://${connectionConfig.subdomain}.axiom.co",
+    "allProxyUrls": [
+      "https://${connectionConfig.subdomain}.axiom.co"
+    ],
+    "auth": {
+      "apiKey": "axiom"
+    }
+  },
+  "aws": {
+    "proxyUrl": "https://cognito-${apiSubdomain}.amazonaws.com",
+    "allProxyUrls": [
+      "https://cognito-${apiSubdomain}.amazonaws.com"
+    ],
+    "auth": {
+      "oauth2": "aws"
+    }
+  },
+  "aws-iam": {
+    "proxyUrl": "https://iam.amazonaws.com",
+    "allProxyUrls": [
+      "https://iam.amazonaws.com"
+    ],
+    "auth": {
+      "basic": "aws-iam"
+    }
+  },
+  "aws-inspector2": {
+    "proxyUrl": "https://inspector2.${connectionConfig.region}.amazonaws.com",
+    "allProxyUrls": [
+      "https://inspector2.${connectionConfig.region}.amazonaws.com"
+    ],
+    "auth": {
+      "basic": "aws-inspector2"
+    }
+  },
+  "aws-multi-service": {
+    "proxyUrl": "https://${connectionConfig.service}.${connectionConfig.region}.amazonaws.com",
+    "allProxyUrls": [
+      "https://${connectionConfig.service}.${connectionConfig.region}.amazonaws.com"
+    ],
+    "auth": {
+      "basic": "aws-multi-service"
+    }
+  },
+  "aws-scim": {
+    "proxyUrl": "${connectionConfig.scimEndpoint}",
+    "allProxyUrls": [
+      "${connectionConfig.scimEndpoint}"
+    ],
+    "auth": {
+      "apiKey": "aws-scim"
+    }
+  },
+  "azure-devops": {
+    "proxyUrl": "https://${connectionConfig.organizationUrl}",
+    "allProxyUrls": [
+      "https://${connectionConfig.organizationUrl}"
+    ],
+    "auth": {
+      "basic": "azure-devops"
+    }
+  },
+  "bamboohr": {
+    "proxyUrl": "https://api.bamboohr.com/api/gateway.php/${connectionConfig.subdomain}",
+    "allProxyUrls": [
+      "https://api.bamboohr.com/api/gateway.php/${connectionConfig.subdomain}",
+      "https://api.bamboohr.com/api/gateway.php/${connectionConfig.subdomain}"
+    ],
+    "auth": {
+      "oauth2": "bamboohr",
+      "basic": "bamboohr-basic"
+    }
+  },
+  "basecamp": {
+    "proxyUrl": "https://3.basecampapi.com/${connectionConfig.accountId}",
+    "allProxyUrls": [
+      "https://3.basecampapi.com/${connectionConfig.accountId}"
+    ],
+    "auth": {
+      "oauth2": "basecamp"
+    }
+  },
+  "battlenet": {
+    "proxyUrl": "https://${connectionConfig.apiDomain}",
+    "allProxyUrls": [
+      "https://${connectionConfig.apiDomain}"
+    ],
+    "auth": {
+      "oauth2": "battlenet"
+    }
+  },
+  "beehiiv": {
+    "proxyUrl": "https://api.beehiiv.com/v2/publications/${connectionConfig.publicationId}",
+    "allProxyUrls": [
+      "https://api.beehiiv.com/v2/publications/${connectionConfig.publicationId}"
+    ],
+    "auth": {
+      "apiKey": "beehiiv"
+    }
+  },
+  "bettercontact": {
+    "proxyUrl": "https://app.bettercontact.rocks",
+    "allProxyUrls": [
+      "https://app.bettercontact.rocks"
+    ],
+    "auth": {
+      "apiKey": "bettercontact"
+    }
+  },
+  "bigcommerce": {
+    "proxyUrl": "https://api.bigcommerce.com/stores/${connectionConfig.storeHash}",
+    "allProxyUrls": [
+      "https://api.bigcommerce.com/stores/${connectionConfig.storeHash}"
+    ],
+    "auth": {
+      "oauth2": "bigcommerce"
+    }
+  },
+  "bing-webmasters": {
+    "proxyUrl": "https://www.bing.com/webmaster/api.svc/json",
+    "allProxyUrls": [
+      "https://www.bing.com/webmaster/api.svc/json"
+    ],
+    "auth": {
+      "oauth2": "bing-webmasters"
+    }
+  },
+  "bitbucket": {
+    "proxyUrl": "https://api.bitbucket.org",
+    "allProxyUrls": [
+      "https://api.bitbucket.org"
+    ],
+    "auth": {
+      "oauth2": "bitbucket"
+    }
+  },
+  "bitdefender": {
+    "proxyUrl": "${connectionConfig.ACCESS_URL}",
+    "allProxyUrls": [
+      "${connectionConfig.ACCESS_URL}"
+    ],
+    "auth": {
+      "basic": "bitdefender"
+    }
+  },
+  "bitly": {
+    "proxyUrl": "https://api-ssl.bitly.com",
+    "allProxyUrls": [
+      "https://api-ssl.bitly.com"
+    ],
+    "auth": {
+      "oauth2": "bitly"
+    }
+  },
+  "blackbaud": {
+    "proxyUrl": "https://api.sky.blackbaud.com",
+    "allProxyUrls": [
+      "https://api.sky.blackbaud.com",
+      "https://${connectionConfig.hostName}"
+    ],
+    "auth": {
+      "oauth2": "blackbaud",
+      "basic": "blackbaud-basic"
+    }
+  },
+  "blandai": {
+    "proxyUrl": "https://api.bland.ai",
+    "allProxyUrls": [
+      "https://api.bland.ai"
+    ],
+    "auth": {
+      "apiKey": "blandai"
+    }
+  },
+  "bird": {
+    "proxyUrl": "https://${connectionConfig.subdomain}.bird.com",
+    "allProxyUrls": [
+      "https://${connectionConfig.subdomain}.bird.com"
+    ],
+    "auth": {
+      "apiKey": "bird"
+    }
+  },
+  "boldsign": {
+    "proxyUrl": "https://api.boldsign.com",
+    "allProxyUrls": [
+      "https://api.boldsign.com"
+    ],
+    "auth": {
+      "oauth2": "boldsign"
+    }
+  },
+  "box": {
+    "proxyUrl": "https://api.box.com",
+    "allProxyUrls": [
+      "https://api.box.com"
+    ],
+    "auth": {
+      "oauth2": "box"
+    }
+  },
+  "booking-com": {
+    "proxyUrl": "https://${connectionConfig.environmentType}-xml.booking.com",
+    "allProxyUrls": [
+      "https://${connectionConfig.environmentType}-xml.booking.com"
+    ],
+    "auth": {
+      "basic": "booking-com"
+    }
+  },
+  "braintree": {
+    "proxyUrl": "https://api.braintreegateway.com",
+    "allProxyUrls": [
+      "https://api.braintreegateway.com"
+    ],
+    "auth": {
+      "oauth2": "braintree"
+    }
+  },
+  "braintree-sandbox": {
+    "proxyUrl": "https://api.sandbox.braintreegateway.com",
+    "allProxyUrls": [
+      "https://api.sandbox.braintreegateway.com"
+    ],
+    "auth": {
+      "oauth2": "braintree-sandbox"
+    }
+  },
+  "braze": {
+    "proxyUrl": "https://rest.${connectionConfig.instanceUrl}",
+    "allProxyUrls": [
+      "https://rest.${connectionConfig.instanceUrl}"
+    ],
+    "auth": {
+      "apiKey": "braze"
+    }
+  },
+  "brevo": {
+    "proxyUrl": "https://api.brevo.com/v3",
+    "allProxyUrls": [
+      "https://api.brevo.com/v3"
+    ],
+    "auth": {
+      "apiKey": "brevo-api-key"
+    }
+  },
+  "brex": {
+    "proxyUrl": "https://platform.brexapis.com",
+    "allProxyUrls": [
+      "https://platform.brexapis.com",
+      "https://platform.brexapis.com"
+    ],
+    "auth": {
+      "oauth2": "brex",
+      "apiKey": "brex-api-key"
+    }
+  },
+  "brex-staging": {
+    "proxyUrl": "https://platform.staging.brexapps.com",
+    "allProxyUrls": [
+      "https://platform.staging.brexapps.com"
+    ],
+    "auth": {
+      "oauth2": "brex-staging"
+    }
+  },
+  "builder-io-private": {
+    "proxyUrl": "https://${connectionConfig.domain}",
+    "allProxyUrls": [
+      "https://${connectionConfig.domain}"
+    ],
+    "auth": {
+      "apiKey": "builder-io-private"
+    }
+  },
+  "builder-io-public": {
+    "proxyUrl": "https://${connectionConfig.domain}",
+    "allProxyUrls": [
+      "https://${connectionConfig.domain}"
+    ],
+    "auth": {
+      "apiKey": "builder-io-public"
+    }
+  },
+  "buildium": {
+    "proxyUrl": "https://api.buildium.com",
+    "allProxyUrls": [
+      "https://api.buildium.com"
+    ],
+    "auth": {
+      "apiKey": "buildium"
+    }
+  },
+  "builtwith": {
+    "proxyUrl": "https://api.builtwith.com",
+    "allProxyUrls": [
+      "https://api.builtwith.com"
+    ],
+    "auth": {
+      "apiKey": "builtwith"
+    }
+  },
+  "buffer": {
+    "proxyUrl": "https://api.buffer.com",
+    "allProxyUrls": [
+      "https://api.buffer.com"
+    ],
+    "auth": {
+      "oauth2": "buffer"
+    }
+  },
+  "bullhorn": {
+    "proxyUrl": "${connectionConfig.restUrl}",
+    "allProxyUrls": [
+      "${connectionConfig.restUrl}"
+    ],
+    "auth": {
+      "oauth2": "bullhorn"
+    }
+  },
+  "cal-com-v1": {
+    "proxyUrl": "https://api.cal.com/v1",
+    "allProxyUrls": [
+      "https://api.cal.com/v1"
+    ],
+    "auth": {
+      "apiKey": "cal-com-v1"
+    }
+  },
+  "cal-com-v2": {
+    "proxyUrl": "https://api.cal.com/v2",
+    "allProxyUrls": [
+      "https://api.cal.com/v2"
+    ],
+    "auth": {
+      "apiKey": "cal-com-v2"
+    }
+  },
+  "cal-com": {
+    "proxyUrl": "https://api.cal.com",
+    "allProxyUrls": [
+      "https://api.cal.com"
+    ],
+    "auth": {
+      "oauth2": "cal-com-oauth"
+    }
+  },
+  "calendly": {
+    "proxyUrl": "https://api.calendly.com",
+    "allProxyUrls": [
+      "https://api.calendly.com"
+    ],
+    "auth": {
+      "oauth2": "calendly"
+    }
+  },
+  "callrail": {
+    "proxyUrl": "https://api.callrail.com",
+    "allProxyUrls": [
+      "https://api.callrail.com"
+    ],
+    "auth": {
+      "apiKey": "callrail"
+    }
+  },
+  "canny": {
+    "proxyUrl": "https://canny.io/api/v1",
+    "allProxyUrls": [
+      "https://canny.io/api/v1"
+    ],
+    "auth": {
+      "apiKey": "canny"
+    }
+  },
+  "candis": {
+    "proxyUrl": "https://api.candis.io",
+    "allProxyUrls": [
+      "https://api.candis.io"
+    ],
+    "auth": {
+      "oauth2": "candis"
+    }
+  },
+  "canva": {
+    "proxyUrl": "https://api.canva.com",
+    "allProxyUrls": [
+      "https://api.canva.com"
+    ],
+    "auth": {
+      "oauth2": "canva"
+    }
+  },
+  "canvas-lms": {
+    "proxyUrl": "https://${connectionConfig.hostname}",
+    "allProxyUrls": [
+      "https://${connectionConfig.hostname}"
+    ],
+    "auth": {
+      "oauth2": "canvas-lms"
+    }
+  },
+  "canva-scim": {
+    "proxyUrl": "https://www.canva.com/_scim",
+    "allProxyUrls": [
+      "https://www.canva.com/_scim"
+    ],
+    "auth": {
+      "apiKey": "canva-scim"
+    }
+  },
+  "certn": {
+    "proxyUrl": "https://api.certn.co",
+    "allProxyUrls": [
+      "https://api.certn.co"
+    ],
+    "auth": {
+      "apiKey": "certn"
+    }
+  },
+  "chargebee": {
+    "proxyUrl": "https://${connectionConfig.subdomain}.chargebee.com",
+    "allProxyUrls": [
+      "https://${connectionConfig.subdomain}.chargebee.com"
+    ],
+    "auth": {
+      "basic": "chargebee"
+    }
+  },
+  "chattermill": {
+    "proxyUrl": "https://${connectionConfig.subdomain}.chattermill.com",
+    "allProxyUrls": [
+      "https://${connectionConfig.subdomain}.chattermill.com"
+    ],
+    "auth": {
+      "apiKey": "chattermill"
+    }
+  },
+  "checkhq": {
+    "proxyUrl": "https://api.checkhq.com",
+    "allProxyUrls": [
+      "https://api.checkhq.com"
+    ],
+    "auth": {
+      "apiKey": "checkhq"
+    }
+  },
+  "checkr-partner": {
+    "proxyUrl": "https://api.checkr.com",
+    "allProxyUrls": [
+      "https://api.checkr.com"
+    ],
+    "auth": {
+      "oauth2": "checkr-partner"
+    }
+  },
+  "checkr-partner-staging": {
+    "proxyUrl": "https://api.checkr-staging.com",
+    "allProxyUrls": [
+      "https://api.checkr-staging.com"
+    ],
+    "auth": {
+      "oauth2": "checkr-partner-staging"
+    }
+  },
+  "chorus": {
+    "proxyUrl": "https://chorus.ai",
+    "allProxyUrls": [
+      "https://chorus.ai"
+    ],
+    "auth": {
+      "apiKey": "chorus"
+    }
+  },
+  "cin7-core": {
+    "proxyUrl": "https://inventory.dearsystems.com/externalapi",
+    "allProxyUrls": [
+      "https://inventory.dearsystems.com/externalapi"
+    ],
+    "auth": {
+      "apiKey": "cin7-core"
+    }
+  },
+  "circle-so": {
+    "proxyUrl": "https://app.circle.so",
+    "allProxyUrls": [
+      "https://app.circle.so"
+    ],
+    "auth": {
+      "apiKey": "circle-so"
+    }
+  },
+  "clari-copilot": {
+    "proxyUrl": "https://rest-api.copilot.clari.com",
+    "allProxyUrls": [
+      "https://rest-api.copilot.clari.com"
+    ],
+    "auth": {
+      "apiKey": "clari-copilot"
+    }
+  },
+  "clay": {
+    "proxyUrl": "https://api.clay.com",
+    "allProxyUrls": [
+      "https://api.clay.com"
+    ],
+    "auth": {
+      "apiKey": "clay"
+    }
+  },
+  "cleverreach": {
+    "proxyUrl": "https://rest.cleverreach.com",
+    "allProxyUrls": [
+      "https://rest.cleverreach.com"
+    ],
+    "auth": {
+      "oauth2": "cleverreach"
+    }
+  },
+  "clickhouse": {
+    "proxyUrl": "https://api.clickhouse.cloud",
+    "allProxyUrls": [
+      "https://api.clickhouse.cloud"
+    ],
+    "auth": {
+      "basic": "clickhouse"
+    }
+  },
+  "clicksend": {
+    "proxyUrl": "https://rest.clicksend.com",
+    "allProxyUrls": [
+      "https://rest.clicksend.com"
+    ],
+    "auth": {
+      "basic": "clicksend"
+    }
+  },
+  "clickup": {
+    "proxyUrl": "https://api.clickup.com",
+    "allProxyUrls": [
+      "https://api.clickup.com"
+    ],
+    "auth": {
+      "oauth2": "clickup"
+    }
+  },
+  "clio": {
+    "proxyUrl": "https://${connectionConfig.hostname}",
+    "allProxyUrls": [
+      "https://${connectionConfig.hostname}"
+    ],
+    "auth": {
+      "oauth2": "clio"
+    }
+  },
+  "cloudbeds": {
+    "proxyUrl": "https://api.cloudbeds.com",
+    "allProxyUrls": [
+      "https://api.cloudbeds.com"
+    ],
+    "auth": {
+      "oauth2": "cloudbeds"
+    }
+  },
+  "cloudtalk": {
+    "proxyUrl": "https://my.cloudtalk.io/api",
+    "allProxyUrls": [
+      "https://my.cloudtalk.io/api"
+    ],
+    "auth": {
+      "basic": "cloudtalk"
+    }
+  },
+  "clerk": {
+    "proxyUrl": "https://api.clerk.com",
+    "allProxyUrls": [
+      "https://api.clerk.com"
+    ],
+    "auth": {
+      "apiKey": "clerk"
+    }
+  },
+  "cloudflare": {
+    "proxyUrl": "https://api.cloudflare.com/client",
+    "allProxyUrls": [
+      "https://api.cloudflare.com/client"
+    ],
+    "auth": {
+      "apiKey": "cloudflare"
+    }
+  },
+  "clover": {
+    "proxyUrl": "https://${connectionConfig.apiHost}",
+    "allProxyUrls": [
+      "https://${connectionConfig.apiHost}"
+    ],
+    "auth": {
+      "oauth2": "clover"
+    }
+  },
+  "close": {
+    "proxyUrl": "https://api.close.com/api",
+    "allProxyUrls": [
+      "https://api.close.com/api"
+    ],
+    "auth": {
+      "oauth2": "close"
+    }
+  },
+  "coda": {
+    "proxyUrl": "https://coda.io/apis/v1",
+    "allProxyUrls": [
+      "https://coda.io/apis/v1"
+    ],
+    "auth": {
+      "apiKey": "coda"
+    }
+  },
+  "codeclimate": {
+    "proxyUrl": "https://${connectionConfig.domain}",
+    "allProxyUrls": [
+      "https://${connectionConfig.domain}"
+    ],
+    "auth": {
+      "apiKey": "codeclimate"
+    }
+  },
+  "codegen": {
+    "proxyUrl": "https://api.codegen.com",
+    "allProxyUrls": [
+      "https://api.codegen.com"
+    ],
+    "auth": {
+      "apiKey": "codegen"
+    }
+  },
+  "companycam": {
+    "proxyUrl": "https://api.companycam.com",
+    "allProxyUrls": [
+      "https://api.companycam.com"
+    ],
+    "auth": {
+      "apiKey": "companycam"
+    }
+  },
+  "constant-contact": {
+    "proxyUrl": "https://api.cc.email",
+    "allProxyUrls": [
+      "https://api.cc.email"
+    ],
+    "auth": {
+      "oauth2": "constant-contact"
+    }
+  },
+  "copper": {
+    "proxyUrl": "https://api.copper.com/developer_api",
+    "allProxyUrls": [
+      "https://api.copper.com/developer_api",
+      "https://api.copper.com/developer_api"
+    ],
+    "auth": {
+      "oauth2": "copper",
+      "apiKey": "copper-api-key"
+    }
+  },
+  "connectwise-psa": {
+    "proxyUrl": "https://${connectionConfig.hostname}/v4_6_release/apis/3.0 || https://${connectionConfig.subdomain}.myconnectwise.net/v4_6_release/apis/3.0",
+    "allProxyUrls": [
+      "https://${connectionConfig.hostname}/v4_6_release/apis/3.0 || https://${connectionConfig.subdomain}.myconnectwise.net/v4_6_release/apis/3.0"
+    ],
+    "auth": {
+      "basic": "connectwise-psa"
+    }
+  },
+  "connectwise-psa-staging": {
+    "proxyUrl": "https://api-staging.connectwisedev.com/v4_6_release/apis/3.0",
+    "allProxyUrls": [
+      "https://api-staging.connectwisedev.com/v4_6_release/apis/3.0"
+    ],
+    "auth": {
+      "basic": "connectwise-psa-staging"
+    }
+  },
+  "conta-azul": {
+    "proxyUrl": "https://api-v2.contaazul.com",
+    "allProxyUrls": [
+      "https://api-v2.contaazul.com"
+    ],
+    "auth": {
+      "oauth2": "conta-azul"
+    }
+  },
+  "confluence": {
+    "proxyUrl": "https://${connectionConfig.subdomain}.atlassian.net",
+    "allProxyUrls": [
+      "https://${connectionConfig.subdomain}.atlassian.net"
+    ],
+    "auth": {
+      "basic": "confluence-basic"
+    }
+  },
+  "contentful": {
+    "proxyUrl": "https://${connectionConfig.subdomain}.contentful.com",
+    "allProxyUrls": [
+      "https://${connectionConfig.subdomain}.contentful.com"
+    ],
+    "auth": {
+      "oauth2": "contentful"
+    }
+  },
+  "contentstack": {
+    "proxyUrl": "https://${connectionConfig.apiDomain}",
+    "allProxyUrls": [
+      "https://${connectionConfig.apiDomain}"
+    ],
+    "auth": {
+      "oauth2": "contentstack"
+    }
+  },
+  "coros": {
+    "proxyUrl": "https://open.coros.com",
+    "allProxyUrls": [
+      "https://open.coros.com"
+    ],
+    "auth": {
+      "oauth2": "coros"
+    }
+  },
+  "coros-sandbox": {
+    "proxyUrl": "https://opentest.coros.com",
+    "allProxyUrls": [
+      "https://opentest.coros.com"
+    ],
+    "auth": {
+      "oauth2": "coros-sandbox"
+    }
+  },
+  "cyberimpact": {
+    "proxyUrl": "https://api.cyberimpact.com",
+    "allProxyUrls": [
+      "https://api.cyberimpact.com"
+    ],
+    "auth": {
+      "apiKey": "cyberimpact"
+    }
+  },
+  "customer-io": {
+    "proxyUrl": "https://${connectionConfig.subdomain}.customer.io",
+    "allProxyUrls": [
+      "https://${connectionConfig.subdomain}.customer.io"
+    ],
+    "auth": {
+      "basic": "customer-io"
+    }
+  },
+  "cursor": {
+    "proxyUrl": "https://api.cursor.com",
+    "allProxyUrls": [
+      "https://api.cursor.com"
+    ],
+    "auth": {
+      "apiKey": "cursor"
+    }
+  },
+  "cursor-admin": {
+    "proxyUrl": "https://api.cursor.com",
+    "allProxyUrls": [
+      "https://api.cursor.com"
+    ],
+    "auth": {
+      "basic": "cursor-admin"
+    }
+  },
+  "datev": {
+    "proxyUrl": "https://api.datev.de",
+    "allProxyUrls": [
+      "https://api.datev.de"
+    ],
+    "auth": {
+      "oauth2": "datev"
+    }
+  },
+  "datacandy": {
+    "proxyUrl": "https://${connectionConfig.application_url}/api2",
+    "allProxyUrls": [
+      "https://${connectionConfig.application_url}/api2"
+    ],
+    "auth": {
+      "basic": "datacandy"
+    }
+  },
+  "datadog": {
+    "proxyUrl": "https://api.${connectionConfig.siteParameter}/api",
+    "allProxyUrls": [
+      "https://api.${connectionConfig.siteParameter}/api"
+    ],
+    "auth": {
+      "apiKey": "datadog"
+    }
+  },
+  "datto-rmm": {
+    "proxyUrl": "https://${connectionConfig.platform}-api.centrastage.net/api",
+    "allProxyUrls": [
+      "https://${connectionConfig.platform}-api.centrastage.net/api"
+    ],
+    "auth": {
+      "oauth2": "datto-rmm"
+    }
+  },
+  "deel": {
+    "proxyUrl": "https://api.letsdeel.com",
+    "allProxyUrls": [
+      "https://api.letsdeel.com"
+    ],
+    "auth": {
+      "oauth2": "deel"
+    }
+  },
+  "deel-sandbox": {
+    "proxyUrl": "https://api-sandbox.demo.deel.com",
+    "allProxyUrls": [
+      "https://api-sandbox.demo.deel.com"
+    ],
+    "auth": {
+      "oauth2": "deel-sandbox"
+    }
+  },
+  "devin": {
+    "proxyUrl": "https://api.devin.ai",
+    "allProxyUrls": [
+      "https://api.devin.ai"
+    ],
+    "auth": {
+      "apiKey": "devin"
+    }
+  },
+  "demodesk": {
+    "proxyUrl": "https://demodesk.com",
+    "allProxyUrls": [
+      "https://demodesk.com"
+    ],
+    "auth": {
+      "apiKey": "demodesk"
+    }
+  },
+  "dialpad": {
+    "proxyUrl": "https://dialpad.com",
+    "allProxyUrls": [
+      "https://dialpad.com"
+    ],
+    "auth": {
+      "oauth2": "dialpad"
+    }
+  },
+  "dialpad-sandbox": {
+    "proxyUrl": "https://sandbox.dialpad.com",
+    "allProxyUrls": [
+      "https://sandbox.dialpad.com"
+    ],
+    "auth": {
+      "oauth2": "dialpad-sandbox"
+    }
+  },
+  "digitalocean": {
+    "proxyUrl": "https://api.digitalocean.com",
+    "allProxyUrls": [
+      "https://api.digitalocean.com"
+    ],
+    "auth": {
+      "oauth2": "digitalocean"
+    }
+  },
+  "digits": {
+    "proxyUrl": "https://connect.digits.com",
+    "allProxyUrls": [
+      "https://connect.digits.com"
+    ],
+    "auth": {
+      "oauth2": "digits"
+    }
+  },
+  "discord": {
+    "proxyUrl": "https://discord.com",
+    "allProxyUrls": [
+      "https://discord.com"
+    ],
+    "auth": {
+      "oauth2": "discord"
+    }
+  },
+  "discourse": {
+    "proxyUrl": "https://${connectionConfig.defaultHost}",
+    "allProxyUrls": [
+      "https://${connectionConfig.defaultHost}"
+    ],
+    "auth": {
+      "apiKey": "discourse"
+    }
+  },
+  "crisp": {
+    "proxyUrl": "https://api.crisp.chat",
+    "allProxyUrls": [
+      "https://api.crisp.chat"
+    ],
+    "auth": {
+      "basic": "crisp"
+    }
+  },
+  "crunchbase": {
+    "proxyUrl": "https://api.crunchbase.com/",
+    "allProxyUrls": [
+      "https://api.crunchbase.com/"
+    ],
+    "auth": {
+      "apiKey": "crunchbase"
+    }
+  },
+  "dixa": {
+    "proxyUrl": "https://${connectionConfig.apiType}.dixa.io",
+    "allProxyUrls": [
+      "https://${connectionConfig.apiType}.dixa.io"
+    ],
+    "auth": {
+      "apiKey": "dixa"
+    }
+  },
+  "document360": {
+    "proxyUrl": "https://api.document360.com",
+    "allProxyUrls": [
+      "https://api.document360.com"
+    ],
+    "auth": {
+      "apiKey": "document360"
+    }
+  },
+  "docusign": {
+    "proxyUrl": "https://www.docusign.net",
+    "allProxyUrls": [
+      "https://www.docusign.net"
+    ],
+    "auth": {
+      "oauth2": "docusign"
+    }
+  },
+  "docusign-sandbox": {
+    "proxyUrl": "https://demo.docusign.net",
+    "allProxyUrls": [
+      "https://demo.docusign.net"
+    ],
+    "auth": {
+      "oauth2": "docusign-sandbox"
+    }
+  },
+  "dropbox": {
+    "proxyUrl": "https://api.dropboxapi.com",
+    "allProxyUrls": [
+      "https://api.dropboxapi.com"
+    ],
+    "auth": {
+      "oauth2": "dropbox"
+    }
+  },
+  "dropbox-sign": {
+    "proxyUrl": "https://api.hellosign.com",
+    "allProxyUrls": [
+      "https://api.hellosign.com"
+    ],
+    "auth": {
+      "oauth2": "dropbox-sign"
+    }
+  },
+  "drchrono": {
+    "proxyUrl": "https://app.drchrono.com",
+    "allProxyUrls": [
+      "https://app.drchrono.com"
+    ],
+    "auth": {
+      "oauth2": "drchrono"
+    }
+  },
+  "drata": {
+    "proxyUrl": "https://public-api.drata.com",
+    "allProxyUrls": [
+      "https://public-api.drata.com"
+    ],
+    "auth": {
+      "apiKey": "drata"
+    }
+  },
+  "cisco-duo-admin": {
+    "proxyUrl": "https://${connectionConfig.hostname}",
+    "allProxyUrls": [
+      "https://${connectionConfig.hostname}"
+    ],
+    "auth": {
+      "basic": "cisco-duo-admin"
+    }
+  },
+  "contactout": {
+    "proxyUrl": "https://api.contactout.com",
+    "allProxyUrls": [
+      "https://api.contactout.com"
+    ],
+    "auth": {
+      "apiKey": "contactout"
+    }
+  },
+  "employment-hero": {
+    "proxyUrl": "https://api.employmenthero.com/api",
+    "allProxyUrls": [
+      "https://api.employmenthero.com/api"
+    ],
+    "auth": {
+      "oauth2": "employment-hero"
+    }
+  },
+  "ebay": {
+    "proxyUrl": "https://api.ebay.com/",
+    "allProxyUrls": [
+      "https://api.ebay.com/"
+    ],
+    "auth": {
+      "oauth2": "ebay"
+    }
+  },
+  "ebay-sandbox": {
+    "proxyUrl": "https://api.sandbox.ebay.com/",
+    "allProxyUrls": [
+      "https://api.sandbox.ebay.com/"
+    ],
+    "auth": {
+      "oauth2": "ebay-sandbox"
+    }
+  },
+  "easypost": {
+    "proxyUrl": "https://api.easypost.com",
+    "allProxyUrls": [
+      "https://api.easypost.com"
+    ],
+    "auth": {
+      "basic": "easypost"
+    }
+  },
+  "e-conomic": {
+    "proxyUrl": "https://restapi.e-conomic.com",
+    "allProxyUrls": [
+      "https://restapi.e-conomic.com"
+    ],
+    "auth": {
+      "basic": "e-conomic"
+    }
+  },
+  "egnyte": {
+    "proxyUrl": "https://${connectionConfig.subdomain}.egnyte.com/pubapi",
+    "allProxyUrls": [
+      "https://${connectionConfig.subdomain}.egnyte.com/pubapi"
+    ],
+    "auth": {
+      "oauth2": "egnyte"
+    }
+  },
+  "elevenlabs": {
+    "proxyUrl": "https://api.elevenlabs.io",
+    "allProxyUrls": [
+      "https://api.elevenlabs.io"
+    ],
+    "auth": {
+      "apiKey": "elevenlabs"
+    }
+  },
+  "elevio": {
+    "proxyUrl": "https://api.elev.io",
+    "allProxyUrls": [
+      "https://api.elev.io"
+    ],
+    "auth": {
+      "apiKey": "elevio"
+    }
+  },
+  "entrata": {
+    "proxyUrl": "https://${connectionConfig.subdomain}.entrata.com",
+    "allProxyUrls": [
+      "https://${connectionConfig.subdomain}.entrata.com"
+    ],
+    "auth": {
+      "basic": "entrata"
+    }
+  },
+  "envoy": {
+    "proxyUrl": "https://api.envoy.com",
+    "allProxyUrls": [
+      "https://api.envoy.com"
+    ],
+    "auth": {
+      "oauth2": "envoy"
+    }
+  },
+  "epc-gov-uk": {
+    "proxyUrl": "https://api.get-energy-performance-data.communities.gov.uk",
+    "allProxyUrls": [
+      "https://api.get-energy-performance-data.communities.gov.uk"
+    ],
+    "auth": {
+      "apiKey": "epc-gov-uk"
+    }
+  },
+  "epic-games": {
+    "proxyUrl": "https://api.epicgames.dev",
+    "allProxyUrls": [
+      "https://api.epicgames.dev"
+    ],
+    "auth": {
+      "oauth2": "epic-games"
+    }
+  },
+  "evaluagent": {
+    "proxyUrl": "https://${connectionConfig.region}.evaluagent.com",
+    "allProxyUrls": [
+      "https://${connectionConfig.region}.evaluagent.com"
+    ],
+    "auth": {
+      "basic": "evaluagent"
+    }
+  },
+  "eventbrite": {
+    "proxyUrl": "https://www.eventbriteapi.com",
+    "allProxyUrls": [
+      "https://www.eventbriteapi.com"
+    ],
+    "auth": {
+      "oauth2": "eventbrite"
+    }
+  },
+  "etsy": {
+    "proxyUrl": "https://api.etsy.com",
+    "allProxyUrls": [
+      "https://api.etsy.com"
+    ],
+    "auth": {
+      "oauth2": "etsy"
+    }
+  },
+  "exa": {
+    "proxyUrl": "https://api.exa.ai",
+    "allProxyUrls": [
+      "https://api.exa.ai"
+    ],
+    "auth": {
+      "apiKey": "exa"
+    }
+  },
+  "exact-online": {
+    "proxyUrl": "https://start.exactonline.${connectionConfig.extension}/",
+    "allProxyUrls": [
+      "https://start.exactonline.${connectionConfig.extension}/"
+    ],
+    "auth": {
+      "oauth2": "exact-online"
+    }
+  },
+  "exist": {
+    "proxyUrl": "https://exist.io/",
+    "allProxyUrls": [
+      "https://exist.io/"
+    ],
+    "auth": {
+      "oauth2": "exist"
+    }
+  },
+  "expensify": {
+    "proxyUrl": "https://integrations.expensify.com/Integration-Server/",
+    "allProxyUrls": [
+      "https://integrations.expensify.com/Integration-Server/"
+    ],
+    "auth": {
+      "basic": "expensify"
+    }
+  },
+  "factorial": {
+    "proxyUrl": "https://api.factorialhr.com/api",
+    "allProxyUrls": [
+      "https://api.factorialhr.com/api"
+    ],
+    "auth": {
+      "oauth2": "factorial"
+    }
+  },
+  "fairing": {
+    "proxyUrl": "https://app.fairing.co/api",
+    "allProxyUrls": [
+      "https://app.fairing.co/api"
+    ],
+    "auth": {
+      "apiKey": "fairing"
+    }
+  },
+  "facebook": {
+    "proxyUrl": "https://graph.facebook.com",
+    "allProxyUrls": [
+      "https://graph.facebook.com"
+    ],
+    "auth": {
+      "oauth2": "facebook"
+    }
+  },
+  "fanvue": {
+    "proxyUrl": "https://api.fanvue.com",
+    "allProxyUrls": [
+      "https://api.fanvue.com"
+    ],
+    "auth": {
+      "oauth2": "fanvue"
+    }
+  },
+  "fiber-ai": {
+    "proxyUrl": "https://api.fiber.ai",
+    "allProxyUrls": [
+      "https://api.fiber.ai"
+    ],
+    "auth": {
+      "apiKey": "fiber-ai"
+    }
+  },
+  "fathom": {
+    "proxyUrl": "https://api.fathom.ai",
+    "allProxyUrls": [
+      "https://api.fathom.ai",
+      "https://api.fathom.ai"
+    ],
+    "auth": {
+      "apiKey": "fathom",
+      "oauth2": "fathom-oauth"
+    }
+  },
+  "fellow": {
+    "proxyUrl": "https://${connectionConfig.subdomain}.fellow.app/api",
+    "allProxyUrls": [
+      "https://${connectionConfig.subdomain}.fellow.app/api"
+    ],
+    "auth": {
+      "apiKey": "fellow"
+    }
+  },
+  "fern": {
+    "proxyUrl": "https://${connectionConfig.baseUrl}",
+    "allProxyUrls": [
+      "https://${connectionConfig.baseUrl}"
+    ],
+    "auth": {
+      "apiKey": "fern"
+    }
+  },
+  "freeagent": {
+    "proxyUrl": "https://api.freeagent.com",
+    "allProxyUrls": [
+      "https://api.freeagent.com"
+    ],
+    "auth": {
+      "oauth2": "freeagent"
+    }
+  },
+  "freeagent-sandbox": {
+    "proxyUrl": "https://api.sandbox.freeagent.com",
+    "allProxyUrls": [
+      "https://api.sandbox.freeagent.com"
+    ],
+    "auth": {
+      "oauth2": "freeagent-sandbox"
+    }
+  },
+  "freepik": {
+    "proxyUrl": "https://api.freepik.com",
+    "allProxyUrls": [
+      "https://api.freepik.com"
+    ],
+    "auth": {
+      "apiKey": "freepik"
+    }
+  },
+  "figma": {
+    "proxyUrl": "https://api.figma.com",
+    "allProxyUrls": [
+      "https://api.figma.com"
+    ],
+    "auth": {
+      "oauth2": "figma"
+    }
+  },
+  "figma-scim": {
+    "proxyUrl": "https://${connectionConfig.host}/scim/v2/${connectionConfig.tenantId}",
+    "allProxyUrls": [
+      "https://${connectionConfig.host}/scim/v2/${connectionConfig.tenantId}"
+    ],
+    "auth": {
+      "apiKey": "figma-scim"
+    }
+  },
+  "falai": {
+    "proxyUrl": "https://queue.fal.run",
+    "allProxyUrls": [
+      "https://queue.fal.run"
+    ],
+    "auth": {
+      "apiKey": "falai"
+    }
+  },
+  "findymail": {
+    "proxyUrl": "https://app.findymail.com",
+    "allProxyUrls": [
+      "https://app.findymail.com"
+    ],
+    "auth": {
+      "apiKey": "findymail"
+    }
+  },
+  "fireflies": {
+    "proxyUrl": "https://api.fireflies.ai",
+    "allProxyUrls": [
+      "https://api.fireflies.ai"
+    ],
+    "auth": {
+      "apiKey": "fireflies"
+    }
+  },
+  "firstbase": {
+    "proxyUrl": "https://apipub.firstbasehq.com",
+    "allProxyUrls": [
+      "https://apipub.firstbasehq.com"
+    ],
+    "auth": {
+      "apiKey": "firstbase"
+    }
+  },
+  "fiserv": {
+    "proxyUrl": "https://prod.emea.api.fiservapps.com",
+    "allProxyUrls": [
+      "https://prod.emea.api.fiservapps.com"
+    ],
+    "auth": {
+      "apiKey": "fiserv-api-key"
+    }
+  },
+  "fitbit": {
+    "proxyUrl": "https://api.fitbit.com",
+    "allProxyUrls": [
+      "https://api.fitbit.com"
+    ],
+    "auth": {
+      "oauth2": "fitbit"
+    }
+  },
+  "fillout": {
+    "proxyUrl": "https://${connectionConfig.hostname}",
+    "allProxyUrls": [
+      "https://${connectionConfig.hostname}",
+      "${connectionConfig.base_url}"
+    ],
+    "auth": {
+      "apiKey": "fillout-api-key",
+      "oauth2": "fillout"
+    }
+  },
+  "float": {
+    "proxyUrl": "https://api.float.com",
+    "allProxyUrls": [
+      "https://api.float.com"
+    ],
+    "auth": {
+      "apiKey": "float"
+    }
+  },
+  "folk": {
+    "proxyUrl": "https://api.folk.app",
+    "allProxyUrls": [
+      "https://api.folk.app"
+    ],
+    "auth": {
+      "apiKey": "folk"
+    }
+  },
+  "fortnox": {
+    "proxyUrl": "https://api.fortnox.se/3",
+    "allProxyUrls": [
+      "https://api.fortnox.se/3"
+    ],
+    "auth": {
+      "oauth2": "fortnox"
+    }
+  },
+  "freshbooks": {
+    "proxyUrl": "https://api.freshbooks.com",
+    "allProxyUrls": [
+      "https://api.freshbooks.com"
+    ],
+    "auth": {
+      "oauth2": "freshbooks"
+    }
+  },
+  "freshdesk": {
+    "proxyUrl": "https://${connectionConfig.subdomain}.freshdesk.com",
+    "allProxyUrls": [
+      "https://${connectionConfig.subdomain}.freshdesk.com"
+    ],
+    "auth": {
+      "basic": "freshdesk"
+    }
+  },
+  "freshsales": {
+    "proxyUrl": "https://${connectionConfig.bundleAlias} || https://${connectionConfig.subdomain}.freshsales.io",
+    "allProxyUrls": [
+      "https://${connectionConfig.bundleAlias} || https://${connectionConfig.subdomain}.freshsales.io"
+    ],
+    "auth": {
+      "apiKey": "freshsales"
+    }
+  },
+  "freshservice": {
+    "proxyUrl": "https://${connectionConfig.subdomain}.freshservice.com",
+    "allProxyUrls": [
+      "https://${connectionConfig.subdomain}.freshservice.com"
+    ],
+    "auth": {
+      "basic": "freshservice"
+    }
+  },
+  "freshteam": {
+    "proxyUrl": "https://${connectionConfig.accountName}.freshteam.com",
+    "allProxyUrls": [
+      "https://${connectionConfig.accountName}.freshteam.com"
+    ],
+    "auth": {
+      "apiKey": "freshteam"
+    }
+  },
+  "freshworks": {
+    "proxyUrl": "https://${connectionConfig.bundleAlias}",
+    "allProxyUrls": [
+      "https://${connectionConfig.bundleAlias}"
+    ],
+    "auth": {
+      "oauth2": "freshworks"
+    }
+  },
+  "front": {
+    "proxyUrl": "https://api2.frontapp.com",
+    "allProxyUrls": [
+      "https://api2.frontapp.com",
+      "https://api2.frontapp.com"
+    ],
+    "auth": {
+      "oauth2": "front",
+      "apiKey": "front-api-key"
+    }
+  },
+  "fullenrich": {
+    "proxyUrl": "https://app.fullenrich.com/api",
+    "allProxyUrls": [
+      "https://app.fullenrich.com/api"
+    ],
+    "auth": {
+      "apiKey": "fullenrich"
+    }
+  },
+  "google-gemini": {
+    "proxyUrl": "https://generativelanguage.googleapis.com",
+    "allProxyUrls": [
+      "https://generativelanguage.googleapis.com"
+    ],
+    "auth": {
+      "apiKey": "google-gemini"
+    }
+  },
+  "gem": {
+    "proxyUrl": "https://api.gem.com",
+    "allProxyUrls": [
+      "https://api.gem.com"
+    ],
+    "auth": {
+      "apiKey": "gem"
+    }
+  },
+  "gerrit": {
+    "proxyUrl": "https://${connectionConfig.host}",
+    "allProxyUrls": [
+      "https://${connectionConfig.host}"
+    ],
+    "auth": {
+      "basic": "gerrit"
+    }
+  },
+  "getty-images": {
+    "proxyUrl": "https://api.gettyimages.com",
+    "allProxyUrls": [
+      "https://api.gettyimages.com"
+    ],
+    "auth": {
+      "oauth2": "getty-images"
+    }
+  },
+  "grammarly-scim": {
+    "proxyUrl": "https://sso.grammarly.com",
+    "allProxyUrls": [
+      "https://sso.grammarly.com"
+    ],
+    "auth": {
+      "apiKey": "grammarly-scim"
+    }
+  },
+  "granola": {
+    "proxyUrl": "https://public-api.granola.ai",
+    "allProxyUrls": [
+      "https://public-api.granola.ai"
+    ],
+    "auth": {
+      "apiKey": "granola"
+    }
+  },
+  "guru": {
+    "proxyUrl": "https://api.getguru.com/api/v1",
+    "allProxyUrls": [
+      "https://api.getguru.com/api/v1"
+    ],
+    "auth": {
+      "basic": "guru"
+    }
+  },
+  "guru-scim": {
+    "proxyUrl": "https://api.getguru.com/api/scim",
+    "allProxyUrls": [
+      "https://api.getguru.com/api/scim"
+    ],
+    "auth": {
+      "basic": "guru-scim"
+    }
+  },
+  "github": {
+    "proxyUrl": "https://api.github.com",
+    "allProxyUrls": [
+      "https://api.github.com"
+    ],
+    "auth": {
+      "oauth2": "github"
+    }
+  },
+  "github-app": {
+    "proxyUrl": "",
+    "allProxyUrls": [
+      ""
+    ],
+    "auth": {
+      "apiKey": "github-app"
+    }
+  },
+  "github-pat": {
+    "proxyUrl": "https://api.github.com",
+    "allProxyUrls": [
+      "https://api.github.com"
+    ],
+    "auth": {
+      "apiKey": "github-pat"
+    }
+  },
+  "gitlab": {
+    "proxyUrl": "https://gitlab.com",
+    "allProxyUrls": [
+      "https://gitlab.com"
+    ],
+    "auth": {
+      "oauth2": "gitlab"
+    }
+  },
+  "gitlab-pat": {
+    "proxyUrl": "https://${connectionConfig.hostname}",
+    "allProxyUrls": [
+      "https://${connectionConfig.hostname}"
+    ],
+    "auth": {
+      "apiKey": "gitlab-pat"
+    }
+  },
+  "ghost-content": {
+    "proxyUrl": "https://${connectionConfig.adminDomain}/ghost/api/content/",
+    "allProxyUrls": [
+      "https://${connectionConfig.adminDomain}/ghost/api/content/"
+    ],
+    "auth": {
+      "apiKey": "ghost-content"
+    }
+  },
+  "gong": {
+    "proxyUrl": "https://api.gong.io",
+    "allProxyUrls": [
+      "https://api.gong.io",
+      "${connectionConfig.api_base_url_for_customer} || https://api.gong.io"
+    ],
+    "auth": {
+      "basic": "gong",
+      "oauth2": "gong-oauth"
+    }
+  },
+  "glyphic": {
+    "proxyUrl": "https://api.glyphic.ai",
+    "allProxyUrls": [
+      "https://api.glyphic.ai"
+    ],
+    "auth": {
+      "apiKey": "glyphic"
+    }
+  },
+  "gamma": {
+    "proxyUrl": "https://public-api.gamma.app",
+    "allProxyUrls": [
+      "https://public-api.gamma.app"
+    ],
+    "auth": {
+      "apiKey": "gamma"
+    }
+  },
+  "google": {
+    "proxyUrl": "https://www.googleapis.com",
+    "allProxyUrls": [
+      "https://www.googleapis.com"
+    ],
+    "auth": {
+      "oauth2": "google"
+    }
+  },
+  "google-maps": {
+    "proxyUrl": "https://maps.googleapis.com",
+    "allProxyUrls": [
+      "https://maps.googleapis.com"
+    ],
+    "auth": {
+      "apiKey": "google-maps"
+    }
+  },
+  "google-play": {
+    "proxyUrl": "https://play.googleapis.com",
+    "allProxyUrls": [
+      "https://play.googleapis.com"
+    ],
+    "auth": {
+      "oauth2": "google-play"
+    }
+  },
+  "gorgias": {
+    "proxyUrl": "https://${connectionConfig.subdomain}.gorgias.com",
+    "allProxyUrls": [
+      "https://${connectionConfig.subdomain}.gorgias.com",
+      "https://${connectionConfig.subdomain}.gorgias.com"
+    ],
+    "auth": {
+      "oauth2": "gorgias",
+      "basic": "gorgias-basic"
+    }
+  },
+  "grafana": {
+    "proxyUrl": "https://${connectionConfig.domain}",
+    "allProxyUrls": [
+      "https://${connectionConfig.domain}"
+    ],
+    "auth": {
+      "apiKey": "grafana"
+    }
+  },
+  "grain": {
+    "proxyUrl": "https://api.grain.com",
+    "allProxyUrls": [
+      "https://api.grain.com",
+      "https://api.grain.com"
+    ],
+    "auth": {
+      "oauth2": "grain",
+      "apiKey": "grain-api-key"
+    }
+  },
+  "greenhouse": {
+    "proxyUrl": "https://${connectionConfig.resource}.greenhouse.io",
+    "allProxyUrls": [
+      "https://${connectionConfig.resource}.greenhouse.io",
+      "https://${connectionConfig.resource}.greenhouse.io"
+    ],
+    "auth": {
+      "oauth2": "greenhouse",
+      "basic": "greenhouse-basic"
+    }
+  },
+  "greenhouse-harvest": {
+    "proxyUrl": "https://harvest.greenhouse.io",
+    "allProxyUrls": [
+      "https://harvest.greenhouse.io"
+    ],
+    "auth": {
+      "basic": "greenhouse-harvest"
+    }
+  },
+  "greenhouse-harvest-partner": {
+    "proxyUrl": "https://harvest.greenhouse.io",
+    "allProxyUrls": [
+      "https://harvest.greenhouse.io"
+    ],
+    "auth": {
+      "oauth2": "greenhouse-harvest-partner"
+    }
+  },
+  "greenhouse-job-board": {
+    "proxyUrl": "https://boards-api.greenhouse.io",
+    "allProxyUrls": [
+      "https://boards-api.greenhouse.io"
+    ],
+    "auth": {
+      "basic": "greenhouse-job-board"
+    }
+  },
+  "greenhouse-assessment": {
+    "proxyUrl": "https://${connectionConfig.baseUrl}",
+    "allProxyUrls": [
+      "https://${connectionConfig.baseUrl}"
+    ],
+    "auth": {
+      "basic": "greenhouse-assessment"
+    }
+  },
+  "greenhouse-ingestion": {
+    "proxyUrl": "https://api.greenhouse.io",
+    "allProxyUrls": [
+      "https://api.greenhouse.io"
+    ],
+    "auth": {
+      "oauth2": "greenhouse-ingestion"
+    }
+  },
+  "greenhouse-onboarding": {
+    "proxyUrl": "https://onboarding-api.greenhouse.io",
+    "allProxyUrls": [
+      "https://onboarding-api.greenhouse.io"
+    ],
+    "auth": {
+      "basic": "greenhouse-onboarding"
+    }
+  },
+  "grist": {
+    "proxyUrl": "https://${connectionConfig.environment}.getgrist.com",
+    "allProxyUrls": [
+      "https://${connectionConfig.environment}.getgrist.com"
+    ],
+    "auth": {
+      "apiKey": "grist"
+    }
+  },
+  "gumroad": {
+    "proxyUrl": "https://api.gumroad.com",
+    "allProxyUrls": [
+      "https://api.gumroad.com"
+    ],
+    "auth": {
+      "oauth2": "gumroad"
+    }
+  },
+  "gusto": {
+    "proxyUrl": "https://api.gusto.com",
+    "allProxyUrls": [
+      "https://api.gusto.com"
+    ],
+    "auth": {
+      "oauth2": "gusto"
+    }
+  },
+  "gusto-demo": {
+    "proxyUrl": "https://api.gusto-demo.com",
+    "allProxyUrls": [
+      "https://api.gusto-demo.com"
+    ],
+    "auth": {
+      "oauth2": "gusto-demo"
+    }
+  },
+  "hackerrank-work": {
+    "proxyUrl": "https://www.hackerrank.com",
+    "allProxyUrls": [
+      "https://www.hackerrank.com"
+    ],
+    "auth": {
+      "basic": "hackerrank-work"
+    }
+  },
+  "harvest": {
+    "proxyUrl": "https://api.harvestapp.com",
+    "allProxyUrls": [
+      "https://api.harvestapp.com"
+    ],
+    "auth": {
+      "oauth2": "harvest"
+    }
+  },
+  "health-gorilla": {
+    "proxyUrl": "https://healthgorilla.com",
+    "allProxyUrls": [
+      "https://healthgorilla.com"
+    ],
+    "auth": {
+      "oauth2": "health-gorilla"
+    }
+  },
+  "hex": {
+    "proxyUrl": "https://${connectionConfig.subdomain}.hex.tech/api",
+    "allProxyUrls": [
+      "https://${connectionConfig.subdomain}.hex.tech/api"
+    ],
+    "auth": {
+      "apiKey": "hex"
+    }
+  },
+  "heyreach": {
+    "proxyUrl": "https://api.heyreach.io/api",
+    "allProxyUrls": [
+      "https://api.heyreach.io/api"
+    ],
+    "auth": {
+      "apiKey": "heyreach"
+    }
+  },
+  "hibob-service-user": {
+    "proxyUrl": "https://api.hibob.com",
+    "allProxyUrls": [
+      "https://api.hibob.com"
+    ],
+    "auth": {
+      "basic": "hibob-service-user"
+    }
+  },
+  "heygen": {
+    "proxyUrl": "https://api2.heygen.com",
+    "allProxyUrls": [
+      "https://api2.heygen.com"
+    ],
+    "auth": {
+      "oauth2": "heygen"
+    }
+  },
+  "highlevel": {
+    "proxyUrl": "https://services.leadconnectorhq.com",
+    "allProxyUrls": [
+      "https://services.leadconnectorhq.com"
+    ],
+    "auth": {
+      "oauth2": "highlevel"
+    }
+  },
+  "highlevel-white-label": {
+    "proxyUrl": "https://services.leadconnectorhq.com",
+    "allProxyUrls": [
+      "https://services.leadconnectorhq.com"
+    ],
+    "auth": {
+      "oauth2": "highlevel-white-label"
+    }
+  },
+  "holded": {
+    "proxyUrl": "https://api.holded.com/api",
+    "allProxyUrls": [
+      "https://api.holded.com/api"
+    ],
+    "auth": {
+      "apiKey": "holded"
+    }
+  },
+  "hover": {
+    "proxyUrl": "https://api.hover.to",
+    "allProxyUrls": [
+      "https://api.hover.to"
+    ],
+    "auth": {
+      "oauth2": "hover"
+    }
+  },
+  "huntress": {
+    "proxyUrl": "https://api.huntress.io",
+    "allProxyUrls": [
+      "https://api.huntress.io"
+    ],
+    "auth": {
+      "basic": "huntress"
+    }
+  },
+  "hubspot": {
+    "proxyUrl": "https://api.hubapi.com",
+    "allProxyUrls": [
+      "https://api.hubapi.com"
+    ],
+    "auth": {
+      "oauth2": "hubspot"
+    }
+  },
+  "incident-io": {
+    "proxyUrl": "https://api.incident.io",
+    "allProxyUrls": [
+      "https://api.incident.io"
+    ],
+    "auth": {
+      "apiKey": "incident-io"
+    }
+  },
+  "insightly": {
+    "proxyUrl": "https://api.${connectionConfig.pod}.insightly.com",
+    "allProxyUrls": [
+      "https://api.${connectionConfig.pod}.insightly.com"
+    ],
+    "auth": {
+      "basic": "insightly"
+    }
+  },
+  "instantly": {
+    "proxyUrl": "https://api.instantly.ai/api",
+    "allProxyUrls": [
+      "https://api.instantly.ai/api"
+    ],
+    "auth": {
+      "apiKey": "instantly"
+    }
+  },
+  "instagram": {
+    "proxyUrl": "https://graph.instagram.com",
+    "allProxyUrls": [
+      "https://graph.instagram.com"
+    ],
+    "auth": {
+      "oauth2": "instagram"
+    }
+  },
+  "icypeas": {
+    "proxyUrl": "https://app.icypeas.com/api",
+    "allProxyUrls": [
+      "https://app.icypeas.com/api"
+    ],
+    "auth": {
+      "apiKey": "icypeas"
+    }
+  },
+  "itglue": {
+    "proxyUrl": "https://${connectionConfig.subdomain}.itglue.com",
+    "allProxyUrls": [
+      "https://${connectionConfig.subdomain}.itglue.com"
+    ],
+    "auth": {
+      "apiKey": "itglue"
+    }
+  },
+  "intercom": {
+    "proxyUrl": "https://api.${connectionConfig.region}.intercom.io || https://api.intercom.io",
+    "allProxyUrls": [
+      "https://api.${connectionConfig.region}.intercom.io || https://api.intercom.io"
+    ],
+    "auth": {
+      "oauth2": "intercom"
+    }
+  },
+  "intuit": {
+    "proxyUrl": "https://quickbooks.api.intuit.com",
+    "allProxyUrls": [
+      "https://quickbooks.api.intuit.com"
+    ],
+    "auth": {
+      "oauth2": "intuit"
+    }
+  },
+  "ironclad": {
+    "proxyUrl": "https://${connectionConfig.subdomain}.ironcladapp.com",
+    "allProxyUrls": [
+      "https://${connectionConfig.subdomain}.ironcladapp.com"
+    ],
+    "auth": {
+      "oauth2": "ironclad"
+    }
+  },
+  "jazzhr": {
+    "proxyUrl": "https://api.resumatorapi.com",
+    "allProxyUrls": [
+      "https://api.resumatorapi.com"
+    ],
+    "auth": {
+      "apiKey": "jazzhr"
+    }
+  },
+  "jiminny": {
+    "proxyUrl": "https://app.jiminny.${connectionConfig.region}/customer/api",
+    "allProxyUrls": [
+      "https://app.jiminny.${connectionConfig.region}/customer/api"
+    ],
+    "auth": {
+      "apiKey": "jiminny"
+    }
+  },
+  "jira": {
+    "proxyUrl": "https://api.atlassian.com",
+    "allProxyUrls": [
+      "https://api.atlassian.com",
+      "https://${connectionConfig.subdomain}.atlassian.net"
+    ],
+    "auth": {
+      "oauth2": "jira",
+      "basic": "jira-basic"
+    }
+  },
+  "justworks": {
+    "proxyUrl": "https://public-api.justworks.com",
+    "allProxyUrls": [
+      "https://public-api.justworks.com"
+    ],
+    "auth": {
+      "oauth2": "justworks"
+    }
+  },
+  "jira-data-center": {
+    "proxyUrl": "https://${connectionConfig.endpointURL}/rest/api/latest",
+    "allProxyUrls": [
+      "https://${connectionConfig.endpointURL}/rest/api/latest",
+      "${connectionConfig.baseUrl}",
+      "${connectionConfig.baseUrl}"
+    ],
+    "auth": {
+      "oauth2": "jira-data-center",
+      "apiKey": "jira-data-center-api-key",
+      "basic": "jira-data-center-basic"
+    }
+  },
+  "jobadder": {
+    "proxyUrl": "https://api.jobadder.com",
+    "allProxyUrls": [
+      "https://api.jobadder.com"
+    ],
+    "auth": {
+      "oauth2": "jobadder"
+    }
+  },
+  "jobber": {
+    "proxyUrl": "https://api.getjobber.com/api",
+    "allProxyUrls": [
+      "https://api.getjobber.com/api"
+    ],
+    "auth": {
+      "oauth2": "jobber"
+    }
+  },
+  "jobvite": {
+    "proxyUrl": "https://api.jobvite.com/api",
+    "allProxyUrls": [
+      "https://api.jobvite.com/api"
+    ],
+    "auth": {
+      "apiKey": "jobvite"
+    }
+  },
+  "jotform": {
+    "proxyUrl": "https://api.jotform.com",
+    "allProxyUrls": [
+      "https://api.jotform.com"
+    ],
+    "auth": {
+      "apiKey": "jotform"
+    }
+  },
+  "jumpcloud": {
+    "proxyUrl": "https://console.jumpcloud.com/api",
+    "allProxyUrls": [
+      "https://console.jumpcloud.com/api"
+    ],
+    "auth": {
+      "apiKey": "jumpcloud"
+    }
+  },
+  "helpscout-docs": {
+    "proxyUrl": "https://docsapi.helpscout.net",
+    "allProxyUrls": [
+      "https://docsapi.helpscout.net"
+    ],
+    "auth": {
+      "basic": "helpscout-docs"
+    }
+  },
+  "helpscout-mailbox": {
+    "proxyUrl": "https://api.helpscout.net",
+    "allProxyUrls": [
+      "https://api.helpscout.net"
+    ],
+    "auth": {
+      "oauth2": "helpscout-mailbox"
+    }
+  },
+  "kandji": {
+    "proxyUrl": "https://${connectionConfig.subdomain}.kandji.io",
+    "allProxyUrls": [
+      "https://${connectionConfig.subdomain}.kandji.io"
+    ],
+    "auth": {
+      "apiKey": "kandji"
+    }
+  },
+  "keap": {
+    "proxyUrl": "https://api.infusionsoft.com",
+    "allProxyUrls": [
+      "https://api.infusionsoft.com"
+    ],
+    "auth": {
+      "oauth2": "keap"
+    }
+  },
+  "keeper-scim": {
+    "proxyUrl": "https://keepersecurity.com/api/rest/scim/v2/${connectionConfig.node}",
+    "allProxyUrls": [
+      "https://keepersecurity.com/api/rest/scim/v2/${connectionConfig.node}"
+    ],
+    "auth": {
+      "apiKey": "keeper-scim"
+    }
+  },
+  "kintone": {
+    "proxyUrl": "https://${connectionConfig.subdomain}.kintone.com",
+    "allProxyUrls": [
+      "https://${connectionConfig.subdomain}.kintone.com"
+    ],
+    "auth": {
+      "oauth2": "kintone"
+    }
+  },
+  "kintone-user-api": {
+    "proxyUrl": "https://${connectionConfig.subdomain}.kintone.com",
+    "allProxyUrls": [
+      "https://${connectionConfig.subdomain}.kintone.com"
+    ],
+    "auth": {
+      "apiKey": "kintone-user-api"
+    }
+  },
+  "knowbe4": {
+    "proxyUrl": "https://${connectionConfig.subdomain}.knowbe4.com",
+    "allProxyUrls": [
+      "https://${connectionConfig.subdomain}.knowbe4.com"
+    ],
+    "auth": {
+      "apiKey": "knowbe4"
+    }
+  },
+  "klipfolio": {
+    "proxyUrl": "https://app.klipfolio.com",
+    "allProxyUrls": [
+      "https://app.klipfolio.com"
+    ],
+    "auth": {
+      "apiKey": "klipfolio"
+    }
+  },
+  "klaviyo": {
+    "proxyUrl": "https://a.klaviyo.com",
+    "allProxyUrls": [
+      "https://a.klaviyo.com",
+      "https://a.klaviyo.com"
+    ],
+    "auth": {
+      "apiKey": "klaviyo",
+      "oauth2": "klaviyo-oauth"
+    }
+  },
+  "klicktipp": {
+    "proxyUrl": "https://api.klicktipp.com",
+    "allProxyUrls": [
+      "https://api.klicktipp.com"
+    ],
+    "auth": {
+      "apiKey": "klicktipp"
+    }
+  },
+  "kustomer": {
+    "proxyUrl": "https://${connectionConfig.extension}.kustomerapp.com",
+    "allProxyUrls": [
+      "https://${connectionConfig.extension}.kustomerapp.com"
+    ],
+    "auth": {
+      "apiKey": "kustomer"
+    }
+  },
+  "lagrowthmachine": {
+    "proxyUrl": "https://apiv2.lagrowthmachine.com",
+    "allProxyUrls": [
+      "https://apiv2.lagrowthmachine.com"
+    ],
+    "auth": {
+      "apiKey": "lagrowthmachine"
+    }
+  },
+  "lastpass": {
+    "proxyUrl": "https://lastpass.com",
+    "allProxyUrls": [
+      "https://lastpass.com"
+    ],
+    "auth": {
+      "basic": "lastpass"
+    }
+  },
+  "lattice": {
+    "proxyUrl": "https://api.latticehq.com/",
+    "allProxyUrls": [
+      "https://api.latticehq.com/"
+    ],
+    "auth": {
+      "apiKey": "lattice"
+    }
+  },
+  "leadmagic": {
+    "proxyUrl": "https://api.leadmagic.io",
+    "allProxyUrls": [
+      "https://api.leadmagic.io"
+    ],
+    "auth": {
+      "apiKey": "leadmagic"
+    }
+  },
+  "lessonly": {
+    "proxyUrl": "https://api.lessonly.com/api",
+    "allProxyUrls": [
+      "https://api.lessonly.com/api"
+    ],
+    "auth": {
+      "basic": "lessonly"
+    }
+  },
+  "lemlist": {
+    "proxyUrl": "https://api.lemlist.com",
+    "allProxyUrls": [
+      "https://api.lemlist.com"
+    ],
+    "auth": {
+      "basic": "lemlist"
+    }
+  },
+  "lever": {
+    "proxyUrl": "https://api.lever.co",
+    "allProxyUrls": [
+      "https://api.lever.co",
+      "https://api.lever.co"
+    ],
+    "auth": {
+      "oauth2": "lever",
+      "basic": "lever-basic"
+    }
+  },
+  "lever-sandbox": {
+    "proxyUrl": "https://api.sandbox.lever.co",
+    "allProxyUrls": [
+      "https://api.sandbox.lever.co",
+      "https://api.sandbox.lever.co"
+    ],
+    "auth": {
+      "oauth2": "lever-sandbox",
+      "basic": "lever-basic-sandbox"
+    }
+  },
+  "lightspeed-retail": {
+    "proxyUrl": "https://${connectionConfig.domain_prefix}.retail.lightspeed.app",
+    "allProxyUrls": [
+      "https://${connectionConfig.domain_prefix}.retail.lightspeed.app"
+    ],
+    "auth": {
+      "oauth2": "lightspeed-retail"
+    }
+  },
+  "linear": {
+    "proxyUrl": "https://api.linear.app",
+    "allProxyUrls": [
+      "https://api.linear.app"
+    ],
+    "auth": {
+      "oauth2": "linear"
+    }
+  },
+  "linkedin": {
+    "proxyUrl": "https://api.linkedin.com",
+    "allProxyUrls": [
+      "https://api.linkedin.com"
+    ],
+    "auth": {
+      "oauth2": "linkedin"
+    }
+  },
+  "linkhut": {
+    "proxyUrl": "https://api.ln.ht",
+    "allProxyUrls": [
+      "https://api.ln.ht"
+    ],
+    "auth": {
+      "oauth2": "linkhut"
+    }
+  },
+  "lokalise": {
+    "proxyUrl": "https://api.lokalise.com/api2",
+    "allProxyUrls": [
+      "https://api.lokalise.com/api2"
+    ],
+    "auth": {
+      "oauth2": "lokalise"
+    }
+  },
+  "loom-scim": {
+    "proxyUrl": "https://${connectionConfig.domain}/scim",
+    "allProxyUrls": [
+      "https://${connectionConfig.domain}/scim"
+    ],
+    "auth": {
+      "apiKey": "loom-scim"
+    }
+  },
+  "loops-so": {
+    "proxyUrl": "https://app.loops.so/api",
+    "allProxyUrls": [
+      "https://app.loops.so/api"
+    ],
+    "auth": {
+      "apiKey": "loops-so"
+    }
+  },
+  "loop-returns": {
+    "proxyUrl": "https://api.loopreturns.com/api",
+    "allProxyUrls": [
+      "https://api.loopreturns.com/api"
+    ],
+    "auth": {
+      "apiKey": "loop-returns"
+    }
+  },
+  "looker": {
+    "proxyUrl": "https://${connectionConfig.apiHostname}/api",
+    "allProxyUrls": [
+      "https://${connectionConfig.apiHostname}/api"
+    ],
+    "auth": {
+      "oauth2": "looker-oauth"
+    }
+  },
+  "lucid-scim": {
+    "proxyUrl": "https://users.lucid.app/scim",
+    "allProxyUrls": [
+      "https://users.lucid.app/scim"
+    ],
+    "auth": {
+      "apiKey": "lucid-scim"
+    }
+  },
+  "luma": {
+    "proxyUrl": "https://api.lu.ma",
+    "allProxyUrls": [
+      "https://api.lu.ma"
+    ],
+    "auth": {
+      "apiKey": "luma"
+    }
+  },
+  "lumos": {
+    "proxyUrl": "https://api.lumos.com",
+    "allProxyUrls": [
+      "https://api.lumos.com"
+    ],
+    "auth": {
+      "apiKey": "lumos"
+    }
+  },
+  "listmonk": {
+    "proxyUrl": "https://${connectionConfig.domain}/api",
+    "allProxyUrls": [
+      "https://${connectionConfig.domain}/api"
+    ],
+    "auth": {
+      "basic": "listmonk"
+    }
+  },
+  "lob": {
+    "proxyUrl": "https://api.lob.com",
+    "allProxyUrls": [
+      "https://api.lob.com"
+    ],
+    "auth": {
+      "basic": "lob"
+    }
+  },
+  "make": {
+    "proxyUrl": "https://${connectionConfig.environmentUrl}/api/v2",
+    "allProxyUrls": [
+      "https://${connectionConfig.environmentUrl}/api/v2"
+    ],
+    "auth": {
+      "apiKey": "make"
+    }
+  },
+  "mailgun": {
+    "proxyUrl": "https://${connectionConfig.region}.mailgun.net",
+    "allProxyUrls": [
+      "https://${connectionConfig.region}.mailgun.net"
+    ],
+    "auth": {
+      "basic": "mailgun"
+    }
+  },
+  "mailchimp": {
+    "proxyUrl": "https://${connectionConfig.dc}.api.mailchimp.com",
+    "allProxyUrls": [
+      "https://${connectionConfig.dc}.api.mailchimp.com"
+    ],
+    "auth": {
+      "oauth2": "mailchimp"
+    }
+  },
+  "mailjet": {
+    "proxyUrl": "https://api.mailjet.com",
+    "allProxyUrls": [
+      "https://api.mailjet.com"
+    ],
+    "auth": {
+      "basic": "mailjet"
+    }
+  },
+  "manatal": {
+    "proxyUrl": "https://api.manatal.com/open/v3",
+    "allProxyUrls": [
+      "https://api.manatal.com/open/v3"
+    ],
+    "auth": {
+      "apiKey": "manatal"
+    }
+  },
+  "metabase": {
+    "proxyUrl": "https://${connectionConfig.hostname} || https://${connectionConfig.domain}.com",
+    "allProxyUrls": [
+      "https://${connectionConfig.hostname} || https://${connectionConfig.domain}.com"
+    ],
+    "auth": {
+      "apiKey": "metabase"
+    }
+  },
+  "mercury": {
+    "proxyUrl": "https://api.mercury.com",
+    "allProxyUrls": [
+      "https://api.mercury.com"
+    ],
+    "auth": {
+      "oauth2": "mercury"
+    }
+  },
+  "microsoft": {
+    "proxyUrl": "https://graph.microsoft.com",
+    "allProxyUrls": [
+      "https://graph.microsoft.com"
+    ],
+    "auth": {
+      "oauth2": "microsoft"
+    }
+  },
+  "microsoft-admin": {
+    "proxyUrl": "https://graph.microsoft.com",
+    "allProxyUrls": [
+      "https://graph.microsoft.com"
+    ],
+    "auth": {
+      "oauth2": "microsoft-admin"
+    }
+  },
+  "microsoft-teams-bot": {
+    "proxyUrl": "https://smba.trafficmanager.net/teams",
+    "allProxyUrls": [
+      "https://smba.trafficmanager.net/teams"
+    ],
+    "auth": {
+      "oauth2": "microsoft-teams-bot"
+    }
+  },
+  "microsoft-tenant-specific": {
+    "proxyUrl": "https://graph.microsoft.com",
+    "allProxyUrls": [
+      "https://graph.microsoft.com"
+    ],
+    "auth": {
+      "oauth2": "microsoft-tenant-specific"
+    }
+  },
+  "maximizer": {
+    "proxyUrl": "https://${connectionConfig.region}.maximizercrmlive.com",
+    "allProxyUrls": [
+      "https://${connectionConfig.region}.maximizercrmlive.com"
+    ],
+    "auth": {
+      "oauth2": "maximizer"
+    }
+  },
+  "maximizer-on-premise": {
+    "proxyUrl": "https://${connectionConfig.hostname}",
+    "allProxyUrls": [
+      "https://${connectionConfig.hostname}"
+    ],
+    "auth": {
+      "oauth2": "maximizer-on-premise"
+    }
+  },
+  "maxio": {
+    "proxyUrl": "https://${connectionConfig.hostname}",
+    "allProxyUrls": [
+      "https://${connectionConfig.hostname}"
+    ],
+    "auth": {
+      "basic": "maxio"
+    }
+  },
+  "mindbody": {
+    "proxyUrl": "https://api.mindbodyonline.com",
+    "allProxyUrls": [
+      "https://api.mindbodyonline.com"
+    ],
+    "auth": {
+      "apiKey": "mindbody"
+    }
+  },
+  "minimax": {
+    "proxyUrl": "https://api.minimaxi.chat",
+    "allProxyUrls": [
+      "https://api.minimaxi.chat"
+    ],
+    "auth": {
+      "apiKey": "minimax"
+    }
+  },
+  "mixpanel": {
+    "proxyUrl": "https://mixpanel.com",
+    "allProxyUrls": [
+      "https://mixpanel.com"
+    ],
+    "auth": {
+      "basic": "mixpanel"
+    }
+  },
+  "miro": {
+    "proxyUrl": "https://api.miro.com",
+    "allProxyUrls": [
+      "https://api.miro.com"
+    ],
+    "auth": {
+      "oauth2": "miro"
+    }
+  },
+  "miro-scim": {
+    "proxyUrl": "https://miro.com/api",
+    "allProxyUrls": [
+      "https://miro.com/api"
+    ],
+    "auth": {
+      "apiKey": "miro-scim"
+    }
+  },
+  "missive": {
+    "proxyUrl": "https://missiveapp.com",
+    "allProxyUrls": [
+      "https://missiveapp.com"
+    ],
+    "auth": {
+      "apiKey": "missive"
+    }
+  },
+  "juniper-mist": {
+    "proxyUrl": "https://${connectionConfig.subdomain}.mist.com",
+    "allProxyUrls": [
+      "https://${connectionConfig.subdomain}.mist.com"
+    ],
+    "auth": {
+      "apiKey": "juniper-mist"
+    }
+  },
+  "monday": {
+    "proxyUrl": "https://api.monday.com",
+    "allProxyUrls": [
+      "https://api.monday.com"
+    ],
+    "auth": {
+      "oauth2": "monday"
+    }
+  },
+  "momentum-io": {
+    "proxyUrl": "https://api.momentum.io",
+    "allProxyUrls": [
+      "https://api.momentum.io"
+    ],
+    "auth": {
+      "apiKey": "momentum-io"
+    }
+  },
+  "modjo-ai": {
+    "proxyUrl": "https://api.modjo.ai",
+    "allProxyUrls": [
+      "https://api.modjo.ai"
+    ],
+    "auth": {
+      "apiKey": "modjo-ai"
+    }
+  },
+  "mollie": {
+    "proxyUrl": "https://api.mollie.com",
+    "allProxyUrls": [
+      "https://api.mollie.com"
+    ],
+    "auth": {
+      "oauth2": "mollie"
+    }
+  },
+  "mural": {
+    "proxyUrl": "https://app.mural.co",
+    "allProxyUrls": [
+      "https://app.mural.co"
+    ],
+    "auth": {
+      "oauth2": "mural"
+    }
+  },
+  "nationbuilder": {
+    "proxyUrl": "https://${connectionConfig.accountId}.nationbuilder.com/api",
+    "allProxyUrls": [
+      "https://${connectionConfig.accountId}.nationbuilder.com/api"
+    ],
+    "auth": {
+      "oauth2": "nationbuilder"
+    }
+  },
+  "namely": {
+    "proxyUrl": "https://${connectionConfig.company}.namely.com/api",
+    "allProxyUrls": [
+      "https://${connectionConfig.company}.namely.com/api"
+    ],
+    "auth": {
+      "oauth2": "namely"
+    }
+  },
+  "namely-pat": {
+    "proxyUrl": "https://${connectionConfig.company}.namely.com/api",
+    "allProxyUrls": [
+      "https://${connectionConfig.company}.namely.com/api"
+    ],
+    "auth": {
+      "apiKey": "namely-pat"
+    }
+  },
+  "netsuite": {
+    "proxyUrl": "https://${connectionConfig.accountId}.suitetalk.api.netsuite.com/services/rest/record/v1",
+    "allProxyUrls": [
+      "https://${connectionConfig.accountId}.suitetalk.api.netsuite.com/services/rest/record/v1"
+    ],
+    "auth": {
+      "oauth2": "netsuite"
+    }
+  },
+  "next-cloud-ocs": {
+    "proxyUrl": "https://${connectionConfig.domain}/ocs/v1.php",
+    "allProxyUrls": [
+      "https://${connectionConfig.domain}/ocs/v1.php"
+    ],
+    "auth": {
+      "basic": "next-cloud-ocs"
+    }
+  },
+  "ninjaone-rmm2": {
+    "proxyUrl": "https://app.ninjarmm.com",
+    "allProxyUrls": [
+      "https://app.ninjarmm.com"
+    ],
+    "auth": {
+      "oauth2": "ninjaone-rmm-oauth2"
+    }
+  },
+  "nocrm": {
+    "proxyUrl": "https://${connectionConfig.subdomain}.nocrm.io",
+    "allProxyUrls": [
+      "https://${connectionConfig.subdomain}.nocrm.io"
+    ],
+    "auth": {
+      "apiKey": "nocrm"
+    }
+  },
+  "northbeam": {
+    "proxyUrl": "https://${connectionConfig.subdomain}.northbeam.io",
+    "allProxyUrls": [
+      "https://${connectionConfig.subdomain}.northbeam.io"
+    ],
+    "auth": {
+      "apiKey": "northbeam"
+    }
+  },
+  "notion": {
+    "proxyUrl": "https://api.notion.com",
+    "allProxyUrls": [
+      "https://api.notion.com"
+    ],
+    "auth": {
+      "oauth2": "notion"
+    }
+  },
+  "notion-scim": {
+    "proxyUrl": "https://api.notion.com/scim",
+    "allProxyUrls": [
+      "https://api.notion.com/scim"
+    ],
+    "auth": {
+      "apiKey": "notion-scim"
+    }
+  },
+  "nyne-ai": {
+    "proxyUrl": "https://api.nyne.ai",
+    "allProxyUrls": [
+      "https://api.nyne.ai"
+    ],
+    "auth": {
+      "apiKey": "nyne-ai"
+    }
+  },
+  "ocean-io": {
+    "proxyUrl": "https://api.ocean.io",
+    "allProxyUrls": [
+      "https://api.ocean.io"
+    ],
+    "auth": {
+      "apiKey": "ocean-io"
+    }
+  },
+  "odoo": {
+    "proxyUrl": "https://${connectionConfig.serverUrl}",
+    "allProxyUrls": [
+      "https://${connectionConfig.serverUrl}"
+    ],
+    "auth": {
+      "oauth2": "odoo"
+    }
+  },
+  "okta": {
+    "proxyUrl": "https://${connectionConfig.subdomain}.okta.com",
+    "allProxyUrls": [
+      "https://${connectionConfig.subdomain}.okta.com"
+    ],
+    "auth": {
+      "oauth2": "okta"
+    }
+  },
+  "onlogist": {
+    "proxyUrl": "https://dev.portal.onlogist.com/api",
+    "allProxyUrls": [
+      "https://dev.portal.onlogist.com/api"
+    ],
+    "auth": {
+      "apiKey": "onlogist"
+    }
+  },
+  "one-drive-personal": {
+    "proxyUrl": "https://api.onedrive.com",
+    "allProxyUrls": [
+      "https://api.onedrive.com"
+    ],
+    "auth": {
+      "oauth2": "one-drive-personal"
+    }
+  },
+  "oomnitza": {
+    "proxyUrl": "https://${connectionConfig.subdomain}.oomnitza.com",
+    "allProxyUrls": [
+      "https://${connectionConfig.subdomain}.oomnitza.com"
+    ],
+    "auth": {
+      "apiKey": "oomnitza"
+    }
+  },
+  "openai": {
+    "proxyUrl": "https://api.openai.com",
+    "allProxyUrls": [
+      "https://api.openai.com"
+    ],
+    "auth": {
+      "apiKey": "openai"
+    }
+  },
+  "openai-admin": {
+    "proxyUrl": "https://api.openai.com",
+    "allProxyUrls": [
+      "https://api.openai.com"
+    ],
+    "auth": {
+      "apiKey": "openai-admin"
+    }
+  },
+  "open-hands": {
+    "proxyUrl": "https://app.all-hands.dev",
+    "allProxyUrls": [
+      "https://app.all-hands.dev"
+    ],
+    "auth": {
+      "apiKey": "open-hands"
+    }
+  },
+  "oracle-hcm": {
+    "proxyUrl": "https://${connectionConfig.restServerUrl}",
+    "allProxyUrls": [
+      "https://${connectionConfig.restServerUrl}"
+    ],
+    "auth": {
+      "basic": "oracle-hcm"
+    }
+  },
+  "ordinal": {
+    "proxyUrl": "https://app.tryordinal.com/api",
+    "allProxyUrls": [
+      "https://app.tryordinal.com/api"
+    ],
+    "auth": {
+      "apiKey": "ordinal"
+    }
+  },
+  "osu": {
+    "proxyUrl": "https://osu.ppy.sh",
+    "allProxyUrls": [
+      "https://osu.ppy.sh"
+    ],
+    "auth": {
+      "oauth2": "osu"
+    }
+  },
+  "oura": {
+    "proxyUrl": "https://api.ouraring.com",
+    "allProxyUrls": [
+      "https://api.ouraring.com"
+    ],
+    "auth": {
+      "oauth2": "oura"
+    }
+  },
+  "outreach": {
+    "proxyUrl": "https://api.outreach.io",
+    "allProxyUrls": [
+      "https://api.outreach.io"
+    ],
+    "auth": {
+      "oauth2": "outreach"
+    }
+  },
+  "pagerduty": {
+    "proxyUrl": "https://api.pagerduty.com",
+    "allProxyUrls": [
+      "https://api.pagerduty.com"
+    ],
+    "auth": {
+      "oauth2": "pagerduty"
+    }
+  },
+  "paligo": {
+    "proxyUrl": "https://${connectionConfig.subdomain}.paligoapp.com",
+    "allProxyUrls": [
+      "https://${connectionConfig.subdomain}.paligoapp.com"
+    ],
+    "auth": {
+      "basic": "paligo"
+    }
+  },
+  "pandadoc": {
+    "proxyUrl": "https://api.pandadoc.com",
+    "allProxyUrls": [
+      "https://api.pandadoc.com",
+      "https://api.pandadoc.com"
+    ],
+    "auth": {
+      "oauth2": "pandadoc",
+      "apiKey": "pandadoc-api-key"
+    }
+  },
+  "paddle": {
+    "proxyUrl": "https://${connectionConfig.subdomain}.paddle.com",
+    "allProxyUrls": [
+      "https://${connectionConfig.subdomain}.paddle.com"
+    ],
+    "auth": {
+      "apiKey": "paddle"
+    }
+  },
+  "paycor": {
+    "proxyUrl": "https://apis.paycor.com",
+    "allProxyUrls": [
+      "https://apis.paycor.com"
+    ],
+    "auth": {
+      "oauth2": "paycor"
+    }
+  },
+  "paycor-sandbox": {
+    "proxyUrl": "https://apis-sandbox.paycor.com",
+    "allProxyUrls": [
+      "https://apis-sandbox.paycor.com"
+    ],
+    "auth": {
+      "oauth2": "paycor-sandbox"
+    }
+  },
+  "paycom": {
+    "proxyUrl": "https://api.paycomonline.net",
+    "allProxyUrls": [
+      "https://api.paycomonline.net"
+    ],
+    "auth": {
+      "basic": "paycom"
+    }
+  },
+  "payfit": {
+    "proxyUrl": "https://partner-api.payfit.com",
+    "allProxyUrls": [
+      "https://partner-api.payfit.com"
+    ],
+    "auth": {
+      "oauth2": "payfit"
+    }
+  },
+  "paypal": {
+    "proxyUrl": "https://api-m.paypal.com",
+    "allProxyUrls": [
+      "https://api-m.paypal.com"
+    ],
+    "auth": {
+      "oauth2": "paypal"
+    }
+  },
+  "paypal-sandbox": {
+    "proxyUrl": "https://api-m.sandbox.paypal.com",
+    "allProxyUrls": [
+      "https://api-m.sandbox.paypal.com"
+    ],
+    "auth": {
+      "oauth2": "paypal-sandbox"
+    }
+  },
+  "pendo": {
+    "proxyUrl": "https://app.pendo.io",
+    "allProxyUrls": [
+      "https://app.pendo.io"
+    ],
+    "auth": {
+      "apiKey": "pendo"
+    }
+  },
+  "pennylane": {
+    "proxyUrl": "https://app.pennylane.com",
+    "allProxyUrls": [
+      "https://app.pennylane.com"
+    ],
+    "auth": {
+      "oauth2": "pennylane"
+    }
+  },
+  "pennylane-company-api": {
+    "proxyUrl": "https://app.pennylane.com",
+    "allProxyUrls": [
+      "https://app.pennylane.com"
+    ],
+    "auth": {
+      "apiKey": "pennylane-company-api"
+    }
+  },
+  "peopledatalabs": {
+    "proxyUrl": "https://api.peopledatalabs.com",
+    "allProxyUrls": [
+      "https://api.peopledatalabs.com"
+    ],
+    "auth": {
+      "apiKey": "peopledatalabs"
+    }
+  },
+  "perdoo": {
+    "proxyUrl": "https://eu.perdoo.com",
+    "allProxyUrls": [
+      "https://eu.perdoo.com"
+    ],
+    "auth": {
+      "apiKey": "perdoo"
+    }
+  },
+  "perplexity": {
+    "proxyUrl": "https://api.perplexity.ai",
+    "allProxyUrls": [
+      "https://api.perplexity.ai"
+    ],
+    "auth": {
+      "apiKey": "perplexity"
+    }
+  },
+  "personio-recruiting": {
+    "proxyUrl": "https://api.personio.de/v1",
+    "allProxyUrls": [
+      "https://api.personio.de/v1"
+    ],
+    "auth": {
+      "apiKey": "personio-recruiting"
+    }
+  },
+  "pingone": {
+    "proxyUrl": "https://api.pingone.${connectionConfig.tld}",
+    "allProxyUrls": [
+      "https://api.pingone.${connectionConfig.tld}"
+    ],
+    "auth": {
+      "oauth2": "pingone"
+    }
+  },
+  "pinterest": {
+    "proxyUrl": "https://api.pinterest.com",
+    "allProxyUrls": [
+      "https://api.pinterest.com"
+    ],
+    "auth": {
+      "oauth2": "pinterest"
+    }
+  },
+  "rocketlane": {
+    "proxyUrl": "https://api.rocketlane.com/api",
+    "allProxyUrls": [
+      "https://api.rocketlane.com/api"
+    ],
+    "auth": {
+      "apiKey": "rocketlane"
+    }
+  },
+  "pipedrive": {
+    "proxyUrl": "${connectionConfig.api_domain}/api",
+    "allProxyUrls": [
+      "${connectionConfig.api_domain}/api"
+    ],
+    "auth": {
+      "oauth2": "pipedrive"
+    }
+  },
+  "pylon": {
+    "proxyUrl": "https://api.usepylon.com",
+    "allProxyUrls": [
+      "https://api.usepylon.com"
+    ],
+    "auth": {
+      "apiKey": "pylon"
+    }
+  },
+  "pipedream": {
+    "proxyUrl": "https://api.pipedream.com",
+    "allProxyUrls": [
+      "https://api.pipedream.com"
+    ],
+    "auth": {
+      "apiKey": "pipedream"
+    }
+  },
+  "pivotaltracker": {
+    "proxyUrl": "https://www.pivotaltracker.com/services/v5",
+    "allProxyUrls": [
+      "https://www.pivotaltracker.com/services/v5"
+    ],
+    "auth": {
+      "apiKey": "pivotaltracker"
+    }
+  },
+  "plain": {
+    "proxyUrl": "https://core-api.uk.plain.com/graphql",
+    "allProxyUrls": [
+      "https://core-api.uk.plain.com/graphql"
+    ],
+    "auth": {
+      "apiKey": "plain"
+    }
+  },
+  "pleo": {
+    "proxyUrl": "https://${connectionConfig.apiSubdomain}.pleo.io",
+    "allProxyUrls": [
+      "https://${connectionConfig.apiSubdomain}.pleo.io"
+    ],
+    "auth": {
+      "oauth2": "pleo"
+    }
+  },
+  "podium": {
+    "proxyUrl": "https://api.podium.com",
+    "allProxyUrls": [
+      "https://api.podium.com"
+    ],
+    "auth": {
+      "oauth2": "podium"
+    }
+  },
+  "podscribe": {
+    "proxyUrl": "https://backend.podscribe.ai",
+    "allProxyUrls": [
+      "https://backend.podscribe.ai"
+    ],
+    "auth": {
+      "apiKey": "podscribe"
+    }
+  },
+  "posthog": {
+    "proxyUrl": "https://${connectionConfig.subdomain}.posthog.com",
+    "allProxyUrls": [
+      "https://${connectionConfig.subdomain}.posthog.com",
+      "https://${connectionConfig.subdomain}.posthog.com"
+    ],
+    "auth": {
+      "apiKey": "posthog",
+      "oauth2": "posthog-oauth"
+    }
+  },
+  "prive": {
+    "proxyUrl": "https://subs.api.tryprive.com",
+    "allProxyUrls": [
+      "https://subs.api.tryprive.com"
+    ],
+    "auth": {
+      "apiKey": "prive"
+    }
+  },
+  "prospeo": {
+    "proxyUrl": "https://api.prospeo.io",
+    "allProxyUrls": [
+      "https://api.prospeo.io"
+    ],
+    "auth": {
+      "apiKey": "prospeo"
+    }
+  },
+  "prtg-classic": {
+    "proxyUrl": "https://${connectionConfig.host}",
+    "allProxyUrls": [
+      "https://${connectionConfig.host}"
+    ],
+    "auth": {
+      "apiKey": "prtg-classic"
+    }
+  },
+  "private-api-bearer": {
+    "proxyUrl": "https://my-private-api",
+    "allProxyUrls": [
+      "https://my-private-api"
+    ],
+    "auth": {
+      "apiKey": "private-api-bearer"
+    }
+  },
+  "private-api": {
+    "proxyUrl": "https://my-private-api",
+    "allProxyUrls": [
+      "https://my-private-api"
+    ],
+    "auth": {
+      "basic": "private-api-basic"
+    }
+  },
+  "precisefp": {
+    "proxyUrl": "https://app.precisefp.com",
+    "allProxyUrls": [
+      "https://app.precisefp.com"
+    ],
+    "auth": {
+      "oauth2": "precisefp"
+    }
+  },
+  "practicefusion": {
+    "proxyUrl": "https://${connectionConfig.baseUrl}",
+    "allProxyUrls": [
+      "https://${connectionConfig.baseUrl}"
+    ],
+    "auth": {
+      "oauth2": "practicefusion"
+    }
+  },
+  "productboard": {
+    "proxyUrl": "https://api.productboard.com",
+    "allProxyUrls": [
+      "https://api.productboard.com"
+    ],
+    "auth": {
+      "oauth2": "productboard"
+    }
+  },
+  "printful": {
+    "proxyUrl": "https://api.printful.com",
+    "allProxyUrls": [
+      "https://api.printful.com"
+    ],
+    "auth": {
+      "oauth2": "printful"
+    }
+  },
+  "procore": {
+    "proxyUrl": "https://api.procore.com",
+    "allProxyUrls": [
+      "https://api.procore.com"
+    ],
+    "auth": {
+      "oauth2": "procore"
+    }
+  },
+  "provenexpert": {
+    "proxyUrl": "https://www.provenexpert.com/api/",
+    "allProxyUrls": [
+      "https://www.provenexpert.com/api/"
+    ],
+    "auth": {
+      "basic": "provenexpert"
+    }
+  },
+  "qualtrics": {
+    "proxyUrl": "https://${connectionConfig.subdomain}.qualtrics.com",
+    "allProxyUrls": [
+      "https://${connectionConfig.subdomain}.qualtrics.com"
+    ],
+    "auth": {
+      "oauth2": "qualtrics"
+    }
+  },
+  "quentn": {
+    "proxyUrl": "https://${connectionConfig.subdomain}.quentn.com/public/api",
+    "allProxyUrls": [
+      "https://${connectionConfig.subdomain}.quentn.com/public/api"
+    ],
+    "auth": {
+      "apiKey": "quentn"
+    }
+  },
+  "quickbase": {
+    "proxyUrl": "https://api.quickbase.com/v1/",
+    "allProxyUrls": [
+      "https://api.quickbase.com/v1/"
+    ],
+    "auth": {
+      "apiKey": "quickbase"
+    }
+  },
+  "qualia": {
+    "proxyUrl": "https://${connectionConfig.subdomain}.qualia.io/api",
+    "allProxyUrls": [
+      "https://${connectionConfig.subdomain}.qualia.io/api"
+    ],
+    "auth": {
+      "basic": "qualia"
+    }
+  },
+  "quickbooks": {
+    "proxyUrl": "https://quickbooks.api.intuit.com",
+    "allProxyUrls": [
+      "https://quickbooks.api.intuit.com"
+    ],
+    "auth": {
+      "oauth2": "quickbooks"
+    }
+  },
+  "quipteams": {
+    "proxyUrl": "https://api.quipteams.com",
+    "allProxyUrls": [
+      "https://api.quipteams.com"
+    ],
+    "auth": {
+      "apiKey": "quipteams"
+    }
+  },
+  "ragieai": {
+    "proxyUrl": "https://api.ragie.ai",
+    "allProxyUrls": [
+      "https://api.ragie.ai"
+    ],
+    "auth": {
+      "apiKey": "ragieai"
+    }
+  },
+  "ramp": {
+    "proxyUrl": "https://api.ramp.com",
+    "allProxyUrls": [
+      "https://api.ramp.com"
+    ],
+    "auth": {
+      "oauth2": "ramp"
+    }
+  },
+  "ramp-sandbox": {
+    "proxyUrl": "https://demo-api.ramp.com",
+    "allProxyUrls": [
+      "https://demo-api.ramp.com"
+    ],
+    "auth": {
+      "oauth2": "ramp-sandbox"
+    }
+  },
+  "rapidapi": {
+    "proxyUrl": "https://${connectionConfig.subdomain}.p.rapidapi.com",
+    "allProxyUrls": [
+      "https://${connectionConfig.subdomain}.p.rapidapi.com"
+    ],
+    "auth": {
+      "apiKey": "rapidapi"
+    }
+  },
+  "razorpay": {
+    "proxyUrl": "https://api.razorpay.com",
+    "allProxyUrls": [
+      "https://api.razorpay.com"
+    ],
+    "auth": {
+      "basic": "razorpay"
+    }
+  },
+  "readwise": {
+    "proxyUrl": "https://readwise.io/api/v2",
+    "allProxyUrls": [
+      "https://readwise.io/api/v2"
+    ],
+    "auth": {
+      "apiKey": "readwise"
+    }
+  },
+  "readwise-reader": {
+    "proxyUrl": "https://readwise.io/api/v3",
+    "allProxyUrls": [
+      "https://readwise.io/api/v3"
+    ],
+    "auth": {
+      "apiKey": "readwise-reader"
+    }
+  },
+  "recharge": {
+    "proxyUrl": "https://api.rechargeapps.com",
+    "allProxyUrls": [
+      "https://api.rechargeapps.com"
+    ],
+    "auth": {
+      "apiKey": "recharge"
+    }
+  },
+  "recall-ai": {
+    "proxyUrl": "https://${connectionConfig.region}.recall.ai",
+    "allProxyUrls": [
+      "https://${connectionConfig.region}.recall.ai"
+    ],
+    "auth": {
+      "apiKey": "recall-ai"
+    }
+  },
+  "recruitcrm": {
+    "proxyUrl": "https://api.recruitcrm.com",
+    "allProxyUrls": [
+      "https://api.recruitcrm.com"
+    ],
+    "auth": {
+      "apiKey": "recruitcrm"
+    }
+  },
+  "recruitee": {
+    "proxyUrl": "https://api.recruitee.com/c/${connectionConfig.companyId}",
+    "allProxyUrls": [
+      "https://api.recruitee.com/c/${connectionConfig.companyId}"
+    ],
+    "auth": {
+      "apiKey": "recruitee"
+    }
+  },
+  "recruiterflow": {
+    "proxyUrl": "https://api.recruiterflow.com",
+    "allProxyUrls": [
+      "https://api.recruiterflow.com"
+    ],
+    "auth": {
+      "apiKey": "recruiterflow"
+    }
+  },
+  "render-mcp": {
+    "proxyUrl": "https://mcp.render.com",
+    "allProxyUrls": [
+      "https://mcp.render.com"
+    ],
+    "auth": {
+      "apiKey": "render-mcp"
+    }
+  },
+  "reddit": {
+    "proxyUrl": "https://oauth.reddit.com",
+    "allProxyUrls": [
+      "https://oauth.reddit.com"
+    ],
+    "auth": {
+      "oauth2": "reddit"
+    }
+  },
+  "refiner": {
+    "proxyUrl": "https://api.refiner.io/v1",
+    "allProxyUrls": [
+      "https://api.refiner.io/v1"
+    ],
+    "auth": {
+      "apiKey": "refiner"
+    }
+  },
+  "replicate": {
+    "proxyUrl": "https://api.replicate.com",
+    "allProxyUrls": [
+      "https://api.replicate.com"
+    ],
+    "auth": {
+      "apiKey": "replicate"
+    }
+  },
+  "reply-io": {
+    "proxyUrl": "https://api.reply.io",
+    "allProxyUrls": [
+      "https://api.reply.io"
+    ],
+    "auth": {
+      "apiKey": "reply-io"
+    }
+  },
+  "resend": {
+    "proxyUrl": "https://api.resend.com",
+    "allProxyUrls": [
+      "https://api.resend.com"
+    ],
+    "auth": {
+      "apiKey": "resend"
+    }
+  },
+  "retell-ai": {
+    "proxyUrl": "https://api.retellai.com",
+    "allProxyUrls": [
+      "https://api.retellai.com"
+    ],
+    "auth": {
+      "apiKey": "retell-ai"
+    }
+  },
+  "ring-central": {
+    "proxyUrl": "https://platform.ringcentral.com",
+    "allProxyUrls": [
+      "https://platform.ringcentral.com"
+    ],
+    "auth": {
+      "oauth2": "ring-central"
+    }
+  },
+  "ring-central-sandbox": {
+    "proxyUrl": "https://platform.devtest.ringcentral.com",
+    "allProxyUrls": [
+      "https://platform.devtest.ringcentral.com"
+    ],
+    "auth": {
+      "oauth2": "ring-central-sandbox"
+    }
+  },
+  "ringover": {
+    "proxyUrl": "https://public-api.ringover.com",
+    "allProxyUrls": [
+      "https://public-api.ringover.com"
+    ],
+    "auth": {
+      "apiKey": "ringover"
+    }
+  },
+  "rippling": {
+    "proxyUrl": "https://rest.ripplingapis.com",
+    "allProxyUrls": [
+      "https://rest.ripplingapis.com"
+    ],
+    "auth": {
+      "apiKey": "rippling"
+    }
+  },
+  "rippling-shop-app": {
+    "proxyUrl": "https://api.rippling.com",
+    "allProxyUrls": [
+      "https://api.rippling.com"
+    ],
+    "auth": {
+      "oauth2": "rippling-shop-app"
+    }
+  },
+  "roam-scim": {
+    "proxyUrl": "https://api.ro.am/scim",
+    "allProxyUrls": [
+      "https://api.ro.am/scim"
+    ],
+    "auth": {
+      "apiKey": "roam-scim"
+    }
+  },
+  "rock-gym-pro": {
+    "proxyUrl": "https://api.rockgympro.com",
+    "allProxyUrls": [
+      "https://api.rockgympro.com"
+    ],
+    "auth": {
+      "basic": "rock-gym-pro"
+    }
+  },
+  "rocketreach": {
+    "proxyUrl": "https://api.rocketreach.co",
+    "allProxyUrls": [
+      "https://api.rocketreach.co"
+    ],
+    "auth": {
+      "apiKey": "rocketreach"
+    }
+  },
+  "rootly": {
+    "proxyUrl": "https://api.rootly.com",
+    "allProxyUrls": [
+      "https://api.rootly.com"
+    ],
+    "auth": {
+      "apiKey": "rootly"
+    }
+  },
+  "reapit": {
+    "proxyUrl": "https://platform.reapit.cloud",
+    "allProxyUrls": [
+      "https://platform.reapit.cloud"
+    ],
+    "auth": {
+      "oauth2": "reapit"
+    }
+  },
+  "segment": {
+    "proxyUrl": "https://api.segment.io",
+    "allProxyUrls": [
+      "https://api.segment.io"
+    ],
+    "auth": {
+      "oauth2": "segment"
+    }
+  },
+  "sage": {
+    "proxyUrl": "https://api.accounting.sage.com",
+    "allProxyUrls": [
+      "https://api.accounting.sage.com"
+    ],
+    "auth": {
+      "oauth2": "sage"
+    }
+  },
+  "sage-hr": {
+    "proxyUrl": "https://${connectionConfig.subdomain}.sage.hr",
+    "allProxyUrls": [
+      "https://${connectionConfig.subdomain}.sage.hr"
+    ],
+    "auth": {
+      "apiKey": "sage-hr"
+    }
+  },
+  "sage-intacct": {
+    "proxyUrl": "https://api.intacct.com/ia/api",
+    "allProxyUrls": [
+      "https://api.intacct.com/ia/api"
+    ],
+    "auth": {
+      "oauth2": "sage-intacct-oauth"
+    }
+  },
+  "sage-people": {
+    "proxyUrl": "https://${connectionConfig.instance_url}/services/apexrest/spapi",
+    "allProxyUrls": [
+      "https://${connectionConfig.instance_url}/services/apexrest/spapi"
+    ],
+    "auth": {
+      "oauth2": "sage-people"
+    }
+  },
+  "salesforce": {
+    "proxyUrl": "${connectionConfig.instance_url}",
+    "allProxyUrls": [
+      "${connectionConfig.instance_url}"
+    ],
+    "auth": {
+      "oauth2": "salesforce"
+    }
+  },
+  "salesforce-sandbox": {
+    "proxyUrl": "${connectionConfig.instance_url}",
+    "allProxyUrls": [
+      "${connectionConfig.instance_url}"
+    ],
+    "auth": {
+      "oauth2": "salesforce-sandbox"
+    }
+  },
+  "salesforce-experience-cloud": {
+    "proxyUrl": "${connectionConfig.instance_url}",
+    "allProxyUrls": [
+      "${connectionConfig.instance_url}"
+    ],
+    "auth": {
+      "oauth2": "salesforce-experience-cloud"
+    }
+  },
+  "salesmsg2": {
+    "proxyUrl": "https://api.salesmessage.com/pub/",
+    "allProxyUrls": [
+      "https://api.salesmessage.com/pub/"
+    ],
+    "auth": {
+      "oauth2": "salesmsg-oauth2"
+    }
+  },
+  "sap-odata": {
+    "proxyUrl": "https://${connectionConfig.apiServer}",
+    "allProxyUrls": [
+      "https://${connectionConfig.apiServer}"
+    ],
+    "auth": {
+      "basic": "sap-odata-basic"
+    }
+  },
+  "schwab": {
+    "proxyUrl": "https://api.schwabapi.com",
+    "allProxyUrls": [
+      "https://api.schwabapi.com"
+    ],
+    "auth": {
+      "oauth2": "schwab"
+    }
+  },
+  "scrapedo": {
+    "proxyUrl": "https://api.scrape.do",
+    "allProxyUrls": [
+      "https://api.scrape.do"
+    ],
+    "auth": {
+      "apiKey": "scrapedo"
+    }
+  },
+  "salesloft": {
+    "proxyUrl": "https://api.salesloft.com",
+    "allProxyUrls": [
+      "https://api.salesloft.com"
+    ],
+    "auth": {
+      "oauth2": "salesloft"
+    }
+  },
+  "sendgrid": {
+    "proxyUrl": "https://api.sendgrid.com",
+    "allProxyUrls": [
+      "https://api.sendgrid.com"
+    ],
+    "auth": {
+      "apiKey": "sendgrid"
+    }
+  },
+  "semrush": {
+    "proxyUrl": "https://api.semrush.com",
+    "allProxyUrls": [
+      "https://api.semrush.com"
+    ],
+    "auth": {
+      "apiKey": "semrush"
+    }
+  },
+  "sentinelone": {
+    "proxyUrl": "https://${connectionConfig.hostname}",
+    "allProxyUrls": [
+      "https://${connectionConfig.hostname}"
+    ],
+    "auth": {
+      "apiKey": "sentinelone"
+    }
+  },
+  "sentry": {
+    "proxyUrl": "https://${connectionConfig.hostname}/api",
+    "allProxyUrls": [
+      "https://${connectionConfig.hostname}/api",
+      "https://${connectionConfig.hostname}/api"
+    ],
+    "auth": {
+      "apiKey": "sentry",
+      "oauth2": "sentry-oauth"
+    }
+  },
+  "sedna": {
+    "proxyUrl": "https://${connectionConfig.tenant}.sednanetwork.com/platform",
+    "allProxyUrls": [
+      "https://${connectionConfig.tenant}.sednanetwork.com/platform"
+    ],
+    "auth": {
+      "basic": "sedna-basic"
+    }
+  },
+  "sellsy": {
+    "proxyUrl": "https://api.sellsy.com",
+    "allProxyUrls": [
+      "https://api.sellsy.com"
+    ],
+    "auth": {
+      "oauth2": "sellsy"
+    }
+  },
+  "servicem8": {
+    "proxyUrl": "https://api.servicem8.com",
+    "allProxyUrls": [
+      "https://api.servicem8.com"
+    ],
+    "auth": {
+      "oauth2": "servicem8"
+    }
+  },
+  "signnow": {
+    "proxyUrl": "https://api.signnow.com",
+    "allProxyUrls": [
+      "https://api.signnow.com"
+    ],
+    "auth": {
+      "oauth2": "signnow"
+    }
+  },
+  "signnow-sandbox": {
+    "proxyUrl": "https://api-eval.signnow.com",
+    "allProxyUrls": [
+      "https://api-eval.signnow.com"
+    ],
+    "auth": {
+      "oauth2": "signnow-sandbox"
+    }
+  },
+  "servicenow": {
+    "proxyUrl": "https://${connectionConfig.subdomain}.service-now.com",
+    "allProxyUrls": [
+      "https://${connectionConfig.subdomain}.service-now.com"
+    ],
+    "auth": {
+      "oauth2": "servicenow"
+    }
+  },
+  "skio": {
+    "proxyUrl": "https://graphql.skio.com",
+    "allProxyUrls": [
+      "https://graphql.skio.com"
+    ],
+    "auth": {
+      "apiKey": "skio"
+    }
+  },
+  "shipbob-pat": {
+    "proxyUrl": "https://${connectionConfig.apiSubdomain}.shipbob.com",
+    "allProxyUrls": [
+      "https://${connectionConfig.apiSubdomain}.shipbob.com"
+    ],
+    "auth": {
+      "apiKey": "shipbob-pat"
+    }
+  },
+  "shippo": {
+    "proxyUrl": "https://api.goshippo.com",
+    "allProxyUrls": [
+      "https://api.goshippo.com"
+    ],
+    "auth": {
+      "apiKey": "shippo"
+    }
+  },
+  "shipstation": {
+    "proxyUrl": "https://ssapi.shipstation.com",
+    "allProxyUrls": [
+      "https://ssapi.shipstation.com"
+    ],
+    "auth": {
+      "basic": "shipstation"
+    }
+  },
+  "shipstation-v2": {
+    "proxyUrl": "https://api.shipstation.com",
+    "allProxyUrls": [
+      "https://api.shipstation.com"
+    ],
+    "auth": {
+      "apiKey": "shipstation-v2"
+    }
+  },
+  "shopify": {
+    "proxyUrl": "https://${connectionConfig.subdomain}.myshopify.com",
+    "allProxyUrls": [
+      "https://${connectionConfig.subdomain}.myshopify.com",
+      "https://${connectionConfig.subdomain}.myshopify.com"
+    ],
+    "auth": {
+      "oauth2": "shopify",
+      "apiKey": "shopify-api-key"
+    }
+  },
+  "shopify-partner": {
+    "proxyUrl": "https://partners.shopify.com/${connectionConfig.partnerId}/api/",
+    "allProxyUrls": [
+      "https://partners.shopify.com/${connectionConfig.partnerId}/api/"
+    ],
+    "auth": {
+      "apiKey": "shopify-partner"
+    }
+  },
+  "shopify-scim": {
+    "proxyUrl": "https://shopifyscim.com/scim",
+    "allProxyUrls": [
+      "https://shopifyscim.com/scim"
+    ],
+    "auth": {
+      "apiKey": "shopify-scim"
+    }
+  },
+  "slab": {
+    "proxyUrl": "https://api.slab.com",
+    "allProxyUrls": [
+      "https://api.slab.com"
+    ],
+    "auth": {
+      "apiKey": "slab"
+    }
+  },
+  "shortcut": {
+    "proxyUrl": "https://api.app.shortcut.com",
+    "allProxyUrls": [
+      "https://api.app.shortcut.com"
+    ],
+    "auth": {
+      "apiKey": "shortcut"
+    }
+  },
+  "simpro": {
+    "proxyUrl": "https://${connectionConfig.build}.simprosuite.com",
+    "allProxyUrls": [
+      "https://${connectionConfig.build}.simprosuite.com"
+    ],
+    "auth": {
+      "oauth2": "simpro"
+    }
+  },
+  "slack": {
+    "proxyUrl": "https://slack.com/api",
+    "allProxyUrls": [
+      "https://slack.com/api"
+    ],
+    "auth": {
+      "oauth2": "slack"
+    }
+  },
+  "smartlead-ai": {
+    "proxyUrl": "https://server.smartlead.ai/api",
+    "allProxyUrls": [
+      "https://server.smartlead.ai/api"
+    ],
+    "auth": {
+      "apiKey": "smartlead-ai"
+    }
+  },
+  "smartrecruiters": {
+    "proxyUrl": "https://api.smartrecruiters.com",
+    "allProxyUrls": [
+      "https://api.smartrecruiters.com"
+    ],
+    "auth": {
+      "apiKey": "smartrecruiters-api-key"
+    }
+  },
+  "smartsheet": {
+    "proxyUrl": "https://api.${connectionConfig.domain}",
+    "allProxyUrls": [
+      "https://api.${connectionConfig.domain}"
+    ],
+    "auth": {
+      "oauth2": "smartsheet"
+    }
+  },
+  "snapchat": {
+    "proxyUrl": "https://adsapi.snapchat.com",
+    "allProxyUrls": [
+      "https://adsapi.snapchat.com"
+    ],
+    "auth": {
+      "oauth2": "snapchat"
+    }
+  },
+  "snowflake": {
+    "proxyUrl": "https://${connectionConfig.snowflake_account_url}",
+    "allProxyUrls": [
+      "https://${connectionConfig.snowflake_account_url}"
+    ],
+    "auth": {
+      "oauth2": "snowflake"
+    }
+  },
+  "splitwise": {
+    "proxyUrl": "https://secure.splitwise.com",
+    "allProxyUrls": [
+      "https://secure.splitwise.com"
+    ],
+    "auth": {
+      "oauth2": "splitwise"
+    }
+  },
+  "spotify": {
+    "proxyUrl": "https://api.spotify.com",
+    "allProxyUrls": [
+      "https://api.spotify.com"
+    ],
+    "auth": {
+      "oauth2": "spotify"
+    }
+  },
+  "squarespace": {
+    "proxyUrl": "https://api.squarespace.com",
+    "allProxyUrls": [
+      "https://api.squarespace.com"
+    ],
+    "auth": {
+      "oauth2": "squarespace"
+    }
+  },
+  "squareup": {
+    "proxyUrl": "https://connect.squareup.com",
+    "allProxyUrls": [
+      "https://connect.squareup.com"
+    ],
+    "auth": {
+      "oauth2": "squareup"
+    }
+  },
+  "squareup-sandbox": {
+    "proxyUrl": "https://connect.squareupsandbox.com",
+    "allProxyUrls": [
+      "https://connect.squareupsandbox.com"
+    ],
+    "auth": {
+      "oauth2": "squareup-sandbox"
+    }
+  },
+  "stackexchange": {
+    "proxyUrl": "https://api.stackexchange.com",
+    "allProxyUrls": [
+      "https://api.stackexchange.com"
+    ],
+    "auth": {
+      "oauth2": "stackexchange"
+    }
+  },
+  "statamic": {
+    "proxyUrl": "https://${connectionConfig.baseUrl}",
+    "allProxyUrls": [
+      "https://${connectionConfig.baseUrl}"
+    ],
+    "auth": {
+      "apiKey": "statamic"
+    }
+  },
+  "statista": {
+    "proxyUrl": "https://api.statista.ai",
+    "allProxyUrls": [
+      "https://api.statista.ai"
+    ],
+    "auth": {
+      "apiKey": "statista"
+    }
+  },
+  "stay-ai": {
+    "proxyUrl": "https://api.retextion.com/api",
+    "allProxyUrls": [
+      "https://api.retextion.com/api"
+    ],
+    "auth": {
+      "apiKey": "stay-ai"
+    }
+  },
+  "store-leads": {
+    "proxyUrl": "https://storeleads.app/json/api",
+    "allProxyUrls": [
+      "https://storeleads.app/json/api"
+    ],
+    "auth": {
+      "apiKey": "store-leads"
+    }
+  },
+  "strava": {
+    "proxyUrl": "https://www.strava.com",
+    "allProxyUrls": [
+      "https://www.strava.com"
+    ],
+    "auth": {
+      "oauth2": "strava"
+    }
+  },
+  "strava-web": {
+    "proxyUrl": "https://www.strava.com",
+    "allProxyUrls": [
+      "https://www.strava.com"
+    ],
+    "auth": {
+      "oauth2": "strava-web"
+    }
+  },
+  "streak": {
+    "proxyUrl": "https://api.streak.com/api",
+    "allProxyUrls": [
+      "https://api.streak.com/api"
+    ],
+    "auth": {
+      "basic": "streak"
+    }
+  },
+  "stripe": {
+    "proxyUrl": "https://api.stripe.com",
+    "allProxyUrls": [
+      "https://api.stripe.com",
+      "https://api.stripe.com"
+    ],
+    "auth": {
+      "oauth2": "stripe",
+      "basic": "stripe-api-key"
+    }
+  },
+  "stripe-express": {
+    "proxyUrl": "https://api.stripe.com",
+    "allProxyUrls": [
+      "https://api.stripe.com"
+    ],
+    "auth": {
+      "oauth2": "stripe-express"
+    }
+  },
+  "stripe-app": {
+    "proxyUrl": "https://api.stripe.com",
+    "allProxyUrls": [
+      "https://api.stripe.com"
+    ],
+    "auth": {
+      "oauth2": "stripe-app"
+    }
+  },
+  "stripe-app-sandbox": {
+    "proxyUrl": "https://api.stripe.com",
+    "allProxyUrls": [
+      "https://api.stripe.com"
+    ],
+    "auth": {
+      "oauth2": "stripe-app-sandbox"
+    }
+  },
+  "supabase": {
+    "proxyUrl": "https://${connectionConfig.projectUrl}",
+    "allProxyUrls": [
+      "https://${connectionConfig.projectUrl}"
+    ],
+    "auth": {
+      "apiKey": "supabase"
+    }
+  },
+  "supabase-mcp": {
+    "proxyUrl": "https://mcp.supabase.com",
+    "allProxyUrls": [
+      "https://mcp.supabase.com"
+    ],
+    "auth": {
+      "apiKey": "supabase-mcp"
+    }
+  },
+  "survey-monkey": {
+    "proxyUrl": "https://api.surveymonkey.com",
+    "allProxyUrls": [
+      "https://api.surveymonkey.com"
+    ],
+    "auth": {
+      "oauth2": "survey-monkey"
+    }
+  },
+  "tailscale": {
+    "proxyUrl": "https://api.tailscale.com/api",
+    "allProxyUrls": [
+      "https://api.tailscale.com/api"
+    ],
+    "auth": {
+      "apiKey": "tailscale-api-key"
+    }
+  },
+  "talentlms": {
+    "proxyUrl": "https://${connectionConfig.subdomain}.talentlms.com",
+    "allProxyUrls": [
+      "https://${connectionConfig.subdomain}.talentlms.com"
+    ],
+    "auth": {
+      "apiKey": "talentlms"
+    }
+  },
+  "tally": {
+    "proxyUrl": "https://api.tally.so",
+    "allProxyUrls": [
+      "https://api.tally.so"
+    ],
+    "auth": {
+      "apiKey": "tally"
+    }
+  },
+  "teamtailor": {
+    "proxyUrl": "https://${connectionConfig.extension}.teamtailor.com",
+    "allProxyUrls": [
+      "https://${connectionConfig.extension}.teamtailor.com"
+    ],
+    "auth": {
+      "apiKey": "teamtailor"
+    }
+  },
+  "teamleader": {
+    "proxyUrl": "https://api.focus.teamleader.eu",
+    "allProxyUrls": [
+      "https://api.focus.teamleader.eu"
+    ],
+    "auth": {
+      "oauth2": "teamleader"
+    }
+  },
+  "teamwork": {
+    "proxyUrl": "${connectionConfig.installation.apiEndPoint}",
+    "allProxyUrls": [
+      "${connectionConfig.installation.apiEndPoint}"
+    ],
+    "auth": {
+      "oauth2": "teamwork"
+    }
+  },
+  "telegram": {
+    "proxyUrl": "https://api.telegram.org/bot${apiKey}",
+    "allProxyUrls": [
+      "https://api.telegram.org/bot${apiKey}"
+    ],
+    "auth": {
+      "apiKey": "telegram"
+    }
+  },
+  "terraform": {
+    "proxyUrl": "https://app.terraform.io",
+    "allProxyUrls": [
+      "https://app.terraform.io"
+    ],
+    "auth": {
+      "apiKey": "terraform"
+    }
+  },
+  "ticktick": {
+    "proxyUrl": "https://api.ticktick.com",
+    "allProxyUrls": [
+      "https://api.ticktick.com"
+    ],
+    "auth": {
+      "oauth2": "ticktick"
+    }
+  },
+  "tiktok-accounts": {
+    "proxyUrl": "https://business-api.tiktok.com/open_api/v1.3/",
+    "allProxyUrls": [
+      "https://business-api.tiktok.com/open_api/v1.3/"
+    ],
+    "auth": {
+      "oauth2": "tiktok-accounts"
+    }
+  },
+  "tiktok-ads": {
+    "proxyUrl": "https://business-api.tiktok.com/open_api/v1.3/",
+    "allProxyUrls": [
+      "https://business-api.tiktok.com/open_api/v1.3/"
+    ],
+    "auth": {
+      "oauth2": "tiktok-ads"
+    }
+  },
+  "tiktok-personal": {
+    "proxyUrl": "https://open.tiktokapis.com",
+    "allProxyUrls": [
+      "https://open.tiktokapis.com"
+    ],
+    "auth": {
+      "oauth2": "tiktok-personal"
+    }
+  },
+  "timely": {
+    "proxyUrl": "https://api.timelyapp.com",
+    "allProxyUrls": [
+      "https://api.timelyapp.com"
+    ],
+    "auth": {
+      "oauth2": "timely"
+    }
+  },
+  "thrivecart": {
+    "proxyUrl": "https://thrivecart.com/api/external",
+    "allProxyUrls": [
+      "https://thrivecart.com/api/external",
+      "https://thrivecart.com/api/external"
+    ],
+    "auth": {
+      "oauth2": "thrivecart-oauth",
+      "apiKey": "thrivecart-api-key"
+    }
+  },
+  "trakstar-hire": {
+    "proxyUrl": "https://api.recruiterbox.com",
+    "allProxyUrls": [
+      "https://api.recruiterbox.com"
+    ],
+    "auth": {
+      "basic": "trakstar-hire"
+    }
+  },
+  "tremendous": {
+    "proxyUrl": "https://api.tremendous.com/api/v2",
+    "allProxyUrls": [
+      "https://api.tremendous.com/api/v2"
+    ],
+    "auth": {
+      "oauth2": "tremendous"
+    }
+  },
+  "tremendous-sandbox": {
+    "proxyUrl": "https://testflight.tremendous.com/api/v2",
+    "allProxyUrls": [
+      "https://testflight.tremendous.com/api/v2"
+    ],
+    "auth": {
+      "oauth2": "tremendous-sandbox"
+    }
+  },
+  "perk": {
+    "proxyUrl": "https://api.travelperk.com",
+    "allProxyUrls": [
+      "https://api.travelperk.com"
+    ],
+    "auth": {
+      "oauth2": "perk"
+    }
+  },
+  "trello-scim": {
+    "proxyUrl": "https://trello.com/scim",
+    "allProxyUrls": [
+      "https://trello.com/scim"
+    ],
+    "auth": {
+      "apiKey": "trello-scim"
+    }
+  },
+  "tldv": {
+    "proxyUrl": "https://pasta.tldv.io",
+    "allProxyUrls": [
+      "https://pasta.tldv.io"
+    ],
+    "auth": {
+      "apiKey": "tldv"
+    }
+  },
+  "trigger-dev": {
+    "proxyUrl": "https://${connectionConfig.baseUrl}",
+    "allProxyUrls": [
+      "https://${connectionConfig.baseUrl}"
+    ],
+    "auth": {
+      "apiKey": "trigger-dev"
+    }
+  },
+  "triple-whale": {
+    "proxyUrl": "https://api.triplewhale.com",
+    "allProxyUrls": [
+      "https://api.triplewhale.com"
+    ],
+    "auth": {
+      "apiKey": "triple-whale"
+    }
+  },
+  "tsheetsteam": {
+    "proxyUrl": "https://rest.tsheets.com/api/v1",
+    "allProxyUrls": [
+      "https://rest.tsheets.com/api/v1"
+    ],
+    "auth": {
+      "oauth2": "tsheetsteam"
+    }
+  },
+  "todoist": {
+    "proxyUrl": "https://api.todoist.com",
+    "allProxyUrls": [
+      "https://api.todoist.com"
+    ],
+    "auth": {
+      "oauth2": "todoist"
+    }
+  },
+  "toggl": {
+    "proxyUrl": "https://api.track.toggl.com",
+    "allProxyUrls": [
+      "https://api.track.toggl.com"
+    ],
+    "auth": {
+      "basic": "toggl"
+    }
+  },
+  "torii": {
+    "proxyUrl": "https://api.toriihq.com",
+    "allProxyUrls": [
+      "https://api.toriihq.com"
+    ],
+    "auth": {
+      "apiKey": "torii"
+    }
+  },
+  "tumblr": {
+    "proxyUrl": "https://api.tumblr.com/v2",
+    "allProxyUrls": [
+      "https://api.tumblr.com/v2"
+    ],
+    "auth": {
+      "oauth2": "tumblr"
+    }
+  },
+  "twitch": {
+    "proxyUrl": "https://api.twitch.tv",
+    "allProxyUrls": [
+      "https://api.twitch.tv"
+    ],
+    "auth": {
+      "oauth2": "twitch"
+    }
+  },
+  "twitter-v2": {
+    "proxyUrl": "https://api.twitter.com",
+    "allProxyUrls": [
+      "https://api.twitter.com"
+    ],
+    "auth": {
+      "oauth2": "twitter-v2"
+    }
+  },
+  "twinfield": {
+    "proxyUrl": "https://${connectionConfig.cluster}.twinfield.com",
+    "allProxyUrls": [
+      "https://${connectionConfig.cluster}.twinfield.com"
+    ],
+    "auth": {
+      "oauth2": "twinfield"
+    }
+  },
+  "twenty-crm": {
+    "proxyUrl": "https://api.twenty.com/rest",
+    "allProxyUrls": [
+      "https://api.twenty.com/rest"
+    ],
+    "auth": {
+      "apiKey": "twenty-crm"
+    }
+  },
+  "twenty-crm-self-hosted": {
+    "proxyUrl": "https://${connectionConfig.domain}/rest",
+    "allProxyUrls": [
+      "https://${connectionConfig.domain}/rest"
+    ],
+    "auth": {
+      "apiKey": "twenty-crm-self-hosted"
+    }
+  },
+  "twilio": {
+    "proxyUrl": "https://api.twilio.com",
+    "allProxyUrls": [
+      "https://api.twilio.com"
+    ],
+    "auth": {
+      "basic": "twilio"
+    }
+  },
+  "typeform": {
+    "proxyUrl": "https://api.typeform.com",
+    "allProxyUrls": [
+      "https://api.typeform.com"
+    ],
+    "auth": {
+      "oauth2": "typeform"
+    }
+  },
+  "typefully": {
+    "proxyUrl": "https://api.typefully.com",
+    "allProxyUrls": [
+      "https://api.typefully.com"
+    ],
+    "auth": {
+      "apiKey": "typefully"
+    }
+  },
+  "typefully-v2": {
+    "proxyUrl": "https://api.typefully.com",
+    "allProxyUrls": [
+      "https://api.typefully.com"
+    ],
+    "auth": {
+      "apiKey": "typefully-v2"
+    }
+  },
+  "uber": {
+    "proxyUrl": "https://api.uber.com",
+    "allProxyUrls": [
+      "https://api.uber.com"
+    ],
+    "auth": {
+      "oauth2": "uber"
+    }
+  },
+  "ukg-pro-wfm": {
+    "proxyUrl": "https://${connectionConfig.hostname}/api",
+    "allProxyUrls": [
+      "https://${connectionConfig.hostname}/api"
+    ],
+    "auth": {
+      "oauth2": "ukg-pro-wfm"
+    }
+  },
+  "ukg-pro": {
+    "proxyUrl": "https://${connectionConfig.hostname}",
+    "allProxyUrls": [
+      "https://${connectionConfig.hostname}"
+    ],
+    "auth": {
+      "basic": "ukg-pro"
+    }
+  },
+  "unanet": {
+    "proxyUrl": "https://compass.cosential.com",
+    "allProxyUrls": [
+      "https://compass.cosential.com"
+    ],
+    "auth": {
+      "basic": "unanet"
+    }
+  },
+  "unipile": {
+    "proxyUrl": "https://${connectionConfig.subdomain}.unipile.com:${connectionConfig.port}",
+    "allProxyUrls": [
+      "https://${connectionConfig.subdomain}.unipile.com:${connectionConfig.port}"
+    ],
+    "auth": {
+      "apiKey": "unipile"
+    }
+  },
+  "upsales": {
+    "proxyUrl": "https://integration.upsales.com",
+    "allProxyUrls": [
+      "https://integration.upsales.com"
+    ],
+    "auth": {
+      "apiKey": "upsales"
+    }
+  },
+  "vercel": {
+    "proxyUrl": "https://api.vercel.com",
+    "allProxyUrls": [
+      "https://api.vercel.com"
+    ],
+    "auth": {
+      "apiKey": "vercel"
+    }
+  },
+  "vimeo": {
+    "proxyUrl": "https://api.vimeo.com",
+    "allProxyUrls": [
+      "https://api.vimeo.com",
+      "https://api.vimeo.com"
+    ],
+    "auth": {
+      "oauth2": "vimeo",
+      "basic": "vimeo-basic"
+    }
+  },
+  "valley": {
+    "proxyUrl": "https://api.joinvalley.co/api",
+    "allProxyUrls": [
+      "https://api.joinvalley.co/api"
+    ],
+    "auth": {
+      "apiKey": "valley-api-key"
+    }
+  },
+  "vtex": {
+    "proxyUrl": "https://${connectionConfig.accountName}.vtexcommercestable.com.br",
+    "allProxyUrls": [
+      "https://${connectionConfig.accountName}.vtexcommercestable.com.br"
+    ],
+    "auth": {
+      "apiKey": "vtex"
+    }
+  },
+  "videoask": {
+    "proxyUrl": "https://api.videoask.com",
+    "allProxyUrls": [
+      "https://api.videoask.com"
+    ],
+    "auth": {
+      "oauth2": "videoask"
+    }
+  },
+  "wakatime": {
+    "proxyUrl": "https://wakatime.com",
+    "allProxyUrls": [
+      "https://wakatime.com"
+    ],
+    "auth": {
+      "oauth2": "wakatime"
+    }
+  },
+  "wave-accounting": {
+    "proxyUrl": "https://gql.waveapps.com",
+    "allProxyUrls": [
+      "https://gql.waveapps.com"
+    ],
+    "auth": {
+      "oauth2": "wave-accounting"
+    }
+  },
+  "wealthbox": {
+    "proxyUrl": "https://api.crmworkspace.com",
+    "allProxyUrls": [
+      "https://api.crmworkspace.com"
+    ],
+    "auth": {
+      "oauth2": "wealthbox"
+    }
+  },
+  "webflow": {
+    "proxyUrl": "https://api.webflow.com",
+    "allProxyUrls": [
+      "https://api.webflow.com"
+    ],
+    "auth": {
+      "oauth2": "webflow"
+    }
+  },
+  "webex": {
+    "proxyUrl": "https://webexapis.com",
+    "allProxyUrls": [
+      "https://webexapis.com"
+    ],
+    "auth": {
+      "oauth2": "webex"
+    }
+  },
+  "webinarjam": {
+    "proxyUrl": "https://api.webinarjam.com/webinarjam",
+    "allProxyUrls": [
+      "https://api.webinarjam.com/webinarjam"
+    ],
+    "auth": {
+      "apiKey": "webinarjam"
+    }
+  },
+  "wejam": {
+    "proxyUrl": "https://api.wejam.ai",
+    "allProxyUrls": [
+      "https://api.wejam.ai"
+    ],
+    "auth": {
+      "apiKey": "wejam"
+    }
+  },
+  "whatsapp-business": {
+    "proxyUrl": "https://graph.facebook.com",
+    "allProxyUrls": [
+      "https://graph.facebook.com"
+    ],
+    "auth": {
+      "apiKey": "whatsapp-business"
+    }
+  },
+  "whoop": {
+    "proxyUrl": "https://api.prod.whoop.com/",
+    "allProxyUrls": [
+      "https://api.prod.whoop.com/"
+    ],
+    "auth": {
+      "oauth2": "whoop"
+    }
+  },
+  "wildix-pbx": {
+    "proxyUrl": "https://${connectionConfig.subdomain}.wildixin.com",
+    "allProxyUrls": [
+      "https://${connectionConfig.subdomain}.wildixin.com"
+    ],
+    "auth": {
+      "oauth2": "wildix-pbx"
+    }
+  },
+  "wiza": {
+    "proxyUrl": "https://wiza.co/api",
+    "allProxyUrls": [
+      "https://wiza.co/api"
+    ],
+    "auth": {
+      "apiKey": "wiza"
+    }
+  },
+  "wordpress": {
+    "proxyUrl": "https://public-api.wordpress.com/rest/v1",
+    "allProxyUrls": [
+      "https://public-api.wordpress.com/rest/v1"
+    ],
+    "auth": {
+      "oauth2": "wordpress"
+    }
+  },
+  "wiseagent": {
+    "proxyUrl": "https://sync.thewiseagent.com",
+    "allProxyUrls": [
+      "https://sync.thewiseagent.com"
+    ],
+    "auth": {
+      "oauth2": "wiseagent"
+    }
+  },
+  "woocommerce": {
+    "proxyUrl": "https://${connectionConfig.storeURL}",
+    "allProxyUrls": [
+      "https://${connectionConfig.storeURL}"
+    ],
+    "auth": {
+      "basic": "woocommerce"
+    }
+  },
+  "workable": {
+    "proxyUrl": "https://${connectionConfig.subdomain}.workable.com",
+    "allProxyUrls": [
+      "https://${connectionConfig.subdomain}.workable.com",
+      "https://${connectionConfig.subdomain}.workable.com"
+    ],
+    "auth": {
+      "apiKey": "workable",
+      "oauth2": "workable-oauth"
+    }
+  },
+  "workday": {
+    "proxyUrl": "https://${connectionConfig.hostname}/ccx/service/${connectionConfig.tenant}",
+    "allProxyUrls": [
+      "https://${connectionConfig.hostname}/ccx/service/${connectionConfig.tenant}",
+      "https://${connectionConfig.tokenDomain}/ccx/api"
+    ],
+    "auth": {
+      "basic": "workday",
+      "oauth2": "workday-oauth"
+    }
+  },
+  "workday-adaptive-planning": {
+    "proxyUrl": "https://api.adaptiveplanning.com/api/rest",
+    "allProxyUrls": [
+      "https://api.adaptiveplanning.com/api/rest"
+    ],
+    "auth": {
+      "basic": "workday-adaptive-planning-basic"
+    }
+  },
+  "workos": {
+    "proxyUrl": "https://api.workos.com",
+    "allProxyUrls": [
+      "https://api.workos.com"
+    ],
+    "auth": {
+      "apiKey": "workos"
+    }
+  },
+  "workpath": {
+    "proxyUrl": "https://connect.workpath.com/api",
+    "allProxyUrls": [
+      "https://connect.workpath.com/api"
+    ],
+    "auth": {
+      "apiKey": "workpath"
+    }
+  },
+  "wrike": {
+    "proxyUrl": "https://${connectionConfig.host}/api/v4",
+    "allProxyUrls": [
+      "https://${connectionConfig.host}/api/v4"
+    ],
+    "auth": {
+      "oauth2": "wrike"
+    }
+  },
+  "wise": {
+    "proxyUrl": "https://api.wise.com",
+    "allProxyUrls": [
+      "https://api.wise.com"
+    ],
+    "auth": {
+      "apiKey": "wise-api-key"
+    }
+  },
+  "xai": {
+    "proxyUrl": "https://api.x.ai",
+    "allProxyUrls": [
+      "https://api.x.ai"
+    ],
+    "auth": {
+      "apiKey": "xai"
+    }
+  },
+  "xero": {
+    "proxyUrl": "https://api.xero.com",
+    "allProxyUrls": [
+      "https://api.xero.com"
+    ],
+    "auth": {
+      "oauth2": "xero"
+    }
+  },
+  "yahoo": {
+    "proxyUrl": "https://${connectionConfig.apiDomain}",
+    "allProxyUrls": [
+      "https://${connectionConfig.apiDomain}"
+    ],
+    "auth": {
+      "oauth2": "yahoo"
+    }
+  },
+  "yandex": {
+    "proxyUrl": "https://translate.yandex.net",
+    "allProxyUrls": [
+      "https://translate.yandex.net"
+    ],
+    "auth": {
+      "oauth2": "yandex"
+    }
+  },
+  "zapier": {
+    "proxyUrl": "https://api.zapier.com",
+    "allProxyUrls": [
+      "https://api.zapier.com"
+    ],
+    "auth": {
+      "oauth2": "zapier"
+    }
+  },
+  "zapier-nla": {
+    "proxyUrl": "https://nla.zapier.com",
+    "allProxyUrls": [
+      "https://nla.zapier.com"
+    ],
+    "auth": {
+      "oauth2": "zapier-nla"
+    }
+  },
+  "zapier-scim": {
+    "proxyUrl": "https://zapier.com/scim/v2",
+    "allProxyUrls": [
+      "https://zapier.com/scim/v2"
+    ],
+    "auth": {
+      "apiKey": "zapier-scim"
+    }
+  },
+  "zendesk": {
+    "proxyUrl": "https://${connectionConfig.subdomain}.zendesk.com",
+    "allProxyUrls": [
+      "https://${connectionConfig.subdomain}.zendesk.com",
+      "https://${connectionConfig.subdomain}.zendesk.com"
+    ],
+    "auth": {
+      "oauth2": "zendesk",
+      "basic": "zendesk-api-key"
+    }
+  },
+  "zendesk-sell": {
+    "proxyUrl": "https://api.getbase.com",
+    "allProxyUrls": [
+      "https://api.getbase.com"
+    ],
+    "auth": {
+      "oauth2": "zendesk-sell"
+    }
+  },
+  "zenefits": {
+    "proxyUrl": "https://api.zenefits.com",
+    "allProxyUrls": [
+      "https://api.zenefits.com"
+    ],
+    "auth": {
+      "oauth2": "zenefits"
+    }
+  },
+  "zigpoll": {
+    "proxyUrl": "https://v1.zigpoll.com",
+    "allProxyUrls": [
+      "https://v1.zigpoll.com"
+    ],
+    "auth": {
+      "apiKey": "zigpoll"
+    }
+  },
+  "zoho": {
+    "proxyUrl": "https://www.zohoapis.${connectionConfig.extension} || ${connectionConfig.api_domain}",
+    "allProxyUrls": [
+      "https://www.zohoapis.${connectionConfig.extension} || ${connectionConfig.api_domain}"
+    ],
+    "auth": {
+      "oauth2": "zoho"
+    }
+  },
+  "zoom": {
+    "proxyUrl": "https://api.zoom.us/v2",
+    "allProxyUrls": [
+      "https://api.zoom.us/v2"
+    ],
+    "auth": {
+      "oauth2": "zoom"
+    }
+  },
+  "snipe-it": {
+    "proxyUrl": "https://${connectionConfig.hostname}/api/",
+    "allProxyUrls": [
+      "https://${connectionConfig.hostname}/api/"
+    ],
+    "auth": {
+      "apiKey": "snipe-it"
+    }
+  },
+  "zorus": {
+    "proxyUrl": "https://developer.zorustech.com",
+    "allProxyUrls": [
+      "https://developer.zorustech.com"
+    ],
+    "auth": {
+      "apiKey": "zorus"
+    }
+  }
+}

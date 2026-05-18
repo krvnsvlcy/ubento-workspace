@@ -7,6 +7,10 @@ export async function getSpec() {
     template: {
       name: "Figma",
       discover: true,
+      connection: {
+        provider: "figma",
+        baseUrl: "https://api.figma.com",
+      },
     },
   });
 }

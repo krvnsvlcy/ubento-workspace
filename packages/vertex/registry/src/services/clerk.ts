@@ -7,6 +7,10 @@ export async function getSpec() {
     template: {
       name: "Clerk",
       discover: true,
+      connection: {
+        provider: "clerk",
+        baseUrl: "https://api.clerk.com",
+      },
     },
   });
 }

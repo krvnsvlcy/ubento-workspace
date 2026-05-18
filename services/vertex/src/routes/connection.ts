@@ -110,9 +110,18 @@ router.post(
       body: z.unknown(),
     }),
     async (req: Request, res: Response) => {
+      let credentials = req.body;
+      let name: string | undefined;
+
+      if (req.body && typeof req.body === "object" && "credentials" in (req.body as any)) {
+        credentials = (req.body as any).credentials;
+        name = (req.body as any).name;
+      }
+
       const connection = await updateConnectionAuth(
         req.params.connection_id as string,
-        req.body,
+        credentials,
+        name,
       );
       res.json(toSerializable(connection));
     },

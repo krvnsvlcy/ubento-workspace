@@ -38,6 +38,9 @@ export async function listConnectionProviders({
 export async function getConnectionProvider(id: string) {
   return prisma.connectionProvider.findUnique({ where: { id } });
 }
+export async function getConnectionProviderByCode(code: string) {
+  return prisma.connectionProvider.findUnique({ where: { code } });
+}
 
 export async function createConnectionProvider({
   code,
@@ -70,6 +73,7 @@ export async function createConnectionProvider({
 export async function updateConnectionProvider(
   id: string,
   data: {
+    type?: string;
     name?: string;
     description?: string | null;
     config?: Prisma.InputJsonValue | null;

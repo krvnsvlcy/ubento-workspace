@@ -7,6 +7,10 @@ export async function getSpec() {
     template: {
       name: "Supabase",
       discover: true,
+      connection: {
+        provider: "supabase",
+        baseUrl: "https://${connectionConfig.projectUrl}",
+      },
     },
   });
 }

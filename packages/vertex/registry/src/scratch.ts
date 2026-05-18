@@ -7,6 +7,7 @@ const nangoProviders = yaml.parse(
   readFileSync("./nango-providers.yaml", "utf-8"),
 );
 const grouped = groupNangoProviders(nangoProviders);
+writeFileSync("./grouped.json", JSON.stringify(grouped, null, 2));
 const providers = buildUbentoProviders(grouped, nangoProviders);
 console.log(`Generated ${Object.keys(providers).length} providers`);
 writeFileSync("./providers.json", JSON.stringify(providers, null, 2));

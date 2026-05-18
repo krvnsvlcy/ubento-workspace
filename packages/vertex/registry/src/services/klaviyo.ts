@@ -7,6 +7,10 @@ export async function getSpec() {
     template: {
       name: "Klaviyo",
       discover: true,
+      connection: {
+        provider: "klaviyo",
+        baseUrl: "https://a.klaviyo.com",
+      },
     },
   });
 }

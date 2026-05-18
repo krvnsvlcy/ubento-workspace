@@ -2,7 +2,7 @@ import cx from "clsx";
 import { ChevronRight } from "lucide-react";
 import type { JSX, PropsWithChildren } from "react";
 import React, { memo, useState } from "react";
-import ProgressBar from "@/components/feedback/loaders/progress_bar.js";
+import ProgressBar from "@/components/feedback/loaders/progress_bar.js"; 
 import { TreeEntryRaw } from "@/components/data/tree/tree_entry_raw.js";
 
 export type TreeEntryProps = PropsWithChildren<{

@@ -45,7 +45,7 @@ export async function invokeHttpService({
   // 4. Resolve Headers
   const headers = buildRequestHeaders(
     request.headers,
-    connection?.provider.headers,
+    connection?.spec.headers,
   );
 
   // 5. Inject Authentication

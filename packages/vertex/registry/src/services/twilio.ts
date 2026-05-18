@@ -7,6 +7,10 @@ export async function getSpec() {
     template: {
       name: "Twilio",
       discover: true,
+      connection: {
+        provider: "twilio",
+        baseUrl: "https://api.twilio.com",
+      },
     },
   });
 }

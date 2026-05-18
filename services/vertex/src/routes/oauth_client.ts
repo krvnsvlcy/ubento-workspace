@@ -11,6 +11,7 @@ import { z } from "zod";
 import {
   createOAuthClient,
   deleteOAuthClient,
+  getDefaultOAuthClient,
   getOAuthClient,
   listOAuthClients,
   oauthClientCredentialsSchema,
@@ -18,6 +19,26 @@ import {
 } from "../entities/oauth_client.js";
 
 const router: Router = Router();
+
+router.get(
+  "/default/:provider_id",
+  chain(
+    validate({
+      params: z.object({
+        provider_id: z.string(),
+      }),
+    }),
+    async (req: Request, res: Response) => {
+      const client = await getDefaultOAuthClient(req.params.provider_id as string);
+      if (!client) {
+        throw new NotFoundError(
+          `Default OAuth Client for provider ${req.params.provider_id}`,
+        );
+      }
+      res.json(toSerializable(client));
+    },
+  ),
+);
 
 router.get(
   "/:oauth_client_id",

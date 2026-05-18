@@ -18,14 +18,18 @@ export const oauthClientCredentialsSchema = z.object({
   clientId: z.string(),
   clientSecret: z.string(),
 });
-export type OAuthClientCredentials = z.infer<typeof oauthClientCredentialsSchema>;
+export type OAuthClientCredentials = z.infer<
+  typeof oauthClientCredentialsSchema
+>;
 
 export type SafeOAuthClient = Omit<OAuthClient, "credentials">;
 export type OAuthClientWithCredentials = SafeOAuthClient & {
   credentials?: OAuthClientCredentials;
 };
 
-function safeOAuthClient<T extends OAuthClient>(client: T): Omit<T, "credentials"> {
+function safeOAuthClient<T extends OAuthClient>(
+  client: T,
+): Omit<T, "credentials"> {
   const { credentials, ...safe } = client;
   return safe;
 }
@@ -62,6 +66,14 @@ export async function listOAuthClients({
 export async function getOAuthClient(id: string) {
   const client = await prisma.oAuthClient.findUnique({
     where: { id },
+    include: { provider: true },
+  });
+  return client ? safeOAuthClient(client) : null;
+}
+
+export async function getDefaultOAuthClient(providerId: string) {
+  const client = await prisma.oAuthClient.findFirst({
+    where: { provider_id: providerId, team_id: null },
     include: { provider: true },
   });
   return client ? safeOAuthClient(client) : null;

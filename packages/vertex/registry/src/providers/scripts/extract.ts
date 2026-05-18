@@ -1,6 +1,7 @@
 // 1. Input Interface (Nango)
 interface NangoProviderConfig {
   auth_mode?: string;
+  authorization_url?: string;
   proxy?: {
     base_url?: string;
   };
@@ -12,6 +13,7 @@ export type UbentoAuthType = "basic" | "oauth2" | "apiKey";
 
 export interface GroupedNangoProvider {
   proxyUrl: string;
+  allProxyUrls: string[];
   auth: {
     basic?: string;
     oauth2?: string;
@@ -47,16 +49,21 @@ export function groupNangoProviders(
 
     // Normalize the URL for grouping (lowercase, remove trailing slashes).
     // If the API has no proxyUrl defined, fallback to its original key to prevent dropping it.
-    const groupKey = proxyUrl
-      ? proxyUrl.trim().toLowerCase().replace(/\/$/, "")
-      : originalKey.toLowerCase();
+    const groupKey = originalKey
+      .replace("-api-key", "")
+      .replace("-oauth", "")
+      .replace("-basic", "")
+      .replace("-basic-auth", "");
 
     // 3. Initialize the group if it doesn't exist yet
     if (!grouped[groupKey]) {
       grouped[groupKey] = {
         proxyUrl, // Store the raw URL for later use
+        allProxyUrls: [proxyUrl],
         auth: {},
       };
+    } else {
+      grouped[groupKey].allProxyUrls.push(proxyUrl);
     }
 
     // 4. Register the original Nango key under the mapped auth type

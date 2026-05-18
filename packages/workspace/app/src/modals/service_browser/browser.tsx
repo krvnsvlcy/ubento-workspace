@@ -1,9 +1,13 @@
 import { useSession } from "@/contexts/session";
 import { useUbento } from "@/engine/app/engine";
 import { WorkspaceEngine } from "@/engine/workspace/engine";
+import { useModal } from "@/utils/modal-store";
+import { CreateServiceModal } from "./create-service";
 import {
+  Button,
   Content,
   ContentBody,
+  ContentFooter,
   ContentHeader,
   Heading,
   RailLayout,
@@ -81,6 +85,7 @@ export function ServiceBrowser({
 }) {
   const ubento = useUbento();
   const session = useSession();
+  const { open } = useModal();
   const installedServices =
     activeWorkspaceEngine?.useState(
       (s) => (s.workspace as any)?.services || {},
@@ -131,6 +136,20 @@ export function ServiceBrowser({
               })}
             </div>
           </ContentBody>
+          <ContentFooter className="border-t border-neutral-border/30 pt-3">
+            <Button
+              variant="outline"
+              className="w-full justify-center"
+              onClick={async () => {
+                const newService = await open(CreateServiceModal);
+                if (newService && newService.id) {
+                  onSelectService(newService.id);
+                }
+              }}
+            >
+              Create Service
+            </Button>
+          </ContentFooter>
         </Content>
       </RailLayoutSide>
       <RailLayoutMain>

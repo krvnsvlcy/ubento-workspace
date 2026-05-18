@@ -7,6 +7,10 @@ export async function getSpec() {
     template: {
       name: "Github",
       discover: true,
+      connection: {
+        provider: "github",
+        baseUrl: "https://api.github.com",
+      },
     },
   });
 }

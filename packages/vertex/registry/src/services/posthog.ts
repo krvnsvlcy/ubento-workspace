@@ -7,6 +7,10 @@ export async function getSpec() {
     template: {
       name: "Posthog",
       discover: true,
+      connection: {
+        provider: "posthog",
+        baseUrl: "https://${connectionConfig.subdomain}.posthog.com",
+      },
     },
   });
 }

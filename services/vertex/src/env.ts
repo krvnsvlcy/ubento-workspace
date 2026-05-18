@@ -17,10 +17,6 @@ export const env = defineEnv({
     type: "string",
     required: true,
   },
-  AUTH_ENCRYPTION_KEY: {
-    type: "string",
-    required: true,
-  },
   GCP_SERVICE_BUCKET_NAME: {
     type: "string",
     required: true,

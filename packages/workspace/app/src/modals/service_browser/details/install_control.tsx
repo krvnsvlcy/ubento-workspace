@@ -3,7 +3,7 @@ import {
   useServiceWorkspaceState,
   useWorkspaceServices,
 } from "@/hooks/workspace";
-import { ConnectionModal } from "@/modals/connection";
+import { ConnectionModal } from "@/modals/connection/connection";
 import { useModal } from "@/utils/modal-store";
 import { vertexClient } from "@ubento/services.sdk";
 import { ServiceSpecV1 } from "@ubento/vertex.core";
@@ -68,7 +68,7 @@ export function InstallControl({
       <Button
         onClick={() => {
           open(ConnectionModal, {
-            providerName: specData?.connection?.provider || "",
+            providerCode: specData?.connection?.provider || "",
           });
         }}
         variant="primary"
@@ -124,7 +124,7 @@ export function InstallControl({
         <Button
           onClick={() => {
             open(ConnectionModal, {
-              providerName: specData?.connection?.provider || "",
+              providerCode: specData?.connection?.provider || "",
             });
           }}
           variant="ghost"
@@ -179,7 +179,7 @@ export function InstallControl({
       <Button
         onClick={() => {
           open(ConnectionModal, {
-            providerName: specData?.connection?.provider || "",
+            providerCode: specData?.connection?.provider || "",
           });
         }}
         variant="ghost"

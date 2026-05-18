@@ -7,6 +7,10 @@ export async function getSpec() {
     template: {
       name: "Todoist",
       discover: true,
+      connection: {
+        provider: "todoist",
+        baseUrl: "https://api.todoist.com",
+      },
     },
   });
 }

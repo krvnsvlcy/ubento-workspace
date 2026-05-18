@@ -7,6 +7,10 @@ export async function getSpec() {
     template: {
       name: "Sentry",
       discover: true,
+      connection: {
+        provider: "sentry",
+        baseUrl: "https://${connectionConfig.hostname}/api",
+      },
     },
   });
 }

@@ -7,6 +7,10 @@ export async function getSpec() {
     template: {
       name: "Mailchimp",
       discover: true,
+      connection: {
+        provider: "mailchimp",
+        baseUrl: "https://${connectionConfig.dc}.api.mailchimp.com",
+      },
     },
   });
 }

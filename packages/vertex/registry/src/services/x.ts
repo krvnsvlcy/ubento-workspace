@@ -7,6 +7,10 @@ export async function getSpec() {
     template: {
       name: "X",
       discover: true,
+      connection: {
+        provider: "twitter-v2",
+        baseUrl: "https://api.twitter.com",
+      },
     },
   });
 }

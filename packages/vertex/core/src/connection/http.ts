@@ -49,6 +49,7 @@ export const httpConnectionProviderConfigSchema = z.object({
   type: z.literal("http"),
   code: z.string(), // unique identifier for the provider
   name: z.string(), // display name of the provider
+  baseUrl: z.string().optional(),
 
   // Dynamic UI variables collected before authentication begins
   customFields: z.record(z.string(), connectionCustomFieldSchema).optional(),

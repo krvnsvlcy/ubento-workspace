@@ -33,7 +33,24 @@ function BoardsSection({
         {
           icon: "plus",
           title: "Create Board",
-          handler: () => {},
+          handler: async () => {
+            const title = window.prompt("Enter new board name:");
+            if (title?.trim()) {
+              try {
+                const res = await workspaceEngine.createBoard({
+                  title: title.trim(),
+                });
+                if (res.boardId) {
+                  engine.goToLocation({
+                    board: res.boardId,
+                    params: {},
+                  });
+                }
+              } catch (err) {
+                console.error("Failed to create board:", err);
+              }
+            }
+          },
         },
       ]}
     >

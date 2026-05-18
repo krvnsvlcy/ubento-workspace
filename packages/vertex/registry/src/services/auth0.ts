@@ -7,6 +7,10 @@ export async function getSpec() {
     template: {
       name: "Auth0",
       discover: true,
+      connection: {
+        provider: "auth0",
+        baseUrl: "https://${connectionConfig.subdomain}.auth0.com",
+      },
     },
   });
 }

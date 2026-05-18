@@ -1001,48 +1001,12 @@ importers:
 
   packages/vertex/core:
     dependencies:
-      '@dnd-kit/core':
-        specifier: ^6.3.1
-        version: 6.3.1(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
-      '@dnd-kit/sortable':
-        specifier: ^10.0.0
-        version: 10.0.0(@dnd-kit/core@6.3.1(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(react@19.2.5)
-      '@dnd-kit/utilities':
-        specifier: ^3.2.2
-        version: 3.2.2(react@19.2.5)
-      '@json-render/core':
-        specifier: ^0.18.0
-        version: 0.18.0(zod@4.4.3)
-      '@json-render/react':
-        specifier: ^0.18.0
-        version: 0.18.0(react@19.2.5)(zod@4.4.3)
-      '@ubento/fabric':
-        specifier: workspace:*
-        version: link:../../utils/fabric
-      '@ubento/rpc':
-        specifier: workspace:*
-        version: link:../../utils/rpc
-      '@ubento/services.primitives':
-        specifier: workspace:*
-        version: link:../../services/primitives
-      '@ubento/workspace.primitives':
-        specifier: workspace:*
-        version: link:../../workspace/primitives
       dlv:
         specifier: ^1.1.3
         version: 1.1.3
-      motion:
-        specifier: ^12.38.0
-        version: 12.38.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
-      wouter:
-        specifier: ^3.6.0
-        version: 3.9.0(react@19.2.5)
       zod:
         specifier: ^4.3.6
         version: 4.4.3
-      zustand:
-        specifier: ^5.0.12
-        version: 5.0.13(@types/react@19.2.14)(immer@11.1.8)(react@19.2.5)(use-sync-external-store@1.6.0(react@19.2.5))
     devDependencies:
       '@types/dlv':
         specifier: ^1.1.5
@@ -1379,12 +1343,18 @@ importers:
       react-dom:
         specifier: ^19.0.0
         version: 19.2.5(react@19.2.5)
+      react-if:
+        specifier: ^4.1.6
+        version: 4.1.6(react@19.2.5)
       react-textarea-autosize:
         specifier: ^8.5.9
         version: 8.5.9(@types/react@19.2.14)(react@19.2.5)
       ses:
         specifier: ^2.0.0
         version: 2.0.0
+      wouter:
+        specifier: ^3.9.0
+        version: 3.9.0(react@19.2.5)
       yaml:
         specifier: ^2.8.3
         version: 2.8.4
@@ -9551,6 +9521,12 @@ packages:
     engines: {node: '>= 10.13'}
     peerDependencies:
       react: '>= 16.8 || 18.0.0'
+
+  react-if@4.1.6:
+    resolution: {integrity: sha512-vEwRUAiNVD+UWE5vRIU+wTPZOSlw81xpR8ffDRxkff+68y63I8Lbv9PIGdookNDAKbyCRqtKxccKoFtgIhEM/w==}
+    engines: {node: '>=12'}
+    peerDependencies:
+      react: ^16.x || ^17.x || ^18.x || ^19.x
 
   react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
@@ -19617,6 +19593,10 @@ snapshots:
       attr-accept: 2.2.5
       file-selector: 2.1.2
       prop-types: 15.8.1
+      react: 19.2.5
+
+  react-if@4.1.6(react@19.2.5):
+    dependencies:
       react: 19.2.5
 
   react-is@16.13.1: {}

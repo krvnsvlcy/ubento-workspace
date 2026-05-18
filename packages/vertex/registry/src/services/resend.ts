@@ -7,6 +7,10 @@ export async function getSpec() {
     template: {
       name: "Resend",
       discover: true,
+      connection: {
+        provider: "resend",
+        baseUrl: "https://api.resend.com",
+      },
     },
   });
 }

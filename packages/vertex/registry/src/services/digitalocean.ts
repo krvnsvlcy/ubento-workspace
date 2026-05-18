@@ -7,6 +7,10 @@ export async function getSpec() {
     template: {
       name: "Digitalocean",
       discover: true,
+      connection: {
+        provider: "digitalocean",
+        baseUrl: "https://api.digitalocean.com",
+      },
     },
   });
 }

@@ -7,6 +7,10 @@ export async function getSpec() {
     template: {
       name: "Google",
       discover: true,
+      connection: {
+        provider: "google",
+        baseUrl: "https://www.googleapis.com",
+      },
     },
   });
 }

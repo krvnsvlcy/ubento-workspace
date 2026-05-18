@@ -44,11 +44,11 @@ export class VertexService {
     return extractResponseData(result, true);
   }
 
-  async getProviderByName(name: string): Promise<ConnectionProvider> {
+  async getProviderByCode(code: string): Promise<ConnectionProvider> {
     const result = await this.vertexClient.get(
-      "/vertex/connection-providers/by-name/{name}",
+      "/vertex/connection-providers/by-code/{code}",
       {
-        params: { path: { name } },
+        params: { path: { code } },
       },
     );
     return extractResponseData(result, true);
@@ -160,6 +160,20 @@ export class VertexService {
     return extractResponseData(result, true);
   }
 
+  async updateConnectionAuth(
+    connectionId: string,
+    credentials: any,
+  ): Promise<Connection> {
+    const result = await this.vertexClient.post(
+      "/vertex/connections/{connection_id}/auth",
+      {
+        params: { path: { connection_id: connectionId } },
+        body: credentials,
+      },
+    );
+    return extractResponseData(result, true);
+  }
+
   // ===== OAuth Clients =====
 
   async listOAuthClients(
@@ -181,6 +195,16 @@ export class VertexService {
       "/vertex/oauth-clients/{oauth_client_id}",
       {
         params: { path: { oauth_client_id: oauthClientId } },
+      },
+    );
+    return extractResponseData(result, true);
+  }
+
+  async getDefaultOAuthClient(providerId: string): Promise<OAuthClient> {
+    const result = await this.vertexClient.get(
+      "/vertex/oauth-clients/default/{provider_id}" as any,
+      {
+        params: { path: { provider_id: providerId } } as any,
       },
     );
     return extractResponseData(result, true);
@@ -278,7 +302,6 @@ export class VertexService {
       name?: string;
       display_name?: string;
       description?: string;
-      config?: Record<string, any>;
     },
   ): Promise<Service> {
     const result = await this.vertexClient.patch(

@@ -13,6 +13,7 @@ import {
   createConnectionProvider,
   deleteConnectionProvider,
   getConnectionProvider,
+  getConnectionProviderByCode,
   listConnectionProviders,
   updateConnectionProvider,
 } from "../entities/connection_provider.js";
@@ -42,19 +43,17 @@ router.get(
 );
 
 router.get(
-  "/by-name/:name",
+  "/by-code/:code",
   chain(
     validate({
       params: z.object({
-        name: z.string(),
+        code: z.string(),
       }),
     }),
     async (req: Request, res: Response) => {
-      const result = await listConnectionProviders({
-        name: req.params.name as string,
-        limit: 1,
-      });
-      const provider = result.data[0];
+      const provider = await getConnectionProviderByCode(
+        req.params.code as string,
+      );
       if (!provider) {
         throw new NotFoundError(
           `connection_provider with name ${req.params.name}`,

@@ -6,7 +6,6 @@ import { BentoRuntime } from "../runtime/runtime";
 export function BentoHomeView({ runtime }: { runtime: BentoRuntime }) {
   const { data: boards, status } = useStoreEntities(runtime.boardStore);
   const workspace = runtime.useState((runtime) => runtime.workspace);
-  const user = runtime.useState((runtime) => runtime.user);
 
   const boardsList = boards || [];
 

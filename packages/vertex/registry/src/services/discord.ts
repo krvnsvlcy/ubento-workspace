@@ -7,6 +7,10 @@ export async function getSpec() {
     template: {
       name: "Discord",
       discover: true,
+      connection: {
+        provider: "discord",
+        baseUrl: "https://discord.com",
+      },
     },
   });
 }

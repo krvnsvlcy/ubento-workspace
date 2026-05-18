@@ -32,11 +32,11 @@ export async function getAuthUrl({
 
   // 1. Validate config
   const config = connectionProviderConfigSchema.parse(provider.config);
-  const authConfig = config.authStrategies?.find((s) => s.type === "oauth2");
+  const authConfig = config.auth?.oauth2;
 
-  if (!authConfig || authConfig.type !== "oauth2") {
+  if (!authConfig) {
     throw new ValidationError(
-      `Unsupported auth type for oauth flow: ${authConfig?.type || "none"}`,
+      "Unsupported auth type for oauth flow: none",
     );
   }
 
@@ -60,7 +60,7 @@ export async function getAuthUrl({
 
   // 3. Resolve the authorize request
   const resolvedAuthorize = resolveObject(
-    authConfig.handlers.authorize.request,
+    authConfig.authorize.request,
     {
       args: {
         client_id: clientCredentials.clientId || clientCredentials.client_id,
@@ -107,8 +107,8 @@ export async function handleOAuthCallback(
 
   // 4. Extract correctly typed auth config
   const config = connectionProviderConfigSchema.parse(provider.config);
-  const authConfig = config.authStrategies?.find((s) => s.type === "oauth2");
-  if (!authConfig || authConfig.type !== "oauth2") {
+  const authConfig = config.auth?.oauth2;
+  if (!authConfig) {
     throw new Error("Provider is not configured for OAuth2");
   }
 
@@ -121,7 +121,7 @@ export async function handleOAuthCallback(
 
   // 5. Exchange token using invokeHttpService
   const result = await invokeHttpService({
-    handler: authConfig.handlers.token,
+    handler: authConfig.token,
     args: {
       code,
       client_id: clientCredentials.clientId || clientCredentials.client_id,

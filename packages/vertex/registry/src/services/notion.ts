@@ -7,6 +7,10 @@ export async function getSpec() {
     template: {
       name: "Notion",
       discover: true,
+      connection: {
+        provider: "notion",
+        baseUrl: "https://api.notion.com",
+      },
     },
   });
 }

@@ -1,4 +1,3 @@
-import { Prisma } from "@ubento/services.database/vertex";
 import { generateBareId, makeEntityId } from "@ubento/services.primitives";
 import { prismaListWithCursor } from "@ubento/services.toolkit";
 import prisma from "../lib/prisma.js";
@@ -49,15 +48,17 @@ export async function createService({
   name,
   display_name,
   description,
-  config,
 }: {
   team_id: string;
   scope?: string;
   name: string;
   display_name: string;
   description?: string | null;
-  config?: unknown;
 }) {
+  console.log({
+    scope,
+    name,
+  });
   return prisma.service.create({
     data: {
       id: makeEntityId({
@@ -65,11 +66,10 @@ export async function createService({
         bareId: generateBareId(),
       }),
       team_id,
-      scope,
+      scope: scope === "team" ? team_id : "__public__",
       name: name.toLowerCase(),
       display_name,
       description,
-      config: config as Prisma.InputJsonValue | undefined,
     },
   });
 }
@@ -80,7 +80,6 @@ export async function updateService(
     name?: string;
     display_name?: string;
     description?: string | null;
-    config?: unknown;
   },
 ) {
   return prisma.service.update({
@@ -88,10 +87,6 @@ export async function updateService(
     data: {
       ...data,
       ...(data.name !== undefined && { name: data.name.toLowerCase() }),
-      config:
-        data.config !== undefined
-          ? (data.config as Prisma.InputJsonValue)
-          : undefined,
     },
   });
 }

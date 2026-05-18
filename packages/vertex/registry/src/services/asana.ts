@@ -10,6 +10,10 @@ export async function getSpec() {
     template: {
       name: "Asana",
       discover: true,
+      connection: {
+        provider: "asana",
+        baseUrl: "https://app.asana.com",
+      },
     },
   });
 }

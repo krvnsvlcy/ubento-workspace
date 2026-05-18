@@ -546,7 +546,7 @@ export function createWorkspaceEngine({
     title: string;
     parentId?: string;
     spec?: any;
-  }): Promise<ParsedSpec<BoardSpec>> {
+  }): Promise<ParsedSpec<BoardSpec> & { boardId: string; id: string }> {
     const state = store.getState();
     const workspaceId = state.workspace.id;
 
@@ -558,14 +558,18 @@ export function createWorkspaceEngine({
       ? await deepValidateBoard(parsed.data)
       : parsed;
 
-    await workspaceService.createBoard({
+    const board = await workspaceService.createBoard({
       name: title,
       parentId,
       workspace_id: workspaceId,
       data: validated.data as any,
     });
 
-    return validated;
+    return {
+      ...validated,
+      boardId: board.id,
+      id: board.id,
+    };
   }
 
   const persistBoard = debounce(async (data: BentoBoardData) => {

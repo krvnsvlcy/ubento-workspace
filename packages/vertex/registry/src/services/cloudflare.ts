@@ -7,6 +7,10 @@ export async function getSpec() {
     template: {
       name: "Cloudflare",
       discover: true,
+      connection: {
+        provider: "cloudflare",
+        baseUrl: "https://api.cloudflare.com/client",
+      },
     },
   });
 }

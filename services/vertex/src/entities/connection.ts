@@ -5,6 +5,7 @@ import {
   ubentoEntities,
 } from "@ubento/services.primitives";
 import {
+  InternalServerError,
   NotFoundError,
   prismaListWithCursor,
   ValidationError,
@@ -182,8 +183,8 @@ export async function createConnection({
     provider.config,
   );
   if (!parsedConfig.success) {
-    throw new ValidationError(
-      `Invalid connection provider config\n${parsedConfig.error.message}`,
+    throw new InternalServerError(
+      `Invalid connection provider config for ${provider.code}: ${parsedConfig.error.message}`,
     );
   }
 
@@ -270,10 +271,25 @@ export async function createConnection({
   return safeConnection(result); // FIXED: Protect raw return
 }
 
-export async function updateConnectionAuth(id: string, auth: unknown) {
+export async function updateConnectionAuth(
+  id: string,
+  auth?: unknown,
+  name?: string,
+) {
   const connection = await getConnection(id);
   if (!connection) {
     throw new NotFoundError(`connection ${id}`);
+  }
+
+  if (!auth) {
+    if (!name) {
+      throw new ValidationError("Either credentials or name must be provided");
+    }
+    const result = await prisma.connection.update({
+      where: { id },
+      data: { name },
+    });
+    return safeConnection(result);
   }
 
   const provider = await getConnectionProvider(connection.provider_id);
@@ -309,6 +325,7 @@ export async function updateConnectionAuth(id: string, auth: unknown) {
   const result = await prisma.connection.update({
     where: { id },
     data: {
+      ...(name && { name }),
       credentials: {
         iv: encryptedData.iv,
         auth_tag: encryptedData.authTag,

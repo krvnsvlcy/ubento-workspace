@@ -11,7 +11,7 @@ export function ConnectionBlock({
 }) {
   const ubento = useUbento();
   const { data: providerData } =
-    ubento.vertex.useConnectionProviderByName(providerName);
+    ubento.vertex.useConnectionProviderByCode(providerName);
 
   if (!isMissing) return null;
 
@@ -55,7 +55,9 @@ export function ConnectionBlock({
           )}
           {!supportsToken && !supportsOAuth2 && (
             <div>
-              <Text tone="subtle" className="text-[11px]">No connection method available</Text>
+              <Text tone="subtle" className="text-[11px]">
+                No connection method available
+              </Text>
             </div>
           )}
         </div>

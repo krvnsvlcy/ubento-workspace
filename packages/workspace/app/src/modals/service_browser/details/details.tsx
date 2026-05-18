@@ -1,11 +1,14 @@
 import { ErrorView } from "@/components/error";
+import { useSession } from "@/contexts/session";
 import { useUbento } from "@/engine/app/engine";
 import { WorkspaceEngine } from "@/engine/workspace/engine";
+import { useModal } from "@/utils/modal-store";
 import { serviceSpecV1Schema } from "@ubento/vertex.core";
 import {
   Button,
   Content,
   ContentBody,
+  ContentFooter,
   ContentHeader,
   PendingView,
   RailLayout,
@@ -13,8 +16,9 @@ import {
   RailLayoutSide,
   Text,
 } from "@ubento/workspace.primitives";
-import { ArrowLeft, Server } from "lucide-react";
+import { ArrowLeft, Edit, Server } from "lucide-react";
 import { useEffect, useState } from "react";
+import { EditServiceModal } from "../edit-service";
 import { DetailsBody } from "./body";
 import { DetailsHeader } from "./header";
 
@@ -27,7 +31,9 @@ export function ServiceDetails({
   serviceId: string;
   onBack: () => void;
 }) {
+  const session = useSession();
   const ubento = useUbento();
+  const { open } = useModal();
   const [activeChannelId, setActiveChannelId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const {
@@ -99,6 +105,19 @@ export function ServiceDetails({
               {specData?.description || serviceData.description}
             </Text>
           </ContentBody>
+          {serviceData.team_id === session?.teamId && (
+            <ContentFooter className="border-t border-neutral-border/30 pt-3">
+              <Button
+                variant="outline"
+                className="w-full justify-center gap-2"
+                onClick={() => {
+                  open(EditServiceModal, { service: serviceData });
+                }}
+              >
+                <Edit size={16} /> Edit Service
+              </Button>
+            </ContentFooter>
+          )}
         </Content>
       </RailLayoutSide>
       <RailLayoutMain>

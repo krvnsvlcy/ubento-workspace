@@ -9,6 +9,7 @@ import {
 import { ubentoEntities } from "@ubento/services.primitives";
 import { UbentoSDK, vertexClient } from "@ubento/services.sdk";
 import { UbentoApiPage, ubentoToFabricPagedResponse } from "../libs/pagination";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function createUbentoVertexService({
   ubentoSdk,
@@ -123,13 +124,13 @@ export function createUbentoVertexService({
     ) => {
       return useStoreEntities(connectionProviderStore, params, options);
     },
-    useConnectionProviderByName: (name: string, options?: any) => {
+    useConnectionProviderByCode: (code: string, options?: any) => {
       return useQuery<vertexClient.ConnectionProvider>({
-        queryKey: ["connection-provider-by-name", name],
+        queryKey: ["connection-provider-by-code", code],
         queryFn: async () => {
-          return await ubentoSdk.vertex.getProviderByName(name);
+          return await ubentoSdk.vertex.getProviderByCode(code);
         },
-        enabled: !!name,
+        enabled: !!code,
         ...options,
       });
     },
@@ -182,6 +183,23 @@ export function createUbentoVertexService({
         },
       });
     },
+    useUpdateConnectionAuth: () => {
+      return useMutation({
+        mutationFn: async (data: {
+          connectionId: string;
+          credentials: any;
+        }) => {
+          return await (ubentoSdk.vertex as any).updateConnectionAuth(
+            data.connectionId,
+            data.credentials,
+          );
+        },
+        onSuccess: (connection) => {
+          connectionStore.push(connection);
+        },
+      });
+    },
+
 
     // Services
     useService: (serviceId: string, options?: UseStoreOptions) => {
@@ -223,6 +241,103 @@ export function createUbentoVertexService({
       options?: UseStoreOptions,
     ) => {
       return useStoreEntities(serviceStore, params, options);
+    },
+    useCreateService: () => {
+      return useMutation({
+        mutationFn: async (data: {
+          team_id: string;
+          scope: string;
+          name: string;
+          display_name: string;
+          description?: string;
+          config?: Record<string, any>;
+        }) => {
+          return await ubentoSdk.vertex.createService(data);
+        },
+        onSuccess: (service) => {
+          serviceStore.push(service);
+        },
+      });
+    },
+    useUpdateService: () => {
+      return useMutation({
+        mutationFn: async ({
+          serviceId,
+          data,
+        }: {
+          serviceId: string;
+          data: {
+            name?: string;
+            display_name?: string;
+            description?: string;
+            config?: Record<string, any>;
+          };
+        }) => {
+          return await ubentoSdk.vertex.updateService(serviceId, data);
+        },
+        onSuccess: (service) => {
+          serviceStore.push(service);
+        },
+      });
+    },
+    useCreateConnectionProvider: () => {
+      return useMutation({
+        mutationFn: async (data: {
+          code: string;
+          type: string;
+          name: string;
+          description?: string;
+          config?: Record<string, any>;
+        }) => {
+          const provider = await ubentoSdk.vertex.createConnectionProvider(data);
+          connectionProviderStore.push(provider);
+          return provider;
+        },
+      });
+    },
+    useCreateServiceChannel: () => {
+      const queryClient = useQueryClient();
+      return useMutation({
+        mutationFn: async ({
+          serviceId,
+          data,
+        }: {
+          serviceId: string;
+          data: {
+            team_id: string;
+            name: string;
+          };
+        }) => {
+          return await ubentoSdk.vertex.createServiceChannel(serviceId, data);
+        },
+        onSuccess: (channel) => {
+          queryClient.invalidateQueries({
+            queryKey: ["service-channels", channel.service_id],
+          });
+        },
+      });
+    },
+    useUploadServiceChannelSpec: () => {
+      const queryClient = useQueryClient();
+      return useMutation({
+        mutationFn: async ({
+          serviceChannelId,
+          spec,
+        }: {
+          serviceChannelId: string;
+          spec: Record<string, any>;
+        }) => {
+          return await ubentoSdk.vertex.uploadServiceChannelSpec(
+            serviceChannelId,
+            spec,
+          );
+        },
+        onSuccess: (_, variables) => {
+          queryClient.invalidateQueries({
+            queryKey: ["service-channel-spec", variables.serviceChannelId],
+          });
+        },
+      });
     },
   };
 
