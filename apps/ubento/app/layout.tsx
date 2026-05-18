@@ -1,10 +1,10 @@
-import { SessionProvider } from "@/components/session";
 import { ModalRenderer } from "@/components/modal-renderer";
+import { SessionProvider } from "@/components/session";
 import { getSession } from "@/lib/auth";
+import "@ubento/bento.style/css/themes.css";
 import "@ubento/bento.style/dist/uno.css";
 import type { Metadata } from "next";
 import { headers } from "next/headers";
-import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Ubento",

@@ -20,7 +20,7 @@ interface ModalState {
 export const useModalStore = create<ModalState>((set, get) => ({
   queue: [],
 
-  open: (component, props = {}) => {
+  open: (component, props = {} as any) => {
     return new Promise((resolve) => {
       const id = Math.random().toString(36).substring(7);
       const instance: ModalInstance = {

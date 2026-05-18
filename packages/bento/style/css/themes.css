@@ -10,6 +10,7 @@
 ::file-selector-button {
   /* scrollbar-width: none; */
   border-color: var(--color-neutral-border);
+  /* corner-shape: squircle; */
 }
 
 body {

@@ -1,14 +1,8 @@
 import React from "react";
 
-export function Logo(props: React.JSX.IntrinsicAttributes) {
+export function Logo(props: React.ComponentProps<"svg">) {
   return (
-    <svg
-      width="90"
-      height="17"
-      viewBox="0 0 90 17"
-      xmlns="http://www.w3.org/2000/svg"
-      {...props}
-    >
+    <svg viewBox="0 0 90 17" xmlns="http://www.w3.org/2000/svg" {...props}>
       <path
         d="M6.42857 9.06667C7.0741 9.06667 7.5974 9.57408 7.5974 10.2V16.4333C7.5974 16.7463 7.33575 17 7.01299 17H5.84416C2.61652 17 7.53051e-08 14.4629 0 11.3333V10.2C0 9.57408 0.523304 9.06667 1.16883 9.06667H6.42857Z"
         fill="currentColor"

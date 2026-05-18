@@ -142,4 +142,11 @@
   --color-destructive-content: #7f1d1d;
   --color-destructive-content-subtle: #991b1b;
   --color-destructive-content-muted: #b91c1c;
+
+  /* =========================================
+     Fonts
+     ========================================= */
+  --font-heading: "Inter", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
 }

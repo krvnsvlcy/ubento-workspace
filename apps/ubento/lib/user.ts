@@ -1,8 +1,9 @@
 import axios from "axios";
 import { getAccessToken } from "./auth";
 
-export async function getUser() {
-  const accessToken = await getAccessToken();
+export async function getUser(request?: Request) {
+  if (!request) return undefined;
+  const accessToken = await getAccessToken(request);
   if (!accessToken) return undefined;
 
   try {
