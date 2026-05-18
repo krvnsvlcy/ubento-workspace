@@ -33,9 +33,9 @@ export const apiKeyStrategySchema = z.object({
 });
 
 export const oauth2StrategySchema = z.object({
-  type: z.literal("oauth2"),
   defaultScopes: z.array(z.string()).optional(),
   disablePkce: z.boolean().optional(),
+  baseUrl: z.string(),
   authorize: httpHandlerSchema,
   token: httpHandlerSchema,
   refresh: httpHandlerSchema.optional(),
@@ -93,7 +93,7 @@ export const oauth2ConnectionCredentialsSchema = baseCredentialsSchema.extend({
   accessToken: z.string(),
   expiresIn: z.number(),
   tokenType: z.string(),
-  scope: z.string(),
+  scope: z.string().optional(),
 });
 
 export const apiKeyConnectionCredentialsSchema = baseCredentialsSchema.extend({

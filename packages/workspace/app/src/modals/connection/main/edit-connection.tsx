@@ -17,8 +17,9 @@ import {
   Input,
 } from "@ubento/workspace.primitives";
 import { useState } from "react";
-import { Case, Default, Switch } from "react-if";
+import { Case, Default, If, Switch } from "react-if";
 import { extractProviderAuthMethods } from "./utils";
+import { AuthMethodSelector, OAuthClientSelector } from "./shared";
 
 export function EditConnection({
   connection,
@@ -37,13 +38,16 @@ export function EditConnection({
   const session = useSession();
 
   const authMethods = extractProviderAuthMethods(config);
-  const authMethod = authMethods[0]?.code || "api-key";
-  const authMethodName = authMethods[0]?.name || "API Key";
+  const [authMethod, setAuthMethod] = useState<string>(
+    authMethods[0]?.code || "api-key",
+  );
 
   const [connectionName, setConnectionName] = useState(connection.name || "");
   const [apiKey, setApiKey] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [oauthClientId, setOauthClientId] = useState<string>("");
+
   const [error, setError] = useState("");
   const [isRedirecting, setIsRedirecting] = useState(false);
 
@@ -55,20 +59,17 @@ export function EditConnection({
     try {
       setError("");
       setIsRedirecting(true);
-      const result = await ubento.sdk.vertex.listOAuthClients({
-        provider_id: providerData.id,
-      });
-      const clients = result.data || [];
-      if (clients.length === 0) {
-        setError(
-          "No OAuth Client is configured for this provider. Please configure an OAuth Client first.",
-        );
+      if (!oauthClientId) {
+        setError("Please select or configure an OAuth Client first.");
         setIsRedirecting(false);
         return;
       }
-      const oauthClient = clients[0];
-      // Redirect to the connection endpoint to re-auth
-      window.location.href = `/api/vertex/oauth/connect?oauth_client_id=${oauthClient.id}&team_id=${session.teamId}`;
+      // Open connection endpoint in a new tab
+      window.open(
+        `http://localhost:28642/vertex/oauth/connect?oauth_client_id=${oauthClientId}&team_id=${session.teamId}`,
+        "_blank",
+      );
+      setIsRedirecting(false);
     } catch (err: any) {
       setError(err.message || "Failed to initiate OAuth flow.");
       setIsRedirecting(false);
@@ -132,12 +133,16 @@ export function EditConnection({
           />
         </Field>
 
-        <Field>
-          <FieldLabel>Authentication Method</FieldLabel>
-          <div className="text-sm font-semibold px-3 py-2 bg-neutral-surface-hover/30 rounded-lg w-fit border border-neutral-border text-neutral-content-muted select-none">
-            {authMethodName}
-          </div>
-        </Field>
+        <If condition={authMethods.length > 1}>
+          <Field>
+            <FieldLabel>Authentication Method</FieldLabel>
+            <AuthMethodSelector
+              authMethods={authMethods}
+              value={authMethod}
+              onChange={setAuthMethod}
+            />
+          </Field>
+        </If>
 
         <Switch>
           <Case condition={authMethod === "api-key"}>
@@ -150,6 +155,7 @@ export function EditConnection({
               />
             </Field>
           </Case>
+
           <Case condition={authMethod === "basic"}>
             <div className="space-y-4">
               <Field>
@@ -171,14 +177,13 @@ export function EditConnection({
               </Field>
             </div>
           </Case>
+
           <Case condition={authMethod === "oauth2"}>
-            <div className="space-y-2 p-4 rounded-xl bg-neutral-surface border border-neutral-border text-center">
-              <p className="text-sm font-semibold">OAuth Authorization</p>
-              <p className="text-xs text-neutral-content-muted">
-                To update OAuth credentials, re-authorize your connection with{" "}
-                {providerData.name}.
-              </p>
-            </div>
+            <OAuthClientSelector
+              providerData={providerData}
+              value={oauthClientId}
+              onChange={setOauthClientId}
+            />
           </Case>
         </Switch>
       </ContentBody>
@@ -202,7 +207,7 @@ export function EditConnection({
                 onClick={handleOAuthConnect}
                 variant="primary"
                 size="sm"
-                disabled={isRedirecting}
+                disabled={isRedirecting || !oauthClientId}
               >
                 {isRedirecting ? "Connecting..." : "Reconnect OAuth"}
               </Button>
@@ -223,3 +228,4 @@ export function EditConnection({
     </Content>
   );
 }
+

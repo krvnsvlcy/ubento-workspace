@@ -78,7 +78,9 @@ export async function deleteServiceChannel(id: string) {
   });
 }
 
-export async function getServiceChannelSpec(id: string): Promise<ServiceSpec> {
+export async function getServiceChannelSpec(
+  id: string,
+): RunHttpHandlerErrorCode<ServiceSpec> {
   const channel = await prisma.serviceChannel.findUnique({
     where: { id, deleted_at: { isSet: false } },
   });
@@ -125,7 +127,7 @@ export async function uploadServiceChannelSpec(id: string, spec: ServiceSpec) {
 
 export async function getServiceSpec(
   channel_id: string,
-): Promise<ServiceSpecV1> {
+): RunHttpHandlerErrorCode<ServiceSpecV1> {
   const channel = await prisma.serviceChannel.findUnique({
     where: { id: channel_id },
   });

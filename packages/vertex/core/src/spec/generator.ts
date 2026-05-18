@@ -1,6 +1,6 @@
 import { OperationSpec } from "./operation.js";
 import { HttpConnectionSpec, httpHandlerSchema } from "./protocols/http.js";
-import { ServiceSpecV1 } from "./service.js";
+import { ServiceSpecV1_r } from "./service.js";
 
 export interface ServiceSpecTemplate {
   name: string;
@@ -86,7 +86,7 @@ export function generateServiceSpecFromOpenApi({
 }: {
   openapi: any;
   template: ServiceSpecTemplate;
-}): ServiceSpecV1 {
+}): ServiceSpecV1_r {
   const schemas: Record<string, any> = {};
 
   function sortObjectKeys<T extends Record<string, any>>(
@@ -150,7 +150,7 @@ export function generateServiceSpecFromOpenApi({
     }
   }
 
-  const spec: ServiceSpecV1 = {
+  const spec: ServiceSpecV1_r = {
     spec: 1,
     name: template.name,
     type: "http",

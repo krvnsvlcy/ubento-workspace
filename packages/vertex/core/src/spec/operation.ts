@@ -20,6 +20,6 @@ export function operationSpecSchema<THandlerSpec extends z.ZodType>({
   });
 }
 
-export type OperationSpec<THandlerSpec extends z.ZodType> = z.infer<
+export type OperationSpec<THandlerSpec extends z.ZodType> = z.input<
   ReturnType<typeof operationSpecSchema<THandlerSpec>>
 >;

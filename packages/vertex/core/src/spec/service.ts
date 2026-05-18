@@ -45,4 +45,5 @@ export const httpServiceSpecV1Schema = serviceSpecV1SchemaFactory({
 export const serviceSpecV1Schema = z.discriminatedUnion("type", [
   httpServiceSpecV1Schema,
 ]);
-export type ServiceSpecV1 = z.infer<typeof serviceSpecV1Schema>;
+export type ServiceSpecV1_r = z.input<typeof serviceSpecV1Schema>;
+export type ServiceSpecV1 = z.output<typeof serviceSpecV1Schema>;

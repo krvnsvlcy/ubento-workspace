@@ -22,7 +22,7 @@ export type HttpBodyType = z.infer<typeof httpBodyTypeSchema>;
 
 export const httpBodySchema = z.object({
   type: httpBodyTypeSchema,
-  data: z.unknown(),
+  data: z.unknown().optional(),
 });
 export type HttpBody = z.infer<typeof httpBodySchema>;
 
@@ -47,6 +47,9 @@ export const httpRequestSchema = z.object({
 
 export const httpHandlerSchema = z.object({
   request: httpRequestSchema,
-  response: httpBodySchema.optional(),
+  response: httpBodySchema.default({
+    type: "json",
+  }),
 });
-export type HttpHandler = z.infer<typeof httpHandlerSchema>;
+export type HttpHandlerInput = z.input<typeof httpHandlerSchema>;
+export type HttpHandler = z.output<typeof httpHandlerSchema>;

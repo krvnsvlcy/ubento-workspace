@@ -12,11 +12,15 @@ import {
 } from "@ubento/workspace.primitives";
 import { useState } from "react";
 
-export function CreateProviderModal() {
+interface CreateProviderModalProps {
+  provider?: any;
+}
+
+export function CreateProviderModal({ provider }: CreateProviderModalProps = {}) {
   const ubento = useUbento();
   const { close } = useModal();
 
-  const [description, setDescription] = useState("");
+  const [description, setDescription] = useState(provider?.description || "");
   const [templateType, setTemplateType] = useState("oauth2");
   const [error, setError] = useState("");
 
@@ -86,10 +90,18 @@ export function CreateProviderModal() {
     );
   };
 
-  const [configText, setConfigText] = useState(() => getTemplate("oauth2"));
+  const [configText, setConfigText] = useState(() =>
+    provider
+      ? JSON.stringify(provider.config || provider, null, 2)
+      : getTemplate("oauth2"),
+  );
 
-  const { mutate: createProvider, isPending } =
+  const { mutate: createProvider, isPending: isCreating } =
     ubento.vertex.useCreateConnectionProvider();
+  const { mutate: updateProvider, isPending: isUpdating } =
+    ubento.vertex.useUpdateConnectionProvider();
+
+  const isPending = isCreating || isUpdating;
 
   const handleTemplateChange = (val: string) => {
     setTemplateType(val);
@@ -133,33 +145,59 @@ export function CreateProviderModal() {
       return;
     }
 
-    createProvider(
-      {
-        code: code.trim(),
-        name: name.trim(),
-        type: "http",
-        description: description.trim(),
-        config: parsedConfig,
-      },
-      {
-        onSuccess: (newProvider: any) => {
-          close(newProvider);
+    if (provider) {
+      updateProvider(
+        {
+          providerId: provider.id,
+          data: {
+            code: code.trim(),
+            name: name.trim(),
+            type: "http",
+            description: description.trim(),
+            config: parsedConfig,
+          },
         },
-        onError: (err: any) => {
-          setError(
-            err.message ||
-              "Failed to create connection provider. Please try again.",
-          );
+        {
+          onSuccess: (updated: any) => {
+            close(updated);
+          },
+          onError: (err: any) => {
+            setError(
+              err.message ||
+                "Failed to update connection provider. Please try again.",
+            );
+          },
         },
-      },
-    );
+      );
+    } else {
+      createProvider(
+        {
+          code: code.trim(),
+          name: name.trim(),
+          type: "http",
+          description: description.trim(),
+          config: parsedConfig,
+        },
+        {
+          onSuccess: (newProvider: any) => {
+            close(newProvider);
+          },
+          onError: (err: any) => {
+            setError(
+              err.message ||
+                "Failed to create connection provider. Please try again.",
+            );
+          },
+        },
+      );
+    }
   };
 
   return (
     <Content className="w-[850px] max-w-[95vw]">
       <ContentHeader>
         <Heading className="text-lg font-bold">
-          Create Connection Provider
+          {provider ? "Edit Connection Provider" : "Create Connection Provider"}
         </Heading>
       </ContentHeader>
 
@@ -173,18 +211,20 @@ export function CreateProviderModal() {
               </div>
             )}
 
-            <Field>
-              <FieldLabel>Load Template</FieldLabel>
-              <select
-                value={templateType}
-                onChange={(e) => handleTemplateChange(e.target.value)}
-                className="w-full bg-neutral-surface/50 border border-neutral-border/30 rounded-lg px-2.5 py-1.5 text-sm text-neutral-content focus:outline-none focus:ring-1 focus:ring-accent cursor-pointer"
-              >
-                <option value="oauth2">OAuth 2.0 Template</option>
-                <option value="apiKey">API Key Template</option>
-                <option value="basic">Basic Auth Template</option>
-              </select>
-            </Field>
+            {!provider && (
+              <Field>
+                <FieldLabel>Load Template</FieldLabel>
+                <select
+                  value={templateType}
+                  onChange={(e) => handleTemplateChange(e.target.value)}
+                  className="w-full bg-neutral-surface/50 border border-neutral-border/30 rounded-lg px-2.5 py-1.5 text-sm text-neutral-content focus:outline-none focus:ring-1 focus:ring-accent cursor-pointer"
+                >
+                  <option value="oauth2">OAuth 2.0 Template</option>
+                  <option value="apiKey">API Key Template</option>
+                  <option value="basic">Basic Auth Template</option>
+                </select>
+              </Field>
+            )}
 
             <Field>
               <FieldLabel>Description (Optional)</FieldLabel>
@@ -222,7 +262,13 @@ export function CreateProviderModal() {
           size="sm"
           disabled={isPending}
         >
-          {isPending ? "Creating..." : "Create Provider"}
+          {isPending
+            ? provider
+              ? "Saving..."
+              : "Creating..."
+            : provider
+            ? "Save Changes"
+            : "Create Provider"}
         </Button>
       </ContentFooter>
     </Content>

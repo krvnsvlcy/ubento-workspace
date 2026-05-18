@@ -412,11 +412,13 @@ export function createStore<TData, TParams = {}, TPage = {}>({
       };
       const data = state.data[key];
 
-      return {
+      const entity = {
         data,
         query:
-          state.queries[queryKey] || data ? availableQuery : unavailableQuery,
+          state.queries[queryKey] || (data ? availableQuery : unavailableQuery),
       };
+      console.log({ entity });
+      return entity;
     },
 
     selectManyEntities: (

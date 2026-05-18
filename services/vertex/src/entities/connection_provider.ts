@@ -8,15 +8,17 @@ import { prismaListWithCursor } from "@ubento/services.toolkit";
 import prisma from "../lib/prisma.js";
 
 export async function listConnectionProviders({
+  team_id,
   name,
   cursor,
   limit,
-  provider,
+  code,
 }: {
+  team_id?: string;
   name?: string;
   cursor?: string;
   limit?: number;
-  provider?: string;
+  code?: string;
 } = {}) {
   return prismaListWithCursor(prisma.connectionProvider, {
     limit,
@@ -26,10 +28,11 @@ export async function listConnectionProviders({
       ...(name && {
         name: { contains: name, mode: "insensitive" },
       }),
-      ...(provider && {
-        provider: {
-          code: provider,
-        },
+      ...(code && {
+        code,
+      }),
+      ...(team_id && {
+        team_id,
       }),
     },
     resolveCursor: (p) => ({ id: p.id }),

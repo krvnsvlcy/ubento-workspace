@@ -2,7 +2,7 @@ import { useModalInstance } from "@/utils/modal-store";
 import { CreditCard, Link as LinkIcon, Settings, X } from "lucide-react";
 import { useState } from "react";
 import { BillingTab } from "./tabs/billing";
-import { ConnectionsTab } from "./tabs/connections";
+import { IntegrationsTab } from "./tabs/integrations";
 import { GeneralTab } from "./tabs/general";
 
 interface TeamModalProps {
@@ -16,7 +16,7 @@ export function TeamModal({ team }: TeamModalProps) {
   const tabs = [
     { key: "general", label: "General", icon: Settings },
     { key: "billing", label: "Billing", icon: CreditCard },
-    { key: "connections", label: "Connections", icon: LinkIcon },
+    { key: "integrations", label: "Integrations", icon: LinkIcon },
   ];
 
   return (
@@ -59,7 +59,7 @@ export function TeamModal({ team }: TeamModalProps) {
           <div className="col-span-3 overflow-y-auto px-4">
             {activeTab === "general" && <GeneralTab team={team} />}
             {activeTab === "billing" && <BillingTab team={team} />}
-            {activeTab === "connections" && <ConnectionsTab team={team} />}
+            {activeTab === "integrations" && <IntegrationsTab team={team} />}
           </div>
         </div>
       </div>

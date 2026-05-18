@@ -7,11 +7,19 @@ import {
 export const connectionProviderConfigSchema = z.discriminatedUnion("type", [
   httpConnectionProviderConfigSchema,
 ]);
-export type ConnectionProviderConfig = z.infer<
+export type ConnectionProviderConfig_r = z.input<
+  typeof connectionProviderConfigSchema
+>;
+export type ConnectionProviderConfig = z.output<
   typeof connectionProviderConfigSchema
 >;
 
 export const connectionCredentialsSchema = z.union([
   httpConnectionCredentialsSchema,
 ]);
-export type ConnectionCredentials = z.infer<typeof connectionCredentialsSchema>;
+export type ConnectionCredentials_r = z.input<
+  typeof connectionCredentialsSchema
+>;
+export type ConnectionCredentials = z.output<
+  typeof connectionCredentialsSchema
+>;

@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import {
   createStore,
   useMutation,
@@ -9,7 +10,6 @@ import {
 import { ubentoEntities } from "@ubento/services.primitives";
 import { UbentoSDK, vertexClient } from "@ubento/services.sdk";
 import { UbentoApiPage, ubentoToFabricPagedResponse } from "../libs/pagination";
-import { useQueryClient } from "@tanstack/react-query";
 
 export function createUbentoVertexService({
   ubentoSdk,
@@ -122,7 +122,13 @@ export function createUbentoVertexService({
       params?: { team_id?: string; name?: string },
       options?: UseStoreOptions,
     ) => {
-      return useStoreEntities(connectionProviderStore, params, options);
+      return useQuery({
+        queryKey: ["connection-providers", params],
+        queryFn: async () => {
+          return (await ubentoSdk.vertex.listConnectionProviders(params)).data;
+        },
+        ...options,
+      });
     },
     useConnectionProviderByCode: (code: string, options?: any) => {
       return useQuery<vertexClient.ConnectionProvider>({
@@ -199,7 +205,6 @@ export function createUbentoVertexService({
         },
       });
     },
-
 
     // Services
     useService: (serviceId: string, options?: UseStoreOptions) => {
@@ -281,6 +286,7 @@ export function createUbentoVertexService({
       });
     },
     useCreateConnectionProvider: () => {
+      const queryClient = useQueryClient();
       return useMutation({
         mutationFn: async (data: {
           code: string;
@@ -289,9 +295,41 @@ export function createUbentoVertexService({
           description?: string;
           config?: Record<string, any>;
         }) => {
-          const provider = await ubentoSdk.vertex.createConnectionProvider(data);
+          const provider =
+            await ubentoSdk.vertex.createConnectionProvider(data);
           connectionProviderStore.push(provider);
           return provider;
+        },
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ["connection-providers"] });
+        },
+      });
+    },
+    useUpdateConnectionProvider: () => {
+      const queryClient = useQueryClient();
+      return useMutation({
+        mutationFn: async ({
+          providerId,
+          data,
+        }: {
+          providerId: string;
+          data: {
+            code?: string;
+            type?: string;
+            name?: string;
+            description?: string;
+            config?: Record<string, any>;
+          };
+        }) => {
+          const provider = await ubentoSdk.vertex.updateConnectionProvider(
+            providerId,
+            data,
+          );
+          connectionProviderStore.push(provider);
+          return provider;
+        },
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ["connection-providers"] });
         },
       });
     },
