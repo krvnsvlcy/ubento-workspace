@@ -1,6 +1,6 @@
 import { useSession } from "@/contexts/session";
 import { useUbento } from "@/engine/app/engine";
-import { AccountModal } from "@/modals/account/account";
+import { AccountModal } from "@/modals/app/account/account";
 import { useModal } from "@/utils/modal-store";
 import { LogOut, Settings as SettingsIcon, User } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";

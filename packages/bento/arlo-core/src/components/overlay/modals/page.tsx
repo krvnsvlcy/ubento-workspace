@@ -6,7 +6,7 @@ export function PageModalContainer({
 }: PropsWithChildren<React.JSX.IntrinsicElements["div"]>) {
   return (
     <div
-      style={{ width: "90vw", maxWidth: 960, height: "90vh", maxHeight: 600 }}
+      style={{ width: "90vw", maxWidth: 1200, height: "90vh", maxHeight: 800 }}
       {...props}
     >
       {children}

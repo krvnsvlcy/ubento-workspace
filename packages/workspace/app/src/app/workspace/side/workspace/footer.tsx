@@ -1,6 +1,5 @@
-import { AccountModal } from "@/modals/account/account";
-import { TeamModal } from "@/modals/team/team_modal";
-import { useModal } from "@/utils/modal-store";
+import { useAppModal } from "@/modals/app/hook";
+import { appModalRoutes } from "@/modals/app/routes";
 import {
   Popper,
   PopperMenu,
@@ -11,13 +10,12 @@ import { LogOut, Settings, User } from "lucide-react";
 import { useUbentoEngine } from "../../../../engine/app/engine";
 
 export function WorkspaceFooter() {
+  const { push: open } = useAppModal();
   const engine = useUbentoEngine();
   const session = engine.useState((s) => s.session);
   const { data: team } = engine.ubento.iam.useTeam(session?.teamId || "", {
     enabled: !!session?.teamId,
   });
-
-  const { open } = useModal();
 
   const handleLogout = () => {
     window.location.href = "/auth/logout";
@@ -62,12 +60,12 @@ export function WorkspaceFooter() {
                   {
                     label: "Team Settings",
                     icon: <Settings size={14} />,
-                    onClick: () => open(TeamModal, { team }),
+                    onClick: () => open(appModalRoutes.team.root),
                   },
                   {
                     label: "Account Settings",
                     icon: <User size={14} />,
-                    onClick: () => open(AccountModal, { user: session }),
+                    onClick: () => open(appModalRoutes.account.root),
                   },
                 ],
                 [

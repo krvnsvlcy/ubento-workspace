@@ -23,6 +23,9 @@ export type UbentoEngineState = {
   // workspace
   workspaceStatus: "inactive" | "initializing" | "ready" | "error";
   workspace?: WorkspaceEngine;
+
+  // modal
+  appModalHistory: string[];
 };
 
 export type UbentoEngine = StateController<UbentoEngineState> & {
@@ -38,6 +41,10 @@ export type UbentoEngine = StateController<UbentoEngineState> & {
   setActiveWorkspaceEngine: (engine: WorkspaceEngine) => void;
   clearActiveWorkspaceEngine: (engine: WorkspaceEngine) => void;
   setShowControls: (show: boolean) => void;
+  pushAppModalHistory: (path: string) => void;
+  popAppModalHistory: () => void;
+  replaceAppModalHistory: (path: string) => void;
+  setAppModalHistory: (history: string[]) => void;
 };
 
 export function createUbentoEngine({
@@ -67,6 +74,7 @@ export function createUbentoEngine({
     dragActive: false,
     showControls: false,
     workspaceStatus: "inactive",
+    appModalHistory: [],
   }));
   registerStore("ubentoEngine", store);
   const stateController = createZustandStateController(store);
@@ -202,6 +210,31 @@ export function createUbentoEngine({
       stateController.setState((state) => ({
         ...state,
         showControls: show,
+      }));
+    },
+
+    pushAppModalHistory(path: string) {
+      stateController.setState((state) => ({
+        ...state,
+        appModalHistory: [...state.appModalHistory, path],
+      }));
+    },
+    popAppModalHistory() {
+      stateController.setState((state) => ({
+        ...state,
+        appModalHistory: state.appModalHistory.slice(0, -1),
+      }));
+    },
+    replaceAppModalHistory(path: string) {
+      stateController.setState((state) => ({
+        ...state,
+        appModalHistory: [...state.appModalHistory.slice(0, -1), path],
+      }));
+    },
+    setAppModalHistory(history: string[]) {
+      stateController.setState((state) => ({
+        ...state,
+        appModalHistory: history,
       }));
     },
   };

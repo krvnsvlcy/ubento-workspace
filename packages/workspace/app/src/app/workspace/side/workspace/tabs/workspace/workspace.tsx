@@ -5,7 +5,7 @@ import {
   WorkspaceEngineProvider,
 } from "@/contexts/workspace";
 import { useUbento, useUbentoEngine } from "@/engine/app/engine";
-import { ServiceBrowserModal } from "@/modals/service_browser/services";
+import { ServiceBrowserModal } from "@/modals/app/integrations/services/services";
 import { useModal } from "@/utils/modal-store";
 import { ServiceData } from "@ubento/bento.core";
 import { workspaceClient } from "@ubento/services.sdk";
