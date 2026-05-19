@@ -44,7 +44,7 @@ export const PlanTab: FC = () => {
 
   if (!subscription) {
     return (
-      <div className="p-8 rounded-3xl bg-neutral-surface border border-neutral-border text-center">
+      <div className="h-full w-full p-8 flex flex-col justify-center items-center text-center">
         <h3 className="text-xl font-bold mb-2">No Active Plan</h3>
         <p className="text-sm text-neutral-content-subtle mb-6">
           Subscribe to a plan to unlock professional features.

@@ -39,6 +39,7 @@ export default defineConfig({
         "../runtime/src/**/*.{ts,tsx}",
         "../core/src/**/*.{ts,tsx}",
         "../arlo/src/**/*.{ts,tsx}",
+        "../arlo-core/src/**/*.{ts,tsx}",
         "../../workspace/app/src/**/*.{ts,tsx}",
         "../../workspace/primitives/src/**/*.{ts,tsx}",
         "../../../apps/theme-builder/src/**/*.{ts,tsx}",

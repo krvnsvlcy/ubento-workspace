@@ -1,7 +1,7 @@
 import { Component, createEnvironment, Environment } from "@ubento/bento.core";
 import { createStore } from "@ubento/fabric";
 import type { DuplexRpc } from "@ubento/rpc";
-import { createZustandStateController } from "@ubento/bento.arlo-core";
+import { createZustandStateController } from "@ubento/state";
 import { dequal } from "dequal";
 import { createStore as createZustandStore } from "zustand";
 import {
@@ -42,15 +42,6 @@ export function createBentoRuntime({
     };
   });
 
-  if (initialState.theme) {
-    let styleTag = document.getElementById("theme-variables");
-    if (!styleTag) {
-      styleTag = document.createElement("style");
-      styleTag.id = "theme-variables";
-      document.head.appendChild(styleTag);
-    }
-    styleTag.innerHTML = initialState.theme.css;
-  }
   const controller = createZustandStateController(store);
 
   const boardStore = createStore<BentoBoardData, { parentId?: string }, string>(
@@ -99,15 +90,6 @@ export function createBentoRuntime({
     },
     writeBoard: async ({ data }) => {
       boardStore.push(data);
-    },
-    setTheme: async ({ css }) => {
-      let styleTag = document.getElementById("theme-variables");
-      if (!styleTag) {
-        styleTag = document.createElement("style");
-        styleTag.id = "theme-variables";
-        document.head.appendChild(styleTag);
-      }
-      styleTag.innerHTML = css;
     },
     listComponents: async (_: {}) => {
       return Object.fromEntries(

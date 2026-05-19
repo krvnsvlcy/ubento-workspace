@@ -2,37 +2,65 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { ButtonHTMLAttributes, forwardRef } from "react";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:pointer-events-none disabled:opacity-50 cursor-pointer",
+  "inline-flex items-center gap-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:pointer-events-none disabled:opacity-50 cursor-pointer",
   {
     variants: {
+      align: {
+        default: "justify-center",
+        start: "justify-start",
+        end: "justify-end",
+      },
       variant: {
         default:
           "bg-neutral-surface text-neutral-content hover:bg-neutral-surface-hover",
         primary: "bg-accent text-accent-contrast hover:bg-accent-hover",
         destructive:
           "bg-destructive text-destructive-contrast hover:bg-destructive-hover",
+        "subtle-destructive":
+          "bg-neutral-content/10 text-neutral-content hover:bg-destructive hover:text-destructive-contrast",
         outline:
           "border border-neutral-border bg-transparent hover:bg-neutral-surface text-neutral-content",
         secondary:
           "bg-neutral-surface text-neutral-content hover:bg-neutral-surface-hover",
-        ghost: "hover:bg-neutral-surface hover:text-neutral-content",
+        ghost: "hover:bg-neutral-content/10 hover:text-neutral-content",
         link: "text-accent underline-offset-4 hover:underline",
       },
       size: {
-        default: "h-7 px-3 gap-2",
-        sm: "h-7 px-3",
-        lg: "h-11 px-8",
+        sm: "h-6 px-2",
+        md: "h-8 px-4",
+        lg: "h-10 px-4",
         icon: "h-7 w-7",
       },
       shape: {
-        rounded: "rounded-lg",
-        square: "rounded-sm",
+        rounded: "",
         circle: "rounded-full",
       },
     },
+    compoundVariants: [
+      {
+        size: "sm",
+        shape: "rounded",
+        className: "rounded-lg",
+      },
+      {
+        size: "md",
+        shape: "rounded",
+        className: "rounded-xl",
+      },
+      {
+        size: "lg",
+        shape: "rounded",
+        className: "rounded-xl",
+      },
+      {
+        size: "icon",
+        shape: "rounded",
+        className: "rounded-xl",
+      },
+    ],
     defaultVariants: {
       variant: "default",
-      size: "default",
+      size: "md",
       shape: "rounded",
     },
   },

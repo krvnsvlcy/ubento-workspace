@@ -1,8 +1,8 @@
 import { CreateWorkspaceModal } from "@/modals/create_workspace/create_workspace";
 import { useModal } from "@/utils/modal-store";
 import { Button } from "@ubento/bento.arlo-core";
-import { ArrowRight, Box, Plus, Sparkles } from "lucide-react";
-import React from "react";
+import { Activity, ArrowRight, Box, Command, Plus } from "lucide-react";
+import React, { useMemo } from "react";
 import { useUbento, useUbentoEngine } from "../../../../engine/app/engine";
 
 export function Home() {
@@ -42,71 +42,98 @@ export function Home() {
     });
   };
 
+  // Dynamic greeting reflecting an operational state
+  const greeting = useMemo(() => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good morning";
+    if (hour < 18) return "Good afternoon";
+    return "Good evening";
+  }, []);
+
+  // Graceful fallback to your name if session user data isn't fully wired yet
+  const userName = session?.name;
+
   return (
-    <div className="h-full w-full flex flex-col items-center overflow-auto bg-background p-8 md:p-12 lg:p-16">
-      <div className="w-full max-w-5xl space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        {/* Hero Section */}
-        <div className="flex flex-col gap-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent/10 text-accent text-xs font-semibold w-fit border border-accent/20 shadow-sm shadow-accent/10">
-            <Sparkles size={14} />
-            <span>Welcome to Ubento</span>
-          </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-neutral-content">
-            Let's build something{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-blue-500">
-              extraordinary
-            </span>
+    <div className="h-full w-full flex flex-col items-center overflow-auto bg-background p-8 md:p-12 lg:p-16 selection:bg-neutral-800 selection:text-white">
+      {/* Global Command Hint - Signals high-efficiency keyboard navigation */}
+      <div className="absolute top-6 right-8 hidden md:flex items-center gap-2 text-xs text-neutral-content-muted font-medium bg-neutral-surface border border-neutral-border px-3 py-1.5 rounded-md">
+        <Command size={14} />
+        <span>Press ⌘ K for command palette</span>
+      </div>
+
+      <div className="w-full max-w-5xl space-y-16 animate-in fade-in slide-in-from-bottom-4 duration-500 mt-8">
+        {/* Command Center Header */}
+        <div className="flex flex-col gap-3">
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-neutral-content">
+            {greeting}, {userName}.
           </h1>
-          <p className="text-lg text-neutral-content-muted max-w-2xl">
-            Select a workspace to get started, or create a new one to start your
-            next big project.
+          <p className="text-lg text-neutral-content-muted max-w-2xl font-medium">
+            Access your active environments or deploy a new workspace to begin.
           </p>
         </div>
 
-        {/* Workspaces Grid */}
+        {/* Workspaces Directory */}
         <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-neutral-content">
-              Your Workspaces
+          <div className="flex items-center justify-between border-b border-neutral-border pb-4">
+            <h2 className="text-sm font-bold uppercase tracking-wider text-neutral-content-subtle">
+              Active Workspaces
             </h2>
             <Button
               onClick={handleCreateWorkspace}
-              className="gap-2 shadow-lg shadow-accent/20"
+              className="gap-2 h-8 px-3 text-xs border-neutral-border hover:bg-neutral-surface-hover hover:text-neutral-content transition-colors"
             >
-              <Plus size={16} />
-              New Workspace
+              <Plus size={14} />
+              Deploy Workspace
             </Button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {(workspaces || []).map((workspace) => (
               <button
                 key={workspace.id}
                 onClick={() => engine.openWorkspace(workspace.slug)}
-                className="group relative flex flex-col justify-between gap-4 p-6 text-left rounded-2xl bg-neutral-surface border border-neutral-border hover:border-accent/50 hover:shadow-xl hover:shadow-accent/5 transition-all duration-300"
+                className="group relative flex flex-col justify-between gap-6 p-5 text-left rounded-xl bg-neutral-surface border border-neutral-border hover:border-neutral-content transition-colors duration-200"
               >
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-neutral-surface-hover flex items-center justify-center text-neutral-content-subtle group-hover:bg-accent/10 group-hover:text-accent transition-colors shrink-0">
-                    <Box size={24} />
+                <div className="flex items-start justify-between w-full">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg border border-neutral-border bg-background flex items-center justify-center text-neutral-content group-hover:bg-neutral-content group-hover:text-background transition-colors shrink-0">
+                      <Box size={18} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-base font-semibold text-neutral-content truncate">
+                        {workspace.name}
+                      </h3>
+                      <p className="text-xs text-neutral-content-muted font-mono mt-0.5 truncate">
+                        {workspace.slug}
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex-1 min-w-0 pt-1">
-                    <h3 className="text-lg font-bold text-neutral-content truncate group-hover:text-accent transition-colors">
-                      {workspace.name}
-                    </h3>
-                    <p className="text-xs text-neutral-content-muted truncate mt-1">
-                      {workspace.slug}
-                    </p>
+
+                  {/* Status Indicator */}
+                  <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-green-500/10 text-green-600 border border-green-500/20">
+                    <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                    <span className="text-[10px] font-bold uppercase tracking-wide">
+                      Synced
+                    </span>
                   </div>
                 </div>
 
-                <div className="flex items-center text-xs font-semibold text-neutral-content-muted group-hover:text-accent transition-colors mt-2">
-                  <span>Open workspace</span>
-                  <ArrowRight
-                    size={14}
-                    className="ml-1 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300"
-                  />
+                {/* Density / Metadata row */}
+                <div className="flex items-center justify-between w-full border-t border-neutral-border/50 pt-4 mt-2">
+                  <div className="flex items-center gap-3 text-xs text-neutral-content-muted">
+                    <div className="flex items-center gap-1">
+                      <Activity size={12} />
+                      <span>Active</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center text-xs font-semibold text-neutral-content-muted group-hover:text-neutral-content transition-colors">
+                    <span>Enter</span>
+                    <ArrowRight
+                      size={14}
+                      className="ml-1 -translate-x-1 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200"
+                    />
+                  </div>
                 </div>
-                <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-black/0 group-hover:ring-accent/10 transition-all pointer-events-none" />
               </button>
             ))}
 
@@ -114,17 +141,17 @@ export function Home() {
             {(!workspaces || workspaces.length === 0) && (
               <button
                 onClick={handleCreateWorkspace}
-                className="group flex flex-col items-center justify-center gap-4 p-8 text-center rounded-2xl border-2 border-dashed border-neutral-border hover:border-accent/50 hover:bg-accent/5 transition-all duration-300 min-h-[200px]"
+                className="group flex flex-col items-center justify-center gap-3 p-8 text-center rounded-xl border border-dashed border-neutral-border hover:border-neutral-content hover:bg-neutral-surface-hover transition-all duration-200 min-h-[180px]"
               >
-                <div className="w-12 h-12 rounded-full bg-neutral-surface flex items-center justify-center text-neutral-content-muted group-hover:text-accent transition-colors">
-                  <Plus size={24} />
+                <div className="w-10 h-10 rounded-lg border border-neutral-border flex items-center justify-center text-neutral-content-muted group-hover:text-neutral-content group-hover:border-neutral-content transition-colors">
+                  <Plus size={20} />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-neutral-content group-hover:text-accent transition-colors">
-                    Create your first workspace
+                  <h3 className="text-sm font-semibold text-neutral-content">
+                    Deploy your first workspace
                   </h3>
-                  <p className="text-xs text-neutral-content-subtle mt-1">
-                    Get started by creating a new workspace.
+                  <p className="text-xs text-neutral-content-muted mt-1">
+                    Initialize a new environment to begin.
                   </p>
                 </div>
               </button>

@@ -1,6 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ModalRenderer } from "../components/modal-renderer";
-import { ThemeProvider } from "../contexts/theme";
 import { UbentoEngine, UbentoEngineContext } from "../engine/app/engine";
 import { SessionProvider } from "./session";
 import { Layout } from "./workspace/layout";
@@ -12,10 +11,8 @@ export function Ubento({ engine }: { engine: UbentoEngine }) {
     <UbentoEngineContext value={engine}>
       <QueryClientProvider client={queryClient}>
         <SessionProvider>
-          <ThemeProvider>
-            <Layout />
-            <ModalRenderer />
-          </ThemeProvider>
+          <Layout />
+          <ModalRenderer />
         </SessionProvider>
       </QueryClientProvider>
     </UbentoEngineContext>

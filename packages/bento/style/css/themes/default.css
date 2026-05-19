@@ -20,7 +20,7 @@
   --color-accent-border-active: #a1a1aa;
 
   --color-accent-content: #000000;
-  --color-accent-content-subtle: #3f3f46; /* Neutral 700 */
+  --color-accent-content-subtle: #5c5c68; /* Neutral 700 */
   --color-accent-content-muted: #71717a; /* Neutral 500 */
 
   /* =========================================
@@ -40,8 +40,8 @@
   --color-neutral-border-active: #a1a1aa;
 
   --color-neutral-content: #18181b;
-  --color-neutral-content-subtle: #27272a;
-  --color-neutral-content-muted: #3f3f46;
+  --color-neutral-content-subtle: #5c5c68;
+  --color-neutral-content-muted: #7d7d8a;
 
   /* =========================================
      Inverse Theme (Dark/Almost Black)

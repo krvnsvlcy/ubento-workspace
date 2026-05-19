@@ -1,6 +1,3 @@
-import cn from "clsx";
-import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
-import * as React from "react";
 import { Button } from "@/components/core/button.js";
 import {
   Command,
@@ -10,7 +7,14 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/data/command.js";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/overlay/popover.js";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/overlay/popover.js";
+import cn from "clsx";
+import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
+import * as React from "react";
 
 const frameworks = [
   {
@@ -72,9 +76,7 @@ export function ExampleCombobox() {
                   <CheckIcon
                     className={cn(
                       "mr-2 h-4 w-4",
-                      value === framework.value
-                        ? "opacity-100"
-                        : "opacity-0",
+                      value === framework.value ? "opacity-100" : "opacity-0",
                     )}
                   />
                   {framework.label}

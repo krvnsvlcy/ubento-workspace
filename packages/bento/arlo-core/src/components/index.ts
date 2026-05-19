@@ -27,6 +27,8 @@ export * from "./layout/content.js";
 export * from "./layout/rail_layout.js";
 export * from "./layout/action_row.js";
 export * from "./layout/tab.js";
+export * from "./layout/tab-switch.js";
+
 
 // Overlay components
 export * from "./overlay/dialog.js";

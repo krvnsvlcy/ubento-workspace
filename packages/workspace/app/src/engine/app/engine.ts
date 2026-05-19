@@ -4,11 +4,8 @@ import {
 } from "@/engine/workspace/engine";
 import { createUbentoService, UbentoService } from "@/services/ubento/ubento";
 import type { UbentoSDK, workspaceClient } from "@ubento/services.sdk";
+import { createZustandStateController, StateController } from "@ubento/state";
 import { createLogger, Logger } from "@ubento/telemetry";
-import {
-  createZustandStateController,
-  StateController,
-} from "@ubento/bento.arlo-core";
 import { registerStore } from "@ubento/zustand-devtool";
 import { createContext, useContext } from "react";
 import { createStore } from "zustand";
