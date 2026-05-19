@@ -1,7 +1,7 @@
 import { useSession } from "@/contexts/session";
 import { useUbento } from "@/engine/app/engine";
-import { useModal } from "@/utils/modal-store";
 import { AccountModal } from "@/modals/account/account";
+import { useModal } from "@/utils/modal-store";
 import { LogOut, Settings as SettingsIcon, User } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
@@ -28,7 +28,7 @@ export function UserButton() {
   if (!session) {
     return (
       <a
-        href="/api/auth/login"
+        href="/auth/login"
         className="flex h-10 items-center justify-center rounded-full bg-neutral-content px-6 text-sm font-medium text-neutral-contrast transition-transform hover:scale-105 active:scale-95"
       >
         Sign In
@@ -87,7 +87,7 @@ export function UserButton() {
             </button>
 
             <a
-              href="/api/auth/logout"
+              href="/auth/logout"
               className="group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-destructive-content transition-all hover:bg-destructive-surface hover:text-destructive"
             >
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-destructive-surface/50 transition-colors group-hover:bg-destructive-surface-hover">

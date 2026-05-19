@@ -37,12 +37,13 @@ export function serializeCookie(
 
 export type Session = {
   user_id: string;
-  tenant_id: string;
+  team_id: string;
   access_token: string;
   refresh_token?: string;
   expires_at: number;
-  name?: string;
-  picture?: string;
+  email: string;
+  name: string;
+  picture: string;
 };
 
 const sessionKey = env.SESSION_KEY || "ubento-session";

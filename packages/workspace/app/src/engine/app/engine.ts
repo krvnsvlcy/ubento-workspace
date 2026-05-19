@@ -33,7 +33,6 @@ export type UbentoEngine = StateController<UbentoEngineState> & {
   ubento: UbentoService;
   workspaceRuntimeUrl: string;
   componentRuntimeUrl: string;
-  moduleUrlTemplate: string;
 
   goToLocation: (location: Partial<UbentoLocation>) => void;
   openWorkspace: (slug: string) => void;
@@ -47,13 +46,11 @@ export type UbentoEngine = StateController<UbentoEngineState> & {
 export function createUbentoEngine({
   workspaceRuntimeUrl,
   componentRuntimeUrl,
-  moduleUrlTemplate,
   ubentoApi,
   session,
 }: {
   workspaceRuntimeUrl: string;
   componentRuntimeUrl: string;
-  moduleUrlTemplate: string;
   ubentoApi: UbentoSDK;
   session: UbentoSession;
 }) {
@@ -163,7 +160,6 @@ export function createUbentoEngine({
     ubento,
     workspaceRuntimeUrl,
     componentRuntimeUrl,
-    moduleUrlTemplate,
     goToLocation(location: Partial<UbentoLocation>) {
       stateController.setState((state) => ({
         ...state,

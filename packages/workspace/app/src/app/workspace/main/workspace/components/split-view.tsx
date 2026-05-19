@@ -25,7 +25,9 @@ export function SplitView({
   maxPosition?: number;
   onChange?: (position: number) => void;
 }) {
-  const [position, setPosition] = useState(controlledPosition ?? initialPosition);
+  const [position, setPosition] = useState(
+    controlledPosition ?? initialPosition,
+  );
   const [isResizing, setIsResizing] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -82,7 +84,7 @@ export function SplitView({
         }}
         className={`absolute top-0 bottom-0 w-1.5 -ml-0.75 cursor-ew-resize z-50 transition-colors group ${
           isResizing ? "bg-accent" : "hover:bg-accent/30"
-        } ${(position <= 0 || position >= 100) ? "hidden" : ""}`}
+        } ${position <= 0 || position >= 100 ? "hidden" : ""}`}
         style={{ left: `${position}%` }}
       >
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1 h-8 rounded-full bg-neutral-border group-hover:bg-accent/50 transition-colors" />
@@ -218,10 +220,10 @@ function Panel({
     [side === "right" ? "left" : "right"]: 0,
     top: 0,
     bottom: 0,
-    width: 4,
+    width: 2,
     cursor: "ew-resize",
     zIndex: 100,
-    backgroundColor: isDragging ? "#3b82f6" : "transparent",
+    backgroundColor: isDragging ? "var(--color-accent)" : "transparent",
     transition: "background-color 0.2s",
     pointerEvents: "auto",
   };

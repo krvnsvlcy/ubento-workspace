@@ -61,6 +61,7 @@ import {
 } from "@ubento/bento.arlo";
 import type { Component } from "@ubento/bento.core";
 import { BentoRuntimeView, createBentoRuntime } from "@ubento/bento.runtime";
+import "@ubento/bento.style/css/fonts.css";
 import "@ubento/bento.style/css/themes.css";
 import "@ubento/bento.style/dist/uno.css";
 import { StrictMode } from "react";

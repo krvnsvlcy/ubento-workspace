@@ -7,9 +7,7 @@ export interface ViewProps {
   children?: React.ReactNode;
 }
 
-export const PendingView: React.FC<ViewProps> = ({
-  message = "Loading...",
-}) => {
+export const PendingView: React.FC<ViewProps> = ({ message }) => {
   return (
     <div
       id="pending-view"

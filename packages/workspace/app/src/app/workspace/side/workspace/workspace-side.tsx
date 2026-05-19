@@ -5,6 +5,7 @@ import { useEffect, useMemo } from "react";
 import { useUbentoEngine } from "../../../../engine/app/engine";
 import { TabDefinition } from "../types";
 import { WorkspaceHeader } from "./header";
+import { WorkspaceFooter } from "./footer";
 import { homeTab } from "./tabs/home/home";
 import { workspaceTab } from "./tabs/workspace/workspace";
 
@@ -87,6 +88,7 @@ export function WorkspaceSide() {
       <div className="flex-1 overflow-auto">
         {ActiveComponent ? <ActiveComponent key={activeTabId} /> : null}
       </div>
+      <WorkspaceFooter />
     </div>
   );
 }

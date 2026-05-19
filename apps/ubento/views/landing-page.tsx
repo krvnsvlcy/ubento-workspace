@@ -1,12 +1,11 @@
-"use client";
-
 import { AnimatedHeadline } from "@/components/animated-headline";
-import { Logo } from "@/components/logo";
+import { Footer } from "@/components/footer";
+import { Header } from "@/components/header";
+import { routes } from "@/routes";
 import {
   Activity,
   ArrowRight,
   Check,
-  CheckCircle2,
   Code,
   Copy,
   Layers,
@@ -142,28 +141,7 @@ export function LandingPage() {
 
   return (
     <div className="min-h-screen bg-neutral-surface font-body text-neutral-content selection:bg-neutral-surface-active">
-      {/* Navigation */}
-      <nav className="fixed top-0 z-50 w-full bg-neutral-surface/80 backdrop-blur-md">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <a href="/" className="flex items-center gap-2 font-heading font-bold tracking-tight text-neutral-content hover:opacity-85 transition-opacity">
-            <Logo style={{ width: 100 }} />
-          </a>
-          <div className="flex items-center gap-6">
-            <a
-              href="/pricing"
-              className="text-sm font-medium text-neutral-content-subtle hover:text-neutral-content transition-colors"
-            >
-              Pricing
-            </a>
-            <a
-              href="/vertex/oauth/connect"
-              className="rounded-3xl bg-inverse px-4 py-2 text-sm font-medium text-inverse-contrast transition-colors hover:bg-inverse-hover active:bg-inverse-active"
-            >
-              Get Ubento Free
-            </a>
-          </div>
-        </div>
-      </nav>
+      <Header />
 
       {/* Hero Section */}
       <section className="mx-auto max-w-5xl px-6 pt-40 text-center md:pt-48 pb-20">
@@ -179,7 +157,7 @@ export function LandingPage() {
           </p>
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
             <a
-              href="/vertex/oauth/connect"
+              href={routes.login()}
               className="group flex h-12 items-center justify-center gap-2 rounded-3xl bg-inverse px-8 text-sm font-medium text-inverse-contrast transition-all hover:bg-inverse-hover hover:shadow-xl sm:w-auto"
             >
               Get Ubento Free
@@ -1284,11 +1262,12 @@ export function LandingPage() {
             Take back ownership of your workflow.
           </h2>
           <p className="text-neutral-content-subtle text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed">
-            Experience a customizable, localized, high-agency workspace engine built from the ground up for developer speed and autonomy.
+            Experience a customizable, localized, high-agency workspace engine
+            built from the ground up for developer speed and autonomy.
           </p>
           <div className="pt-4">
             <a
-              href="/vertex/oauth/connect"
+              href={routes.login()}
               className="inline-flex items-center justify-center rounded-xl bg-inverse px-8 py-4 text-base font-semibold text-inverse-contrast shadow-xl transition-all duration-300 hover:scale-[1.02] hover:bg-inverse-hover active:scale-[0.98] active:bg-inverse-active"
             >
               Get Ubento Free
@@ -1297,86 +1276,7 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-neutral-surface py-24 border-t border-neutral-border/20">
-        <div className="mx-auto max-w-7xl px-6">
-          <div className="grid grid-cols-1 gap-12 md:grid-cols-12">
-            {/* Brand Column */}
-            <div className="md:col-span-6 space-y-6 text-left">
-              <div className="flex items-center gap-2 font-heading font-bold text-neutral-content">
-                <Terminal className="h-5 w-5 text-accent shrink-0" />
-                <span className="tracking-tight text-lg">UBENTO</span>
-              </div>
-              <p className="text-sm text-neutral-content-subtle max-w-sm leading-relaxed">
-                The dynamic WorkOS engine built for speed and autonomy.
-              </p>
-              <p className="text-xs text-neutral-content-muted">
-                © 2026 Ubento. All rights reserved.
-              </p>
-            </div>
-
-            {/* Links Columns */}
-            <div className="md:col-span-6 grid grid-cols-3 gap-8 text-left">
-              {/* Product Column */}
-              <div className="space-y-4">
-                <h4 className="text-[10px] font-bold tracking-widest text-neutral-content-muted uppercase">
-                  Product
-                </h4>
-                <ul className="space-y-3 text-sm text-neutral-content-subtle">
-                  <li>
-                    <a href="/pricing" className="hover:text-neutral-content transition-colors">
-                      Pricing
-                    </a>
-                  </li>
-                </ul>
-              </div>
-
-              {/* Legal Column */}
-              <div className="space-y-4">
-                <h4 className="text-[10px] font-bold tracking-widest text-neutral-content-muted uppercase">
-                  Legal
-                </h4>
-                <ul className="space-y-3 text-sm text-neutral-content-subtle">
-                  <li>
-                    <a href="/privacy" className="hover:text-neutral-content transition-colors">
-                      Privacy Policy
-                    </a>
-                  </li>
-                  <li>
-                    <a href="/terms" className="hover:text-neutral-content transition-colors">
-                      Terms of Service
-                    </a>
-                  </li>
-                  <li>
-                    <a href="/contact" className="hover:text-neutral-content transition-colors">
-                      Contact Us
-                    </a>
-                  </li>
-                </ul>
-              </div>
-
-              {/* Connect Column */}
-              <div className="space-y-4">
-                <h4 className="text-[10px] font-bold tracking-widest text-neutral-content-muted uppercase">
-                  Connect
-                </h4>
-                <ul className="space-y-3 text-sm text-neutral-content-subtle">
-                  <li>
-                    <a href="#" className="hover:text-neutral-content transition-colors">
-                      GitHub
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" className="hover:text-neutral-content transition-colors">
-                      X
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

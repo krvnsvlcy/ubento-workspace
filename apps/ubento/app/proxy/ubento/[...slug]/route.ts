@@ -21,7 +21,7 @@ async function handle(req: NextRequest) {
   const serviceName = req.headers.get("x-ubento-service");
 
   // Extract path from the URL by stripping the Next.js API prefix
-  const prefix = "/api/ubento";
+  const prefix = "/proxy/ubento";
   let path = req.nextUrl.pathname;
   if (path.startsWith(prefix)) {
     path = path.slice(prefix.length);

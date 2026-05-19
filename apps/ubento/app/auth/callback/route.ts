@@ -24,17 +24,16 @@ export const GET = async (request: Request) => {
     const accessTokenPayload = jose.decodeJwt(token.access_token) as {
       sub: string;
       exp: number;
-      teamIds?: string[];
+      teamIds: string[];
     };
 
     const expires_at = Math.round(Date.now() / 1000) + token.expires_in;
 
     type User = {
       id: string;
-      email: string | null;
-      name: string | null;
-      picture?: string;
-      tenant_id?: string;
+      email: string;
+      name: string;
+      picture: string;
     };
 
     const { data: user } = await axios.get<User>(
@@ -53,16 +52,16 @@ export const GET = async (request: Request) => {
       },
     });
 
+    console.log({ accessTokenPayload });
+
     await setSession(response, {
       user_id: user.id,
-      tenant_id:
-        user.tenant_id ||
-        (accessTokenPayload.teamIds && accessTokenPayload.teamIds[0]) ||
-        "",
+      team_id: accessTokenPayload.teamIds[0],
       access_token: token.access_token,
       refresh_token: token.refresh_token,
       expires_at,
-      name: user.name ?? undefined,
+      name: user.name,
+      email: user.email,
       picture: user.picture,
     });
 

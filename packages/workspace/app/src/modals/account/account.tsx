@@ -74,10 +74,10 @@ export function AccountModal({ user }: AccountModalProps) {
                     </div>
                     <div>
                       <h3 className="text-xl font-bold text-neutral-content">
-                        {user?.name || "User Name"}
+                        {user?.name}
                       </h3>
                       <p className="text-sm text-neutral-content-subtle">
-                        {user?.email || "user@example.com"}
+                        {user?.email}
                       </p>
                     </div>
                   </div>

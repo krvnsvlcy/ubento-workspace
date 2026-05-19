@@ -49,7 +49,7 @@ export function TreeEntry({
           })}
         >
           {actions.map((action, index) => (
-            <Action {...action} />
+            <Action key={index} {...action} />
           ))}
         </div>
       )}

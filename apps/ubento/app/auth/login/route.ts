@@ -8,7 +8,7 @@ export const GET = async (request: Request) => {
   authUrl.searchParams.set("client_id", env.CLIENT_ID);
   authUrl.searchParams.set(
     "redirect_uri",
-    new URL("/api/auth/callback", origin).toString(),
+    new URL("/auth/callback", origin).toString(),
   );
   authUrl.searchParams.set("response_type", "code");
   authUrl.searchParams.set("provider", "google");

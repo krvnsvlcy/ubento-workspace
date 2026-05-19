@@ -2,8 +2,8 @@
 
 import React, { useState } from "react";
 import { Terminal, Send, CheckCircle2, ArrowRight } from "lucide-react";
-import { Logo } from "@/components/logo";
-
+import { Header } from "@/components/header";
+import { Footer } from "@/components/footer";
 export default function ContactPage() {
   const [formState, setFormState] = useState({ name: "", email: "", message: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -24,28 +24,7 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen bg-neutral-surface font-body text-neutral-content selection:bg-neutral-surface-active flex flex-col">
-      {/* Navigation */}
-      <nav className="fixed top-0 z-50 w-full bg-neutral-surface/80 backdrop-blur-md">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <a href="/" className="flex items-center gap-2 font-heading font-bold tracking-tight text-neutral-content hover:opacity-85 transition-opacity">
-            <Logo style={{ width: 100 }} />
-          </a>
-          <div className="flex items-center gap-6">
-            <a
-              href="/pricing"
-              className="text-sm font-medium text-neutral-content-subtle hover:text-neutral-content transition-colors"
-            >
-              Pricing
-            </a>
-            <a
-              href="/vertex/oauth/connect"
-              className="rounded-3xl bg-inverse px-4 py-2 text-sm font-medium text-inverse-contrast transition-colors hover:bg-inverse-hover active:bg-inverse-active"
-            >
-              Get Ubento Free
-            </a>
-          </div>
-        </div>
-      </nav>
+      <Header />
 
       {/* Main Contact Grid */}
       <main className="flex-grow pt-32 pb-24 md:pt-40">
@@ -187,86 +166,7 @@ export default function ContactPage() {
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="bg-neutral-surface py-24 border-t border-neutral-border/20">
-        <div className="mx-auto max-w-7xl px-6">
-          <div className="grid grid-cols-1 gap-12 md:grid-cols-12">
-            {/* Brand Column */}
-            <div className="md:col-span-6 space-y-6 text-left">
-              <div className="flex items-center gap-2 font-heading font-bold text-neutral-content">
-                <Terminal className="h-5 w-5 text-accent shrink-0" />
-                <span className="tracking-tight text-lg">UBENTO</span>
-              </div>
-              <p className="text-sm text-neutral-content-subtle max-w-sm leading-relaxed">
-                The dynamic WorkOS engine built for speed and autonomy.
-              </p>
-              <p className="text-xs text-neutral-content-muted">
-                © 2026 Ubento. All rights reserved.
-              </p>
-            </div>
-
-            {/* Links Columns */}
-            <div className="md:col-span-6 grid grid-cols-3 gap-8 text-left">
-              {/* Product Column */}
-              <div className="space-y-4">
-                <h4 className="text-[10px] font-bold tracking-widest text-neutral-content-muted uppercase">
-                  Product
-                </h4>
-                <ul className="space-y-3 text-sm text-neutral-content-subtle">
-                  <li>
-                    <a href="/pricing" className="hover:text-neutral-content transition-colors">
-                      Pricing
-                    </a>
-                  </li>
-                </ul>
-              </div>
-
-              {/* Legal Column */}
-              <div className="space-y-4">
-                <h4 className="text-[10px] font-bold tracking-widest text-neutral-content-muted uppercase">
-                  Legal
-                </h4>
-                <ul className="space-y-3 text-sm text-neutral-content-subtle">
-                  <li>
-                    <a href="/privacy" className="hover:text-neutral-content transition-colors">
-                      Privacy Policy
-                    </a>
-                  </li>
-                  <li>
-                    <a href="/terms" className="hover:text-neutral-content transition-colors">
-                      Terms of Service
-                    </a>
-                  </li>
-                  <li>
-                    <a href="/contact" className="hover:text-neutral-content transition-colors">
-                      Contact Us
-                    </a>
-                  </li>
-                </ul>
-              </div>
-
-              {/* Connect Column */}
-              <div className="space-y-4">
-                <h4 className="text-[10px] font-bold tracking-widest text-neutral-content-muted uppercase">
-                  Connect
-                </h4>
-                <ul className="space-y-3 text-sm text-neutral-content-subtle">
-                  <li>
-                    <a href="#" className="hover:text-neutral-content transition-colors">
-                      GitHub
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" className="hover:text-neutral-content transition-colors">
-                      X
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

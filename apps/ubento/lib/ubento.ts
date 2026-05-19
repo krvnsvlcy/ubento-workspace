@@ -1,7 +1,7 @@
 import { UbentoSDK } from "@ubento/services.sdk";
 
-export const ubento = new UbentoSDK({
-  baseUrl: "/api/ubento",
+export const ubentoApi = new UbentoSDK({
+  baseUrl: "/proxy/ubento",
   tokenManager: {
     getToken: async () => "",
   },
