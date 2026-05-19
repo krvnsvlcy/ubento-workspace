@@ -73,11 +73,17 @@ ENV NODE_ENV=production
 ENV PORT=8080
 
 WORKDIR /app
-USER node
+
+# Install sharp directly for linux-x64 to avoid native module bundling issues
+RUN npm install --cpu=x64 --os=linux --libc=glibc sharp@0.34.5
 
 # 1. Copy the physical, symlink-free Prisma files from our staging folder
 COPY --from=build --chown=node:node /app/prisma-staging/node_modules ./node_modules
 COPY --from=build --chown=node:node /app/prisma-staging/prisma ./prisma
+
+RUN chown -R node:node /app/node_modules
+
+USER node
 
 # 2. Copy your single bundled JavaScript file
 COPY --from=build --chown=node:node /usr/src/app/services/intelligence/dist/index.js ./index.js

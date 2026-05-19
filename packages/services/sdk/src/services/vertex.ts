@@ -46,7 +46,7 @@ export class VertexService {
 
   async getProviderByCode(code: string): Promise<ConnectionProvider> {
     const result = await this.vertexClient.get(
-      "/vertex/connection-providers/by-code/{code}",
+      "/vertex/connection-providers/by-code/{code}" as any,
       {
         params: { path: { code } },
       },

@@ -15,3 +15,25 @@ spec:
                 secretKeyRef:
                   key: latest
                   name: "ubento-database-url"
+            # llms
+            - name: AI_GATEWAY_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: latest
+                  name: "ai-gateway-api-key"
+            - name: BYPASS_USAGE_ORGS
+              value: "{{ vars.BYPASS_USAGE_ORGS }}"
+            - name: GCP_INTELLIGENCE_BUCKET_NAME
+              value: "{{ vars.GCP_INTELLIGENCE_BUCKET_NAME }}"
+            # auth
+            - name: UBENTO_AUTH_SERVER_URL
+              value: "{{ vars.UBENTO_AUTH_SERVER_URL }}"
+            - name: UBENTO_SERVICES_CLIENT_ID
+              value: "{{ vars.UBENTO_SERVICES_CLIENT_ID }}"
+            - name: UBENTO_SERVICES_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  key: latest
+                  name: "ubento-services-client-secret"
+            - name: UBENTO_API_AUDIENCE
+              value: "{{ vars.UBENTO_API_AUDIENCE }}"

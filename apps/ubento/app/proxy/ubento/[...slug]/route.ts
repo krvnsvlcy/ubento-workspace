@@ -52,6 +52,7 @@ async function handle(req: NextRequest) {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
+        "ubento-team-id": req.headers.get("ubento-team-id") || "",
       },
       validateStatus: () => true,
     });

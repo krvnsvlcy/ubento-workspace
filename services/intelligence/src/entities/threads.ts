@@ -7,7 +7,7 @@ import {
 import { NotFoundError, prismaListWithCursor } from "@ubento/services.toolkit";
 import { generateText, Output } from "ai";
 import z from "zod";
-import { bento } from "../libs/bento.js";
+import { ubento } from "../libs/bento.js";
 import prisma from "../prisma.js";
 
 export enum ThreadStatus {
@@ -73,7 +73,7 @@ export async function createThread({
 
   let resolvedTeamId = team_id;
   if (!resolvedTeamId && workspace_id) {
-    const workspace = await bento.workspace.getWorkspace(workspace_id);
+    const workspace = await ubento.workspace.getWorkspace(workspace_id);
     resolvedTeamId = workspace.team_id;
   }
 

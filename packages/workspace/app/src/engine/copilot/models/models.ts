@@ -16,6 +16,19 @@ export const modelIds = {
 
 export type LanguageModel = LanguageModelV3;
 
+function joinUrl(...parts: string[]) {
+  const p: string[] = [];
+  for (let i = 0; i < parts.length; i++) {
+    let v = parts[i];
+    if (i > 0 && v.startsWith("/")) v = v.slice(1);
+    if (v.endsWith("/")) v = v.slice(0, -1);
+    if (v.length) p.push(v);
+  }
+
+  alert(p.join("/"));
+  return p.join("/");
+}
+
 function createGatewayProxy({
   baseUrl,
   getToken,
@@ -27,7 +40,7 @@ function createGatewayProxy({
 }) {
   const openResponses = createOpenResponses({
     name: "ubento-intelligence",
-    url: new URL("/intelligence/gateway", baseUrl).toString(),
+    url: joinUrl(baseUrl, "/intelligence/gateway"),
     fetch: async (url, options) => {
       const headers = new Headers(options?.headers);
       headers.set("authorization", `Bearer ${await getToken()}`);

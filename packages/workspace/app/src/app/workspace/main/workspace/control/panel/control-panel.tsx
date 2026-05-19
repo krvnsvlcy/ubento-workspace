@@ -74,7 +74,7 @@ function SelectionTab({ controller }: { controller: WorkspaceEngine }) {
     <div className="p-4 h-full overflow-auto flex flex-col gap-4">
       <div className="flex justify-between items-center">
         <p className="text-xs font-bold text-neutral-content-muted uppercase">
-          Selection Data
+          Selection Dataff
         </p>
         <div className="flex items-center gap-2">
           {!isEditing && (
@@ -154,7 +154,8 @@ function ResolvedContextTab({ controller }: { controller: WorkspaceEngine }) {
     if (boardId) {
       setLoading(true);
       setError(null);
-      controller.resolveBoardContextSchema({ boardId })
+      controller
+        .resolveBoardContextSchema({ boardId })
         .then((result) => {
           setResolvedContext(result);
           setLoading(false);
@@ -167,7 +168,9 @@ function ResolvedContextTab({ controller }: { controller: WorkspaceEngine }) {
   }, [boardId, controller]);
 
   if (!boardId) {
-    return <div className="p-4 text-neutral-content-muted">No active board</div>;
+    return (
+      <div className="p-4 text-neutral-content-muted">No active board</div>
+    );
   }
 
   if (loading) {
@@ -175,7 +178,9 @@ function ResolvedContextTab({ controller }: { controller: WorkspaceEngine }) {
   }
 
   if (error) {
-    return <div className="p-4 text-red-400 bg-red-400/10 rounded-md">{error}</div>;
+    return (
+      <div className="p-4 text-red-400 bg-red-400/10 rounded-md">{error}</div>
+    );
   }
 
   return (
@@ -297,7 +302,11 @@ export function ControlPanel({
             }}
             title={`Switch to ${mode === "live" ? "edit" : "live"} mode`}
           >
-            {mode === "live" ? <Edit2 size={16} /> : <LayoutDashboard size={16} />}
+            {mode === "live" ? (
+              <Edit2 size={16} />
+            ) : (
+              <LayoutDashboard size={16} />
+            )}
           </Button>
           <Button variant="ghost" size="icon" shape="circle" onClick={onClose}>
             <X size={16} />

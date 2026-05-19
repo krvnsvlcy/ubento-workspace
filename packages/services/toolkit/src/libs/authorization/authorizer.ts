@@ -54,8 +54,8 @@ m = ((r.scp == "/public" && p.role == "guest") || g(r.sub, p.role, r.scp)) && (p
       // REGISTER THE CUSTOM DOMAIN MATCHER
       // This tells Casbin: "When checking if Alice has role X on 'org_1/repo_2',
       // also accept it if she has role X on 'org_1'".
-      const rm = this.enforcer.getRoleManager();
-      if ("addDomainMatchingFunc" in rm) {
+      const rm = this.enforcer?.getRoleManager();
+      if (rm && "addDomainMatchingFunc" in rm) {
         (rm as any).addDomainMatchingFunc((...args: any[]) => {
           const result = matchScope(...(args as [string, string]));
           // console.log("Match:", result, assignedScope, requestObject);
