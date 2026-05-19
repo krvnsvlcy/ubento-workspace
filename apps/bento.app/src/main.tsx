@@ -74,9 +74,6 @@ const engine = createUbentoEngine({
   }),
   workspaceRuntimeUrl:
     import.meta.env.VITE_RUNTIME_URL || "http://localhost:4020",
-  moduleUrlTemplate:
-    import.meta.env.VITE_MODULE_URL_TEMPLATE ||
-    "https://modules.ubento.pro/{moduleId}/{versionId}/index.js",
   componentRuntimeUrl:
     import.meta.env.VITE_COMPONENT_RUNTIME_URL || "http://localhost:4030",
 });

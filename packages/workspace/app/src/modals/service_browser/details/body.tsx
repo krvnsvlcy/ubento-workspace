@@ -1,4 +1,4 @@
-import { Text } from "@ubento/workspace.primitives";
+import { Text } from "@ubento/bento.arlo-core";
 import { Terminal, AlertCircle } from "lucide-react";
 import {
   AboutSection,

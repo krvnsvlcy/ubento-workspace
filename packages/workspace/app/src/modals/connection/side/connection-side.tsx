@@ -1,6 +1,6 @@
 import { vertexClient } from "@ubento/services.sdk";
 import { ConnectionProviderConfig } from "@ubento/vertex.core";
-import { Badge, Heading, Text } from "@ubento/workspace.primitives";
+import { Badge, Heading, Text } from "@ubento/bento.arlo-core";
 import { Globe } from "lucide-react";
 
 export function ProviderSidebar({

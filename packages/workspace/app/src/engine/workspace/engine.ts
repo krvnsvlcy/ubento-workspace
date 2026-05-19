@@ -24,7 +24,7 @@ import {
 import { createDuplexRpc, createWindowPort, DuplexRpc } from "@ubento/rpc";
 import { workspaceClient } from "@ubento/services.sdk";
 import { OperationSpec, serviceSpecV1Schema } from "@ubento/vertex.core";
-import { createZustandStateController } from "@ubento/workspace.primitives";
+import { createZustandStateController } from "@ubento/bento.arlo-core";
 import { registerStore, unregisterStore } from "@ubento/zustand-devtool";
 import { dequal } from "dequal/lite";
 import { applyPatch } from "fast-json-patch";

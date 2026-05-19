@@ -20,7 +20,7 @@ import {
 } from "recharts";
 import type { AxisDomain } from "recharts/types/util/types";
 
-import { useOnWindowResize } from "@/core/hooks/useOnWindowResize";
+import { useOnWindowResize } from "@/hooks/useOnWindowResize.js";
 import {
   AvailableChartColors,
   constructCategoryColors,
@@ -444,7 +444,7 @@ const ChartLegend = (
 
 //#region Tooltip
 
-type TooltipProps = Pick<ChartTooltipProps, "active" | "payload" | "label">;
+type ComboChartTooltipProps = Pick<ChartTooltipProps, "active" | "payload" | "label">;
 
 type PayloadItem = {
   category: string;
@@ -596,8 +596,8 @@ interface ComboChartProps extends React.HTMLAttributes<HTMLDivElement> {
   legendPosition?: "left" | "center" | "right";
   tickGap?: number;
   enableBiaxial?: boolean;
-  tooltipCallback?: (tooltipCallbackContent: TooltipProps) => void;
-  customTooltip?: React.ComponentType<TooltipProps>;
+  tooltipCallback?: (tooltipCallbackContent: ComboChartTooltipProps) => void;
+  customTooltip?: React.ComponentType<ComboChartTooltipProps>;
   barSeries: ChartSeries & {
     type?: "default" | "stacked";
   };
@@ -934,7 +934,7 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
                 y: 0,
               }}
               content={({ active, payload, label }) => {
-                const cleanPayload: TooltipProps["payload"] = payload
+                const cleanPayload: ComboChartTooltipProps["payload"] = payload
                   ? payload.map((item: any) => ({
                       category: item.dataKey,
                       value: item.value,
@@ -1177,4 +1177,4 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
 
 ComboChart.displayName = "ComboChart";
 
-export { ComboChart, type ComboChartEventProps, type TooltipProps };
+export { ComboChart, type ComboChartEventProps, type ComboChartTooltipProps };

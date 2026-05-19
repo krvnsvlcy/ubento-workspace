@@ -1,10 +1,18 @@
-import {
-  lengthSchema,
-  type EdgesSpec,
-  type LengthSpec,
-} from "@ubento/bento.core";
 import { createContext, useContext } from "react";
 import z from "zod";
+
+export const lengthSchema = z.object({
+  value: z.number(),
+  unit: z.enum(["px", "%", "fr"]),
+});
+export type LengthSpec = z.infer<typeof lengthSchema>;
+
+export type EdgesSpec<S> = {
+  top?: S;
+  left?: S;
+  right?: S;
+  bottom?: S;
+};
 
 function lengthToCSS(length?: LengthSpec, flexAxis?: "main" | "cross") {
   if (!length) return undefined;

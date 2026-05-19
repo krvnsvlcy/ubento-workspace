@@ -19,7 +19,7 @@ import {
 } from "recharts";
 import type { AxisDomain } from "recharts/types/util/types";
 
-import { useOnWindowResize } from "@/core/hooks/useOnWindowResize";
+import { useOnWindowResize } from "@/hooks/useOnWindowResize.js";
 import {
   AvailableChartColors,
   constructCategoryColors,
@@ -363,7 +363,7 @@ const ChartLegend = (
 
 //#region Tooltip
 
-type TooltipProps = Pick<ChartTooltipProps, "active" | "payload" | "label">;
+type LineChartTooltipProps = Pick<ChartTooltipProps, "active" | "payload" | "label">;
 
 type PayloadItem = {
   category: string;
@@ -497,8 +497,8 @@ interface LineChartProps extends React.HTMLAttributes<HTMLDivElement> {
   yAxisLabel?: string;
   legendPosition?: "left" | "center" | "right";
   curveType?: "linear" | "monotone" | "step" | "stepBefore" | "stepAfter";
-  tooltipCallback?: (tooltipCallbackContent: TooltipProps) => void;
-  customTooltip?: React.ComponentType<TooltipProps>;
+  tooltipCallback?: (tooltipCallbackContent: LineChartTooltipProps) => void;
+  customTooltip?: React.ComponentType<LineChartTooltipProps>;
 }
 
 const LineChart = React.forwardRef<HTMLDivElement, LineChartProps>(
@@ -704,7 +704,7 @@ const LineChart = React.forwardRef<HTMLDivElement, LineChartProps>(
               offset={20}
               position={{ y: 0 }}
               content={({ active, payload, label }) => {
-                const cleanPayload: TooltipProps["payload"] = payload
+                const cleanPayload: LineChartTooltipProps["payload"] = payload
                   ? payload.map((item: any) => ({
                       category: item.dataKey,
                       value: item.value,
@@ -906,4 +906,4 @@ const LineChart = React.forwardRef<HTMLDivElement, LineChartProps>(
 
 LineChart.displayName = "LineChart";
 
-export { LineChart, type LineChartEventProps, type TooltipProps };
+export { LineChart, type LineChartEventProps, type LineChartTooltipProps };

@@ -1,4 +1,3 @@
-import { Info } from "lucide-react";
 import { TabDefinition } from "../../../types";
 
 export function ComponentDetailsTab() {
@@ -17,7 +16,7 @@ export function ComponentDetailsTab() {
 export const componentDetailsTab: TabDefinition = {
   id: "details",
   name: "Details",
-  icon: Info,
+  icon: "info",
   component: ComponentDetailsTab,
   enabled: (location) => !!location.component,
 };

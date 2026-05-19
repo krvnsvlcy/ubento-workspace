@@ -1,6 +1,6 @@
 import { CreateWorkspaceModal } from "@/modals/create_workspace/create_workspace";
 import { useModal } from "@/utils/modal-store";
-import { Button } from "@ubento/workspace.primitives";
+import { Button } from "@ubento/bento.arlo-core";
 import { ArrowRight, Box, Plus, Sparkles } from "lucide-react";
 import React from "react";
 import { useUbento, useUbentoEngine } from "../../../../engine/app/engine";

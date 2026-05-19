@@ -1,4 +1,4 @@
-import { createZustandStateController } from "@ubento/workspace.primitives";
+import { createZustandStateController } from "@ubento/bento.arlo-core";
 import { createStore as createZustandStore } from "zustand";
 
 export type InteractionManagerState = {

@@ -1,4 +1,4 @@
-import { Button } from "@ubento/workspace.primitives";
+import { Button } from "@ubento/bento.arlo-core";
 import { ReactNode } from "react";
 
 export function ErrorView({

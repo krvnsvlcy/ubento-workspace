@@ -14,7 +14,7 @@ import {
   RailLayoutMain,
   RailLayoutSide,
   Text,
-} from "@ubento/workspace.primitives";
+} from "@ubento/bento.arlo-core";
 import {
   Briefcase,
   Code2,

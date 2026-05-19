@@ -1,6 +1,6 @@
 import { useCopilot } from "@/contexts/copilot";
 import { UserMessageAttachment } from "@ubento/workspace.agent";
-import { Button, useStoreState } from "@ubento/workspace.primitives";
+import { Button, useStoreState } from "@ubento/bento.arlo-core";
 import { ArrowRight, ChevronDown, Plus, Square, X } from "lucide-react";
 
 function AttachmentChip({

@@ -6,7 +6,7 @@ import {
   themeToCss, 
   type ThemeRoot,
   type HslInput 
-} from "@ubento/workspace.primitives";
+} from "@ubento/bento.arlo-core";
 
 const commonFonts = [
   "Geist",

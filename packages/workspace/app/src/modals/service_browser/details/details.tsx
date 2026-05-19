@@ -15,7 +15,7 @@ import {
   RailLayoutMain,
   RailLayoutSide,
   Text,
-} from "@ubento/workspace.primitives";
+} from "@ubento/bento.arlo-core";
 import { ArrowLeft, Edit, Server } from "lucide-react";
 import { useEffect, useState } from "react";
 import { EditServiceModal } from "../edit-service";

@@ -107,20 +107,22 @@ export function SelectControl<T>({
         shadow
       >
         <PopperMenu
-          options={options.map((o) => ({
-            icon: o.icon,
-            label: o.label,
-            disabled: o.disabled,
-            dimmed: o.muted,
-            onClick: () => {
-              setAnchor(undefined);
-              if ("action" in o) {
-                o.action();
-              } else {
-                onChange?.(o.value);
-              }
-            },
-          }))}
+          options={[
+            options.map((o) => ({
+              icon: o.icon,
+              label: o.label,
+              disabled: o.disabled,
+              dimmed: o.muted,
+              onClick: () => {
+                setAnchor(undefined);
+                if ("action" in o) {
+                  o.action();
+                } else {
+                  onChange?.(o.value);
+                }
+              },
+            })),
+          ]}
         />
       </Popper>
     </div>

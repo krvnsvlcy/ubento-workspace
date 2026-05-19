@@ -60,7 +60,7 @@ describe("Toolkits", () => {
       name: "test-agent",
       description: "Test agent",
       instructions: "Test instructions",
-      enableMessage: "response",
+      enableMessage: true,
     };
 
     const thread = createAgentThread({

@@ -28,7 +28,7 @@ UI is represented as a flat registry of two primitives:
 
 ### 3. Reactive Objects Pattern (StateController)
 
-The standard way to build stateful, reactive objects in Ubento is the **Zustand with State Controller** pattern, defined in `@ubento/workspace.primitives`.
+The standard way to build stateful, reactive objects in Ubento is the **Zustand with State Controller** pattern, defined in `@ubento/bento.arlo-core`.
 
 - **Standard Interface**: Every stateful object (Engine, RuntimeServices, etc.) should expose a `StateController<T>` interface.
 - **Capabilities**:

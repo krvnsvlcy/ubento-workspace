@@ -6,8 +6,8 @@ import {
   PopperMenu,
   PopperProvider,
   PopperTrigger,
-} from "@ubento/workspace.primitives";
-import { LogOut, Settings, User, Palette } from "lucide-react";
+} from "@ubento/bento.arlo-core";
+import { LogOut, Settings, User } from "lucide-react";
 import { useUbentoEngine } from "../../../../engine/app/engine";
 
 export function WorkspaceFooter() {
@@ -59,14 +59,6 @@ export function WorkspaceFooter() {
             <PopperMenu
               options={[
                 [
-                  {
-                    label: "Appearance",
-                    icon: <Palette size={14} />,
-                    onClick: () => {
-                      engine.goToLocation({ style: true });
-                      // Close menu automatically after navigation? The popper might auto-close or we just let it be.
-                    },
-                  },
                   {
                     label: "Team Settings",
                     icon: <Settings size={14} />,

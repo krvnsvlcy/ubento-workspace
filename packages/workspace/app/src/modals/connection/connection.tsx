@@ -5,7 +5,7 @@ import {
   RailLayout,
   RailLayoutMain,
   RailLayoutSide,
-} from "@ubento/workspace.primitives";
+} from "@ubento/bento.arlo-core";
 import { useState } from "react";
 import { ConnectionMain } from "./main/connection-main";
 import { ProviderSidebar } from "./side/connection-side";

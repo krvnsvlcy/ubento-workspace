@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { generateTheme, themeToCss } from "@ubento/workspace.primitives";
+import { generateTheme, themeToCss } from "@ubento/bento.arlo-core";
 
 interface ThemeContextType {
   currentTheme: string;

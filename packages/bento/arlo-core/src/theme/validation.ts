@@ -16,7 +16,7 @@ export function validateLightBackground(
 ): ValidationResult {
   const bg = chroma(backgroundHex);
 
-  // Luminance ranges from 0 (black) to 1 (pure white).
+  // Lightness ranges from 0 (black) to 1 (pure white).
   // 0.85 is a safe minimum for a "light" theme canvas (e.g., a light gray).
   const MIN_CANVAS_LUMINANCE = 0.85;
   const currentLuminance = bg.luminance();

@@ -9,7 +9,7 @@ import {
   Field,
   FieldLabel,
   Heading,
-} from "@ubento/workspace.primitives";
+} from "@ubento/bento.arlo-core";
 import { useState } from "react";
 
 interface CreateProviderModalProps {

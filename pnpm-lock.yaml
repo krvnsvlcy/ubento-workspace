@@ -157,6 +157,9 @@ importers:
       '@ubento/bento.arlo':
         specifier: workspace:*
         version: link:../../packages/bento/arlo
+      '@ubento/bento.arlo-core':
+        specifier: workspace:*
+        version: link:../../packages/bento/arlo-core
       '@ubento/bento.core':
         specifier: workspace:*
         version: link:../../packages/bento/core
@@ -169,9 +172,6 @@ importers:
       '@ubento/rpc':
         specifier: workspace:*
         version: link:../../packages/utils/rpc
-      '@ubento/workspace.primitives':
-        specifier: workspace:*
-        version: link:../../packages/workspace/primitives
       ai:
         specifier: ^6.0.175
         version: 6.0.175(zod@4.4.3)
@@ -251,6 +251,9 @@ importers:
       '@ubento/bento.arlo':
         specifier: workspace:*
         version: link:../../packages/bento/arlo
+      '@ubento/bento.arlo-core':
+        specifier: workspace:*
+        version: link:../../packages/bento/arlo-core
       '@ubento/bento.core':
         specifier: workspace:*
         version: link:../../packages/bento/core
@@ -263,9 +266,6 @@ importers:
       '@ubento/rpc':
         specifier: workspace:*
         version: link:../../packages/utils/rpc
-      '@ubento/workspace.primitives':
-        specifier: workspace:*
-        version: link:../../packages/workspace/primitives
       wouter:
         specifier: ^3.6.0
         version: 3.9.0(react@19.2.5)
@@ -324,6 +324,9 @@ importers:
 
   apps/component.runtime:
     dependencies:
+      '@ubento/bento.arlo-core':
+        specifier: workspace:*
+        version: link:../../packages/bento/arlo-core
       '@ubento/bento.runtime':
         specifier: workspace:*
         version: link:../../packages/bento/runtime
@@ -333,9 +336,6 @@ importers:
       '@ubento/rpc':
         specifier: workspace:*
         version: link:../../packages/utils/rpc
-      '@ubento/workspace.primitives':
-        specifier: workspace:*
-        version: link:../../packages/workspace/primitives
       react:
         specifier: ^19.0.0
         version: 19.2.5
@@ -400,12 +400,12 @@ importers:
 
   apps/theme-builder:
     dependencies:
+      '@ubento/bento.arlo-core':
+        specifier: workspace:*
+        version: link:../../packages/bento/arlo-core
       '@ubento/bento.style':
         specifier: workspace:*
         version: link:../../packages/bento/style
-      '@ubento/workspace.primitives':
-        specifier: workspace:*
-        version: link:../../packages/workspace/primitives
       colord:
         specifier: ^2.9.3
         version: 2.9.3
@@ -464,6 +464,9 @@ importers:
 
   apps/ubento:
     dependencies:
+      '@ubento/bento.arlo-core':
+        specifier: workspace:*
+        version: link:../../packages/bento/arlo-core
       '@ubento/bento.style':
         specifier: workspace:*
         version: link:../../packages/bento/style
@@ -473,9 +476,6 @@ importers:
       '@ubento/workspace.app':
         specifier: workspace:*
         version: link:../../packages/workspace/app
-      '@ubento/workspace.primitives':
-        specifier: workspace:*
-        version: link:../../packages/workspace/primitives
       axios:
         specifier: ^1.15.2
         version: 1.16.0
@@ -653,6 +653,169 @@ importers:
         specifier: ^5.0.0
         version: 5.9.3
 
+  packages/bento/arlo-core:
+    dependencies:
+      '@base-ui/react':
+        specifier: ^1.4.1
+        version: 1.4.1(@types/react@19.2.14)(date-fns@4.1.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      '@internationalized/date':
+        specifier: ^3.12.1
+        version: 3.12.1
+      '@radix-ui/react-accordion':
+        specifier: ^1.2.12
+        version: 1.2.12(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      '@radix-ui/react-checkbox':
+        specifier: ^1.3.3
+        version: 1.3.3(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      '@radix-ui/react-collapsible':
+        specifier: ^1.1.12
+        version: 1.1.12(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      '@radix-ui/react-context-menu':
+        specifier: ^2.2.16
+        version: 2.2.16(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      '@radix-ui/react-dialog':
+        specifier: ^1.1.15
+        version: 1.1.15(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      '@radix-ui/react-dropdown-menu':
+        specifier: ^2.1.16
+        version: 2.1.16(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      '@radix-ui/react-hover-card':
+        specifier: ^1.1.15
+        version: 1.1.15(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      '@radix-ui/react-label':
+        specifier: ^2.1.8
+        version: 2.1.8(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      '@radix-ui/react-navigation-menu':
+        specifier: ^1.2.14
+        version: 1.2.14(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      '@radix-ui/react-popover':
+        specifier: ^1.1.15
+        version: 1.1.15(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      '@radix-ui/react-radio-group':
+        specifier: ^1.3.8
+        version: 1.3.8(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      '@radix-ui/react-scroll-area':
+        specifier: ^1.2.10
+        version: 1.2.10(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      '@radix-ui/react-select':
+        specifier: ^2.2.6
+        version: 2.2.6(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      '@radix-ui/react-separator':
+        specifier: ^1.1.8
+        version: 1.1.8(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      '@radix-ui/react-slider':
+        specifier: ^1.3.6
+        version: 1.3.6(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      '@radix-ui/react-slot':
+        specifier: ^1.2.4
+        version: 1.2.4(@types/react@19.2.14)(react@19.2.5)
+      '@radix-ui/react-switch':
+        specifier: ^1.2.6
+        version: 1.2.6(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      '@radix-ui/react-tabs':
+        specifier: ^1.1.13
+        version: 1.1.13(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      '@radix-ui/react-toast':
+        specifier: ^1.2.15
+        version: 1.2.15(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      '@radix-ui/react-toggle':
+        specifier: ^1.1.10
+        version: 1.1.10(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      '@radix-ui/react-toggle-group':
+        specifier: ^1.1.11
+        version: 1.1.11(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      '@radix-ui/react-tooltip':
+        specifier: ^1.2.8
+        version: 1.2.8(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      '@react-aria/datepicker':
+        specifier: ^3.17.0
+        version: 3.17.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      '@react-stately/datepicker':
+        specifier: ^3.17.0
+        version: 3.17.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      '@tanstack/react-table':
+        specifier: ^8.21.3
+        version: 8.21.3(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      '@ubento/state':
+        specifier: workspace:*
+        version: link:../../utils/state
+      chroma-js:
+        specifier: ^3.2.0
+        version: 3.2.0
+      class-variance-authority:
+        specifier: ^0.7.1
+        version: 0.7.1
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
+      cmdk:
+        specifier: ^1.1.1
+        version: 1.1.1(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      date-fns:
+        specifier: ^4.1.0
+        version: 4.1.0
+      embla-carousel-react:
+        specifier: ^8.6.0
+        version: 8.6.0(react@19.2.5)
+      lucide-react:
+        specifier: ^0.468.0
+        version: 0.468.0(react@19.2.5)
+      rc-slider:
+        specifier: ^11.1.9
+        version: 11.1.9(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      react-colorful:
+        specifier: ^5.6.1
+        version: 5.6.1(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      react-day-picker:
+        specifier: ^8.10.2
+        version: 8.10.2(date-fns@4.1.0)(react@19.2.5)
+      react-dropzone:
+        specifier: ^15.0.0
+        version: 15.0.0(react@19.2.5)
+      react-resizable-panels:
+        specifier: ^4.11.1
+        version: 4.11.1(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      react-shiki:
+        specifier: ^0.9.3
+        version: 0.9.3(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      react-textarea-autosize:
+        specifier: ^8.5.9
+        version: 8.5.9(@types/react@19.2.14)(react@19.2.5)
+      react-virtuoso:
+        specifier: ^4.18.7
+        version: 4.18.7(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      recharts:
+        specifier: ^3.8.1
+        version: 3.8.1(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react-is@18.3.1)(react@19.2.5)(redux@5.0.1)
+      sonner:
+        specifier: ^2.0.7
+        version: 2.0.7(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      tailwind-merge:
+        specifier: ^3.6.0
+        version: 3.6.0
+      tailwind-variants:
+        specifier: ^3.2.2
+        version: 3.2.2(tailwind-merge@3.6.0)(tailwindcss@4.2.4)
+      tinycolor2:
+        specifier: ^1.6.0
+        version: 1.6.0
+      zod:
+        specifier: ^4.3.6
+        version: 4.4.3
+      zustand:
+        specifier: ^5.0.12
+        version: 5.0.13(@types/react@19.2.14)(immer@11.1.8)(react@19.2.5)(use-sync-external-store@1.6.0(react@19.2.5))
+    devDependencies:
+      '@types/chroma-js':
+        specifier: ^3.1.2
+        version: 3.1.2
+      '@types/tinycolor2':
+        specifier: ^1.4.6
+        version: 1.4.6
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
+
   packages/bento/core:
     dependencies:
       '@dnd-kit/core':
@@ -673,6 +836,9 @@ importers:
       '@tanstack/react-query':
         specifier: ^5.100.9
         version: 5.100.9(react@19.2.5)
+      '@ubento/bento.arlo-core':
+        specifier: workspace:*
+        version: link:../arlo-core
       '@ubento/fabric':
         specifier: workspace:*
         version: link:../../utils/fabric
@@ -682,9 +848,6 @@ importers:
       '@ubento/services.primitives':
         specifier: workspace:*
         version: link:../../services/primitives
-      '@ubento/workspace.primitives':
-        specifier: workspace:*
-        version: link:../../workspace/primitives
       motion:
         specifier: ^12.38.0
         version: 12.38.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
@@ -722,6 +885,9 @@ importers:
       '@tanstack/react-query':
         specifier: ^5.72.0
         version: 5.100.9(react@19.2.5)
+      '@ubento/bento.arlo-core':
+        specifier: workspace:*
+        version: link:../arlo-core
       '@ubento/bento.core':
         specifier: workspace:*
         version: link:../core
@@ -734,9 +900,6 @@ importers:
       '@ubento/services.primitives':
         specifier: workspace:*
         version: link:../../services/primitives
-      '@ubento/workspace.primitives':
-        specifier: workspace:*
-        version: link:../../workspace/primitives
       dequal:
         specifier: ^2.0.3
         version: 2.0.3
@@ -780,6 +943,9 @@ importers:
       '@json-render/react':
         specifier: ^0.18.0
         version: 0.18.0(react@19.2.5)(zod@4.4.3)
+      '@ubento/bento.arlo-core':
+        specifier: workspace:*
+        version: link:../arlo-core
       '@ubento/fabric':
         specifier: workspace:*
         version: link:../../utils/fabric
@@ -789,9 +955,6 @@ importers:
       '@ubento/services.primitives':
         specifier: workspace:*
         version: link:../../services/primitives
-      '@ubento/workspace.primitives':
-        specifier: workspace:*
-        version: link:../../workspace/primitives
       motion:
         specifier: ^12.38.0
         version: 12.38.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
@@ -950,9 +1113,9 @@ importers:
       '@tanstack/query-core':
         specifier: ^5.100.10
         version: 5.100.10
-      '@ubento/workspace.primitives':
+      '@ubento/bento.arlo-core':
         specifier: workspace:*
-        version: link:../../workspace/primitives
+        version: link:../../bento/arlo-core
       rxjs:
         specifier: ^7.8.1
         version: 7.8.2
@@ -1177,15 +1340,15 @@ importers:
       '@radix-ui/react-tooltip':
         specifier: ^1.2.8
         version: 1.2.8(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      '@ubento/bento.arlo-core':
+        specifier: workspace:*
+        version: link:../../bento/arlo-core
       '@ubento/state':
         specifier: workspace:*
         version: link:../../utils/state
       '@ubento/telemetry':
         specifier: workspace:*
         version: link:../../utils/telemetry
-      '@ubento/workspace.primitives':
-        specifier: workspace:*
-        version: link:../primitives
       ai:
         specifier: ^6.0.168
         version: 6.0.175(zod@4.4.3)
@@ -1277,6 +1440,9 @@ importers:
       '@tanstack/react-query':
         specifier: ^5.89.7
         version: 5.100.9(react@19.2.5)
+      '@ubento/bento.arlo-core':
+        specifier: workspace:*
+        version: link:../../bento/arlo-core
       '@ubento/bento.core':
         specifier: workspace:*
         version: link:../../bento/core
@@ -1307,9 +1473,6 @@ importers:
       '@ubento/workspace.agent':
         specifier: workspace:*
         version: link:../agent
-      '@ubento/workspace.primitives':
-        specifier: workspace:*
-        version: link:../primitives
       '@ubento/zustand-devtool':
         specifier: workspace:*
         version: link:../../utils/zustand-devtool
@@ -1379,115 +1542,6 @@ importers:
         version: 5.9.3
 
   packages/workspace/contracts: {}
-
-  packages/workspace/primitives:
-    dependencies:
-      '@radix-ui/react-checkbox':
-        specifier: ^1.3.3
-        version: 1.3.3(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
-      '@radix-ui/react-context-menu':
-        specifier: ^2.2.16
-        version: 2.2.16(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
-      '@radix-ui/react-dialog':
-        specifier: ^1.1.15
-        version: 1.1.15(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
-      '@radix-ui/react-dropdown-menu':
-        specifier: ^2.1.16
-        version: 2.1.16(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
-      '@radix-ui/react-label':
-        specifier: ^2.1.8
-        version: 2.1.8(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
-      '@radix-ui/react-popover':
-        specifier: ^1.1.15
-        version: 1.1.15(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
-      '@radix-ui/react-radio-group':
-        specifier: ^1.3.8
-        version: 1.3.8(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
-      '@radix-ui/react-select':
-        specifier: ^2.2.6
-        version: 2.2.6(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
-      '@radix-ui/react-separator':
-        specifier: ^1.1.8
-        version: 1.1.8(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
-      '@radix-ui/react-slot':
-        specifier: ^1.2.4
-        version: 1.2.4(@types/react@19.2.14)(react@19.2.5)
-      '@radix-ui/react-switch':
-        specifier: ^1.2.6
-        version: 1.2.6(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
-      '@radix-ui/react-tabs':
-        specifier: ^1.1.13
-        version: 1.1.13(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
-      '@radix-ui/react-toggle':
-        specifier: ^1.1.10
-        version: 1.1.10(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
-      '@radix-ui/react-toggle-group':
-        specifier: ^1.1.11
-        version: 1.1.11(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
-      '@radix-ui/react-tooltip':
-        specifier: ^1.2.8
-        version: 1.2.8(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
-      '@ubento/state':
-        specifier: workspace:*
-        version: link:../../utils/state
-      chroma-js:
-        specifier: ^3.2.0
-        version: 3.2.0
-      class-variance-authority:
-        specifier: ^0.7.1
-        version: 0.7.1
-      clsx:
-        specifier: ^2.1.1
-        version: 2.1.1
-      cmdk:
-        specifier: ^1.1.1
-        version: 1.1.1(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
-      lucide-react:
-        specifier: ^0.468.0
-        version: 0.468.0(react@19.2.5)
-      rc-slider:
-        specifier: ^11.1.9
-        version: 11.1.9(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
-      react:
-        specifier: ^19.0.0
-        version: 19.2.5
-      react-colorful:
-        specifier: ^5.6.1
-        version: 5.6.1(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
-      react-dom:
-        specifier: ^19.0.0
-        version: 19.2.5(react@19.2.5)
-      react-shiki:
-        specifier: ^0.9.3
-        version: 0.9.3(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
-      react-textarea-autosize:
-        specifier: ^8.5.9
-        version: 8.5.9(@types/react@19.2.14)(react@19.2.5)
-      sonner:
-        specifier: ^2.0.7
-        version: 2.0.7(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
-      tinycolor2:
-        specifier: ^1.6.0
-        version: 1.6.0
-      zustand:
-        specifier: ^5.0.12
-        version: 5.0.12(@types/react@19.2.14)(immer@11.1.8)(react@19.2.5)(use-sync-external-store@1.6.0(react@19.2.5))
-    devDependencies:
-      '@types/chroma-js':
-        specifier: ^3.1.2
-        version: 3.1.2
-      '@types/react':
-        specifier: ^19.0.0
-        version: 19.2.14
-      '@types/react-dom':
-        specifier: ^19.0.0
-        version: 19.2.3(@types/react@19.2.14)
-      '@types/tinycolor2':
-        specifier: ^1.4.6
-        version: 1.4.6
-      typescript:
-        specifier: ^5.0.0
-        version: 5.9.3
 
   packages/workspace/workers/services:
     dependencies:

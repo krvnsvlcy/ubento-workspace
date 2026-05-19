@@ -18,7 +18,7 @@ import {
 } from "recharts";
 import type { AxisDomain } from "recharts/types/util/types";
 
-import { useOnWindowResize } from "@/core/hooks/useOnWindowResize";
+import { useOnWindowResize } from "@/hooks/useOnWindowResize.js";
 import {
   AvailableChartColors,
   constructCategoryColors,
@@ -423,7 +423,7 @@ const ChartLegend = (
 
 //#region Tooltip
 
-type TooltipProps = Pick<ChartTooltipProps, "active" | "payload" | "label">;
+type BarChartTooltipProps = Pick<ChartTooltipProps, "active" | "payload" | "label">;
 
 type PayloadItem = {
   category: string;
@@ -552,8 +552,8 @@ interface BarChartProps extends React.HTMLAttributes<HTMLDivElement> {
   layout?: "vertical" | "horizontal";
   type?: "default" | "stacked" | "percent";
   legendPosition?: "left" | "center" | "right";
-  tooltipCallback?: (tooltipCallbackContent: TooltipProps) => void;
-  customTooltip?: React.ComponentType<TooltipProps>;
+  tooltipCallback?: (tooltipCallbackContent: BarChartTooltipProps) => void;
+  customTooltip?: React.ComponentType<BarChartTooltipProps>;
 }
 
 const BarChart = React.forwardRef<HTMLDivElement, BarChartProps>(
@@ -791,7 +791,7 @@ const BarChart = React.forwardRef<HTMLDivElement, BarChartProps>(
                 x: layout === "horizontal" ? undefined : yAxisWidth + 20,
               }}
               content={({ active, payload, label }) => {
-                const cleanPayload: TooltipProps["payload"] = payload
+                const cleanPayload: BarChartTooltipProps["payload"] = payload
                   ? payload.map((item: any) => ({
                       category: item.dataKey,
                       value: item.value,
@@ -884,4 +884,4 @@ const BarChart = React.forwardRef<HTMLDivElement, BarChartProps>(
 
 BarChart.displayName = "BarChart";
 
-export { BarChart, type BarChartEventProps, type TooltipProps };
+export { BarChart, type BarChartEventProps, type BarChartTooltipProps };

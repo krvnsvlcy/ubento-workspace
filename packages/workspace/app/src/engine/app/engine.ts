@@ -8,7 +8,7 @@ import { createLogger, Logger } from "@ubento/telemetry";
 import {
   createZustandStateController,
   StateController,
-} from "@ubento/workspace.primitives";
+} from "@ubento/bento.arlo-core";
 import { registerStore } from "@ubento/zustand-devtool";
 import { createContext, useContext } from "react";
 import { createStore } from "zustand";

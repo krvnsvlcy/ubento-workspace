@@ -22,7 +22,7 @@
     "@ubento/telemetry": "workspace:*",
     "@ubento/vertex.core": "workspace:*",
     "@ubento/workspace.agent": "workspace:*",
-    "@ubento/workspace.primitives": "workspace:*",
+    "@ubento/bento.arlo-core": "workspace:*",
     "@ubento/zustand-devtool": "workspace:*",
     "ai": "^6.0.168",
     "clsx": "^2.1.1",

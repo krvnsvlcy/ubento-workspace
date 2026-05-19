@@ -15,7 +15,7 @@ import {
   FieldLabel,
   Heading,
   Input,
-} from "@ubento/workspace.primitives";
+} from "@ubento/bento.arlo-core";
 import { useState } from "react";
 import { Case, Default, If, Switch } from "react-if";
 import { extractProviderAuthMethods } from "./utils";

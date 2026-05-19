@@ -1,5 +1,5 @@
 import { AgentThread, UserMessageAttachment } from "@ubento/workspace.agent";
-import { createZustandStateController } from "@ubento/workspace.primitives";
+import { createZustandStateController } from "@ubento/bento.arlo-core";
 import { registerStore } from "@ubento/zustand-devtool";
 import { createStore } from "zustand";
 import {

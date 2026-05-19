@@ -2,6 +2,7 @@
 
 import { ubentoApi } from "@/lib/ubento";
 import { routes } from "@/routes";
+import { PendingView } from "@ubento/bento.arlo-core";
 import {
   createUbentoEngine,
   Ubento,
@@ -9,7 +10,6 @@ import {
 } from "@ubento/workspace.app";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { PendingView } from "../../../packages/workspace/primitives/dist";
 import { useSession } from "../hooks/session";
 
 const workspaceRuntimeUrl = process.env.NEXT_PUBLIC_WORKSPACE_RUNTIME_URL!;

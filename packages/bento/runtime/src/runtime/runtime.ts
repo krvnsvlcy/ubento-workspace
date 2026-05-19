@@ -1,7 +1,7 @@
 import { Component, createEnvironment, Environment } from "@ubento/bento.core";
 import { createStore } from "@ubento/fabric";
 import type { DuplexRpc } from "@ubento/rpc";
-import { createZustandStateController } from "@ubento/workspace.primitives";
+import { createZustandStateController } from "@ubento/bento.arlo-core";
 import { dequal } from "dequal";
 import { createStore as createZustandStore } from "zustand";
 import {

@@ -21,7 +21,7 @@ import { Calendar, Minus } from "lucide-react";
 import * as React from "react";
 import { tv, type VariantProps } from "tailwind-variants";
 
-import { cx, focusInput, focusRing, hasErrorInput } from "../../lib/utils.js";
+import { cx, focusInput, focusRing, hasErrorInput } from "@/lib/utils.js";
 
 import { Button } from "../ui/button.js";
 import { Calendar as CalendarPrimitive, type Matcher } from "./calendar.js";

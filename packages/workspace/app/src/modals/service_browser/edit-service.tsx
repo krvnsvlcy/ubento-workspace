@@ -13,7 +13,7 @@ import {
   Heading,
   Input,
   Textarea,
-} from "@ubento/workspace.primitives";
+} from "@ubento/bento.arlo-core";
 import { useState, useEffect } from "react";
 import { parse as parseYaml } from "yaml";
 import { CreateProviderModal } from "./create-provider-modal";

@@ -70,7 +70,7 @@ const TabNavigationLink = React.forwardRef<
       asChild={asChild}
       {...props}
     >
-      {getSubtree({ asChild, children }, (children) => (
+      {getSubtree({ asChild, children }, (children: React.ReactNode) => (
         <span
           className={cx(
             // base

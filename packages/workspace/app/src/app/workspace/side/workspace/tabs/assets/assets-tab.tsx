@@ -5,7 +5,7 @@ import {
   BrowserDataTransferStore,
   DataTransferPayload,
 } from "@ubento/data-transfer";
-import { EmptyView } from "@ubento/workspace.primitives";
+import { EmptyView } from "@ubento/bento.arlo-core";
 import { Box, Search } from "lucide-react";
 import { useState } from "react";
 import { TabDefinition } from "../../../types";

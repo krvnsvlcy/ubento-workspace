@@ -9,7 +9,7 @@
     "@ai-sdk/provider": "^3.0.8",
     "@ubento/state": "workspace:*",
     "@ubento/telemetry": "workspace:*",
-    "@ubento/workspace.primitives": "workspace:*",
+    "@ubento/bento.arlo-core": "workspace:*",
     "@radix-ui/react-checkbox": "^1.3.3",
     "@radix-ui/react-context-menu": "^2.2.16",
     "@radix-ui/react-dialog": "^1.1.15",

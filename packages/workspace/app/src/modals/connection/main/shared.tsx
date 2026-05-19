@@ -14,7 +14,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@ubento/workspace.primitives";
+} from "@ubento/bento.arlo-core";
 import { useEffect, useState } from "react";
 
 export function AuthMethodSelector({

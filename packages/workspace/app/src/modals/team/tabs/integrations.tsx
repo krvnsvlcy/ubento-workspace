@@ -12,7 +12,7 @@ import {
   ContentHeader,
   Heading,
   Input,
-} from "@ubento/workspace.primitives";
+} from "@ubento/bento.arlo-core";
 import { Globe, Plus, Search, Settings, Trash2 } from "lucide-react";
 import { FC, useState } from "react";
 

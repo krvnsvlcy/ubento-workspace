@@ -4,7 +4,7 @@ import {
   ComponentEngineRuntimeRpcInterface,
 } from "@ubento/bento.runtime";
 import { createDuplexRpc, createWindowPort, DuplexRpc } from "@ubento/rpc";
-import { createZustandStateController } from "@ubento/workspace.primitives";
+import { createZustandStateController } from "@ubento/bento.arlo-core";
 import { createStore as createZustandStore } from "zustand/vanilla";
 
 const dummyComponentCode = `

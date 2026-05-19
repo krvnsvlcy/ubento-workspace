@@ -1,7 +1,7 @@
 import { ErrorView } from "@/components/error.js";
 import { useWorkspaceEngine } from "@/contexts/workspace.js";
 import { useUbentoEngine } from "@/engine/app/engine.js";
-import { PendingView } from "@ubento/workspace.primitives";
+import { PendingView } from "@ubento/bento.arlo-core";
 import { WorkspaceEngine } from "../../../../engine/workspace/engine.js";
 
 function WorkspaceOverlay({ engine }: { engine: WorkspaceEngine }) {

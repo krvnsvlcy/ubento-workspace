@@ -52,8 +52,6 @@ export const GET = async (request: Request) => {
       },
     });
 
-    console.log({ accessTokenPayload });
-
     await setSession(response, {
       user_id: user.id,
       team_id: accessTokenPayload.teamIds[0],

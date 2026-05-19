@@ -145,36 +145,38 @@ export function DimensionControl<U extends string>({
       >
         <PopperMenu
           options={[
-            ...(units?.map((unitDatum) => ({
-              label: (
-                <div className="flex gap-3">
-                  <span className="grow">{unitDatum.label}</span>
-                  <span className="text-neutral-content-subtle">
-                    {" "}
-                    {unitDatum.unit}
-                  </span>
-                </div>
-              ),
-              onClick: () => {
-                setShowUnits(false);
-                let value = Number(inputValue);
-                if (isNaN(value)) {
-                  value = 0;
-                }
-                onChange?.({
-                  value,
-                  unit: unitDatum.unit as any,
-                });
-              },
-            })) || []),
+            [
+              ...(units?.map((unitDatum) => ({
+                label: (
+                  <div className="flex gap-3">
+                    <span className="grow">{unitDatum.label}</span>
+                    <span className="text-neutral-content-subtle">
+                      {" "}
+                      {unitDatum.unit}
+                    </span>
+                  </div>
+                ),
+                onClick: () => {
+                  setShowUnits(false);
+                  let value = Number(inputValue);
+                  if (isNaN(value)) {
+                    value = 0;
+                  }
+                  onChange?.({
+                    value,
+                    unit: unitDatum.unit as any,
+                  });
+                },
+              })) || []),
 
-            ...keywords.map((keyword) => ({
-              label: keyword.label,
-              onClick: () => {
-                setShowUnits(false);
-                onChange?.(keyword.value);
-              },
-            })),
+              ...keywords.map((keyword) => ({
+                label: keyword.label,
+                onClick: () => {
+                  setShowUnits(false);
+                  onChange?.(keyword.value);
+                },
+              })),
+            ],
           ]}
         />
       </Popper>

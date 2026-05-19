@@ -1,4 +1,3 @@
-import { Sparkles } from "lucide-react";
 import { TabDefinition } from "../../../types";
 
 export function ComponentAiTab() {
@@ -17,7 +16,7 @@ export function ComponentAiTab() {
 export const componentAiTab: TabDefinition = {
   id: "ai",
   name: "AI",
-  icon: Sparkles,
+  icon: "sparkles",
   component: ComponentAiTab,
   enabled: (location) => !!location.component,
 };

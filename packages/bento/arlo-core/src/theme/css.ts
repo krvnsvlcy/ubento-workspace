@@ -1,4 +1,4 @@
-import { Theme } from "./generation";
+import { Theme } from "./generation.js";
 
 export function themeToCss(theme: Theme): string {
   const palettes = [

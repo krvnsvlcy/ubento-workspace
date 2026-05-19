@@ -10,7 +10,7 @@
     "build": "tsc -b && vite build"
   },
   "dependencies": {
-    "@ubento/workspace.primitives": "workspace:*",
+    "@ubento/bento.arlo-core": "workspace:*",
     "@ubento/bento.style": "workspace:*",
     "@ubento/bento.runtime": "workspace:*",
     "@ubento/rpc": "workspace:*",

@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@ubento/workspace.primitives": "workspace:*",
+    "@ubento/bento.arlo-core": "workspace:*",
     "@ubento/bento.style": "workspace:*",
     "colord": "^2.9.3",
     "culori": "^4.0.2",

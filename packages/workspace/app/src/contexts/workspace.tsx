@@ -1,6 +1,6 @@
 import { useUbentoEngine } from "@/engine/app/engine";
 import { WorkspaceEngine } from "@/engine/workspace/engine";
-import { ErrorView, PendingView } from "@ubento/workspace.primitives";
+import { ErrorView, PendingView } from "@ubento/bento.arlo-core";
 import { createContext, useContext } from "react";
 import { CopilotContext } from "./copilot";
 

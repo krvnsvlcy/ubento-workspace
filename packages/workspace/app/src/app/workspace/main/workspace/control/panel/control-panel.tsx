@@ -1,5 +1,5 @@
 import { useCopilot } from "@/contexts/copilot";
-import { Button } from "@ubento/workspace.primitives";
+import { Button } from "@ubento/bento.arlo-core";
 import {
   Box,
   Database,
@@ -56,7 +56,7 @@ function SelectionTab({ controller }: { controller: WorkspaceEngine }) {
 
       const updatedElements = { ...elements, ...parsed };
       const updatedSpec = {
-        ...currentBoard.spec.data,
+        ...(currentBoard.spec.data as any),
         elements: updatedElements,
       };
 

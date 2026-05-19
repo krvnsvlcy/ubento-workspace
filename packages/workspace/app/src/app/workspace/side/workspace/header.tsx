@@ -1,4 +1,4 @@
-import { Button } from "@ubento/workspace.primitives";
+import { Button } from "@ubento/bento.arlo-core";
 import { Box, Building2, Home, Sidebar } from "lucide-react";
 import { useUbentoEngine } from "../../../../engine/app/engine";
 

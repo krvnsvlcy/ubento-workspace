@@ -1,4 +1,4 @@
-import { Tooltip } from "@ubento/workspace.primitives";
+import { Tooltip } from "@ubento/bento.arlo-core";
 import { Icon, IconKey } from "../icon/icon";
 
 export type ActionProps = {

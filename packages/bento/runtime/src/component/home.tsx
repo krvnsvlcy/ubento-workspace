@@ -1,5 +1,5 @@
 import { useStoreEntities } from "@ubento/fabric";
-import { Button } from "@ubento/workspace.primitives";
+import { Button } from "@ubento/bento.arlo-core";
 import { ArrowRight, Layout, LayoutGrid, Plus, Search } from "lucide-react";
 import { BentoRuntime } from "../runtime/runtime";
 

@@ -12,7 +12,7 @@ import {
   Heading,
   Input,
   Textarea,
-} from "@ubento/workspace.primitives";
+} from "@ubento/bento.arlo-core";
 import { useState } from "react";
 
 // Helper function to slugify display name into a clean, machine-readable name

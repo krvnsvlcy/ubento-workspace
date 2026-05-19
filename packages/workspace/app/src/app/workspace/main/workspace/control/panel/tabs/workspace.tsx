@@ -85,7 +85,7 @@ export function WorkspaceTab({ controller }: { controller: WorkspaceEngine }) {
                     Channel
                   </span>
                   <span className="text-[10px] font-mono text-neutral-content-subtle">
-                    {data.channel}
+                    {(data as any).channelId || (data as any).channel}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">

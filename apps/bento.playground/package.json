@@ -20,7 +20,7 @@
     "@monaco-editor/react": "^4.7.0",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
-    "@ubento/workspace.primitives": "workspace:*",
+    "@ubento/bento.arlo-core": "workspace:*",
     "@ubento/bento.arlo": "workspace:*",
     "@ubento/bento.core": "workspace:*",
     "@ubento/bento.style": "workspace:*",

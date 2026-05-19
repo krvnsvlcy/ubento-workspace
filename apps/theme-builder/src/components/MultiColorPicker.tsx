@@ -1,4 +1,4 @@
-import { Button, Input } from "@ubento/workspace.primitives";
+import { Button, Input } from "@ubento/bento.arlo-core";
 import { converter, formatHex, parse } from "culori";
 import { Copy } from "lucide-react";
 import { useMemo, useState } from "react";

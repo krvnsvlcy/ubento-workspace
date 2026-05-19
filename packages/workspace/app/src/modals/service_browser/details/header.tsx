@@ -1,7 +1,7 @@
 import { WorkspaceEngine } from "@/engine/workspace/engine";
 import { vertexClient } from "@ubento/services.sdk";
 import { ServiceSpecV1 } from "@ubento/vertex.core";
-import { Button, Heading, Text } from "@ubento/workspace.primitives";
+import { Button, Heading, Text } from "@ubento/bento.arlo-core";
 import { Search } from "lucide-react";
 import { InstallControl } from "./install_control";
 

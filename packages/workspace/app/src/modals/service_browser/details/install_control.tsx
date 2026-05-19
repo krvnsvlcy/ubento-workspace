@@ -7,7 +7,7 @@ import { ConnectionModal } from "@/modals/connection/connection";
 import { useModal } from "@/utils/modal-store";
 import { vertexClient } from "@ubento/services.sdk";
 import { ServiceSpecV1 } from "@ubento/vertex.core";
-import { Badge, Button } from "@ubento/workspace.primitives";
+import { Badge, Button } from "@ubento/bento.arlo-core";
 import { Plus, Settings, Sparkles, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 

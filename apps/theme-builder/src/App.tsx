@@ -8,7 +8,7 @@ import {
   Card,
   Badge,
   Input
-} from "@ubento/workspace.primitives";
+} from "@ubento/bento.arlo-core";
 import { Palette, Box, Sun, Moon, Download } from "lucide-react";
 
 import "./index.css";

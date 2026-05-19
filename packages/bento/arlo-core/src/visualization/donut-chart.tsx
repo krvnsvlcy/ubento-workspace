@@ -50,7 +50,7 @@ const parseLabelInput = (
 
 //#region Tooltip
 
-type TooltipProps = Pick<ChartTooltipProps, "active" | "payload">;
+type DonutChartTooltipProps = Pick<ChartTooltipProps, "active" | "payload">;
 
 type PayloadItem = {
   category: string;
@@ -166,8 +166,8 @@ interface DonutChartProps extends React.HTMLAttributes<HTMLDivElement> {
   showLabel?: boolean;
   showTooltip?: boolean;
   onValueChange?: (value: DonutChartEventProps) => void;
-  tooltipCallback?: (tooltipCallbackContent: TooltipProps) => void;
-  customTooltip?: React.ComponentType<TooltipProps>;
+  tooltipCallback?: (tooltipCallbackContent: DonutChartTooltipProps) => void;
+  customTooltip?: React.ComponentType<DonutChartTooltipProps>;
 }
 
 const DonutChart = React.forwardRef<HTMLDivElement, DonutChartProps>(
@@ -335,4 +335,4 @@ const DonutChart = React.forwardRef<HTMLDivElement, DonutChartProps>(
 
 DonutChart.displayName = "DonutChart";
 
-export { DonutChart, type DonutChartEventProps, type TooltipProps };
+export { DonutChart, type DonutChartEventProps, type DonutChartTooltipProps };

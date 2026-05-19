@@ -7,7 +7,7 @@ import {
   ContentBody,
   ContentHeader,
   Heading,
-} from "@ubento/workspace.primitives";
+} from "@ubento/bento.arlo-core";
 import { Globe, Plus, Trash2, Edit2 } from "lucide-react";
 
 interface ConnectionListProps {
