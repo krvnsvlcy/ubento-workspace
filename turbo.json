@@ -3,7 +3,20 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", "build/**", ".next/**", ".vercel/output/**"]
+      "outputs": ["dist/**", "build/**", ".next/**", ".vercel/output/**"],
+      "env": [
+        "NEXT_PUBLIC_WORKSPACE_RUNTIME_URL",
+        "NEXT_PUBLIC_COMPONENT_RUNTIME_URL"
+      ],
+      "passThroughEnv": [
+        "AUTH_ISSUER_URL",
+        "AUTH_CLIENT_ID",
+        "AUTH_CLIENT_SECRET",
+        "SECRET",
+        "SESSION_KEY",
+        "UBENTO_API_BASE_URL",
+        "UBENTO_SERVICE_URLS"
+      ]
     },
     "deploy": {
       "dependsOn": ["build"],
