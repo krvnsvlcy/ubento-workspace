@@ -11,7 +11,7 @@ export type OfferUiFeatureData = {
     | {
         type: "quota";
         feature_code: string;
-        unit: "storage-mb" | "ai-credit" | "build-run" | "seat";
+        unit: "storage-mb" | "ai-credit" | "build-run" | "seat" | "vertex-request";
       };
 };
 export type OfferMetadata = {
@@ -121,6 +121,12 @@ export const catalog: Catalog = [
             amount: 1,
             merge_strategy: "SUM",
           },
+          // Vertex
+          {
+            feature_code: ubentoFeatures.vertex.requests.code,
+            amount: 1000,
+            merge_strategy: "MAX",
+          },
         ],
         metadata: {
           ui: {
@@ -158,6 +164,15 @@ export const catalog: Catalog = [
                   unit: "build-run",
                 },
               },
+              {
+                icon: "vertex",
+                name: "Vertex Requests",
+                value: {
+                  type: "quota",
+                  feature_code: ubentoFeatures.vertex.requests.code,
+                  unit: "vertex-request",
+                },
+              },
             ],
           },
         },
@@ -193,6 +208,12 @@ export const catalog: Catalog = [
             feature_code: ubentoFeatures.collaboration.seats.code,
             amount: 1,
             merge_strategy: "SUM",
+          },
+          // Vertex
+          {
+            feature_code: ubentoFeatures.vertex.requests.code,
+            amount: "inf",
+            merge_strategy: "MAX",
           },
         ],
         metadata: {
@@ -238,6 +259,15 @@ export const catalog: Catalog = [
                   type: "quota",
                   feature_code: ubentoFeatures.build.runs.code,
                   unit: "build-run",
+                },
+              },
+              {
+                icon: "vertex",
+                name: "Vertex Requests",
+                value: {
+                  type: "quota",
+                  feature_code: ubentoFeatures.vertex.requests.code,
+                  unit: "vertex-request",
                 },
               },
             ],

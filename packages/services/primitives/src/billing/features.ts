@@ -35,7 +35,21 @@ export const ubentoFeatures = {
       code: "ai.credits",
       name: "AI Credits",
       description: "Allowance of credits for AI services",
-      groupStrategy: "MONTH",
+      groupStrategy: "WEEK",
+    },
+  },
+
+  /**
+   * VERTEX SERVICE
+   * Controls external API requests and data fetching.
+   */
+  vertex: {
+    requests: {
+      type: "QUOTA",
+      code: "vertex.requests",
+      name: "Vertex Requests",
+      description: "Allowance for Vertex API requests",
+      groupStrategy: "WEEK",
     },
   },
 

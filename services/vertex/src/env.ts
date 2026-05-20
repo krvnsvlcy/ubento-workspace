@@ -21,4 +21,20 @@ export const env = defineEnv({
     type: "string",
     required: true,
   },
+  UBENTO_AUTH_SERVER_URL: {
+    type: "string",
+    required: true,
+  },
+  UBENTO_SERVICES_CLIENT_ID: {
+    type: "string",
+    required: true,
+  },
+  UBENTO_SERVICES_CLIENT_SECRET: {
+    type: "string",
+    required: true,
+  },
+  UBENTO_API_AUDIENCE: {
+    type: "string",
+    required: true,
+  },
 });

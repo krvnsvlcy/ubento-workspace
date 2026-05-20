@@ -28,8 +28,10 @@ export const AddonsTab: FC = () => {
     );
   }
 
+  // Products that represent addons
+  const addonProductCodes = ["ai_credit_add_on", "storage_add_on"];
   const addons = products.filter(
-    (p: any) => p.type === "ADDON" || p.metadata?.is_addon,
+    (p: any) => p.type === "ADDON" || p.metadata?.is_addon || addonProductCodes.includes(p.code)
   );
 
   return (
