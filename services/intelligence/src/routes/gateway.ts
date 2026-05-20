@@ -1,7 +1,10 @@
+import { ubentoFeatures } from "@ubento/services.primitives";
+import { TooManyRequestsError } from "@ubento/services.toolkit";
 import crypto from "crypto";
 import express, { Request, Response } from "express";
 import https from "https";
 import { env } from "../env.js";
+import { ubento } from "../libs/bento.js";
 
 const models: Record<
   string,
@@ -66,24 +69,22 @@ gatewayRouter.use(async (req, res, next) => {
     console.log("Bypassing usage reservation");
     next();
   } else {
-    // try {
-    //   const result = await bento.billing.reserveUsage({
-    //     organization_id: orgId,
-    //     code: ubentoFeatures.ai.credits.code,
-    //     amount: model.creditRate,
-    //     note: "Model usage",
-    //     duration: 300_000, // 5 minutes
-    //     ref,
-    //   });
-    //   if (!result.success) {
-    //     console.log(result.message);
-    //     next(new TooManyRequestsError(`AI usage exeeded`));
-    //   }
-    next();
-    // } catch (error) {
-    //   console.error("Failed to reserve usage:", error);
-    //   next(new TooManyRequestsError(`AI usage exeeded`));
-    // }
+    try {
+      const result = await ubento.billing.reserveUsage({
+        organization_id: res.locals.orgId,
+        feature_code: ubentoFeatures.ai.credits.code,
+        amount: model.creditRate,
+        note: "Model usage",
+        duration: 300_000, // 5 minutes
+        ref,
+      });
+      // The SDK throws an error if status is not 2xx,
+      // so if we get here the hold was successfully placed.
+      next();
+    } catch (error) {
+      console.error("Failed to reserve usage:", error);
+      next(new TooManyRequestsError(`AI usage exceeded`));
+    }
   }
 });
 
@@ -120,13 +121,13 @@ gatewayRouter.use((req: Request, res: Response) => {
 
     if (ref && orgId && !bypassOrgs.includes(orgId)) {
       if (isSuccess) {
-        // bento.billing
-        //   .commitUsageHold({ organization_id: orgId, ref })
-        //   .catch(console.error);
+        ubento.billing
+          .commitUsageHold({ organization_id: orgId, ref })
+          .catch(console.error);
       } else {
-        // bento.billing
-        //   .releaseUsageHold({ organization_id: orgId, ref })
-        //   .catch(console.error);
+        ubento.billing
+          .releaseUsageHold({ organization_id: orgId, ref })
+          .catch(console.error);
       }
     }
 
@@ -152,9 +153,9 @@ gatewayRouter.use((req: Request, res: Response) => {
   proxyReq.on("error", (err) => {
     console.error("Proxy Error:", err);
     if (ref && orgId && !bypassOrgs.includes(orgId)) {
-      // bento.billing
-      //   .releaseUsageHold({ organization_id: orgId, ref })
-      //   .catch(console.error);
+      ubento.billing
+        .releaseUsageHold({ organization_id: orgId, ref })
+        .catch(console.error);
     }
     if (!res.headersSent) {
       res.status(502).json({ error: "Bad Gateway" });

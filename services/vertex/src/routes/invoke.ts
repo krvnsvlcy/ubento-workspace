@@ -1,16 +1,19 @@
-import { ubentoAuth } from "@ubento/services.primitives";
+import { ubentoAuth, ubentoFeatures } from "@ubento/services.primitives";
 import {
   AuthorizationError,
   chain,
   enforce,
   validate,
   ValidationError,
+  TooManyRequestsError,
 } from "@ubento/services.toolkit";
 import { invokeHttpService, ServiceSpecV1 } from "@ubento/vertex.core";
+import crypto from "crypto";
 import { Router } from "express";
 import z from "zod";
 import { getTeamConnectionWithAuth } from "../entities/connection.js";
 import { getServiceSpec } from "../entities/service_channel.js";
+import { ubento } from "../libs/bento.js";
 
 const invokeRouter: Router = Router();
 
@@ -44,6 +47,21 @@ function createInvokeRoute(operationType: "query" | "action") {
       const operationName = req.body[operationType] as string;
 
       const spec: ServiceSpecV1 = await getServiceSpec(service_channel_id);
+
+      const ref = crypto.randomUUID();
+      try {
+        await ubento.billing.reserveUsage({
+          organization_id: team_id,
+          feature_code: ubentoFeatures.vertex.requests.code,
+          amount: 1,
+          note: `Vertex ${operationType}: ${spec.name}`,
+          duration: 30_000, // 30 seconds
+          ref,
+        });
+      } catch (error) {
+        console.error("Failed to reserve vertex usage:", error);
+        throw new TooManyRequestsError(`Vertex usage exceeded`);
+      }
 
       const operation =
         operationType === "query"
@@ -81,6 +99,10 @@ function createInvokeRoute(operationType: "query" | "action") {
       });
 
       if (result.error) {
+        ubento.billing
+          .releaseUsageHold({ organization_id: team_id, ref })
+          .catch(console.error);
+
         switch (result.error.code) {
           case "INVALID_REQUEST_ERROR":
             throw new ValidationError(result.error.message, {
@@ -91,6 +113,10 @@ function createInvokeRoute(operationType: "query" | "action") {
             throw new Error(result.error.message);
         }
       }
+
+      ubento.billing
+        .commitUsageHold({ organization_id: team_id, ref })
+        .catch(console.error);
 
       res.status(200).json(result.data);
     },
