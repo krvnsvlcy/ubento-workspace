@@ -1,4 +1,4 @@
-import { chain, toSerializable, validate } from "@ubento/service-toolkit";
+import { chain, validate } from "@ubento/services.toolkit";
 import { Router } from "express";
 import z from "zod";
 import { readWebpage } from "../entities/tools.js";
@@ -18,7 +18,7 @@ toolsRouter.post(
       const { url, format } = req.body;
       try {
         const result = await readWebpage({ url, format });
-        res.json(toSerializable(result));
+        res.json(result);
       } catch (error: any) {
         res.status(400).json({
           message: error.message || "Failed to read webpage",

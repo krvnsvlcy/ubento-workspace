@@ -10,11 +10,10 @@
     "build": "tsc -b && vite build"
   },
   "dependencies": {
-    "@ubento/bento-primitives": "workspace:*",
-    "@ubento/bento-style": "workspace:*",
-    "@ubento/engine": "workspace:*",
-    "@ubento/rpc-utils": "workspace:*",
-    "immer": "^11.1.4",
+    "@ubento/bento.arlo-core": "workspace:*",
+    "@ubento/bento.style": "workspace:*",
+    "@ubento/bento.runtime": "workspace:*",
+    "@ubento/rpc": "workspace:*",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "sucrase": "^3.35.0",

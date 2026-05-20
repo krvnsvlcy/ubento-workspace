@@ -1,0 +1,16 @@
+{
+  "name": "@ubento/workspace.workers.services",
+  "version": "1.0.0",
+  "private": true,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "dependencies": {
+    "@ubento/rpc": "workspace:*",
+    "@ubento/workspace.contracts": "workspace:*",
+    "ses": "^2.0.0"
+  },
+  "scripts": {
+    "watch": "scripts watch",
+    "build": "scripts build"
+  }
+}

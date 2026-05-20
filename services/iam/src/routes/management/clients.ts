@@ -1,12 +1,12 @@
-import { ubentoAuth } from "@ubento/primitives";
+import { ubentoAuth } from "@ubento/services.primitives";
 import {
   chain,
   dataResponse,
   enforce,
+  makeCursorPageResponse,
   NotFoundError,
-  setNextLink,
   validate,
-} from "@ubento/service-toolkit";
+} from "@ubento/services.toolkit";
 import { Router } from "express";
 import z from "zod";
 import {
@@ -22,12 +22,11 @@ const clientsRouter: Router = Router();
 clientsRouter.get(
   "/",
   chain(enforce(ubentoAuth.actions.client.list), async (req, res) => {
-    const { items, nextCursor } = await listClients({
+    const result = await listClients({
       limit: req.query.limit ? Number(req.query.limit) : undefined,
       cursor: req.query.cursor as string | undefined,
     });
-    setNextLink(req, res, nextCursor);
-    res.json(dataResponse(items));
+    res.json(makeCursorPageResponse(result));
   }),
 );
 

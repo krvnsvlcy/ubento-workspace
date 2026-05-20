@@ -1,12 +1,12 @@
-import { ubentoAuth } from "@ubento/primitives";
+import { ubentoAuth } from "@ubento/services.primitives";
 import {
   chain,
   dataResponse,
   enforce,
+  makeCursorPageResponse,
   NotFoundError,
-  setNextLink,
   validate,
-} from "@ubento/service-toolkit";
+} from "@ubento/services.toolkit";
 import { Router } from "express";
 import z from "zod";
 import {
@@ -30,13 +30,12 @@ sessionsRouter.get(
     }),
     enforce(ubentoAuth.actions.session.list),
     async (req, res) => {
-      const { items, nextCursor } = await listSessions({
+      const result = await listSessions({
         user_id: req.query.user_id as string | undefined,
         limit: req.query.limit ? Number(req.query.limit) : undefined,
         cursor: req.query.cursor as string | undefined,
       });
-      setNextLink(req, res, nextCursor);
-      res.json(dataResponse(items));
+      res.json(makeCursorPageResponse(result));
     },
   ),
 );

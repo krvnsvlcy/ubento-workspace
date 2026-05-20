@@ -1,4 +1,4 @@
-import { chain, toSerializable, validate } from "@ubento/service-toolkit";
+import { chain, toSerializable, validate } from "@ubento/services.toolkit";
 import { Router } from "express";
 import z from "zod";
 import {
@@ -29,8 +29,8 @@ messageRouter.get(
       }
 
       res.json(toSerializable(message));
-    }
-  )
+    },
+  ),
 );
 
 // Update a specific message
@@ -56,8 +56,8 @@ messageRouter.patch(
       });
 
       res.json(toSerializable(updatedMessage));
-    }
-  )
+    },
+  ),
 );
 
 // Delete a specific message
@@ -73,8 +73,8 @@ messageRouter.delete(
       const { message_id } = req.params;
       await deleteMessage(message_id);
       res.status(204).send();
-    }
-  )
+    },
+  ),
 );
 
 // Delete multiple messages
@@ -90,8 +90,8 @@ messageRouter.delete(
       const { message_ids } = req.body;
       const deletedCount = await deleteMultipleMessages(message_ids);
       res.json({ deleted_count: deletedCount });
-    }
-  )
+    },
+  ),
 );
 
 export default messageRouter;

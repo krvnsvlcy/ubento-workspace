@@ -1,0 +1,429 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+  output        = "./generated/billing"
+}
+
+generator jsonSchema {
+  provider                 = "prisma-json-schema-generator"
+  output                   = "../src/schemas/billing"
+  keepRelationFields       = "false"
+  keepRelationScalarFields = "true"
+  includeRequiredFields    = "true"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("BILLING_DATABASE_URL")
+}
+
+//----------------------------- Enums -----------------------------//
+
+enum Provider {
+  LEMON_SQUEEZY
+}
+
+enum HoldStatus {
+  HELD
+  COMMITTED
+  RELEASED
+  EXPIRED
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  ON_TRIAL
+  PAUSED
+  PAST_DUE
+  UNPAID
+  CANCELLED
+  EXPIRED
+}
+
+enum OrderStatus {
+  PENDING
+  FAILED
+  PAID
+  REFUNDED
+  PARTIAL_REFUND
+  FRAUDULENT
+}
+
+enum InvoiceStatus {
+  DRAFT
+  OPEN
+  PAID
+  VOID
+  UNCOLLECTIBLE
+}
+
+enum ResourceType {
+  PRODUCT
+  OFFER
+}
+
+enum ProviderLinkStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum ProviderEntity {
+  ORDER
+  SUBSCRIPTION
+  SUBSCRIPTION_INVOICE
+  PRODUCT
+  PRODUCT_VARIANT
+}
+
+enum Currency {
+  USD
+}
+
+//---------------------------- Catalog ----------------------------//
+
+model Product {
+  id                 String  @id @map("_id")
+  entity             String  @default("billing_product")
+  code               String  @unique
+  name               String
+  description        String?
+  default_offer_code String?
+
+  offers        Offer[] @relation(name: "product_offer")
+  default_offer Offer?  @relation(fields: [default_offer_code], references: [code], name: "default_offer", onDelete: NoAction, onUpdate: NoAction)
+
+  version       Int            @default(1)
+  created_at    DateTime       @default(now())
+  updated_at    DateTime       @updatedAt
+  subscriptions Subscription[]
+
+  @@map("products")
+}
+
+model Offer {
+  id           String @id @map("_id")
+  entity       String @default("billing_offer")
+  code         String @unique
+  product_code String
+
+  name        String
+  price       Int?
+  currency    Currency?
+  description String?
+
+  active       Boolean @default(true)
+  entitlements Json[]
+  metadata     Json?
+
+  product            Product   @relation(fields: [product_code], references: [code], name: "product_offer", onDelete: Cascade, onUpdate: Cascade)
+  defaulted_products Product[] @relation(name: "default_offer")
+
+  version       Int            @default(1)
+  created_at    DateTime       @default(now())
+  updated_at    DateTime       @updatedAt
+  subscriptions Subscription[]
+
+  @@unique([product_code, code])
+  @@index([active])
+  @@map("offers")
+}
+
+model ProviderLink {
+  id              String         @id @map("_id")
+  entity          String         @default("billing_provider_link")
+  provider        Provider
+  provider_entity ProviderEntity
+  provider_id     String
+
+  resource_type ResourceType
+  resource_code String
+
+  status   ProviderLinkStatus @default(ACTIVE)
+  priority Int                @default(0)
+
+  version    Int      @default(1)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@unique([provider, provider_entity, provider_id, resource_type])
+  @@index([resource_type, resource_code])
+  @@map("provider_links")
+}
+
+//---------------------------- Usage ------------------------------//
+
+model UsageCounter {
+  id      String @id @map("_id")
+  entity  String @default("billing_usage_counter")
+  team_id String
+
+  feature_code String // e.g. "monthly_builds" @map("code")
+  group        String // e.g. "2026-01"
+
+  value    Int @default(0)
+  reserved Int @default(0)
+
+  version    Int      @default(1)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  holds  UsageHold[]
+  events UsageEvent[]
+
+  @@unique([team_id, feature_code, group])
+  @@index([team_id, feature_code])
+  @@index([feature_code])
+  @@map("usage_counters")
+}
+
+model UsageHold {
+  id         String @id @map("_id")
+  entity     String @default("billing_usage_hold")
+  team_id    String
+  counter_id String
+  ref        String
+
+  amount Int
+  note   String
+
+  status     HoldStatus @default(HELD)
+  expires_at DateTime
+  data       Json?
+
+  committed_at DateTime?
+  released_at  DateTime?
+
+  counter UsageCounter @relation(fields: [counter_id], references: [id])
+
+  version    Int      @default(1)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@unique([team_id, ref])
+  @@index([team_id])
+  @@index([status, expires_at])
+  @@map("usage_holds")
+}
+
+model UsageEvent {
+  id         String @id @map("_id")
+  entity     String @default("billing_usage_event")
+  team_id    String
+  counter_id String
+
+  value Int
+
+  ref  String?
+  note String
+  data Json?
+
+  counter UsageCounter @relation(fields: [counter_id], references: [id])
+
+  version    Int      @default(1)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([team_id, created_at])
+  @@index([counter_id, created_at])
+  @@index([ref])
+  @@map("usage_events")
+}
+
+//-------------------------- Subscriptions -------------------------//
+
+model Subscription {
+  id      String @id @map("_id")
+  entity  String @default("billing_subscription")
+  team_id String
+
+  product_code String
+  offer_code   String
+  quantity     Int
+
+  provider    Provider
+  provider_id String
+
+  status SubscriptionStatus
+  data   Json?
+
+  product Product @relation(fields: [product_code], references: [code])
+  offer   Offer   @relation(fields: [offer_code], references: [code])
+
+  version         Int       @default(1)
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+  ends_at         DateTime?
+  link_updated_at DateTime?
+
+  invoices SubscriptionInvoice[]
+
+  @@unique([provider, provider_id])
+  @@index([team_id, status])
+  @@index([team_id])
+  @@index([offer_code])
+  @@map("subscriptions")
+}
+
+model SubscriptionInvoice {
+  id      String @id @map("_id")
+  entity  String @default("billing_subscription_invoice")
+  team_id String
+
+  provider    Provider
+  provider_id String
+
+  subscription_id String
+  subscription    Subscription @relation(fields: [subscription_id], references: [id])
+
+  status InvoiceStatus
+
+  subtotal Int    @default(0)
+  tax      Int    @default(0)
+  total    Int    @default(0)
+  currency String
+
+  issued_at  DateTime?
+  due_at     DateTime?
+  hosted_url String?
+
+  data Json?
+
+  version    Int      @default(1)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@unique([provider, provider_id])
+  @@index([team_id, created_at])
+  @@index([team_id, status, created_at])
+  @@map("invoices")
+}
+
+//--------------------------- Orders --------------------------//
+
+model Order {
+  id      String @id @map("_id")
+  entity  String @default("billing_order")
+  team_id String
+
+  product_code String
+  offer_code   String
+  quantity     Int
+
+  provider    Provider
+  provider_id String
+
+  status       OrderStatus
+  currency     String?
+  amount_total Int?
+
+  line_items      OrderLineItem[]
+  data            Json?
+  link_updated_at DateTime?
+
+  version    Int      @default(1)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@unique([provider, provider_id])
+  @@index([team_id, created_at])
+  @@map("billing_orders")
+}
+
+type OrderLineItem {
+  code       String
+  name       String?
+  quantity   Int
+  unit       String?
+  unit_price Int?
+  amount     Int?
+  currency   String?
+  metadata   Json?
+}
+
+//--------------------------- Checkout --------------------------//
+
+model Checkout {
+  id      String @id @map("_id")
+  entity  String @default("billing_checkout")
+  team_id String
+
+  product_code String
+  offer_code   String
+  quantity     Int
+  url          String
+
+  provider    Provider
+  provider_id String
+
+  data Json?
+
+  version    Int      @default(1)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@unique([provider, provider_id])
+  @@index([team_id, product_code, offer_code])
+  @@index([created_at])
+  @@map("billing_checkouts")
+}
+
+//--------------------------- Integration -------------------------//
+
+enum WebhookEventStatus {
+  RECEIVED
+  PROCESSING
+  PROCESSED
+  ERRORED
+}
+
+enum WebhookEventAttemptStatus {
+  STARTED
+  SUCCEEDED
+  FAILED
+}
+
+model WebhookEvent {
+  id          String   @id @map("_id")
+  entity      String   @default("billing_webhook_event")
+  provider    Provider
+  provider_id String
+  payload     Json
+
+  event           String
+  attempts        WebhookEventAttempt[]
+  status          WebhookEventStatus    @default(RECEIVED)
+  error           String?
+  lock_expires_at DateTime?
+
+  version    Int      @default(1)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@unique([provider, provider_id])
+  @@map("webhook_events")
+}
+
+type WebhookEventAttempt {
+  id     String
+  at     DateTime
+  status WebhookEventAttemptStatus @default(STARTED)
+  error  String?
+}
+
+//---------------------- Manual Entitlement -----------------------//
+
+model EntitlementGrant {
+  id      String @id @map("_id")
+  entity  String @default("billing_entitlement_grant")
+  team_id String
+
+  expires_at DateTime
+  data       Json
+
+  version    Int      @default(1)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([team_id, expires_at])
+  @@map("entitlement_grants")
+}

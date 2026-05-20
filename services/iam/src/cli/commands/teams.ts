@@ -92,8 +92,14 @@ export function registerTeamsCommands(program: Command) {
     .command("list")
     .description("List team members")
     .argument("<team_id>", "Team ID")
-    .action(async (teamId) => {
-      const result = await listTeamMembers(teamId);
+    .option("-l, --limit <limit>", "Limit results", parseInt)
+    .option("-c, --cursor <cursor>", "Cursor for pagination")
+    .action(async (teamId, options) => {
+      const result = await listTeamMembers({
+        team_id: teamId,
+        limit: options.limit,
+        cursor: options.cursor,
+      });
       console.log(JSON.stringify(result, null, 2));
     });
 

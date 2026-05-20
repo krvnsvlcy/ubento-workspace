@@ -1,15 +1,19 @@
-import { WorkspaceInvite, WorkspaceInviteStatus, WorkspaceMembership } from "@ubento/database/workspace";
+import {
+  WorkspaceInvite,
+  WorkspaceInviteStatus,
+  WorkspaceMembership,
+} from "@ubento/services.database/workspace";
 import {
   generateBareId,
   makeEntityId,
   ubentoAuth,
   ubentoEntities,
-} from "@ubento/primitives";
+} from "@ubento/services.primitives";
 import {
   NotFoundError,
   ValidationError,
   prismaListWithCursor,
-} from "@ubento/service-toolkit";
+} from "@ubento/services.toolkit";
 import crypto from "crypto";
 import { authorizer } from "../../lib/authorizer.js";
 import prisma from "../../lib/prisma.js";
@@ -50,7 +54,7 @@ export async function listWorkspaceInvites({
   limit?: number;
   cursor?: string;
 }) {
-  const { items, ...rest } = await prismaListWithCursor(prisma.workspaceInvite, {
+  const { data, ...rest } = await prismaListWithCursor(prisma.workspaceInvite, {
     limit,
     cursor,
     orderBy: { created_at: "desc" },
@@ -64,7 +68,7 @@ export async function listWorkspaceInvites({
 
   return {
     ...rest,
-    items: items.map(sanitizeInvite),
+    data: data.map(sanitizeInvite),
   };
 }
 
@@ -81,7 +85,9 @@ export async function createWorkspaceInvite({
   invited_by: string;
   expires_in_seconds?: number;
 }) {
-  const workspace = await prisma.workspace.findUnique({ where: { id: workspace_id } });
+  const workspace = await prisma.workspace.findUnique({
+    where: { id: workspace_id },
+  });
   if (!workspace) {
     throw new NotFoundError("Workspace not found");
   }
@@ -140,7 +146,9 @@ export async function acceptWorkspaceInvite({
   if (!invite.token_hash || !checkInviteToken(token, invite.token_hash))
     throw new ValidationError("Invalid token");
 
-  const workspace = await prisma.workspace.findUnique({ where: { id: invite.workspace_id } });
+  const workspace = await prisma.workspace.findUnique({
+    where: { id: invite.workspace_id },
+  });
   if (!workspace) throw new NotFoundError("Workspace not found");
 
   let membership: WorkspaceMembership | null = null;
@@ -161,7 +169,10 @@ export async function acceptWorkspaceInvite({
     await authorizer.assignRole(
       accepted_by,
       invite.role,
-      ubentoAuth.scopes.workspace({ team_id: workspace.team_id, workspace_id: workspace.id }),
+      ubentoAuth.scopes.workspace({
+        team_id: workspace.team_id,
+        workspace_id: workspace.id,
+      }),
     );
 
     const updatedInvite = await prisma.workspaceInvite.update({

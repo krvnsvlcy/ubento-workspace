@@ -1,9 +1,13 @@
+import { ModalRenderer } from "@/components/modal-renderer";
 import { SessionProvider } from "@/components/session";
 import { getSession } from "@/lib/auth";
-import "@ubento/bento-style/dist/uno.css";
 import type { Metadata } from "next";
 import { headers } from "next/headers";
-import "./globals.css";
+import { fontRegistryClassNames } from "./fonts";
+
+import "@ubento/bento.style/dist/uno.css";
+
+import "@ubento/bento.style/css/themes.css";
 
 export const metadata: Metadata = {
   title: "Ubento",
@@ -21,14 +25,15 @@ export default async function RootLayout({
   );
 
   return (
-    <html lang="en" className="antialiased">
+    <html lang="en" className={`${fontRegistryClassNames} antialiased`}>
       <body className="min-h-full flex flex-col">
         <SessionProvider
           session={
             session
               ? {
                   userId: session.user_id,
-                  tenantId: session.tenant_id,
+                  teamId: session.team_id,
+                  email: session.email,
                   name: session.name,
                   picture: session.picture,
                 }
@@ -36,6 +41,7 @@ export default async function RootLayout({
           }
         >
           {children}
+          <ModalRenderer />
         </SessionProvider>
       </body>
     </html>

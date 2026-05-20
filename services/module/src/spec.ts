@@ -1,4 +1,5 @@
-import { moduleSchemas } from "@ubento/database/module";
+import { moduleSchemas } from "@ubento/services.database/module";
+import { makeCursorPageResponseSchema } from "@ubento/services.toolkit";
 import { OpenAPIV3 } from "openapi-types";
 
 export const spec: OpenAPIV3.Document = {
@@ -8,54 +9,28 @@ export const spec: OpenAPIV3.Document = {
     version: "1.0.0",
   },
   paths: {
-    "/modules/slug/{slug}": {
-      get: {
-        summary: "Get Module by Slug",
-        parameters: [
-          {
-            name: "slug",
-            in: "path",
-            required: true,
-            schema: { type: "string" },
-          },
-        ],
-        responses: {
-          "200": {
-            description: "Module details",
-            content: {
-              "application/json": {
-                schema: { $ref: "#/components/schemas/Module" },
-              },
-            },
-          },
-        },
-      },
-    },
     "/modules": {
       get: {
         summary: "List Modules",
         parameters: [
+          { name: "team_id", in: "query", schema: { type: "string" } },
+          { name: "type", in: "query", schema: { type: "string" } },
           {
-            name: "team_id",
+            name: "scope",
             in: "query",
-            schema: { type: "string" },
+            schema: { type: "string", enum: ["private", "public"] },
           },
+          { name: "limit", in: "query", schema: { type: "integer" } },
+          { name: "cursor", in: "query", schema: { type: "string" } },
         ],
         responses: {
           "200": {
             description: "A list of modules",
             content: {
               "application/json": {
-                schema: {
-                  type: "object",
-                  properties: {
-                    data: {
-                      type: "array",
-                      items: { $ref: "#/components/schemas/Module" },
-                    },
-                  },
-                  required: ["data"],
-                },
+                schema: makeCursorPageResponseSchema({
+                  $ref: "#/components/schemas/Module",
+                }),
               },
             },
           },
@@ -71,12 +46,13 @@ export const spec: OpenAPIV3.Document = {
                 type: "object",
                 properties: {
                   name: { type: "string" },
-                  slug: { type: "string" },
                   team_id: { type: "string" },
                   source: { type: "string" },
-                  scope: { type: "string", enum: ["team", "public"] },
+                  scope: { type: "string", enum: ["private", "public"] },
+                  type: { type: "string" },
+                  summary: { type: "string" },
                 },
-                required: ["name", "team_id", "source", "scope"],
+                required: ["name", "team_id", "source", "scope", "type"],
               },
             },
           },
@@ -87,6 +63,96 @@ export const spec: OpenAPIV3.Document = {
             content: {
               "application/json": {
                 schema: { $ref: "#/components/schemas/Module" },
+              },
+            },
+          },
+        },
+      },
+    },
+    "/modules/upload": {
+      post: {
+        summary: "Upload Raw File",
+        description:
+          "Streams a raw binary file directly to the Content Addressable Storage (CAS) and returns its SHA-256 hash.",
+        requestBody: {
+          required: true,
+          content: {
+            "application/octet-stream": {
+              schema: {
+                type: "string",
+                format: "binary",
+              },
+            },
+          },
+        },
+        responses: {
+          "200": {
+            description: "File uploaded successfully",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    hash: {
+                      type: "string",
+                      description: "The calculated SHA-256 hash of the file.",
+                    },
+                  },
+                  required: ["hash"],
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    "/modules/search": {
+      get: {
+        summary: "Marketplace Search",
+        description:
+          "High-performance fuzzy search for modules via MongoDB Atlas.",
+        parameters: [
+          { name: "query", in: "query", schema: { type: "string" } },
+          {
+            name: "types",
+            in: "query",
+            schema: { type: "array", items: { type: "string" } },
+          },
+          {
+            name: "scope",
+            in: "query",
+            schema: { type: "string", enum: ["private", "public"] },
+          },
+          { name: "page", in: "query", schema: { type: "integer" } },
+          { name: "limit", in: "query", schema: { type: "integer" } },
+        ],
+        responses: {
+          "200": {
+            description: "Search results",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    data: {
+                      type: "object",
+                      properties: {
+                        data: {
+                          type: "array",
+                          items: { $ref: "#/components/schemas/Module" },
+                        },
+                        pagination: {
+                          type: "object",
+                          properties: {
+                            currentPage: { type: "integer" },
+                            hasNextPage: { type: "boolean" },
+                            nextPage: { type: "integer", nullable: true },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
               },
             },
           },
@@ -106,41 +172,7 @@ export const spec: OpenAPIV3.Document = {
         ],
         responses: {
           "200": {
-            description: "Module details",
-            content: {
-              "application/json": {
-                schema: { $ref: "#/components/schemas/Module" },
-              },
-            },
-          },
-        },
-      },
-      patch: {
-        summary: "Update Module",
-        parameters: [
-          {
-            name: "module_id",
-            in: "path",
-            required: true,
-            schema: { type: "string" },
-          },
-        ],
-        requestBody: {
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  name: { type: "string" },
-                  slug: { type: "string" },
-                },
-              },
-            },
-          },
-        },
-        responses: {
-          "200": {
-            description: "Module updated",
+            description: "Module metadata",
             content: {
               "application/json": {
                 schema: { $ref: "#/components/schemas/Module" },
@@ -184,87 +216,28 @@ export const spec: OpenAPIV3.Document = {
             required: true,
             schema: { type: "string" },
           },
+          { name: "limit", in: "query", schema: { type: "integer" } },
+          { name: "cursor", in: "query", schema: { type: "string" } },
         ],
         responses: {
           "200": {
-            description: "A list of module versions",
+            description: "Version history",
             content: {
               "application/json": {
-                schema: {
-                  type: "object",
-                  properties: {
-                    data: {
-                      type: "array",
-                      items: { $ref: "#/components/schemas/ModuleVersion" },
-                    },
-                  },
-                  required: ["data"],
-                },
+                schema: makeCursorPageResponseSchema({
+                  $ref: "#/components/schemas/ModuleVersion",
+                }),
               },
             },
           },
         },
       },
-    },
-    "/modules/{module_id}/files/{filename}": {
-      put: {
-        summary: "Update Module File",
-        parameters: [
-          {
-            name: "module_id",
-            in: "path",
-            required: true,
-            schema: { type: "string" },
-          },
-          {
-            name: "filename",
-            in: "path",
-            required: true,
-            schema: { type: "string" },
-          },
-        ],
-        requestBody: {
-          required: true,
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  content: { type: "string" },
-                  autoTranspile: { type: "boolean" },
-                },
-                required: ["content"],
-              },
-            },
-          },
-        },
-        responses: {
-          "200": {
-            description: "File updated",
-            content: {
-              "application/json": {
-                schema: {
-                  type: "object",
-                  additionalProperties: { type: "string" },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-    "/modules/{module_id}/files/{filename}/restore": {
       post: {
-        summary: "Restore Module File",
+        summary: "Save Draft Version",
+        description: "Creates a new private version of the module source code.",
         parameters: [
           {
             name: "module_id",
-            in: "path",
-            required: true,
-            schema: { type: "string" },
-          },
-          {
-            name: "filename",
             in: "path",
             required: true,
             schema: { type: "string" },
@@ -277,22 +250,28 @@ export const spec: OpenAPIV3.Document = {
               schema: {
                 type: "object",
                 properties: {
-                  hash: { type: "string" },
+                  content: {
+                    type: "string",
+                    description: "The module source code (triggers a build)",
+                  },
+                  files: {
+                    type: "object",
+                    additionalProperties: { type: "string" },
+                    description:
+                      "A map of filenames to CAS hashes (skips build)",
+                  },
                 },
-                required: ["hash"],
+                minProperties: 1,
               },
             },
           },
         },
         responses: {
           "200": {
-            description: "File restored",
+            description: "Draft saved",
             content: {
               "application/json": {
-                schema: {
-                  type: "object",
-                  properties: { success: { type: "boolean" } },
-                },
+                schema: { $ref: "#/components/schemas/Module" },
               },
             },
           },
@@ -301,7 +280,9 @@ export const spec: OpenAPIV3.Document = {
     },
     "/modules/{module_id}/publish": {
       post: {
-        summary: "Publish Module Version",
+        summary: "Publish Current Draft",
+        description:
+          "Promotes the current private draft to be the public version.",
         parameters: [
           {
             name: "module_id",
@@ -311,11 +292,11 @@ export const spec: OpenAPIV3.Document = {
           },
         ],
         responses: {
-          "201": {
-            description: "Version published",
+          "200": {
+            description: "Module published",
             content: {
               "application/json": {
-                schema: { $ref: "#/components/schemas/ModuleVersion" },
+                schema: { $ref: "#/components/schemas/Module" },
               },
             },
           },
@@ -341,7 +322,7 @@ export const spec: OpenAPIV3.Document = {
         ],
         responses: {
           "200": {
-            description: "Module version details",
+            description: "Module version metadata",
             content: {
               "application/json": {
                 schema: { $ref: "#/components/schemas/ModuleVersion" },
@@ -351,9 +332,11 @@ export const spec: OpenAPIV3.Document = {
         },
       },
     },
-    "/modules/{module_id}/versions/{version_id}/source": {
+    "/modules/{module_id}/versions/{version_id}/{filename}": {
       get: {
-        summary: "Get Module Version Source",
+        summary: "Read Version File",
+        description:
+          "Fetches the raw content of a specific file within a module version.",
         parameters: [
           {
             name: "module_id",
@@ -367,43 +350,8 @@ export const spec: OpenAPIV3.Document = {
             required: true,
             schema: { type: "string" },
           },
-        ],
-        responses: {
-          "200": {
-            description: "Module version source code (TSX)",
-            content: {
-              "application/json": {
-                schema: {
-                  type: "object",
-                  properties: {
-                    data: {
-                      type: "object",
-                      properties: {
-                        source: { type: "string" },
-                      },
-                      required: ["source"],
-                    },
-                  },
-                  required: ["data"],
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-    "/modules/{module_id}/versions/{version_id}/artifact": {
-      get: {
-        summary: "Get Module Version Artifact",
-        parameters: [
           {
-            name: "module_id",
-            in: "path",
-            required: true,
-            schema: { type: "string" },
-          },
-          {
-            name: "version_id",
+            name: "filename",
             in: "path",
             required: true,
             schema: { type: "string" },
@@ -411,21 +359,15 @@ export const spec: OpenAPIV3.Document = {
         ],
         responses: {
           "200": {
-            description: "Module version transpiled artifact (JS)",
+            description: "File content",
             content: {
               "application/json": {
                 schema: {
                   type: "object",
                   properties: {
-                    data: {
-                      type: "object",
-                      properties: {
-                        artifact: { type: "string" },
-                      },
-                      required: ["artifact"],
-                    },
+                    content: { type: "string" },
                   },
-                  required: ["data"],
+                  required: ["content"],
                 },
               },
             },

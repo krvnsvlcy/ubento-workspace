@@ -6,10 +6,12 @@
   "scripts": {
     "clean": "find . -type d \\( -name node_modules -o -name .turbo -o -name dist -o -name build \\) -prune -exec rm -rf '{}' +",
     "clean:packages": "find . -type d \\( -name node_modules \\) -prune -exec rm -rf '{}' +",
-    "dev": "turbo run dev --filter=@ubento/bento.runtime --filter=@ubento/bento.app --filter=@ubento/component.runtime",
+    "dev": "turbo run dev --filter=@ubento/bento.runtime.app --filter=@ubento/bento.app --filter=@ubento/component.runtime",
     "build": "turbo run build --filter=@ubento/bento.runtime --filter=@ubento/bento.app",
-    "dev:web": "turbo run dev --filter=@ubento/bento.runtime --filter=@ubento/ubento",
-    "dev:apps": "turbo dev --filter='./apps/*'"
+    "dev:web": "turbo run dev --filter=@ubento/bento.runtime --filter=@ubento/ubento --filter=@ubento/bento.runtime.app",
+    "dev:apps": "turbo dev --filter='./apps/*'",
+    "deploy:runtime": "turbo run deploy --filter=@ubento/bento.runtime.app",
+    "deploy:app": "turbo run deploy --filter=@ubento/ubento"
   },
   "keywords": [],
   "author": "",
@@ -19,10 +21,12 @@
     "@1password/sdk": "^0.4.0",
     "@manypkg/get-packages": "^3.1.0",
     "@repo/scripts": "workspace:*",
+    "@types/js-yaml": "^4.0.9",
     "@types/node": "^25.6.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "esbuild": "^0.25.12",
+    "js-yaml": "^4.1.1",
     "prisma-json-schema-generator": "^5.1.5",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
@@ -33,7 +37,6 @@
     "vercel": "^51.8.0"
   },
   "dependencies": {
-    "immer": "^11.1.4",
     "zustand": "^5.0.12"
   }
 }

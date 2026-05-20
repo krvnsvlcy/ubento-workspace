@@ -1,12 +1,38 @@
-import { chain, toSerializable, validate } from "@ubento/service-toolkit";
+import { chain, validate } from "@ubento/services.toolkit";
 import { Router } from "express";
 import multer from "multer";
 import z from "zod";
-import { createFile, getFile, getFileUrl } from "../entities/files.js";
+import {
+  createFile,
+  getFile,
+  getFileUrl,
+  listFiles,
+} from "../entities/files.js";
 
 const upload = multer();
 
 const fileRouter: Router = Router();
+
+fileRouter.get(
+  "/",
+  chain(
+    validate({
+      query: z.object({
+        workspace_id: z.string(),
+        limit: z.coerce.number().optional(),
+        cursor: z.string().optional(),
+      }),
+    }),
+    async (req, res) => {
+      const result = await listFiles({
+        workspace_id: req.query.workspace_id as string,
+        limit: req.query.limit ? Number(req.query.limit) : undefined,
+        cursor: req.query.cursor as string | undefined,
+      });
+      res.json(result);
+    },
+  ),
+);
 
 fileRouter.post(
   "/",
@@ -14,7 +40,8 @@ fileRouter.post(
   chain(
     validate({
       body: z.object({
-        workspace_id: z.string(),
+        team_id: z.string(),
+        workspace_id: z.string().optional(),
       }),
     }),
     async (req: any, res) => {
@@ -23,17 +50,18 @@ fileRouter.post(
         return;
       }
 
-      const { workspace_id } = req.body;
+      const { workspace_id, team_id } = req.body;
       const file = await createFile({
         workspace_id,
+        team_id,
         name: req.file.originalname,
         type: req.file.mimetype,
         buffer: req.file.buffer,
       });
 
-      res.status(201).json(toSerializable(file));
-    }
-  )
+      res.status(201).json((file));
+    },
+  ),
 );
 
 fileRouter.get(
@@ -53,9 +81,9 @@ fileRouter.get(
         return;
       }
 
-      res.json(toSerializable(file));
-    }
-  )
+      res.json((file));
+    },
+  ),
 );
 
 fileRouter.get(
@@ -78,8 +106,8 @@ fileRouter.get(
           res.status(500).send(e.message);
         }
       }
-    }
-  )
+    },
+  ),
 );
 
 export default fileRouter;

@@ -3,18 +3,18 @@ import {
   TeamInvite,
   TeamInviteStatus,
   TeamMembership,
-} from "@ubento/database/iam";
+} from "@ubento/services.database/iam";
 import {
   generateBareId,
   makeEntityId,
   ubentoAuth,
   ubentoEntities,
-} from "@ubento/primitives";
+} from "@ubento/services.primitives";
 import {
   NotFoundError,
   ValidationError,
   prismaListWithCursor,
-} from "@ubento/service-toolkit";
+} from "@ubento/services.toolkit";
 import { OrganizationMembership as WOOrganizationMembership } from "@workos-inc/node";
 import crypto from "crypto";
 import { authorizer } from "../../../lib/authorizer.js";

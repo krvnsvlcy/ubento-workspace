@@ -2,7 +2,7 @@ import {
   autoIncrementOnUpdate,
   mongoDbUrlWithDatabase,
   standardizeJsonSchemaOutput,
-} from "@ubento/service-toolkit";
+} from "@ubento/services.toolkit";
 import { Prisma, PrismaClient } from "../prisma/generated/iam/index.js";
 import rawPrismaSchemas from "./schemas/iam/json-schema.json" with { type: "json" };
 import { cleanUpJsonSchema } from "./schemas/utils.js";

@@ -1,0 +1,141 @@
+generator client {
+    provider      = "prisma-client-js"
+    binaryTargets = ["native", "debian-openssl-3.0.x"]
+    output        = "./generated/vertex"
+}
+
+generator jsonSchema {
+    provider                 = "prisma-json-schema-generator"
+    output                   = "../src/schemas/vertex"
+    keepRelationFields       = "false"
+    keepRelationScalarFields = "true"
+    includeRequiredFields    = "true"
+}
+
+datasource db {
+    provider = "mongodb"
+    url      = env("VERTEX_DATABASE_URL")
+}
+
+type EncryptedData {
+    iv          String
+    auth_tag    String
+    cipher_text String
+}
+
+model ConnectionProvider {
+    id     String @id @map("_id")
+    entity String @default("connection_provider")
+
+    code        String  @unique // eg. "stripe", "shopify" (machine-readable)
+    type        String // eg. "http", "database", (protocol)
+    name        String // eg. "Stripe", "Shopify", "PostgreSQL" (human-readable)
+    description String?
+    config      Json? // eg. Auth strategy, default headers
+
+    // Relations
+    connections   Connection[]
+    oauth_clients OAuthClient[]
+
+    version    Int      @default(1) @db.Long
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+
+    @@map("connection_providers")
+}
+
+model Connection {
+    id      String @id @map("_id")
+    entity  String @default("connection")
+    team_id String
+
+    name        String // eg. "Stripe prod", "Stripe test", "Acme Postgres DB"
+    description String?
+
+    provider_id String
+    provider    ConnectionProvider @relation(fields: [provider_id], references: [id])
+    credentials EncryptedData
+
+    version    Int      @default(1) @db.Long
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+
+    @@map("connections")
+}
+
+model OAuthClient {
+    id     String @id @map("_id")
+    entity String @default("oauth_client")
+
+    team_id String?
+    name    String
+
+    provider_id String
+    provider    ConnectionProvider @relation(fields: [provider_id], references: [id])
+    credentials EncryptedData
+
+    version    Int      @default(1) @db.Long
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+
+    @@map("oauth_clients")
+}
+
+model OAuthConnectionState {
+    id      String @id @default(uuid()) @map("_id")
+    entity  String @default("oauth_connection_state")
+    team_id String
+
+    oauth_client_id String
+
+    state        String?
+    redirect_uri String?
+    expires_at   DateTime
+
+    version    Int      @default(1) @db.Long
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+
+    @@map("oauth_connection_states")
+}
+
+model Service {
+    id     String @id @map("_id")
+    entity String @default("service")
+
+    team_id String
+    scope   String @default("__public__")
+    name    String
+
+    display_name String
+    description  String?
+    config       Json?
+
+    channels ServiceChannel[]
+
+    version    Int       @default(1) @db.Long
+    created_at DateTime  @default(now())
+    updated_at DateTime  @updatedAt
+    deleted_at DateTime?
+
+    @@unique([scope, name])
+    @@map("services")
+}
+
+model ServiceChannel {
+    id         String  @id @map("_id")
+    entity     String  @default("service_version")
+    team_id    String
+    service_id String
+    service    Service @relation(fields: [service_id], references: [id])
+
+    name String
+
+    version    Int       @default(1) @db.Long
+    created_at DateTime  @default(now())
+    updated_at DateTime  @updatedAt
+    deleted_at DateTime?
+
+    @@unique([service_id, name])
+    @@map("service_channels")
+}

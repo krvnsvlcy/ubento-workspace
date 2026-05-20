@@ -11,20 +11,20 @@
           "type": "string",
           "default": "intelligence_thread"
         },
-        "organization_id": {
+        "team_id": {
           "type": "string"
         },
         "workspace_id": {
-          "type": "string"
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "title": {
           "type": [
             "string",
             "null"
           ]
-        },
-        "status": {
-          "type": "string"
         },
         "context": {
           "type": [
@@ -55,9 +55,7 @@
       },
       "required": [
         "id",
-        "organization_id",
-        "workspace_id",
-        "status",
+        "team_id",
         "updated_at"
       ]
     },
@@ -70,12 +68,6 @@
         "entity": {
           "type": "string",
           "default": "intelligence_message"
-        },
-        "organization_id": {
-          "type": "string"
-        },
-        "workspace_id": {
-          "type": "string"
         },
         "thread_id": {
           "type": "string"
@@ -120,8 +112,6 @@
       },
       "required": [
         "id",
-        "organization_id",
-        "workspace_id",
         "thread_id",
         "role",
         "data",
@@ -138,8 +128,14 @@
           "type": "string",
           "default": "intelligence_file"
         },
-        "workspace_id": {
+        "team_id": {
           "type": "string"
+        },
+        "workspace_id": {
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "name": {
           "type": "string"
@@ -165,7 +161,7 @@
       },
       "required": [
         "id",
-        "workspace_id",
+        "team_id",
         "name",
         "type",
         "size",

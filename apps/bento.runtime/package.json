@@ -1,5 +1,5 @@
 {
-  "name": "@ubento/bento.runtime",
+  "name": "@ubento/bento.runtime.app",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -13,13 +13,14 @@
     "deploy": "pnpm vercel:build && pnpm vercel:deploy"
   },
   "dependencies": {
-    "@ubento/bento-primitives": "workspace:*",
-    "@ubento/bento-style": "workspace:*",
-    "@ubento/engine": "workspace:*",
-    "@ubento/rpc-utils": "workspace:*",
-    "immer": "^11.1.4",
+    "@ubento/bento.arlo-core": "workspace:*",
+    "@ubento/bento.style": "workspace:*",
+    "@ubento/bento.runtime": "workspace:*",
+    "@ubento/bento.core": "workspace:*",
+    "@ubento/rpc": "workspace:*",
     "wouter": "^3.6.0",
-    "zustand": "^5.0.12"
+    "zustand": "^5.0.12",
+    "@ubento/bento.arlo": "workspace:*"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",

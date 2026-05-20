@@ -1,12 +1,12 @@
-import { ubentoAuth } from "@ubento/primitives";
+import { ubentoAuth } from "@ubento/services.primitives";
 import {
   chain,
   dataResponse,
   enforce,
+  makeCursorPageResponse,
   NotFoundError,
-  setNextLink,
   validate,
-} from "@ubento/service-toolkit";
+} from "@ubento/services.toolkit";
 import { Router } from "express";
 import z from "zod";
 import {
@@ -56,13 +56,12 @@ clientCredentialsRouter.get(
       if (!clientId) {
         throw new NotFoundError("Missing client_id");
       }
-      const { items, nextCursor } = await listClientCredentials({
+      const result = await listClientCredentials({
         client_id: clientId,
         limit: req.query.limit ? Number(req.query.limit) : undefined,
         cursor: req.query.cursor as string | undefined,
       });
-      setNextLink(req, res, nextCursor);
-      res.json(dataResponse(items));
+      res.json(makeCursorPageResponse(result));
     },
   ),
 );

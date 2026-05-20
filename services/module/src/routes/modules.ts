@@ -1,111 +1,112 @@
-import { ubentoAuth } from "@ubento/primitives";
+import { ModuleScope } from "@ubento/services.database/module";
+import { ubentoAuth } from "@ubento/services.primitives";
 import {
   chain,
   dataResponse,
   enforce,
   NotFoundError,
+  parseNumberQuery,
   validate,
-} from "@ubento/service-toolkit";
+} from "@ubento/services.toolkit";
 import { Router } from "express";
 import z from "zod";
 import {
   createModule,
   deleteModule,
   getModule,
-  getModuleBySlug,
-  getModuleFile,
-  getModuleFileHistory,
-  getModuleVersion,
-  getModuleVersionFile,
-  getModuleVersions,
   listModules,
-  ModuleScope,
-  publishModuleVersion,
-  restoreModuleFile,
-  updateModule,
-  updateModuleFile,
+  publishModule,
+  searchModules,
+  writeModule,
 } from "../entities/module.js";
+import {
+  getModuleVersion,
+  listModuleVersions,
+  readModuleVersionFile,
+} from "../entities/version.js";
 
 const modulesRouter: Router = Router();
 
-// Get Module by Slug
-modulesRouter.get(
-  "/slug/:slug",
-  chain(
-    validate({
-      params: z.object({
-        slug: z.string(),
-      }),
-    }),
-    enforce({
-      permissions: [ubentoAuth.actions.module.read],
-      resource: async (req) => {
-        const module = await getModuleBySlug(req.params.slug as string);
-        if (!module) throw new NotFoundError("Module not found");
-
-        if (module.scope === ModuleScope.TEAM) {
-          return ubentoAuth.scopes.team({
-            team_id: module.team_id,
-          });
-        } else {
-          return ubentoAuth.scopes.root;
-        }
-      },
-    }),
-    async (req, res) => {
-      const module = await getModuleBySlug(req.params.slug as string);
-      res.json(dataResponse(module));
-    },
-  ),
-);
-
-// List Modules
+/**
+ * GET /modules
+ * Lists modules with cursor pagination.
+ */
 modulesRouter.get(
   "/",
   chain(
     validate({
       query: z.object({
         team_id: z.string().optional(),
+        limit: z.coerce.number().optional(),
+        cursor: z.string().optional(),
+        type: z.string().optional(),
+        scope: z.nativeEnum(ModuleScope).optional(),
       }),
     }),
     enforce({
       permissions: [ubentoAuth.actions.module.list],
-      resource: (req) =>
-        ubentoAuth.scopes.teamOrHigher({
-          team_id: req.query.team_id as string | undefined,
-        }),
+      scope: (req) => {
+        return req.query.team_id
+          ? ubentoAuth.scopes.team({ team_id: req.query.team_id as string })
+          : ubentoAuth.scopes.public;
+      },
     }),
     async (req, res) => {
-      const modules = await listModules({
-        team_id: req.query.team_id as string | undefined,
+      const result = await listModules({
+        team_id: req.query.team_id as string,
+        limit: parseNumberQuery(req, "limit"),
+        cursor: req.query.cursor as string,
+        type: req.query.type as string,
+        scope: req.query.scope as ModuleScope,
       });
-      res.json(dataResponse(modules));
+      res.json(result);
     },
   ),
 );
 
-// Get Module
+/**
+ * GET /modules/search
+ * High-performance marketplace search via MongoDB Atlas.
+ */
 modulesRouter.get(
-  "/:module_id",
+  "/search",
   chain(
     validate({
-      params: z.object({
-        module_id: z.string(),
+      query: z.object({
+        query: z.string().optional(),
+        types: z.array(z.string()).optional(),
+        scope: z.nativeEnum(ModuleScope).optional(),
+        page: z.coerce.number().optional(),
+        limit: z.coerce.number().optional(),
       }),
     }),
     enforce({
+      permissions: [ubentoAuth.actions.module.list],
+      scope: () => ubentoAuth.scopes.public,
+    }),
+    async (req, res) => {
+      const results = await searchModules(req.query as any);
+      res.json(dataResponse(results));
+    },
+  ),
+);
+
+/**
+ * GET /modules/:module_id
+ * Fetches the base module metadata and pointers.
+ */
+modulesRouter.get(
+  "/:module_id",
+  chain(
+    validate({ params: z.object({ module_id: z.string() }) }),
+    enforce({
       permissions: [ubentoAuth.actions.module.read],
-      resource: async (req) => {
+      scope: async (req) => {
         const module = await getModule(req.params.module_id as string);
         if (!module) throw new NotFoundError("Module not found");
-
-        if (module.scope === ModuleScope.TEAM) {
-          return ubentoAuth.scopes.team({
-            team_id: module.team_id,
-          });
-        } else {
-          return ubentoAuth.scopes.root;
-        }
+        return module.scope === ModuleScope.private
+          ? ubentoAuth.scopes.team({ team_id: module.team_id })
+          : ubentoAuth.scopes.public;
       },
     }),
     async (req, res) => {
@@ -115,38 +116,162 @@ modulesRouter.get(
   ),
 );
 
-// Get Module Versions
-modulesRouter.get(
+/**
+ * POST /modules/:module_id/versions
+ * The primary "Save" mechanism. Creates a new private draft version.
+ */
+modulesRouter.post(
   "/:module_id/versions",
   chain(
     validate({
-      params: z.object({
-        module_id: z.string(),
-      }),
+      params: z.object({ module_id: z.string() }),
+      body: z
+        .object({
+          content: z.string().optional(),
+          files: z.record(z.string(), z.string()).optional(),
+        })
+        .refine((data) => data.content || data.files, {
+          message: "Either content or files must be provided",
+        }),
     }),
     enforce({
-      permissions: [ubentoAuth.actions.module.read],
-      resource: async (req) => {
+      permissions: [ubentoAuth.actions.module.update],
+      scope: async (req) => {
         const module = await getModule(req.params.module_id as string);
         if (!module) throw new NotFoundError("Module not found");
-
-        if (module.scope === ModuleScope.TEAM) {
-          return ubentoAuth.scopes.team({
-            team_id: module.team_id,
-          });
-        } else {
-          return ubentoAuth.scopes.root;
-        }
+        return ubentoAuth.scopes.team({ team_id: module.team_id });
       },
     }),
     async (req, res) => {
-      const versions = await getModuleVersions(req.params.module_id);
-      res.json(dataResponse(versions));
+      const updatedModule = await writeModule({
+        moduleId: req.params.module_id,
+        authorId: req.auth!.subject,
+        source: req.body.content,
+        files: req.body.files,
+      });
+      res.json(dataResponse(updatedModule));
     },
   ),
 );
 
-// Get Module Version
+/**
+ * POST /modules/:module_id/publish
+ * Promotes the current draft to the public-facing version.
+ */
+modulesRouter.post(
+  "/:module_id/publish",
+  chain(
+    validate({ params: z.object({ module_id: z.string() }) }),
+    enforce({
+      permissions: [ubentoAuth.actions.module.update],
+      scope: async (req) => {
+        const module = await getModule(req.params.module_id as string);
+        if (!module) throw new NotFoundError("Module not found");
+        return ubentoAuth.scopes.team({ team_id: module.team_id });
+      },
+    }),
+    async (req, res) => {
+      const publishedModule = await publishModule({
+        moduleId: req.params.module_id,
+        authorId: req.auth!.subject,
+      });
+      res.json(dataResponse(publishedModule));
+    },
+  ),
+);
+
+/**
+ * GET /modules/:module_id/versions
+ * Fetches the history of versions for this module.
+ */
+modulesRouter.get(
+  "/:module_id/versions",
+  chain(
+    validate({
+      params: z.object({ module_id: z.string() }),
+      query: z.object({
+        limit: z.coerce.number().optional(),
+        cursor: z.string().optional(),
+      }),
+    }),
+    enforce({
+      permissions: [ubentoAuth.actions.module.read],
+      scope: async (req) => {
+        const module = await getModule(req.params.module_id as string);
+        if (!module) throw new NotFoundError("Module not found");
+        return module.scope === ModuleScope.private
+          ? ubentoAuth.scopes.team({ team_id: module.team_id })
+          : ubentoAuth.scopes.public;
+      },
+    }),
+    async (req, res) => {
+      const result = await listModuleVersions({
+        module_id: req.params.module_id as string,
+        ...req.query,
+      });
+      res.json(result);
+    },
+  ),
+);
+
+/**
+ * POST /modules
+ * Bootstraps a new module and its initial version.
+ */
+modulesRouter.post(
+  "/",
+  chain(
+    validate({
+      body: z.object({
+        name: z.string(),
+        team_id: z.string(),
+        source: z.string(),
+        scope: z.nativeEnum(ModuleScope),
+        type: z.string(),
+        summary: z.string().optional(),
+      }),
+    }),
+    enforce({
+      permissions: [ubentoAuth.actions.module.create],
+      scope: (req) => ubentoAuth.scopes.team({ team_id: req.body.team_id }),
+    }),
+    async (req, res) => {
+      const module = await createModule({
+        ...req.body,
+        author_id: req.auth!.subject,
+      });
+      res.json(dataResponse(module));
+    },
+  ),
+);
+
+/**
+ * DELETE /modules/:module_id
+ * Soft-deletes a module.
+ */
+modulesRouter.delete(
+  "/:module_id",
+  chain(
+    validate({ params: z.object({ module_id: z.string() }) }),
+    enforce({
+      permissions: [ubentoAuth.actions.module.delete],
+      scope: async (req) => {
+        const module = await getModule(req.params.module_id as string);
+        if (!module) throw new NotFoundError("Module not found");
+        return ubentoAuth.scopes.team({ team_id: module.team_id });
+      },
+    }),
+    async (req, res) => {
+      await deleteModule(req.params.module_id);
+      res.json(dataResponse({ success: true }));
+    },
+  ),
+);
+
+/**
+ * GET /modules/:module_id/versions/:version_id
+ * Fetches details for a specific module version.
+ */
 modulesRouter.get(
   "/:module_id/versions/:version_id",
   chain(
@@ -158,21 +283,16 @@ modulesRouter.get(
     }),
     enforce({
       permissions: [ubentoAuth.actions.module.read],
-      resource: async (req) => {
+      scope: async (req) => {
         const module = await getModule(req.params.module_id as string);
         if (!module) throw new NotFoundError("Module not found");
-
-        if (module.scope === ModuleScope.TEAM) {
-          return ubentoAuth.scopes.team({
-            team_id: module.team_id,
-          });
-        } else {
-          return ubentoAuth.scopes.root;
-        }
+        return module.scope === ModuleScope.private
+          ? ubentoAuth.scopes.team({ team_id: module.team_id })
+          : ubentoAuth.scopes.public;
       },
     }),
     async (req, res) => {
-      const version = await getModuleVersion(req.params.version_id as string);
+      const version = await getModuleVersion(req.params.version_id);
       if (!version || version.module_id !== req.params.module_id) {
         throw new NotFoundError("Version not found");
       }
@@ -181,285 +301,41 @@ modulesRouter.get(
   ),
 );
 
-// Get Module Version Source
+/**
+ * GET /modules/:module_id/versions/:version_id/:filename
+ * Reads a specific file from a module version.
+ */
 modulesRouter.get(
-  "/:module_id/versions/:version_id/source",
+  "/:module_id/versions/:version_id/:filename",
   chain(
     validate({
       params: z.object({
         module_id: z.string(),
         version_id: z.string(),
-      }),
-    }),
-    enforce({
-      permissions: [ubentoAuth.actions.module.source.read],
-      resource: async (req) => {
-        const module = await getModule(req.params.module_id as string);
-        if (!module) throw new NotFoundError("Module not found");
-
-        if (module.scope === ModuleScope.TEAM) {
-          return ubentoAuth.scopes.team({
-            team_id: module.team_id,
-          });
-        } else {
-          return ubentoAuth.scopes.root;
-        }
-      },
-    }),
-    async (req, res) => {
-      const code = await getModuleVersionFile({
-        moduleId: req.params.module_id,
-        versionId: req.params.version_id,
-        filename: "index.tsx", // Default source
-      });
-      if (code === null) throw new NotFoundError("Source not found");
-      res.json(dataResponse({ source: code }));
-    },
-  ),
-);
-
-// Get Module Version Artifact
-modulesRouter.get(
-  "/:module_id/versions/:version_id/artifact",
-  chain(
-    validate({
-      params: z.object({
-        module_id: z.string(),
-        version_id: z.string(),
+        filename: z.string(),
       }),
     }),
     enforce({
       permissions: [ubentoAuth.actions.module.read],
-      resource: async (req) => {
+      scope: async (req) => {
         const module = await getModule(req.params.module_id as string);
         if (!module) throw new NotFoundError("Module not found");
-
-        if (module.scope === ModuleScope.TEAM) {
-          return ubentoAuth.scopes.team({
-            team_id: module.team_id,
-          });
-        } else {
-          return ubentoAuth.scopes.root;
-        }
+        return module.scope === ModuleScope.private
+          ? ubentoAuth.scopes.team({ team_id: module.team_id })
+          : ubentoAuth.scopes.public;
       },
     }),
     async (req, res) => {
-      const code = await getModuleVersionFile({
-        moduleId: req.params.module_id,
+      const content = await readModuleVersionFile({
         versionId: req.params.version_id,
-        filename: "index.js", // Default artifact
-      });
-      if (code === null) throw new NotFoundError("Artifact not found");
-      res.json(dataResponse({ artifact: code }));
-    },
-  ),
-);
-
-// Update Module File
-modulesRouter.put(
-  "/:module_id/files/:filename",
-  chain(
-    validate({
-      params: z.object({
-        module_id: z.string(),
-        filename: z.string(),
-      }),
-      body: z.object({
-        content: z.string(),
-        autoTranspile: z.boolean().optional(),
-      }),
-    }),
-    enforce({
-      permissions: [ubentoAuth.actions.module.update],
-      resource: async (req) => {
-        const module = await getModule(req.params.module_id as string);
-        if (!module) throw new NotFoundError("Module not found");
-
-        if (module.scope === ModuleScope.TEAM) {
-          return ubentoAuth.scopes.team({
-            team_id: module.team_id,
-          });
-        } else {
-          return ubentoAuth.scopes.root;
-        }
-      },
-    }),
-    async (req, res) => {
-      const fileUpdates = await updateModuleFile({
-        moduleId: req.params.module_id,
         filename: req.params.filename,
-        content: req.body.content,
-        authorId: req.auth!.userId,
-        autoTranspile: req.body.autoTranspile,
       });
-      res.json(dataResponse(fileUpdates));
-    },
-  ),
-);
 
-// Restore Module File
-modulesRouter.post(
-  "/:module_id/files/:filename/restore",
-  chain(
-    validate({
-      params: z.object({
-        module_id: z.string(),
-        filename: z.string(),
-      }),
-      body: z.object({
-        hash: z.string(),
-      }),
-    }),
-    enforce({
-      permissions: [ubentoAuth.actions.module.update],
-      resource: async (req) => {
-        const module = await getModule(req.params.module_id as string);
-        if (!module) throw new NotFoundError("Module not found");
+      if (content === null) {
+        throw new NotFoundError("File not found");
+      }
 
-        if (module.scope === ModuleScope.TEAM) {
-          return ubentoAuth.scopes.team({
-            team_id: module.team_id,
-          });
-        } else {
-          return ubentoAuth.scopes.root;
-        }
-      },
-    }),
-    async (req, res) => {
-      await restoreModuleFile(
-        req.params.module_id,
-        req.params.filename,
-        req.body.hash,
-        req.auth!.userId
-      );
-      res.json(dataResponse({ success: true }));
-    },
-  ),
-);
-
-// Publish Module Version
-modulesRouter.post(
-  "/:module_id/publish",
-  chain(
-    validate({
-      params: z.object({
-        module_id: z.string(),
-      }),
-    }),
-    enforce({
-      permissions: [ubentoAuth.actions.module.update],
-      resource: async (req) => {
-        const module = await getModule(req.params.module_id as string);
-        if (!module) throw new NotFoundError("Module not found");
-
-        if (module.scope === ModuleScope.TEAM) {
-          return ubentoAuth.scopes.team({
-            team_id: module.team_id,
-          });
-        } else {
-          return ubentoAuth.scopes.root;
-        }
-      },
-    }),
-    async (req, res) => {
-      const version = await publishModuleVersion(req.params.module_id);
-      res.json(dataResponse(version));
-    },
-  ),
-);
-
-// Create Module
-modulesRouter.post(
-  "/",
-  chain(
-    validate({
-      body: z.object({
-        name: z.string(),
-        slug: z.string().optional(),
-        team_id: z.string(),
-        source: z.string(),
-        scope: z.enum([ModuleScope.TEAM, ModuleScope.PUBLIC]),
-      }),
-    }),
-    enforce({
-      permissions: [ubentoAuth.actions.module.create],
-      resource: (req) =>
-        ubentoAuth.scopes.teamOrHigher({
-          team_id: req.body.team_id as string,
-        }),
-    }),
-    async (req, res) => {
-      const module = await createModule({
-        ...req.body,
-        author_id: req.auth!.userId,
-      });
-      res.json(dataResponse(module));
-    },
-  ),
-);
-
-// Update Module
-modulesRouter.patch(
-  "/:module_id",
-  chain(
-    validate({
-      params: z.object({
-        module_id: z.string(),
-      }),
-      body: z.object({
-        name: z.string().optional(),
-        slug: z.string().optional(),
-      }),
-    }),
-    enforce({
-      permissions: [ubentoAuth.actions.module.update],
-      resource: async (req) => {
-        const module = await getModule(req.params.module_id as string);
-        if (!module) throw new NotFoundError("Module not found");
-
-        if (module.scope === ModuleScope.TEAM) {
-          return ubentoAuth.scopes.team({
-            team_id: module.team_id,
-          });
-        } else {
-          return ubentoAuth.scopes.root;
-        }
-      },
-    }),
-    async (req, res) => {
-      const module = await updateModule(req.params.module_id, req.body);
-      res.json(dataResponse(module));
-    },
-  ),
-);
-
-// Delete Module
-modulesRouter.delete(
-  "/:module_id",
-  chain(
-    validate({
-      params: z.object({
-        module_id: z.string(),
-      }),
-    }),
-    enforce({
-      permissions: [ubentoAuth.actions.module.delete],
-      resource: async (req) => {
-        const module = await getModule(req.params.module_id as string);
-        if (!module) throw new NotFoundError("Module not found");
-
-        if (module.scope === ModuleScope.TEAM) {
-          return ubentoAuth.scopes.team({
-            team_id: module.team_id,
-          });
-        } else {
-          return ubentoAuth.scopes.root;
-        }
-      },
-    }),
-    async (req, res) => {
-      await deleteModule(req.params.module_id);
-      res.json(dataResponse({ success: true }));
+      res.json(dataResponse({ content }));
     },
   ),
 );

@@ -1,0 +1,25 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: "{{ vars.GCP_SERVICE_NAME }}"
+spec:
+  template:
+    spec:
+      serviceAccountName: "{{ vars.GCP_SERVICE_ACCOUNT_NAME }}"
+      containers:
+        - image: "{{ vars.GCP_IMAGE_TAG }}"
+          env:
+            # node
+            - name: NODE_ENV
+              value: "production"
+            # database
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  key: latest
+                  name: "ubento-database-url"
+            # vertex configuration
+            - name: GCP_PROJECT_ID
+              value: "{{ vars.GCP_PROJECT_ID }}"
+            - name: GCP_SERVICE_BUCKET_NAME
+              value: "{{ vars.GCP_SERVICE_BUCKET_NAME }}"

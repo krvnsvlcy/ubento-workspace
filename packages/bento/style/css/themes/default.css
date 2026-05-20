@@ -1,0 +1,169 @@
+:root {
+  /* Global Background */
+  --color-background: #ffffff;
+
+  /* =========================================
+     Accent Theme (Industrial Black)
+     ========================================= */
+
+  --color-accent: #000000;
+  --color-accent-hover: #171717; /* Neutral 900 */
+  --color-accent-active: #262626; /* Neutral 800 */
+  --color-accent-contrast: #ffffff;
+
+  --color-accent-surface: #f4f4f5; /* Subtle gray highlight */
+  --color-accent-surface-hover: #e4e4e7;
+  --color-accent-surface-active: #d4d4d8;
+
+  --color-accent-border: #e4e4e7;
+  --color-accent-border-hover: #d4d4d8;
+  --color-accent-border-active: #a1a1aa;
+
+  --color-accent-content: #000000;
+  --color-accent-content-subtle: #5c5c68; /* Neutral 700 */
+  --color-accent-content-muted: #71717a; /* Neutral 500 */
+
+  /* =========================================
+     Neutral Theme (Zinc/Slate)
+     ========================================= */
+  --color-neutral: #18181b;
+  --color-neutral-hover: #1c1c1c;
+  --color-neutral-active: #262626;
+  --color-neutral-contrast: #ffffff;
+
+  --color-neutral-surface: #f4f4f5;
+  --color-neutral-surface-hover: #f9f9fa;
+  --color-neutral-surface-active: #d4d4d8;
+
+  --color-neutral-border: #e4e4e7;
+  --color-neutral-border-hover: #d4d4d8;
+  --color-neutral-border-active: #a1a1aa;
+
+  --color-neutral-content: #18181b;
+  --color-neutral-content-subtle: #5c5c68;
+  --color-neutral-content-muted: #7d7d8a;
+
+  /* =========================================
+     Inverse Theme (Dark/Almost Black)
+     ========================================= */
+  --color-inverse: #18181b;
+  --color-inverse-hover: #27272a;
+  --color-inverse-active: #3f3f46;
+  --color-inverse-contrast: #ffffff;
+
+  --color-inverse-surface: #27272a;
+  --color-inverse-surface-hover: #3f3f46;
+  --color-inverse-surface-active: #52525b;
+
+  --color-inverse-border: #3f3f46;
+  --color-inverse-border-hover: #52525b;
+  --color-inverse-border-active: #71717a;
+
+  --color-inverse-content: #ffffff;
+  --color-inverse-content-subtle: #f4f4f5;
+  --color-inverse-content-muted: #e4e4e7;
+
+  /* =========================================
+     Success Theme (Emerald/Green)
+     ========================================= */
+  --color-success: #22c55e;
+  --color-success-hover: #16a34a;
+  --color-success-active: #15803d;
+  --color-success-contrast: #ffffff;
+
+  --color-success-surface: #dcfce7;
+  --color-success-surface-hover: #bbf7d0;
+  --color-success-surface-active: #86efac;
+
+  --color-success-border: #86efac;
+  --color-success-border-hover: #4ade80;
+  --color-success-border-active: #22c55e;
+
+  --color-success-content: #14532d;
+  --color-success-content-subtle: #166534;
+  --color-success-content-muted: #15803d;
+
+  /* =========================================
+     Warning Theme (Amber/Yellow)
+     ========================================= */
+  --color-warning: #f59e0b;
+  --color-warning-hover: #d97706;
+  --color-warning-active: #b45309;
+  --color-warning-contrast: #ffffff;
+
+  --color-warning-surface: #fef3c7;
+  --color-warning-surface-hover: #fde68a;
+  --color-warning-surface-active: #fcd34d;
+
+  --color-warning-border: #fcd34d;
+  --color-warning-border-hover: #fbbf24;
+  --color-warning-border-active: #f59e0b;
+
+  --color-warning-content: #78350f;
+  --color-warning-content-subtle: #92400e;
+  --color-warning-content-muted: #b45309;
+
+  /* =========================================
+     Info Theme (Sky/Light Blue)
+     ========================================= */
+  --color-info: #0ea5e9;
+  --color-info-hover: #0284c7;
+  --color-info-active: #0369a1;
+  --color-info-contrast: #ffffff;
+
+  --color-info-surface: #e0f2fe;
+  --color-info-surface-hover: #bae6fd;
+  --color-info-surface-active: #7dd3fc;
+
+  --color-info-border: #7dd3fc;
+  --color-info-border-hover: #38bdf8;
+  --color-info-border-active: #0ea5e9;
+
+  --color-info-content: #0c4a6e;
+  --color-info-content-subtle: #075985;
+  --color-info-content-muted: #0369a1;
+
+  /* =========================================
+     Destructive Theme (Red/Rose)
+     ========================================= */
+  --color-destructive: #f21621;
+  --color-destructive-hover: #ff2a34;
+  --color-destructive-active: #dd0b16;
+  --color-destructive-contrast: #ffffff;
+
+  --color-destructive-surface: #fff0f0;
+  --color-destructive-surface-hover: #fff3f3;
+  --color-destructive-surface-active: #ffdcdc;
+
+  --color-destructive-border: #ffd7d7;
+  --color-destructive-border-hover: #ffbbbb;
+  --color-destructive-border-active: #ff9292;
+
+  --color-destructive-content: #a30000;
+  --color-destructive-content-subtle: #bb3434;
+  --color-destructive-content-muted: #c14f4f;
+
+  /* =========================================
+     Fonts
+     ========================================= */
+  --font-heading: "Inter", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  /* =========================================
+     Fallback Intent Theme (Neutral)
+     ========================================= */
+  --color-intent: var(--color-neutral);
+  --color-intent-hover: var(--color-neutral-hover);
+  --color-intent-active: var(--color-neutral-active);
+  --color-intent-contrast: var(--color-neutral-contrast);
+  --color-intent-surface: var(--color-neutral-surface);
+  --color-intent-surface-hover: var(--color-neutral-surface-hover);
+  --color-intent-surface-active: var(--color-neutral-surface-active);
+  --color-intent-border: var(--color-neutral-border);
+  --color-intent-border-hover: var(--color-neutral-border-hover);
+  --color-intent-border-active: var(--color-neutral-border-active);
+  --color-intent-content: var(--color-neutral-content);
+  --color-intent-content-subtle: var(--color-neutral-content-subtle);
+  --color-intent-content-muted: var(--color-neutral-content-muted);
+}

@@ -1,5 +1,5 @@
-import { ubentoAuth } from "@ubento/primitives";
-import { AuthorizationError, ValidationError } from "@ubento/service-toolkit";
+import { ubentoAuth } from "@ubento/services.primitives";
+import { AuthorizationError, ValidationError } from "@ubento/services.toolkit";
 import { GenericServerException } from "@workos-inc/node";
 import { env } from "../../env.js";
 import { workos } from "../../lib/workos.js";
@@ -96,7 +96,7 @@ export async function getTokenWithAuthorizationCode({
     throw new AuthorizationError("Scope not authorized");
   }
 
-  const teams = await listUserTeams(session.user_id);
+  const { items: teams } = await listUserTeams({ user_id: session.user_id });
 
   // 5. Issue Access Token
   const expiresIn = 3600;
@@ -282,7 +282,7 @@ export async function getTokenWithPassword({
     throw new AuthorizationError("Scope not authorized");
   }
 
-  const teams = await listUserTeams(dbUser.id);
+  const { items: teams } = await listUserTeams({ user_id: dbUser.id });
 
   // 5. Issue Access Token
   const expiresIn = 3600;

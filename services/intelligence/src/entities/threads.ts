@@ -1,18 +1,13 @@
+import { Thread } from "@ubento/services.database/intelligence";
 import {
-  ubentoEntities,
   generateBareId,
   makeEntityId,
-} from "@ubento/primitives";
-import {
-  NotFoundError,
-  prismaListWithCursor,
-  ValidationError,
-} from "@ubento/service-toolkit";
-import { Prisma, Thread } from "@ubento/database/intelligence";
+  ubentoEntities,
+} from "@ubento/services.primitives";
+import { NotFoundError, prismaListWithCursor } from "@ubento/services.toolkit";
 import { generateText, Output } from "ai";
 import z from "zod";
-import { eventPublisher } from "../event.js";
-import { bento } from "../libs/bento.js";
+import { ubento } from "../libs/bento.js";
 import prisma from "../prisma.js";
 
 export enum ThreadStatus {
@@ -23,12 +18,14 @@ export enum ThreadStatus {
 
 export async function listThreads({
   workspace_id,
+  team_id,
   members,
   limit,
   cursor,
   sort,
 }: {
   workspace_id?: string;
+  team_id?: string;
   members?: string[];
   limit?: number;
   cursor?: string;
@@ -47,6 +44,7 @@ export async function listThreads({
     orderBy,
     where: {
       ...(workspace_id && { workspace_id }),
+      ...(team_id && { team_id }),
       ...(members?.length ? { members: { hasEvery: members } } : {}),
     },
     resolveCursor: (t) => ({ id: t.id }),
@@ -61,15 +59,22 @@ export async function getThread(thread_id: string) {
 }
 
 export async function createThread({
+  team_id,
   workspace_id,
   title,
 }: {
-  workspace_id: string;
+  team_id?: string;
+  workspace_id?: string;
   title?: string;
 }): Promise<Thread> {
-  const workspace = await bento.workspace.getWorkspace(workspace_id);
-  if (!workspace) {
-    throw new NotFoundError(`workspace (${workspace_id})`);
+  if (!team_id && !workspace_id) {
+    throw new Error("team_id or workspace_id is required");
+  }
+
+  let resolvedTeamId = team_id;
+  if (!resolvedTeamId && workspace_id) {
+    const workspace = await ubento.workspace.getWorkspace(workspace_id);
+    resolvedTeamId = workspace.team_id;
   }
 
   const newThread = await prisma.thread.create({
@@ -78,14 +83,12 @@ export async function createThread({
         code: ubentoEntities.intelligenceThread.code,
         bareId: generateBareId(),
       }),
-      workspace_id: workspace.id,
-      organization_id: workspace.team_id,
+      workspace_id: workspace_id ?? null,
+      team_id: resolvedTeamId!,
       title,
-      status: ThreadStatus.IDLE,
     },
   });
 
-  eventPublisher.publishEntity("created", newThread);
   return newThread;
 }
 
@@ -96,14 +99,13 @@ export async function updateThread(
     metadata?: Record<string, any>;
     context?: any;
     last_message_at?: Date;
-  }
+  },
 ): Promise<Thread> {
   const updatedThread = await prisma.thread.update({
     where: { id: thread_id },
     data: updates,
   });
 
-  eventPublisher.publishEntity("updated", updatedThread);
   return updatedThread;
 }
 
@@ -139,92 +141,10 @@ export async function generateThreadTitle(thread_id: string): Promise<Thread> {
   return updateThread(thread_id, { title });
 }
 
-export async function activateThread(thread_id: string): Promise<Thread> {
-  let updatedThread: Thread;
-  try {
-    updatedThread = await prisma.thread.update({
-      where: {
-        id: thread_id,
-        status: {
-          in: [ThreadStatus.IDLE, ThreadStatus.PAUSED],
-        },
-      },
-      data: {
-        status: ThreadStatus.ACTIVE,
-      },
-    });
-  } catch (err) {
-    if (
-      err instanceof Prisma.PrismaClientKnownRequestError &&
-      err.code === "P2025"
-    ) {
-      throw new ValidationError(
-        `Thread with ID ${thread_id} is not in IDLE or PAUSED status or does not exist.`
-      );
-    } else {
-      throw err; // Re-throw other errors
-    }
-  }
-
-  eventPublisher.publishEntity("updated", updatedThread);
-  return updatedThread;
-}
-
-export async function pauseThread(thread_id: string): Promise<Thread> {
-  return prisma.$transaction(async (tx: any) => {
-    const thread = await tx.thread.findUnique({
-      where: { id: thread_id },
-    });
-    if (!thread) {
-      throw new NotFoundError(`Thread with ID ${thread_id} not found.`);
-    }
-
-    if (
-      thread.status === ThreadStatus.PAUSED ||
-      thread.status === ThreadStatus.IDLE
-    ) {
-      return thread;
-    } else {
-      const thread = await tx.thread.update({
-        where: { id: thread_id },
-        data: { status: ThreadStatus.PAUSED },
-      });
-
-      eventPublisher.publishEntity("updated", thread);
-      return thread;
-    }
-  });
-}
-
-export async function deactivateThread(thread_id: string): Promise<Thread> {
-  let updatedThread: Thread;
-  try {
-    updatedThread = await prisma.thread.update({
-      where: { id: thread_id },
-      data: {
-        status: ThreadStatus.IDLE,
-      },
-    });
-  } catch (err) {
-    if (
-      err instanceof Prisma.PrismaClientKnownRequestError &&
-      err.code === "P2025"
-    ) {
-      throw new NotFoundError(`Thread with ID ${thread_id} does not exist.`);
-    } else {
-      throw err; // Re-throw other errors
-    }
-  }
-
-  eventPublisher.publishEntity("updated", updatedThread);
-  return updatedThread;
-}
-
 export async function deleteThread(thread_id: string): Promise<Thread> {
   const deletedThread = await prisma.thread.delete({
     where: { id: thread_id },
   });
 
-  eventPublisher.publishEntity("deleted", deletedThread);
   return deletedThread;
 }

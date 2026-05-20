@@ -13,11 +13,10 @@
     "deploy": "pnpm vercel:build && pnpm vercel:deploy"
   },
   "dependencies": {
-    "@tanstack/react-query": "^5.100.1",
-    "@ubento/bento-app": "workspace:*",
-    "@ubento/bento-style": "workspace:*",
-    "@ubento/engine": "workspace:*",
-    "@ubento/sdk": "workspace:*",
+    "@ubento/workspace.app": "workspace:*",
+    "@ubento/bento.style": "workspace:*",
+    "@ubento/bento.runtime": "workspace:*",
+    "@ubento/services.sdk": "workspace:*",
     "react": "^19.2.5",
     "react-dom": "^19.2.5"
   },

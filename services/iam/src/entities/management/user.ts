@@ -1,11 +1,14 @@
-import { Broker } from "@ubento/database/iam";
+import { Broker } from "@ubento/services.database/iam";
 import {
   generateBareId,
   makeEntityId,
   ubentoAuth,
   ubentoEntities,
-} from "@ubento/primitives";
-import { ValidationError } from "@ubento/service-toolkit";
+} from "@ubento/services.primitives";
+import {
+  prismaListWithCursor,
+  ValidationError,
+} from "@ubento/services.toolkit";
 import { User as WorkOSUser } from "@workos-inc/node";
 import prisma from "../../lib/prisma.js";
 import { workos } from "../../lib/workos.js";
@@ -30,16 +33,14 @@ export async function listUsers({
   cursor?: string;
   email?: string;
 }) {
-  return await prisma.user.findMany({
-    take: limit || 50,
-    skip: cursor ? 1 : 0,
-    cursor: cursor ? { id: cursor } : undefined,
-    where: {
-      email: email ? { contains: email, mode: "insensitive" } : undefined,
-    },
-    orderBy: {
-      created_at: "desc",
-    },
+  return await prismaListWithCursor(prisma.user, {
+    where: email
+      ? { email: { contains: email, mode: "insensitive" } }
+      : undefined,
+    limit,
+    cursor,
+    orderBy: [{ created_at: "desc" }, { id: "desc" }],
+    resolveCursor: (u) => ({ id: u.id }),
   });
 }
 
@@ -49,10 +50,10 @@ export async function deleteUser(id: string) {
     return;
   }
 
-  const teams = await listUserTeams(user.id);
+  const { items: teams } = await listUserTeams({ user_id: user.id });
   const canBeDeleted = await Promise.all(
     teams.map(async (team) => {
-      const members = await listTeamMembers(team.id);
+      const { items: members } = await listTeamMembers({ team_id: team.id });
       return members.length === 1 && members[0].id === user.id;
     }),
   );
@@ -125,7 +126,7 @@ export async function syncUserData(user: WorkOSUser) {
     });
   }
 
-  const teams = await listUserTeams(syncedUser.id);
+  const { items: teams } = await listUserTeams({ user_id: syncedUser.id });
   if (teams.length === 0) {
     let baseHandle = (syncedUser.name || syncedUser.email || syncedUser.id)
       .replace(/[^a-zA-Z0-9]+/g, "-")

@@ -18,19 +18,18 @@ datasource db {
 }
 
 model Thread {
-    id              String   @id @map("_id")
-    entity          String   @default("intelligence_thread")
-    organization_id String
-    workspace_id    String
+    id           String  @id @map("_id")
+    entity       String  @default("intelligence_thread")
+    team_id      String
+    workspace_id String?
 
-    title           String?
-    status          String
+    title   String?
     context Json?
     message Message[]
 
-    version    Int      @default(1) @db.Long
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
+    version         Int      @default(1) @db.Long
+    created_at      DateTime @default(now())
+    updated_at      DateTime @updatedAt
     last_message_at DateTime @default(now())
 
     @@map("threads")
@@ -39,15 +38,13 @@ model Thread {
 model Message {
     id        String @id @map("_id")
     entity    String @default("intelligence_message")
-    organization_id String
-    workspace_id    String
     thread_id String
     thread    Thread @relation(fields: [thread_id], references: [id])
 
-    role    String
-    author  String?
-    data    Json
-    error   String?
+    role   String
+    author String?
+    data   Json
+    error  String?
 
     version    Int      @default(1) @db.Long
     created_at DateTime @default(now())
@@ -57,17 +54,18 @@ model Message {
 }
 
 model File {
-    id           String   @id @map("_id")
-    entity       String   @default("intelligence_file")  
-    workspace_id String
-    
-    name         String
-    type         String
-    size         Int
-    
-    version      Int      @default(1) @db.Long
-    created_at   DateTime @default(now())
-    updated_at   DateTime @updatedAt
+    id           String  @id @map("_id")
+    entity       String  @default("intelligence_file")
+    team_id      String
+    workspace_id String?
+
+    name String
+    type String
+    size Int
+
+    version    Int      @default(1) @db.Long
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
 
     @@map("files")
 }

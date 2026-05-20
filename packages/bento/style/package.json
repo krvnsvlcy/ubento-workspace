@@ -1,5 +1,5 @@
 {
-  "name": "@ubento/bento-style",
+  "name": "@ubento/bento.style",
   "version": "1.0.0",
   "private": true,
   "main": "dist/uno.css",

@@ -4,7 +4,8 @@ import {
   makeEntityId,
   slugify,
   ubentoEntities,
-} from "@ubento/primitives";
+} from "@ubento/services.primitives";
+import { prismaListWithCursor } from "@ubento/services.toolkit";
 import prisma from "../../lib/prisma.js";
 
 export async function getWorkspace(id: string) {
@@ -84,13 +85,21 @@ export async function deleteWorkspace(id: string) {
   });
 }
 
-export async function listWorkspaces(filter: { team_id?: string }) {
-  return await prisma.workspace.findMany({
+export async function listWorkspaces(filters: {
+  team_id?: string;
+  limit?: number;
+  cursor?: string;
+}) {
+  return await prismaListWithCursor(prisma.workspace, {
+    limit: filters.limit,
+    cursor: filters.cursor,
     where: {
-      team_id: filter.team_id,
+      team_id: filters.team_id,
       deleted_at: {
         isSet: false,
       },
     },
+    orderBy: { created_at: "desc" },
+    resolveCursor: (i) => ({ id: i.id }),
   });
 }

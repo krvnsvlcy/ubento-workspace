@@ -1,3 +1,3 @@
-import { createEventPublisher } from "@ubento/service-toolkit";
+import { createEventPublisher } from "@ubento/services.toolkit";
 
 export const eventPublisher = createEventPublisher();

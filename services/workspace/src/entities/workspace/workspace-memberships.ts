@@ -1,16 +1,19 @@
-import { WorkspaceMembership, Prisma } from "@ubento/database/workspace";
+import {
+  Prisma,
+  WorkspaceMembership,
+} from "@ubento/services.database/workspace";
 import {
   generateBareId,
   makeEntityId,
   ubentoAuth,
   ubentoEntities,
-} from "@ubento/primitives";
+} from "@ubento/services.primitives";
 import {
   isPrismaConstraintError,
   NotFoundError,
   prismaListWithCursor,
   ValidationError,
-} from "@ubento/service-toolkit";
+} from "@ubento/services.toolkit";
 import { authorizer } from "../../lib/authorizer.js";
 import prisma from "../../lib/prisma.js";
 
@@ -121,6 +124,9 @@ export async function removeMemberFromWorkspace(id: string) {
   await authorizer.revokeRole(
     membership.user_id,
     membership.role,
-    ubentoAuth.scopes.workspace({ team_id: workspace.team_id, workspace_id: workspace.id }),
+    ubentoAuth.scopes.workspace({
+      team_id: workspace.team_id,
+      workspace_id: workspace.id,
+    }),
   );
 }

@@ -10,6 +10,6 @@ export default function Home() {
   if (!currentSession) {
     return <LandingPage />;
   } else {
-    return <Dashboard session={currentSession} />;
+    return <Dashboard />;
   }
 }

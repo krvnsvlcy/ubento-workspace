@@ -1,4 +1,5 @@
-import { workspaceSchemas } from "@ubento/database/workspace";
+import { workspaceSchemas } from "@ubento/services.database/workspace";
+import { makeCursorPageResponseSchema } from "@ubento/services.toolkit";
 import { OpenAPIV3 } from "openapi-types";
 
 export const spec: OpenAPIV3.Document = {
@@ -25,17 +26,9 @@ export const spec: OpenAPIV3.Document = {
             description: "A list of workspaces",
             content: {
               "application/json": {
-                schema: {
-                  type: "object",
-                  properties: {
-                    items: {
-                      type: "array",
-                      items: { $ref: "#/components/schemas/Workspace" },
-                    },
-                    next_cursor: { type: "string", nullable: true },
-                  },
-                  required: ["items"],
-                },
+                schema: makeCursorPageResponseSchema({
+                  $ref: "#/components/schemas/Workspace",
+                }),
               },
             },
           },
@@ -206,23 +199,20 @@ export const spec: OpenAPIV3.Document = {
             required: true,
             schema: { type: "string" },
           },
+          {
+            name: "parent_id",
+            in: "query",
+            schema: { type: "string" },
+          },
         ],
         responses: {
           "200": {
             description: "A list of boards",
             content: {
               "application/json": {
-                schema: {
-                  type: "object",
-                  properties: {
-                    items: {
-                      type: "array",
-                      items: { $ref: "#/components/schemas/Board" },
-                    },
-                    next_cursor: { type: "string", nullable: true },
-                  },
-                  required: ["items"],
-                },
+                schema: makeCursorPageResponseSchema({
+                  $ref: "#/components/schemas/Board",
+                }),
               },
             },
           },
@@ -238,10 +228,12 @@ export const spec: OpenAPIV3.Document = {
                 type: "object",
                 properties: {
                   workspace_id: { type: "string" },
+                  parent_id: { type: "string" },
                   name: { type: "string" },
-                  path: { type: "string" },
+                  data: { type: "object" },
+                  index: { type: "string" },
                 },
-                required: ["workspace_id", "name", "path"],
+                required: ["workspace_id", "name", "index"],
               },
             },
           },
@@ -299,7 +291,9 @@ export const spec: OpenAPIV3.Document = {
                 type: "object",
                 properties: {
                   name: { type: "string" },
-                  path: { type: "string" },
+                  parent_id: { type: "string", nullable: true },
+                  data: { type: "object" },
+                  index: { type: "string" },
                 },
               },
             },
@@ -365,17 +359,9 @@ export const spec: OpenAPIV3.Document = {
             description: "A list of workspace memberships",
             content: {
               "application/json": {
-                schema: {
-                  type: "object",
-                  properties: {
-                    items: {
-                      type: "array",
-                      items: { $ref: "#/components/schemas/WorkspaceMembership" },
-                    },
-                    next_cursor: { type: "string", nullable: true },
-                  },
-                  required: ["items"],
-                },
+                schema: makeCursorPageResponseSchema({
+                  $ref: "#/components/schemas/WorkspaceMembership",
+                }),
               },
             },
           },
@@ -457,17 +443,9 @@ export const spec: OpenAPIV3.Document = {
             description: "A list of workspace invites",
             content: {
               "application/json": {
-                schema: {
-                  type: "object",
-                  properties: {
-                    items: {
-                      type: "array",
-                      items: { $ref: "#/components/schemas/WorkspaceInvite" },
-                    },
-                    next_cursor: { type: "string", nullable: true },
-                  },
-                  required: ["items"],
-                },
+                schema: makeCursorPageResponseSchema({
+                  $ref: "#/components/schemas/WorkspaceInvite",
+                }),
               },
             },
           },
@@ -591,7 +569,8 @@ export const spec: OpenAPIV3.Document = {
     schemas: {
       Workspace: workspaceSchemas.definitions.Workspace as any,
       Board: workspaceSchemas.definitions.Board as any,
-      WorkspaceMembership: workspaceSchemas.definitions.WorkspaceMembership as any,
+      WorkspaceMembership: workspaceSchemas.definitions
+        .WorkspaceMembership as any,
       WorkspaceInvite: workspaceSchemas.definitions.WorkspaceInvite as any,
       Error: {
         type: "object",

@@ -1,0 +1,59 @@
+/* Modern browsers — Chrome 121+, Edge 121+, Firefox, Safari 18.2+ */
+* {
+  scrollbar-width: 6px;
+  scrollbar-color: #787878 #f5f5f5;
+}
+
+/* Legacy WebKit — older Chrome/Edge/Safari, radius, borders & shadows */
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  background-color: #f5f5f5;
+  border-radius: 3px;
+  padding: 6px;
+}
+
+*::-webkit-scrollbar-track:hover {
+  background-color: #e8e8e8;
+}
+
+*::-webkit-scrollbar-track:active {
+  background-color: #d6d6d6;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #787878;
+  border-radius: 3px;
+  min-height: 40px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: #595959;
+}
+
+*::-webkit-scrollbar-thumb:active {
+  background-color: #454545;
+}
+
+*::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* OverlayScrollbars Custom Styling */
+.os-scrollbar {
+  --os-size: 6px;
+  --os-track-bg: transparent;
+  --os-track-bg-hover: transparent;
+  --os-track-bg-active: transparent;
+  --os-thumb-bg: var(--color-neutral-border, #787878);
+  --os-thumb-bg-hover: var(--color-neutral-border-hover, #595959);
+  --os-thumb-bg-active: var(--color-neutral-border-active, #454545);
+  --os-thumb-border-radius: 3px;
+  --os-track-border-radius: 3px;
+}
+

@@ -1,11 +1,12 @@
-import { ubentoAuth } from "@ubento/primitives";
+import { ubentoAuth } from "@ubento/services.primitives";
 import {
   chain,
   dataResponse,
   enforce,
+  makeCursorPageResponse,
   NotFoundError,
   validate,
-} from "@ubento/service-toolkit";
+} from "@ubento/services.toolkit";
 import { Router } from "express";
 import z from "zod";
 import { listUserTeams } from "../../entities/management/team/memberships.js";
@@ -23,7 +24,6 @@ usersRouter.get(
   chain(
     validate({
       query: z.object({
-        email: z.string().optional(),
         limit: z.coerce.number().optional(),
         cursor: z.string().optional(),
       }),
@@ -31,11 +31,10 @@ usersRouter.get(
     enforce(ubentoAuth.actions.user.list),
     async (req, res) => {
       const users = await listUsers({
-        email: req.query.email as string | undefined,
         limit: req.query.limit ? Number(req.query.limit) : undefined,
         cursor: req.query.cursor as string | undefined,
       });
-      res.json(dataResponse(users));
+      res.json(makeCursorPageResponse(users));
     },
   ),
 );
@@ -85,11 +84,19 @@ usersRouter.get(
       params: z.object({
         user_id: z.string(),
       }),
+      query: z.object({
+        limit: z.coerce.number().optional(),
+        cursor: z.string().optional(),
+      }),
     }),
     enforce(ubentoAuth.actions.user.read),
     async (req, res) => {
-      const teams = await listUserTeams(req.params.user_id);
-      res.json(dataResponse(teams));
+      const teams = await listUserTeams({
+        user_id: req.params.user_id as string,
+        limit: req.query.limit ? Number(req.query.limit) : undefined,
+        cursor: req.query.cursor as string | undefined,
+      });
+      res.json(makeCursorPageResponse(teams));
     },
   ),
 );

@@ -1,28 +1,56 @@
 "use client";
 
-import { env } from "@/lib/env";
-import { ubento } from "@/lib/ubento";
-import { Bento, createBentoHost } from "@ubento/bento-app";
-import { useMemo } from "react";
-import { Session } from "../hooks/session";
+import { ubentoApi } from "@/lib/ubento";
+import { routes } from "@/routes";
+import { PendingView } from "@ubento/bento.arlo-core";
+import {
+  createUbentoEngine,
+  Ubento,
+  UbentoEngine,
+} from "@ubento/workspace.app";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useSession } from "../hooks/session";
 
-export function Dashboard({ session }: { session: Session }) {
-  const host = useMemo(() => {
-    return createBentoHost({
-      session: {
-        userId: session.userId,
-        teamId: session.tenantId,
-        email: "", // Not available in session
-        name: session.name || "",
-        picture: session.picture,
-      },
-      location: { view: "home", params: {} },
-      ubento,
-      iframeUrl: env.BENTO_RUNTIME_URL,
-      componentIframeUrl: (env as any).BENTO_COMPONENT_RUNTIME_URL || "http://localhost:4030",
-      moduleUrlTemplate: (env as any).BENTO_MODULE_URL_TEMPLATE || "https://modules.ubento.pro/{moduleId}/{versionId}/index.js",
-    });
-  }, [session, ubento]);
+const workspaceRuntimeUrl = process.env.NEXT_PUBLIC_WORKSPACE_RUNTIME_URL!;
+const componentRuntimeUrl = process.env.NEXT_PUBLIC_COMPONENT_RUNTIME_URL!;
 
-  return <Bento host={host} />;
+if (!workspaceRuntimeUrl)
+  throw new Error("Missing NEXT_PUBLIC_WORKSPACE_RUNTIME_URL");
+if (!componentRuntimeUrl)
+  throw new Error("Missing NEXT_PUBLIC_COMPONENT_RUNTIME_URL");
+
+export function Dashboard() {
+  const session = useSession();
+  const router = useRouter();
+  const [engine, setEngine] = useState<UbentoEngine | undefined>();
+
+  useEffect(() => {
+    if (session) {
+      const engine = createUbentoEngine({
+        session: {
+          userId: session.userId,
+          teamId: session.teamId,
+          email: session.email,
+          name: session.name,
+          picture: session.picture,
+        },
+        workspaceRuntimeUrl,
+        componentRuntimeUrl,
+        ubentoApi,
+      });
+      setEngine(engine);
+    } else {
+      router.push(routes.login());
+    }
+  }, [session]);
+
+  if (!engine)
+    return (
+      <div className="h-screen w-screen">
+        <PendingView message="Ubento" />
+      </div>
+    );
+
+  return <Ubento engine={engine} />;
 }

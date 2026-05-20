@@ -1,19 +1,18 @@
-import { ubentoAuth } from "@ubento/primitives";
+import { ubentoAuth } from "@ubento/services.primitives";
 import {
   chain,
   dataResponse,
   enforce,
-  setNextLink,
   validate,
-} from "@ubento/service-toolkit";
+} from "@ubento/services.toolkit";
 import { Router } from "express";
 import z from "zod";
-import { getWorkspace } from "../entities/workspace/workspace.js";
 import {
   acceptWorkspaceInvite,
   createWorkspaceInvite,
   listWorkspaceInvites,
 } from "../entities/workspace/workspace-invites.js";
+import { getWorkspace } from "../entities/workspace/workspace.js";
 
 const workspaceInvitesRouter: Router = Router();
 
@@ -31,11 +30,11 @@ workspaceInvitesRouter.get(
     }),
     enforce({
       permissions: [ubentoAuth.actions.roleAssignment.list],
-      resource: async (req) => {
+      scope: async (req) => {
         const workspace_id = req.params.workspace_id as string;
         const workspace = await getWorkspace(workspace_id);
         if (!workspace) return ubentoAuth.scopes.root;
-        return ubentoAuth.scopes.workspaceOrHigher({
+        return ubentoAuth.scopes.workspace({
           team_id: workspace.team_id,
           workspace_id: workspace.id,
         });
@@ -48,8 +47,7 @@ workspaceInvitesRouter.get(
         limit: req.query.limit ? Number(req.query.limit) : undefined,
         cursor: req.query.cursor as string | undefined,
       });
-      setNextLink(req, res, result.nextCursor);
-      res.json(dataResponse(result.items));
+      res.json(result);
     },
   ),
 );
@@ -68,11 +66,11 @@ workspaceInvitesRouter.post(
     }),
     enforce({
       permissions: [ubentoAuth.actions.roleAssignment.read],
-      resource: async (req) => {
+      scope: async (req) => {
         const workspace_id = req.params.workspace_id as string;
         const workspace = await getWorkspace(workspace_id);
         if (!workspace) return ubentoAuth.scopes.root;
-        return ubentoAuth.scopes.workspaceOrHigher({
+        return ubentoAuth.scopes.workspace({
           team_id: workspace.team_id,
           workspace_id: workspace.id,
         });

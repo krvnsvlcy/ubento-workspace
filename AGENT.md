@@ -1,100 +1,41 @@
-# Ubento Workspace Architecture
+# Ubento Agent Index
 
-This repository contains the Ubento Data-Driven UI (SDUI) engine and its ecosystem. It is structured as a pnpm monorepo designed for high-performance, remotely-controlled applications.
+Ubento is a **WorkOS for internal and personal software**, designed with a "Live Editable" philosophy. This document serves as the central entry point for agents to understand and navigate the project.
 
-## Monorepo Structure
+## 📖 Documentation Index
 
-- `apps/web`: **Work OS Host**. The owner of application data. It manages the lifecycle of the environment and injects configurations into guest applications.
-- `apps/tabula`: **Interactive Board Guest**. A thin renderer application that runs inside an iframe. It receives its UI definitions dynamically from the Host.
-- `apps/registry`: **Component Registry**. A static server (`port 4030`) that serves self-contained ES modules (widgets) to be used by the engine.
-- `packages/engine`: **Core Engine (@ubento/engine)**. The shared logic for state modeling, component rendering, and drag-and-drop interactions.
+For detailed information on specific areas of the platform, refer to the following sub-documents:
 
----
+### 1. [Engine & Architecture](./docs/agents/ARCHITECTURE.md)
 
-## Core Engine Architecture (@ubento/engine)
+- **Live Editable Paradigm**: Understanding the "Edit-as-you-use" philosophy and mode toggling.
+- **Core Engine (@ubento/bento.runtime)**: Flat Map element model, primitives (Stacks/Blocks), and reactive state (Zustand).
+- **The Bridge**: Host-Guest communication via Duplex RPC.
 
-The engine is built on a "Flat Map" element architecture, using **Valtio** for high-performance reactive state.
+### 2. [Service Layers](./docs/agents/SERVICES.md)
 
-### 1. Primitives
+- **Platform Services**: IAM, Workspaces, and Modules via the bundled service pattern.
+- **Workspace Services (Integrations)**: Third-party service consumption via `useServices()`.
+- **Backend Infrastructure**: Overview of the microservices ecosystem.
 
-Instead of a deep nested tree, the engine represents UI as a flat registry of two primitives:
+### 3. [Design System & Style](./docs/agents/STYLE.md)
 
-- **Container**: A structural element responsible for layout (Flexbox, Grid). It owns a `content` array (list of child IDs).
-- **Block**: A content element that wraps a specific widget (e.g., `text` or a remote module). It automatically applies a standardized "box model" (style) to its widget.
+- **UnoCSS Configuration**: The 100-500 color scale and utility principles.
+- **Dynamic Theming**: How CSS variables drive the live-editable styling.
 
-### 2. State Modeling (`models.ts`)
+### 4. [Monorepo & Workflow](./docs/agents/WORKFLOW.md)
 
-- **AppData**: Defines application metadata and routes (mapping paths to Page IDs).
-
----
-
-## Design System & Styling
-
-Ubento uses a custom design system based on **UnoCSS**. Unlike traditional Tailwind projects, it does not use the default 50-950 color scale. Instead, it uses a simplified **100-500** scale for all colors.
-
-### 1. Color Palette
-
-Every color in Ubento has 5 levels:
-- **100**: Darkest / Most Saturated
-- **300**: Base level
-- **500**: Lightest / Most Desaturated (in Light mode) or Brightest (in Dark mode)
-
-### 2. Core Colors
-- `primary`: The main brand color (mapped to `blue` by default).
-- `secondary`: The secondary brand color (mapped to `cyan` by default).
-- `background`: Managed using `background-000` to `background-500`.
-- `foreground`: Managed using `foreground-100` to `foreground-500`.
-
-### 3. Usage in Utilities
-When using utility classes, always use the 100-500 scale:
-- ✅ `text-primary-300`, `bg-background-100`, `border-red-400`
-- ❌ `text-blue-600`, `bg-gray-50`, `border-indigo-500`
-
-Styling is strictly controlled via CSS variables defined in `@ubento/bento-style`, allowing for dynamic theme switching at runtime.
-- **PageData**: Contains a `rootId` and an `elements` map of all Containers and Blocks.
-- **EditorContext**: Global state for `mode` (`edit` | `view`) and the current `selection`.
-
-### 3. Rendering Logic
-
-- **Recursive Rendering**: The `Page` component starts at the `rootId` and recursively renders elements from the flat registry.
-- **Editor-Aware**: When in `edit` mode, the `Element` component wraps content in interactive handles and enables **dnd-kit** for rearrangement.
+- **Monorepo Structure**: Applications (`apps/`) and Packages (`packages/`).
+- **Development Procedures**: Starting services, ports, and using the `scripts/` directory.
 
 ---
 
-## Communication Strategy
+## 🤖 Agent Mandate
 
-### The Bridge
+### Living Documentation
 
-Host and Guest communicate via a `PostMessage` wrapper called `Bridge`.
+**The agent is responsible for the autonomous upkeep of this documentation set.**
 
-1.  **Handshake**: Guest (Tabula) sends `APP_READY` to the Host.
-2.  **Injection**: Host responds with `INITIALIZE_GUEST`, sending the entire JSON `AppData` and `PageData`.
-3.  **Commanding**: Host can send `NAVIGATE` or update commands to the Guest.
-
-### Shared React Instance
-
-To prevent "Multiple React Instances" errors when loading remote ESM components:
-
-- The Guest app uses an **Import Map** (defined in `apps/tabula/src/modules.ts`).
-- This maps `import "react"` inside remote modules to a synthetic blob URL that re-exports the Guest's own React instance.
-
----
-
-## Remote Components (ESM)
-
-Components in the `apps/registry` are served as pure ES modules.
-
-- They must be the **default export**.
-- They import `React` directly from the standard `react` specifier.
-- The engine uses dynamic `import()` with a cache to load these widgets on demand.
-
----
-
-## Development Workflow
-
-1.  **Start Services**: Run `npm run dev` from the root.
-2.  **Ports**:
-    - Host: `4000`
-    - Tabula (Guest): `4020`
-    - Registry: `4030`
-3.  **Editing**: Toggle to "Edit" mode in Tabula to select elements or drag them to rearrange.
+- **Continuous Update**: As you explore the codebase, understand new patterns, or identify architectural shifts, you MUST proactively update the relevant sub-document.
+- **Truth Alignment**: If you discover a discrepancy between the documentation and the actual implementation, update the documents immediately.
+- **Context Preservation**: Ensure all new insights, refined workflows, and critical architectural decisions are captured to maintain a high-signal context for future agents.

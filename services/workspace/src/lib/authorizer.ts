@@ -1,4 +1,4 @@
-import { Authorizer, mongoDbUrlWithDatabase } from "@ubento/service-toolkit";
+import { Authorizer, mongoDbUrlWithDatabase } from "@ubento/services.toolkit";
 import { env } from "../env.js";
 
 export const authorizer = new Authorizer(

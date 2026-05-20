@@ -1,0 +1,1 @@
+export type DropEffect = "none" | "copy" | "move" | "link";

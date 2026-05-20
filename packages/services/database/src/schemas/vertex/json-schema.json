@@ -1,0 +1,361 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "ConnectionProvider": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "entity": {
+          "type": "string",
+          "default": "connection_provider"
+        },
+        "code": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "config": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "version": {
+          "type": "integer",
+          "default": 1
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "code",
+        "type",
+        "name",
+        "updated_at"
+      ]
+    },
+    "Connection": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "entity": {
+          "type": "string",
+          "default": "connection"
+        },
+        "team_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "provider_id": {
+          "type": "string"
+        },
+        "credentials": {
+          "$ref": "#/definitions/EncryptedData"
+        },
+        "version": {
+          "type": "integer",
+          "default": 1
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "team_id",
+        "name",
+        "provider_id",
+        "updated_at"
+      ]
+    },
+    "OAuthClient": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "entity": {
+          "type": "string",
+          "default": "oauth_client"
+        },
+        "team_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "name": {
+          "type": "string"
+        },
+        "provider_id": {
+          "type": "string"
+        },
+        "credentials": {
+          "$ref": "#/definitions/EncryptedData"
+        },
+        "version": {
+          "type": "integer",
+          "default": 1
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "provider_id",
+        "updated_at"
+      ]
+    },
+    "OAuthConnectionState": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "entity": {
+          "type": "string",
+          "default": "oauth_connection_state"
+        },
+        "team_id": {
+          "type": "string"
+        },
+        "oauth_client_id": {
+          "type": "string"
+        },
+        "state": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "redirect_uri": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "version": {
+          "type": "integer",
+          "default": 1
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "team_id",
+        "oauth_client_id",
+        "expires_at",
+        "updated_at"
+      ]
+    },
+    "Service": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "entity": {
+          "type": "string",
+          "default": "service"
+        },
+        "team_id": {
+          "type": "string"
+        },
+        "scope": {
+          "type": "string",
+          "default": "__public__"
+        },
+        "name": {
+          "type": "string"
+        },
+        "display_name": {
+          "type": "string"
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "config": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "version": {
+          "type": "integer",
+          "default": 1
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "deleted_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "team_id",
+        "name",
+        "display_name",
+        "updated_at"
+      ]
+    },
+    "ServiceChannel": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "entity": {
+          "type": "string",
+          "default": "service_version"
+        },
+        "team_id": {
+          "type": "string"
+        },
+        "service_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "integer",
+          "default": 1
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "deleted_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "team_id",
+        "service_id",
+        "name",
+        "updated_at"
+      ]
+    },
+    "EncryptedData": {
+      "type": "object",
+      "properties": {
+        "iv": {
+          "type": "string"
+        },
+        "auth_tag": {
+          "type": "string"
+        },
+        "cipher_text": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "iv",
+        "auth_tag",
+        "cipher_text"
+      ]
+    }
+  },
+  "type": "object",
+  "properties": {
+    "connectionProvider": {
+      "$ref": "#/definitions/ConnectionProvider"
+    },
+    "connection": {
+      "$ref": "#/definitions/Connection"
+    },
+    "oAuthClient": {
+      "$ref": "#/definitions/OAuthClient"
+    },
+    "oAuthConnectionState": {
+      "$ref": "#/definitions/OAuthConnectionState"
+    },
+    "service": {
+      "$ref": "#/definitions/Service"
+    },
+    "serviceChannel": {
+      "$ref": "#/definitions/ServiceChannel"
+    }
+  }
+}

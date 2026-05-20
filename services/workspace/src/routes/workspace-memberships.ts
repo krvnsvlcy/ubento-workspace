@@ -1,20 +1,19 @@
-import { ubentoAuth } from "@ubento/primitives";
+import { ubentoAuth } from "@ubento/services.primitives";
 import {
   chain,
   dataResponse,
   enforce,
-  setNextLink,
   validate,
-} from "@ubento/service-toolkit";
+} from "@ubento/services.toolkit";
 import { Router } from "express";
 import z from "zod";
-import { getWorkspace } from "../entities/workspace/workspace.js";
 import {
   addMemberToWorkspace,
   getWorkspaceMembership,
   listWorkspaceMemberships,
   removeMemberFromWorkspace,
 } from "../entities/workspace/workspace-memberships.js";
+import { getWorkspace } from "../entities/workspace/workspace.js";
 
 const workspaceMembershipsRouter: Router = Router();
 
@@ -32,11 +31,13 @@ workspaceMembershipsRouter.get(
     }),
     enforce({
       permissions: [ubentoAuth.actions.roleAssignment.list],
-      resource: async (req) => {
+      scope: async (req) => {
         if (req.query.workspace_id) {
-          const workspace = await getWorkspace(req.query.workspace_id as string);
+          const workspace = await getWorkspace(
+            req.query.workspace_id as string,
+          );
           if (workspace) {
-            return ubentoAuth.scopes.workspaceOrHigher({
+            return ubentoAuth.scopes.workspace({
               team_id: workspace.team_id,
               workspace_id: workspace.id,
             });
@@ -52,8 +53,7 @@ workspaceMembershipsRouter.get(
         limit: req.query.limit ? Number(req.query.limit) : undefined,
         cursor: req.query.cursor as string | undefined,
       });
-      setNextLink(req, res, result.nextCursor);
-      res.json(dataResponse(result.items));
+      res.json(result);
     },
   ),
 );
@@ -71,10 +71,10 @@ workspaceMembershipsRouter.post(
     }),
     enforce({
       permissions: [ubentoAuth.actions.roleAssignment.create],
-      resource: async (req) => {
+      scope: async (req) => {
         const workspace = await getWorkspace(req.body.workspace_id);
         if (!workspace) return ubentoAuth.scopes.root;
-        return ubentoAuth.scopes.workspaceOrHigher({
+        return ubentoAuth.scopes.workspace({
           team_id: workspace.team_id,
           workspace_id: workspace.id,
         });
@@ -102,12 +102,14 @@ workspaceMembershipsRouter.delete(
     }),
     enforce({
       permissions: [ubentoAuth.actions.roleAssignment.delete],
-      resource: async (req) => {
-        const membership = await getWorkspaceMembership(req.params.id as string);
+      scope: async (req) => {
+        const membership = await getWorkspaceMembership(
+          req.params.id as string,
+        );
         if (!membership) return ubentoAuth.scopes.root;
         const workspace = await getWorkspace(membership.workspace_id);
         if (!workspace) return ubentoAuth.scopes.root;
-        return ubentoAuth.scopes.workspaceOrHigher({
+        return ubentoAuth.scopes.workspace({
           team_id: workspace.team_id,
           workspace_id: workspace.id,
         });

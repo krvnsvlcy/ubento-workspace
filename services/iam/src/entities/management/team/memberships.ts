@@ -1,37 +1,52 @@
-import { Broker, Prisma, TeamMembership } from "@ubento/database/iam";
+import { Broker, Prisma, TeamMembership } from "@ubento/services.database/iam";
 import {
   generateBareId,
   makeEntityId,
   ubentoAuth,
   ubentoEntities,
-} from "@ubento/primitives";
+} from "@ubento/services.primitives";
 import {
   isPrismaConstraintError,
   NotFoundError,
+  prismaListWithCursor,
   ValidationError,
-} from "@ubento/service-toolkit";
+} from "@ubento/services.toolkit";
 import { OrganizationMembership as WOOrganizationMembership } from "@workos-inc/node";
 import { authorizer } from "../../../lib/authorizer.js";
 import prisma from "../../../lib/prisma.js";
 import { workos } from "../../../lib/workos.js";
 import { workosRoleFromInternalRole } from "./team.js";
 
-export async function listTeamMembers(teamId: string) {
-  const memberships = await prisma.teamMembership.findMany({
-    where: {
-      team_id: teamId,
+export async function listTeamMembers(filters: {
+  team_id: string;
+  limit?: number;
+  cursor?: string;
+}) {
+  const { items, nextCursor } = await prismaListWithCursor(
+    prisma.teamMembership,
+    {
+      where: {
+        team_id: filters.team_id,
+      },
+      limit: filters.limit,
+      cursor: filters.cursor,
+      orderBy: { created_at: "desc" },
+      resolveCursor: (i) => ({ id: i.id }),
     },
-  });
+  );
 
   const users = await prisma.user.findMany({
     where: {
       id: {
-        in: memberships.map((m) => m.user_id),
+        in: items.map((m) => m.user_id),
       },
     },
   });
 
-  return users;
+  return {
+    items: users,
+    nextCursor,
+  };
 }
 
 export async function addMemberToTeam({
@@ -172,20 +187,34 @@ export async function removeMemberFromTeam({
   }
 }
 
-export async function listUserTeams(userId: string) {
-  const memberships = await prisma.teamMembership.findMany({
-    where: {
-      user_id: userId,
+export async function listUserTeams(filters: {
+  user_id: string;
+  limit?: number;
+  cursor?: string;
+}) {
+  const { items, nextCursor } = await prismaListWithCursor(
+    prisma.teamMembership,
+    {
+      where: {
+        user_id: filters.user_id,
+      },
+      limit: filters.limit,
+      cursor: filters.cursor,
+      orderBy: { created_at: "desc" },
+      resolveCursor: (i) => ({ id: i.id }),
     },
-  });
+  );
 
   const teams = await prisma.team.findMany({
     where: {
       id: {
-        in: memberships.map((m) => m.team_id),
+        in: items.map((m) => m.team_id),
       },
     },
   });
 
-  return teams;
+  return {
+    items: teams,
+    nextCursor,
+  };
 }

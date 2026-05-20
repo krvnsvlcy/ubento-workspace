@@ -1,14 +1,29 @@
-@import "./themes/base.css";
-@import "./themes/sky.css";
-@import "./themes/sunset.css";
-@import "./themes/forest.css";
-@import "./themes/carbon.css";
+@import "./themes/default.css";
+@import "./themes/intents.css";
+@import "./animation.css";
+@import "./scrollbar.css";
 
 *,
 ::after,
 ::before,
 ::backdrop,
 ::file-selector-button {
-  scrollbar-width: none;
-  border-color: color-mix(in srgb, var(--foreground-500) 10%, transparent);
+  /* scrollbar-width: none; */
+  border-color: var(--color-neutral-border);
+  /* corner-shape: squircle; */
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--color-neutral-content);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+  color: var(--color-neutral-content);
 }

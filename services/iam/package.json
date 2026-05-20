@@ -17,9 +17,9 @@
     "deploy": "scripts containerize iam && scripts deploy iam"
   },
   "dependencies": {
-    "@ubento/database": "workspace:*",
-    "@ubento/primitives": "workspace:*",
-    "@ubento/service-toolkit": "workspace:*",
+    "@ubento/services.database": "workspace:*",
+    "@ubento/services.primitives": "workspace:*",
+    "@ubento/services.toolkit": "workspace:*",
     "@workos-inc/node": "^8.0.0",
     "commander": "^14.0.2",
     "cookie-parser": "^1.4.7",

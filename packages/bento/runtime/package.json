@@ -1,0 +1,43 @@
+{
+  "name": "@ubento/bento.runtime",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./build/index.js",
+  "module": "./build/index.js",
+  "types": "./build/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./build/index.d.ts",
+      "import": "./build/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch"
+  },
+  "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
+    "@json-render/core": "^0.18.0",
+    "@json-render/react": "^0.18.0",
+    "@ubento/bento.core": "workspace:*",
+    "@ubento/fabric": "workspace:*",
+    "@ubento/rpc": "workspace:*",
+    "@ubento/services.primitives": "workspace:*",
+    "@ubento/bento.arlo-core": "workspace:*",
+    "@ubento/state": "workspace:*",
+    "@tanstack/react-query": "^5.72.0",
+    "dequal": "^2.0.3",
+    "json-diff-ts": "^4.10.4",
+    "lucide-react": "^0.468.0",
+    "motion": "^12.38.0",
+    "wouter": "^3.6.0",
+    "zod": "^4.3.6",
+    "zustand": "^5.0.12"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

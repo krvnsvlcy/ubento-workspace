@@ -1,10 +1,10 @@
-import { ClientStatus, Prisma } from "@ubento/database/iam";
+import { ClientStatus, Prisma } from "@ubento/services.database/iam";
 import {
   generateBareId,
   makeEntityId,
   ubentoEntities,
-} from "@ubento/primitives";
-import { prismaListWithCursor } from "@ubento/service-toolkit";
+} from "@ubento/services.primitives";
+import { prismaListWithCursor } from "@ubento/services.toolkit";
 import prisma from "../../../lib/prisma.js";
 
 export async function listClients(filters?: {
