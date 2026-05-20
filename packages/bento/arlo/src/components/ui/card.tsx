@@ -1,7 +1,6 @@
+import { Card as CoreCard } from "@ubento/bento.arlo-core";
 import { createComponent } from "@ubento/bento.core";
 import { z } from "zod";
-import { Card as CoreCard } from "@ubento/bento.arlo-core";
-import * as React from "react";
 
 export const Card = createComponent({
   props: z.object({
@@ -15,13 +14,6 @@ export const Card = createComponent({
   ].join("\n"),
 
   render: ({ ref, props, children }) => {
-    return (
-      <CoreCard
-        ref={ref}
-        asChild={props.asChild}
-      >
-        {children}
-      </CoreCard>
-    );
+    return <CoreCard ref={ref}>{children}</CoreCard>;
   },
 });

@@ -1006,6 +1006,20 @@ importers:
         specifier: 5.22.0
         version: 5.22.0
 
+  packages/services/database/prisma/generated/billing: {}
+
+  packages/services/database/prisma/generated/iam: {}
+
+  packages/services/database/prisma/generated/integration: {}
+
+  packages/services/database/prisma/generated/intelligence: {}
+
+  packages/services/database/prisma/generated/module: {}
+
+  packages/services/database/prisma/generated/vertex: {}
+
+  packages/services/database/prisma/generated/workspace: {}
+
   packages/services/primitives:
     dependencies:
       '@noble/hashes':

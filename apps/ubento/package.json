@@ -4,11 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "vercel build --prod",
+    "build": "next build",
     "start": "next start",
-    "lint": "eslint",
-    "deploy:only": "vercel deploy --prebuilt --prod --yes",
-    "deploy": "pnpm build && pnpm deploy:only"
+    "lint": "eslint"
   },
   "dependencies": {
     "@ubento/bento.style": "workspace:*",
