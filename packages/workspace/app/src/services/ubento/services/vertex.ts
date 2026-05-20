@@ -1,4 +1,8 @@
-import { useQueryClient } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useInfiniteQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import {
   createStore,
   useMutation,
@@ -120,13 +124,19 @@ export function createUbentoVertexService({
     },
     useConnectionProviders: (
       params?: { team_id?: string; name?: string },
-      options?: UseStoreOptions,
+      options?: any,
     ) => {
-      return useQuery({
+      return useInfiniteQuery({
         queryKey: ["connection-providers", params],
-        queryFn: async () => {
-          return (await ubentoSdk.vertex.listConnectionProviders(params)).data;
+        queryFn: async ({ pageParam }) => {
+          return await ubentoSdk.vertex.listConnectionProviders({
+            ...params,
+            cursor: pageParam as string | undefined,
+          });
         },
+        initialPageParam: undefined as string | undefined,
+        getNextPageParam: (lastPage) => lastPage.nextPage?.cursor,
+        placeholderData: keepPreviousData,
         ...options,
       });
     },
@@ -160,10 +170,28 @@ export function createUbentoVertexService({
       });
     },
     useConnections: (
-      params?: { team_id?: string },
-      options?: UseStoreOptions,
+      params?: {
+        teamId?: string;
+        team_id?: string;
+        providerId?: string;
+        provider_id?: string;
+      },
+      options?: any,
     ) => {
-      return useStoreEntities(connectionStore, params, options);
+      return useInfiniteQuery({
+        queryKey: ["connections", params],
+        queryFn: async ({ pageParam }) => {
+          return await ubentoSdk.vertex.listConnections({
+            team_id: params?.teamId ?? params?.team_id,
+            provider_id: params?.providerId ?? params?.provider_id,
+            cursor: pageParam as string | undefined,
+          } as any);
+        },
+        initialPageParam: undefined as string | undefined,
+        getNextPageParam: (lastPage) => lastPage.nextPage?.cursor,
+        placeholderData: keepPreviousData,
+        ...options,
+      });
     },
     useCreateConnection: () => {
       return useMutation({

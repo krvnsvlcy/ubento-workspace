@@ -5,11 +5,11 @@ import {
   WorkspaceEngineProvider,
 } from "@/contexts/workspace";
 import { useUbento, useUbentoEngine } from "@/engine/app/engine";
-import { ServiceBrowserModal } from "@/modals/app/integrations/services/services";
-import { useModal } from "@/utils/modal-store";
 import { ServiceData } from "@ubento/bento.core";
 import { workspaceClient } from "@ubento/services.sdk";
 
+import { useAppModal } from "@/modals/app/hook";
+import { appModalRoutes } from "@/modals/app/routes";
 import { TabDefinition } from "../../../types";
 
 function BoardsSection({
@@ -123,7 +123,7 @@ function ServicesSection() {
     }
   }) as Record<string, ServiceData>;
   const serviceEntries = Object.entries(services);
-  const { open } = useModal();
+  const { push } = useAppModal();
 
   return (
     <SideSection
@@ -132,7 +132,7 @@ function ServicesSection() {
         {
           icon: "plus",
           title: "Install Service",
-          handler: () => open(ServiceBrowserModal, { workspaceEngine }),
+          handler: () => push(appModalRoutes.services.services),
         },
       ]}
     >
@@ -148,9 +148,8 @@ function ServicesSection() {
             key={name}
             icon="service"
             onClick={() =>
-              open(ServiceBrowserModal, {
-                workspaceEngine,
-                initialSelectedServiceId: service.id,
+              push(appModalRoutes.services.service, {
+                serviceId: service.id,
               })
             }
           >

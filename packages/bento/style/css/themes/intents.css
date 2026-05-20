@@ -1,0 +1,111 @@
+[data-intent="neutral"] {
+  --color-intent: var(--color-neutral);
+  --color-intent-hover: var(--color-neutral-hover);
+  --color-intent-active: var(--color-neutral-active);
+  --color-intent-contrast: var(--color-neutral-contrast);
+  --color-intent-surface: var(--color-neutral-surface);
+  --color-intent-surface-hover: var(--color-neutral-surface-hover);
+  --color-intent-surface-active: var(--color-neutral-surface-active);
+  --color-intent-border: var(--color-neutral-border);
+  --color-intent-border-hover: var(--color-neutral-border-hover);
+  --color-intent-border-active: var(--color-neutral-border-active);
+  --color-intent-content: var(--color-neutral-content);
+  --color-intent-content-subtle: var(--color-neutral-content-subtle);
+  --color-intent-content-muted: var(--color-neutral-content-muted);
+}
+
+[data-intent="accent"] {
+  --color-intent: var(--color-accent);
+  --color-intent-hover: var(--color-accent-hover);
+  --color-intent-active: var(--color-accent-active);
+  --color-intent-contrast: var(--color-accent-contrast);
+  --color-intent-surface: var(--color-accent-surface);
+  --color-intent-surface-hover: var(--color-accent-surface-hover);
+  --color-intent-surface-active: var(--color-accent-surface-active);
+  --color-intent-border: var(--color-accent-border);
+  --color-intent-border-hover: var(--color-accent-border-hover);
+  --color-intent-border-active: var(--color-accent-border-active);
+  --color-intent-content: var(--color-accent-content);
+  --color-intent-content-subtle: var(--color-accent-content-subtle);
+  --color-intent-content-muted: var(--color-accent-content-muted);
+}
+
+[data-intent="inverse"] {
+  --color-intent: var(--color-inverse);
+  --color-intent-hover: var(--color-inverse-hover);
+  --color-intent-active: var(--color-inverse-active);
+  --color-intent-contrast: var(--color-inverse-contrast);
+  --color-intent-surface: var(--color-inverse-surface);
+  --color-intent-surface-hover: var(--color-inverse-surface-hover);
+  --color-intent-surface-active: var(--color-inverse-surface-active);
+  --color-intent-border: var(--color-inverse-border);
+  --color-intent-border-hover: var(--color-inverse-border-hover);
+  --color-intent-border-active: var(--color-inverse-border-active);
+  --color-intent-content: var(--color-inverse-content);
+  --color-intent-content-subtle: var(--color-inverse-content-subtle);
+  --color-intent-content-muted: var(--color-inverse-content-muted);
+}
+
+[data-intent="success"] {
+  --color-intent: var(--color-success);
+  --color-intent-hover: var(--color-success-hover);
+  --color-intent-active: var(--color-success-active);
+  --color-intent-contrast: var(--color-success-contrast);
+  --color-intent-surface: var(--color-success-surface);
+  --color-intent-surface-hover: var(--color-success-surface-hover);
+  --color-intent-surface-active: var(--color-success-surface-active);
+  --color-intent-border: var(--color-success-border);
+  --color-intent-border-hover: var(--color-success-border-hover);
+  --color-intent-border-active: var(--color-success-border-active);
+  --color-intent-content: var(--color-success-content);
+  --color-intent-content-subtle: var(--color-success-content-subtle);
+  --color-intent-content-muted: var(--color-success-content-muted);
+}
+
+[data-intent="warning"] {
+  --color-intent: var(--color-warning);
+  --color-intent-hover: var(--color-warning-hover);
+  --color-intent-active: var(--color-warning-active);
+  --color-intent-contrast: var(--color-warning-contrast);
+  --color-intent-surface: var(--color-warning-surface);
+  --color-intent-surface-hover: var(--color-warning-surface-hover);
+  --color-intent-surface-active: var(--color-warning-surface-active);
+  --color-intent-border: var(--color-warning-border);
+  --color-intent-border-hover: var(--color-warning-border-hover);
+  --color-intent-border-active: var(--color-warning-border-active);
+  --color-intent-content: var(--color-warning-content);
+  --color-intent-content-subtle: var(--color-warning-content-subtle);
+  --color-intent-content-muted: var(--color-warning-content-muted);
+}
+
+[data-intent="info"] {
+  --color-intent: var(--color-info);
+  --color-intent-hover: var(--color-info-hover);
+  --color-intent-active: var(--color-info-active);
+  --color-intent-contrast: var(--color-info-contrast);
+  --color-intent-surface: var(--color-info-surface);
+  --color-intent-surface-hover: var(--color-info-surface-hover);
+  --color-intent-surface-active: var(--color-info-surface-active);
+  --color-intent-border: var(--color-info-border);
+  --color-intent-border-hover: var(--color-info-border-hover);
+  --color-intent-border-active: var(--color-info-border-active);
+  --color-intent-content: var(--color-info-content);
+  --color-intent-content-subtle: var(--color-info-content-subtle);
+  --color-intent-content-muted: var(--color-info-content-muted);
+}
+
+[data-intent="destructive"] {
+  --color-intent: var(--color-destructive);
+  --color-intent-hover: var(--color-destructive-hover);
+  --color-intent-active: var(--color-destructive-active);
+  --color-intent-contrast: var(--color-destructive-contrast);
+  --color-intent-surface: var(--color-destructive-surface);
+  --color-intent-surface-hover: var(--color-destructive-surface-hover);
+  --color-intent-surface-active: var(--color-destructive-surface-active);
+  --color-intent-border: var(--color-destructive-border);
+  --color-intent-border-hover: var(--color-destructive-border-hover);
+  --color-intent-border-active: var(--color-destructive-border-active);
+  --color-intent-content: var(--color-destructive-content);
+  --color-intent-content-subtle: var(--color-destructive-content-subtle);
+  --color-intent-content-muted: var(--color-destructive-content-muted);
+}

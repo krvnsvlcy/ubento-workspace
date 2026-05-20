@@ -38,17 +38,22 @@ function safeConnection<T extends Connection>(
 
 export async function listConnections({
   team_id,
+  provider_id,
   cursor,
   limit,
 }: {
   team_id?: string;
+  provider_id?: string;
   cursor?: string;
   limit?: number;
 }) {
   const result = await prismaListWithCursor(prisma.connection, {
     limit,
     cursor,
-    where: { ...(team_id && { team_id }) },
+    where: {
+      ...(team_id && { team_id }),
+      ...(provider_id && { provider_id }),
+    },
     include: { provider: true },
     orderBy: [{ created_at: "desc" }, { id: "desc" }],
     resolveCursor: (c) => ({ id: c.id }),

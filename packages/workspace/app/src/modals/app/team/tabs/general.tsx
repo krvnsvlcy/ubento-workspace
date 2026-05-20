@@ -1,6 +1,17 @@
 import { useSession } from "@/contexts/session";
 import { useUbento } from "@/engine/app/engine";
-import { PrimitiveButton as Button, Content, ContentBody, ContentHeader, Field, FieldLabel, Heading, PrimitiveInput as Input, ScrollArea, Text } from "@ubento/bento.arlo-core";
+import {
+  PrimitiveButton as Button,
+  Content,
+  ContentBody,
+  ContentHeader,
+  Field,
+  FieldLabel,
+  Heading,
+  PrimitiveInput as Input,
+  ScrollArea,
+  Text,
+} from "@ubento/bento.arlo-core";
 import { Loader2 } from "lucide-react";
 import { FC, useEffect, useState } from "react";
 
@@ -125,7 +136,7 @@ export const GeneralTab: FC = () => {
                   <Button
                     onClick={handleDelete}
                     disabled={isDeleting}
-                    variant="subtle-destructive"
+                    variant="secondary-destructive"
                   >
                     {isDeleting ? "Deleting..." : "Delete"}
                   </Button>

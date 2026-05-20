@@ -18,7 +18,7 @@ SelectValue.displayName = "SelectValue";
 const selectTriggerStyles = [
   cx(
     // base
-    "group/trigger flex w-full select-none items-center justify-between gap-2 truncate rounded-md border px-3 py-2 shadow-xs outline-hidden transition sm:text-sm",
+    "group/trigger flex w-full select-none items-center justify-between gap-2 truncate rounded-xl border px-3 py-2 outline-hidden transition sm:text-sm",
     // border color
     "border-neutral-border",
     // text color
@@ -128,13 +128,13 @@ const SelectContent = React.forwardRef<
         ref={forwardedRef}
         className={cx(
           // base
-          "relative z-50 overflow-hidden rounded-md border shadow-xl shadow-black/[2.5%]",
+          "relative z-50 overflow-hidden rounded-xl border shadow-xl shadow-black/[2.5%]",
           // widths
           "min-w-[calc(var(--radix-select-trigger-width)-2px)] max-w-[95vw]",
           // heights
           "max-h-(--radix-select-content-available-height)",
           // background color
-          "bg-neutral-surface",
+          "bg-background",
           // text color
           "text-neutral-content",
           // border color
@@ -197,7 +197,7 @@ const SelectItem = React.forwardRef<
       ref={forwardedRef}
       className={cx(
         // base
-        "grid cursor-pointer grid-cols-[1fr_20px] gap-x-2 rounded-sm px-3 py-2 outline-hidden transition-colors data-[state=checked]:font-semibold sm:text-sm",
+        "grid cursor-pointer grid-cols-[1fr_20px] gap-x-2 rounded-md px-3 py-2 outline-hidden transition-colors data-[state=checked]:font-semibold sm:text-sm",
         // text color
         "text-neutral-content",
         // disabled

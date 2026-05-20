@@ -1,10 +1,14 @@
 import { useSession } from "@/contexts/session";
 import { useUbento } from "@/engine/app/engine";
+import {
+  RailLayout,
+  RailLayoutMain,
+  RailLayoutSide,
+} from "@ubento/bento.arlo-core";
 import { ConnectionProviderConfig } from "@ubento/vertex.core";
-import { RailLayout, RailLayoutMain, RailLayoutSide } from "@ubento/bento.arlo-core";
 import { useAppModal } from "../hook.js";
-import { ProviderSidebar } from "./side/provider-side.js";
 import { ConnectionMain } from "./main/connection-main.js";
+import { ProviderSidebar } from "./side/provider-side.js";
 
 export function ProviderModal() {
   const ubento = useUbento();
@@ -12,11 +16,14 @@ export function ProviderModal() {
   const { params } = useAppModal();
   const providerCode = params.providerCode;
 
-  const { data: providerData } =
-    ubento.vertex.useConnectionProviderByCode(providerCode || "");
+  const { data: providerData } = ubento.vertex.useConnectionProviderByCode(
+    providerCode || "",
+  );
 
-  const { data: allConnections = [], isLoading: isLoadingConnections } =
-    ubento.vertex.useConnections({ team_id: session.teamId || "" });
+  const { data: allConnectionsData, isLoading: isLoadingConnections } =
+    ubento.vertex.useConnections({ teamId: session.teamId || "" });
+  const allConnections =
+    allConnectionsData?.pages.flatMap((page) => page.data) ?? [];
 
   const config = (providerData as any)?.config as
     | ConnectionProviderConfig

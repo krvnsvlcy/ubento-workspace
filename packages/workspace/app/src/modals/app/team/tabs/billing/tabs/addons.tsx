@@ -35,7 +35,7 @@ export const AddonsTab: FC = () => {
   );
 
   return (
-    <div className="space-y-4 animate-in fade-in duration-300">
+    <div className="space-y-4">
       {addons.length === 0 && (
         <div className="py-12 text-center text-neutral-content-muted">
           <p className="text-[13px]">No addons available at the moment.</p>

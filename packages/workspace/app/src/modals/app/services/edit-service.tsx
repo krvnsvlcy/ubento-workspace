@@ -1,16 +1,17 @@
 import { useSession } from "@/contexts/session";
 import { useUbento } from "@/engine/app/engine";
-import { useModal } from "@/utils/modal-store";
+import { useAppModal } from "@/modals/app/hook.js";
+import { appModalRoutes } from "@/modals/app/routes.js";
 import { generateServiceSpecFromOpenApi } from "@ubento/vertex.core";
-import { PrimitiveButton as Button, Content, ContentBody, ContentFooter, ContentHeader, Field, FieldLabel, Heading, PrimitiveInput as Input, Textarea } from "@ubento/bento.arlo-core";
+import { PrimitiveButton as Button, Content, ContentBody, ContentFooter, ContentHeader, Field, FieldLabel, Heading, PrimitiveInput as Input, PendingView, Textarea } from "@ubento/bento.arlo-core";
 import { useState, useEffect } from "react";
 import { parse as parseYaml } from "yaml";
-import { CreateProviderModal } from "./create-provider-modal";
 
-export function EditServiceModal({ service }: { service: any }) {
+// Inner component — all hooks are unconditional here
+function EditServiceContent({ service }: { service: any }) {
   const session = useSession();
   const ubento = useUbento();
-  const { close, open } = useModal();
+  const { goBack, push } = useAppModal();
 
   const [displayName, setDisplayName] = useState(service.display_name || "");
   const [name, setName] = useState(service.name || "");
@@ -38,7 +39,8 @@ export function EditServiceModal({ service }: { service: any }) {
   const [specText, setSpecText] = useState("");
 
   // Subscriptions & Queries
-  const { data: providers = [] } = ubento.vertex.useConnectionProviders();
+  const { data: providersData } = ubento.vertex.useConnectionProviders();
+  const providers = providersData?.pages.flatMap((page) => page.data) ?? [];
   const { data: channels = [], isLoading: isLoadingChannels } =
     ubento.vertex.useServiceChannels(service.id);
   const { data: channelSpec } = ubento.vertex.useServiceChannelSpec(
@@ -211,7 +213,7 @@ export function EditServiceModal({ service }: { service: any }) {
               },
               {
                 onSuccess: () => {
-                  close(updatedService);
+                  goBack();
                 },
                 onError: (err: any) => {
                   setError(
@@ -221,7 +223,7 @@ export function EditServiceModal({ service }: { service: any }) {
               },
             );
           } else {
-            close(updatedService);
+            goBack();
           }
         },
         onError: (err: any) => {
@@ -408,14 +410,10 @@ export function EditServiceModal({ service }: { service: any }) {
                       )}
 
                       <div
-                        onMouseDown={async (e) => {
+                        onMouseDown={(e) => {
                           e.preventDefault();
                           setShowSuggestions(false);
-                          const newProvider: any = await open(CreateProviderModal);
-                          if (newProvider) {
-                            setSelectedProviderId(newProvider.id);
-                            setProviderSearch(newProvider.name || newProvider.id);
-                          }
+                          push(appModalRoutes.services.createProvider);
                         }}
                         className="border-t border-neutral-border/20 mt-1 px-3 py-1.5 text-xs text-accent font-medium hover:bg-neutral-surface-hover cursor-pointer flex items-center gap-1.5"
                       >
@@ -495,7 +493,7 @@ export function EditServiceModal({ service }: { service: any }) {
       </ContentBody>
 
       <ContentFooter className="flex justify-end gap-2 border-t border-neutral-border/30 pt-5 space-y-0">
-        <Button onClick={() => close(null)} variant="ghost" size="sm">
+        <Button onClick={() => goBack()} variant="ghost" size="sm">
           Cancel
         </Button>
         <Button
@@ -509,4 +507,16 @@ export function EditServiceModal({ service }: { service: any }) {
       </ContentFooter>
     </Content>
   );
+}
+
+// Outer wrapper — handles loading, then delegates to content component
+export function EditServiceModal() {
+  const ubento = useUbento();
+  const { params } = useAppModal();
+  const serviceId = params.serviceId || "";
+  const { data: service, isLoading } = ubento.vertex.useService(serviceId);
+
+  if (isLoading || !service) return <PendingView message="Service" />;
+
+  return <EditServiceContent service={service} />;
 }

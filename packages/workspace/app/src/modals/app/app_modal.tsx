@@ -7,6 +7,7 @@ import { useAppModal } from "./hook";
 import { ProviderModal } from "./provider/provider_modal";
 import { ProvidersModal } from "./providers/providers_modal";
 import { routeMatch } from "./routes";
+import { ServicesModal } from "./services/services";
 import { TeamModal } from "./team/team_modal";
 
 export function AppModal() {
@@ -37,6 +38,9 @@ export function AppModal() {
         </Case>
         <Case condition={routeMatch(path, "/providers")}>
           <ProvidersModal />
+        </Case>
+        <Case condition={routeMatch(path, "/services")}>
+          <ServicesModal />
         </Case>
       </Switch>
     </PageModalContainer>

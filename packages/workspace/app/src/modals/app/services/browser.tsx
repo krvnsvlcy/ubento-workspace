@@ -1,8 +1,8 @@
 import { useSession } from "@/contexts/session";
+import { useWorkspaceEngine } from "@/contexts/workspace";
 import { useUbento } from "@/engine/app/engine";
-import { WorkspaceEngine } from "@/engine/workspace/engine";
-import { useModal } from "@/utils/modal-store";
-import { CreateServiceModal } from "./create-service";
+import { useAppModal } from "@/modals/app/hook.js";
+import { appModalRoutes } from "@/modals/app/routes.js";
 import { PrimitiveButton as Button, Content, ContentBody, ContentFooter, ContentHeader, Heading, RailLayout, RailLayoutMain, RailLayoutSide, Text } from "@ubento/bento.arlo-core";
 import {
   Briefcase,
@@ -65,16 +65,12 @@ function ServiceCard({
   );
 }
 
-export function ServiceBrowser({
-  onSelectService,
-  activeWorkspaceEngine,
-}: {
-  onSelectService: (id: string) => void;
-  activeWorkspaceEngine: WorkspaceEngine;
-}) {
+export function ServiceBrowser() {
   const ubento = useUbento();
   const session = useSession();
-  const { open } = useModal();
+  const { push } = useAppModal();
+  const activeWorkspaceEngine = useWorkspaceEngine();
+
   const installedServices =
     activeWorkspaceEngine?.useState(
       (s) => (s.workspace as any)?.services || {},
@@ -94,6 +90,10 @@ export function ServiceBrowser({
     const matchesCategory = activeCategory === "all";
     return matchesQuery && matchesCategory;
   });
+
+  const onSelectService = (id: string) => {
+    push(appModalRoutes.services.service, { serviceId: id });
+  };
 
   return (
     <RailLayout>
@@ -129,11 +129,8 @@ export function ServiceBrowser({
             <Button
               variant="outline"
               className="w-full justify-center"
-              onClick={async () => {
-                const newService = await open(CreateServiceModal);
-                if (newService && newService.id) {
-                  onSelectService(newService.id);
-                }
+              onClick={() => {
+                push(appModalRoutes.services.create);
               }}
             >
               Create Service

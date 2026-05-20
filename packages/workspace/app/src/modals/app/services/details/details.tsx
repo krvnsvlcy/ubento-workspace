@@ -1,28 +1,23 @@
 import { ErrorView } from "@/components/error";
 import { useSession } from "@/contexts/session";
+import { useWorkspaceEngine } from "@/contexts/workspace";
 import { useUbento } from "@/engine/app/engine";
-import { WorkspaceEngine } from "@/engine/workspace/engine";
-import { useModal } from "@/utils/modal-store";
+import { useAppModal } from "@/modals/app/hook.js";
+import { appModalRoutes } from "@/modals/app/routes.js";
 import { serviceSpecV1Schema } from "@ubento/vertex.core";
 import { PrimitiveButton as Button, Content, ContentBody, ContentFooter, ContentHeader, PendingView, RailLayout, RailLayoutMain, RailLayoutSide, Text } from "@ubento/bento.arlo-core";
 import { ArrowLeft, Edit, Server } from "lucide-react";
 import { useEffect, useState } from "react";
-import { EditServiceModal } from "../edit-service";
 import { DetailsBody } from "./body";
 import { DetailsHeader } from "./header";
 
-export function ServiceDetails({
-  workspaceEngine,
-  serviceId,
-  onBack,
-}: {
-  workspaceEngine: WorkspaceEngine;
-  serviceId: string;
-  onBack: () => void;
-}) {
+export function ServiceDetails() {
   const session = useSession();
   const ubento = useUbento();
-  const { open } = useModal();
+  const { params, goBack, push } = useAppModal();
+  const serviceId = params.serviceId || params.id || "";
+  const workspaceEngine = useWorkspaceEngine();
+
   const [activeChannelId, setActiveChannelId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const {
@@ -75,7 +70,7 @@ export function ServiceDetails({
         <Content>
           <ContentHeader>
             <Button
-              onClick={onBack}
+              onClick={goBack}
               variant="ghost"
               className="w-full justify-start gap-2"
             >
@@ -100,7 +95,7 @@ export function ServiceDetails({
                 variant="outline"
                 className="w-full justify-center gap-2"
                 onClick={() => {
-                  open(EditServiceModal, { service: serviceData });
+                  push(appModalRoutes.services.edit, { serviceId });
                 }}
               >
                 <Edit size={16} /> Edit Service

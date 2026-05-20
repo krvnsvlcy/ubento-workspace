@@ -19,7 +19,7 @@ export function ContentBody({
   paddingY = true,
   ...props
 }: {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   paddingX?: boolean;
   paddingY?: boolean;
 } & React.ComponentProps<"div">) {
@@ -43,7 +43,7 @@ export function ContentFooter({
   ...props
 }: { children: React.ReactNode } & React.ComponentProps<"div">) {
   return (
-    <div className={cx("shrink-0 py-5 px-6 space-y-2", className)} {...props}>
+    <div className={cx("shrink-0 py-5 px-6 space-y-4", className)} {...props}>
       {children}
     </div>
   );
@@ -55,7 +55,7 @@ export function ContentHeader({
   ...props
 }: { children: React.ReactNode } & React.ComponentProps<"div">) {
   return (
-    <div className={cx("shrink-0 py-5 px-6 space-y-2", className)} {...props}>
+    <div className={cx("shrink-0 py-5 px-6 space-y-4", className)} {...props}>
       {children}
     </div>
   );

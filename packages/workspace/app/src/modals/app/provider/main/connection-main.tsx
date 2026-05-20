@@ -6,7 +6,7 @@ import { Case, Switch } from "react-if";
 import { AddConnection } from "./add-connection.js";
 import { ConnectionList } from "./connection-list.js";
 import { EditConnection } from "./edit-connection.js";
-import { EditProvider } from "./edit-provider.js";
+import { OAuthClientView } from "./oauth-client.js";
 
 interface ConnectionMainProps {
   connections: vertexClient.Connection[];
@@ -37,67 +37,17 @@ export function ConnectionMain({
 
   return (
     <Switch>
-      <Case
-        condition={
-          routeMatch(path, appModalRoutes.provider.editConnection) &&
-          !!editingConnection &&
-          !!providerData &&
-          !!config
-        }
-      >
-        <EditConnection
-          connection={editingConnection!}
-          providerData={providerData!}
-          config={config!}
-          onSuccess={handleSuccess}
-          onCancel={handleCancel}
-        />
+      <Case condition={routeMatch(path, appModalRoutes.provider.editConnection)}>
+        <EditConnection />
       </Case>
-      <Case
-        condition={
-          routeMatch(path, appModalRoutes.provider.createConnection) &&
-          !!providerData &&
-          !!config
-        }
-      >
-        <AddConnection
-          providerData={providerData!}
-          config={config!}
-          onSuccess={handleSuccess}
-          onCancel={handleCancel}
-        />
+      <Case condition={routeMatch(path, appModalRoutes.provider.createConnection)}>
+        <AddConnection />
       </Case>
-      <Case
-        condition={
-          routeMatch(path, appModalRoutes.provider.editProvider) &&
-          !!providerData
-        }
-      >
-        <EditProvider
-          providerData={providerData!}
-          onSuccess={handleSuccess}
-          onCancel={handleCancel}
-        />
+      <Case condition={routeMatch(path, appModalRoutes.provider.oauthClient)}>
+        <OAuthClientView />
       </Case>
       <Case condition={routeMatch(path, appModalRoutes.provider.provider)}>
-        <ConnectionList
-          connections={connections}
-          isLoadingConnections={isLoadingConnections}
-          providerData={providerData}
-          config={config}
-          onAddConnection={() =>
-            push(appModalRoutes.provider.createConnection, { providerCode })
-          }
-          onEditConnection={(conn) =>
-            push(appModalRoutes.provider.editConnection, {
-              connectionId: conn.id,
-              providerCode,
-            })
-          }
-          onEditProvider={() =>
-            push(appModalRoutes.provider.editProvider, { providerCode })
-          }
-        />
+        <ConnectionList />
       </Case>
     </Switch>
   );

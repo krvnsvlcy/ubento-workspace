@@ -25,6 +25,18 @@ export const PlanTab: FC = () => {
   const { mutate: cancelSubscription, isPending: isCancelling } =
     ubento.billing.useCancelSubscription();
 
+  const { data: offers = [] } = ubento.billing.useOffers({
+    code: "ide.hobby",
+  });
+  const hobbyOffer = offers[0];
+
+  const { data: proOffers = [] } = ubento.billing.useOffers({
+    code: "ide.pro",
+  });
+  const proOffer = proOffers[0];
+
+  const { mutate: createCheckout } = ubento.billing.useCreateCheckout();
+
   const handleCancel = () => {
     if (
       subscription?.id &&
@@ -41,18 +53,6 @@ export const PlanTab: FC = () => {
       </div>
     );
   }
-
-  const { data: offers = [] } = ubento.billing.useOffers({
-    code: "ide.hobby",
-  });
-  const hobbyOffer = offers[0];
-
-  const { data: proOffers = [] } = ubento.billing.useOffers({
-    code: "ide.pro",
-  });
-  const proOffer = proOffers[0];
-
-  const { mutate: createCheckout } = ubento.billing.useCreateCheckout();
 
   const handleUpgrade = () => {
     if (proOffer) {
@@ -72,7 +72,7 @@ export const PlanTab: FC = () => {
 
   if (!subscription) {
     return (
-      <div className="space-y-6 animate-in fade-in duration-300">
+      <div className="space-y-6">
         <div className="p-6 rounded-3xl bg-gradient-to-br from-neutral-surface to-neutral-surface-hover border border-neutral-border relative overflow-hidden group">
           <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
             <Zap className="h-32 w-32" />
@@ -98,14 +98,16 @@ export const PlanTab: FC = () => {
               </span>
             </div>
             <div className="grid grid-cols-2 gap-4 pt-6 border-t border-neutral-border">
-              {(hobbyOffer as any)?.metadata?.ui?.features?.map((feature: any, idx: number) => (
-                <div key={idx} className="flex items-center gap-3">
-                  <div className="h-2 w-2 rounded-full bg-neutral-content-subtle" />
-                  <span className="text-sm text-neutral-content-subtle">
-                    {feature.name}
-                  </span>
-                </div>
-              ))}
+              {(hobbyOffer as any)?.metadata?.ui?.features?.map(
+                (feature: any, idx: number) => (
+                  <div key={idx} className="flex items-center gap-3">
+                    <div className="h-2 w-2 rounded-full bg-neutral-content-subtle" />
+                    <span className="text-sm text-neutral-content-subtle">
+                      {feature.name}
+                    </span>
+                  </div>
+                ),
+              )}
             </div>
           </div>
         </div>
@@ -122,7 +124,7 @@ export const PlanTab: FC = () => {
   }
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-300">
+    <div className="space-y-6">
       <div className="p-6 rounded-3xl bg-gradient-to-br from-neutral-surface to-neutral-surface-hover border border-neutral-border relative overflow-hidden group">
         <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
           <Zap className="h-32 w-32" />
@@ -134,9 +136,7 @@ export const PlanTab: FC = () => {
                 Current Plan
               </p>
               <h3 className="text-3xl font-black text-neutral-content">
-                {product?.name ||
-                  subscription.product_code ||
-                  "Pro"}
+                {product?.name || subscription.product_code || "Pro"}
               </h3>
             </div>
             <span className="px-3 py-1 rounded-full bg-accent-surface text-accent text-[10px] font-black uppercase tracking-wider border border-accent-border">
@@ -144,20 +144,27 @@ export const PlanTab: FC = () => {
             </span>
           </div>
           <div className="flex items-baseline gap-1 mb-8">
-            <span className="text-4xl font-black">${((subscription as any)?.data?.attributes?.first_subscription_item?.price || 2900) / 100}</span>
+            <span className="text-4xl font-black">
+              $
+              {((subscription as any)?.data?.attributes?.first_subscription_item
+                ?.price || 2900) / 100}
+            </span>
             <span className="text-neutral-content-muted font-medium text-sm">
               /month
             </span>
           </div>
           <div className="grid grid-cols-2 gap-4 pt-6 border-t border-neutral-border">
-             {proOffer && (proOffer as any)?.metadata?.ui?.features?.map((feature: any, idx: number) => (
-                <div key={idx} className="flex items-center gap-3">
-                  <div className="h-2 w-2 rounded-full bg-accent" />
-                  <span className="text-sm text-neutral-content-subtle">
-                    {feature.name}
-                  </span>
-                </div>
-              ))}
+            {proOffer &&
+              (proOffer as any)?.metadata?.ui?.features?.map(
+                (feature: any, idx: number) => (
+                  <div key={idx} className="flex items-center gap-3">
+                    <div className="h-2 w-2 rounded-full bg-accent" />
+                    <span className="text-sm text-neutral-content-subtle">
+                      {feature.name}
+                    </span>
+                  </div>
+                ),
+              )}
           </div>
         </div>
       </div>

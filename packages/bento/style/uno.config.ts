@@ -76,6 +76,9 @@ export default defineConfig({
       warning: colorTheme("warning"),
       info: colorTheme("info"),
       destructive: colorTheme("destructive"),
+
+      // intent
+      intent: colorTheme("intent"),
     },
     font: {
       heading: "var(--font-heading)",

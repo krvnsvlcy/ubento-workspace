@@ -1,33 +1,45 @@
 import { useSession } from "@/contexts/session";
 import { useUbento } from "@/engine/app/engine";
+import { useAppModal } from "@/modals/app/hook.js";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { vertexClient } from "@ubento/services.sdk";
-import { PrimitiveButton as Button, Content, ContentBody, ContentFooter, ContentHeader, Field, FieldLabel, Heading, PrimitiveInput as Input } from "@ubento/bento.arlo-core";
+import {
+  PrimitiveButton as Button,
+  Content,
+  ContentBody,
+  ContentFooter,
+  ContentHeader,
+  EmptyView,
+  Field,
+  FieldLabel,
+  Heading,
+  PrimitiveInput as Input,
+  PendingView,
+  Text,
+} from "@ubento/bento.arlo-core";
 import { useState } from "react";
 
-export function EditProvider({
-  providerData,
-  onSuccess,
-  onCancel,
-}: {
-  providerData: vertexClient.ConnectionProvider;
-  onSuccess: () => void;
-  onCancel: () => void;
-}) {
+export function OAuthClientView() {
   const ubento = useUbento();
   const session = useSession();
   const queryClient = useQueryClient();
+  const { params, goBack } = useAppModal();
+  const providerCode = params.providerCode;
 
-  const { data: clients = [], isLoading } = useQuery({
-    queryKey: ["oauth-clients", providerData.id],
+  const { data: providerData, isLoading: isLoadingProvider } =
+    ubento.vertex.useConnectionProviderByCode(providerCode || "");
+
+  const { data: clients = [], isLoading: isLoadingClients } = useQuery({
+    queryKey: ["oauth-clients", providerData?.id],
     queryFn: async () => {
       const res = await ubento.sdk.vertex.listOAuthClients({
-        provider_id: providerData.id,
+        provider_id: providerData!.id,
       });
       return res.data || [];
     },
+    enabled: !!providerData?.id,
   });
 
+  const isLoading = isLoadingProvider || isLoadingClients;
   const teamClient = clients.find((c: any) => c.team_id === session.teamId);
 
   const [clientId, setClientId] = useState("");
@@ -36,6 +48,7 @@ export function EditProvider({
   const [isSaving, setIsSaving] = useState(false);
 
   const handleSave = async () => {
+    if (!providerData) return;
     if (!clientId || !clientSecret) {
       setError("Both Client ID and Client Secret are required.");
       return;
@@ -58,7 +71,7 @@ export function EditProvider({
       queryClient.invalidateQueries({
         queryKey: ["oauth-clients", providerData.id],
       });
-      onSuccess();
+      goBack();
     } catch (err: any) {
       setError(err.message || "Failed to save client credentials.");
     } finally {
@@ -66,23 +79,31 @@ export function EditProvider({
     }
   };
 
-  if (isLoading) {
+  if (1 || isLoading) {
+    return <PendingView message="OAuth Client" />;
+  }
+
+  if (!providerData) {
     return (
-      <div className="p-6 text-sm text-neutral-content-muted">
-        Loading configuration...
-      </div>
+      <EmptyView
+        message="Provider not found"
+        action={{
+          label: "Go Back",
+          onClick: goBack,
+        }}
+      />
     );
   }
 
   return (
     <Content>
       <ContentHeader>
-        <Heading className="text-lg font-bold">
-          Configure Dedicated OAuth Client
-        </Heading>
-        <p className="text-sm text-neutral-content-subtle">
-          Configure a custom OAuth client for {providerData.name} integration.
-        </p>
+        <div className="space-y-2">
+          <Heading>OAuth Client</Heading>
+          <Text tone="subtle">
+            Configure a custom OAuth client for {providerData.name} integration.
+          </Text>
+        </div>
       </ContentHeader>
 
       <ContentBody className="space-y-4">
@@ -108,24 +129,23 @@ export function EditProvider({
             value={clientSecret}
             onChange={(e) => setClientSecret(e.target.value)}
             placeholder={
-              teamClient ? "Enter new Client Secret to update" : "OAuth Client Secret"
+              teamClient
+                ? "Enter new Client Secret to update"
+                : "OAuth Client Secret"
             }
           />
         </Field>
       </ContentBody>
 
-      <ContentFooter className="flex justify-end gap-2 border-t border-neutral-border/30 pt-5">
-        <Button onClick={onCancel} variant="ghost" size="sm">
-          Cancel
-        </Button>
-        <Button
-          onClick={handleSave}
-          variant="primary"
-          size="sm"
-          disabled={isSaving}
-        >
-          {isSaving ? "Saving..." : "Save Configuration"}
-        </Button>
+      <ContentFooter>
+        <div className="flex justify-end gap-2">
+          <Button onClick={goBack} variant="ghost">
+            Cancel
+          </Button>
+          <Button onClick={handleSave} variant="primary" disabled={isSaving}>
+            {isSaving ? "Saving..." : "Save Configuration"}
+          </Button>
+        </div>
       </ContentFooter>
     </Content>
   );

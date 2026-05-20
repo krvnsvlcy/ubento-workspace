@@ -1,5 +1,5 @@
 import { useUbento } from "@/engine/app/engine";
-import { useModal } from "@/utils/modal-store";
+import { useAppModal } from "@/modals/app/hook.js";
 import { PrimitiveButton as Button, Content, ContentBody, ContentFooter, ContentHeader, Field, FieldLabel, Heading } from "@ubento/bento.arlo-core";
 import { useState } from "react";
 
@@ -9,7 +9,7 @@ interface CreateProviderModalProps {
 
 export function CreateProviderModal({ provider }: CreateProviderModalProps = {}) {
   const ubento = useUbento();
-  const { close } = useModal();
+  const { goBack } = useAppModal();
 
   const [description, setDescription] = useState(provider?.description || "");
   const [templateType, setTemplateType] = useState("oauth2");
@@ -150,7 +150,7 @@ export function CreateProviderModal({ provider }: CreateProviderModalProps = {})
         },
         {
           onSuccess: (updated: any) => {
-            close(updated);
+            goBack();
           },
           onError: (err: any) => {
             setError(
@@ -171,7 +171,7 @@ export function CreateProviderModal({ provider }: CreateProviderModalProps = {})
         },
         {
           onSuccess: (newProvider: any) => {
-            close(newProvider);
+            goBack();
           },
           onError: (err: any) => {
             setError(
@@ -244,7 +244,7 @@ export function CreateProviderModal({ provider }: CreateProviderModalProps = {})
       </ContentBody>
 
       <ContentFooter className="flex justify-end gap-2 border-t border-neutral-border/30 pt-5 space-y-0">
-        <Button onClick={() => close(null)} variant="ghost" size="sm">
+        <Button onClick={() => goBack()} variant="ghost" size="sm">
           Cancel
         </Button>
         <Button

@@ -10,10 +10,11 @@ export const ProvidersTab: FC = () => {
   const { push: navigate } = useAppModal();
   const [providerSearch, setProviderSearch] = useState("");
 
-  const { data: allProviders = [], isFetching: isFetchingAllProviders } =
+  const { data: allProvidersData, isFetching: isFetchingAllProviders } =
     ubento.vertex.useConnectionProviders({
       name: providerSearch,
     });
+  const allProviders = allProvidersData?.pages.flatMap((page) => page.data) ?? [];
 
   const handleCreateProvider = () => {
     navigate(appModalRoutes.providers.create);

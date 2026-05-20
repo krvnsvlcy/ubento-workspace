@@ -1,8 +1,22 @@
 import { useSession } from "@/contexts/session";
 import { useUbento } from "@/engine/app/engine";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  PrimitiveButton as Button,
+  Card,
+  Field,
+  FieldLabel,
+  Heading,
+  PrimitiveInput as Input,
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@ubento/bento.arlo-core";
 import { vertexClient } from "@ubento/services.sdk";
-import { PrimitiveButton as Button, Field, FieldLabel, Heading, PrimitiveInput as Input, Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@ubento/bento.arlo-core";
+import { Edit, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export function AuthMethodSelector({
@@ -143,26 +157,36 @@ export function OAuthClientSelector({
     value ||
     (teamClient ? teamClient.id : defaultClient ? defaultClient.id : "");
 
+  const availableClients = [
+    ...(defaultClient ? [defaultClient] : []),
+    ...(teamClient ? [teamClient] : []),
+  ];
+
   return (
     <div className="space-y-3">
       <Field>
         <FieldLabel>Client</FieldLabel>
-        <Select value={selectValue} onValueChange={onChange}>
+        <Select
+          value={selectValue}
+          onValueChange={onChange}
+          disabled={!availableClients.length}
+        >
           <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select an OAuth Client" />
+            <SelectValue
+              placeholder={
+                availableClients.length
+                  ? "Select an OAuth Client"
+                  : "No OAuth Clients Found"
+              }
+            />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              {defaultClient && (
-                <SelectItem value={defaultClient.id}>
-                  Default {providerData.name} Client
+              {availableClients.map((client) => (
+                <SelectItem key={client.id} value={client.id}>
+                  {client.name}
                 </SelectItem>
-              )}
-              {teamClient && (
-                <SelectItem value={teamClient.id}>
-                  Team Dedicated Client
-                </SelectItem>
-              )}
+              ))}
             </SelectGroup>
           </SelectContent>
         </Select>
@@ -174,33 +198,27 @@ export function OAuthClientSelector({
             <Button
               variant="ghost"
               size="sm"
-              className="text-blue-500 hover:text-blue-600 font-medium"
               onClick={handleOpenEdit}
               disabled={isSaving}
             >
-              ✏️ Edit Dedicated Client
+              <Edit size={14} /> Edit Dedicated Client
             </Button>
           ) : (
             <Button
               variant="ghost"
               size="sm"
-              className="text-blue-500 hover:text-blue-600 font-medium"
               onClick={handleOpenCreate}
               disabled={isSaving}
             >
-              ➕ Configure Dedicated Client for Team
+              <Plus size={14} /> Configure Dedicated Client
             </Button>
           )}
         </div>
       )}
 
       {isEditing && (
-        <div className="p-4 border border-neutral-border/30 rounded-xl bg-neutral-surface-hover/10 space-y-3">
-          <Heading className="text-sm font-semibold">
-            {teamClient
-              ? "Edit Dedicated Client"
-              : "Configure Dedicated Client"}
-          </Heading>
+        <Card className="p-4 space-y-3" variant="outline">
+          <Heading className="text-sm font-semibold">OAuth Client</Heading>
 
           {formError && (
             <div className="p-2 text-xs text-destructive bg-destructive/10 rounded-lg">
@@ -209,49 +227,37 @@ export function OAuthClientSelector({
           )}
 
           <Field>
-            <FieldLabel className="text-xs">Client ID</FieldLabel>
+            <FieldLabel>Client ID</FieldLabel>
             <Input
               value={clientId}
               onChange={(e) => setClientId(e.target.value)}
-              placeholder={teamClient ? "Enter new Client ID" : "Client ID"}
-              className="text-xs h-8"
+              placeholder="Enter Client ID"
             />
           </Field>
 
           <Field>
-            <FieldLabel className="text-xs">Client Secret</FieldLabel>
+            <FieldLabel>Client Secret</FieldLabel>
             <Input
               type="password"
               value={clientSecret}
               onChange={(e) => setClientSecret(e.target.value)}
-              placeholder={
-                teamClient ? "Enter new Client Secret" : "Client Secret"
-              }
-              className="text-xs h-8"
+              placeholder="Enter Client Secret"
             />
           </Field>
 
           <div className="flex justify-end gap-2 pt-2">
             <Button
               variant="ghost"
-              size="sm"
               onClick={() => setIsEditing(false)}
               disabled={isSaving}
-              className="h-7 text-xs"
             >
               Cancel
             </Button>
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={handleSave}
-              disabled={isSaving}
-              className="h-7 text-xs"
-            >
+            <Button variant="primary" onClick={handleSave} disabled={isSaving}>
               {isSaving ? "Saving..." : "Save"}
             </Button>
           </div>
-        </div>
+        </Card>
       )}
     </div>
   );

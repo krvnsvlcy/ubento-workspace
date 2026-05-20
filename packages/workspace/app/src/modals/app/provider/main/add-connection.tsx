@@ -1,17 +1,67 @@
 import { useSession } from "@/contexts/session";
 import { useUbento } from "@/engine/app/engine";
+import { useAppModal } from "@/modals/app/hook.js";
+import {
+  PrimitiveButton as Button,
+  Content,
+  ContentBody,
+  ContentFooter,
+  ContentHeader,
+  Field,
+  FieldLabel,
+  Heading,
+  PrimitiveInput as Input,
+  Spinner,
+} from "@ubento/bento.arlo-core";
 import { vertexClient } from "@ubento/services.sdk";
 import {
   ConnectionCredentials,
   ConnectionProviderConfig,
 } from "@ubento/vertex.core";
-import { PrimitiveButton as Button, Content, ContentBody, ContentFooter, ContentHeader, Field, FieldLabel, Heading, PrimitiveInput as Input } from "@ubento/bento.arlo-core";
 import { useState } from "react";
 import { Case, Default, If, Switch } from "react-if";
-import { extractProviderAuthMethods } from "./utils";
 import { AuthMethodSelector, OAuthClientSelector } from "./shared";
+import { extractProviderAuthMethods } from "./utils";
 
-export function AddConnection({
+export function AddConnection() {
+  const ubento = useUbento();
+  const { params, goBack } = useAppModal();
+  const providerCode = params.providerCode;
+
+  const { data: providerData, isLoading } =
+    ubento.vertex.useConnectionProviderByCode(providerCode || "");
+
+  const config = (providerData as any)?.config as
+    | ConnectionProviderConfig
+    | undefined;
+
+  if (isLoading) {
+    return (
+      <Content className="flex items-center justify-center p-6">
+        <Spinner />
+      </Content>
+    );
+  }
+
+  if (!providerData || !config) {
+    return (
+      <Content className="p-6 text-sm text-destructive">
+        Provider not found.
+      </Content>
+    );
+  }
+
+  return (
+    <AddConnectionForm
+      providerData={providerData}
+      config={config}
+      onSuccess={goBack}
+      onCancel={goBack}
+    />
+  );
+}
+
+function AddConnectionForm({
   providerData,
   config,
   onSuccess,
@@ -181,32 +231,32 @@ export function AddConnection({
         </Switch>
       </ContentBody>
 
-      <ContentFooter className="flex justify-end gap-2 space-y-0 border-t border-neutral-border/30 pt-5">
-        <Button onClick={onCancel} variant="ghost" size="sm">
-          Cancel
-        </Button>
-        <Switch>
-          <Case condition={authMethod === "oauth2"}>
-            <Button
-              onClick={handleOAuthConnect}
-              variant="primary"
-              size="sm"
-              disabled={isRedirecting || !oauthClientId}
-            >
-              {isRedirecting ? "Connecting..." : "Connect"}
-            </Button>
-          </Case>
-          <Default>
-            <Button
-              onClick={handleCreate}
-              variant="primary"
-              size="sm"
-              disabled={!connectionName || !inputsAreValid || isCreating}
-            >
-              {isCreating ? "Creating..." : "Create"}
-            </Button>
-          </Default>
-        </Switch>
+      <ContentFooter>
+        <div className="flex justify-end gap-2">
+          <Button onClick={onCancel} variant="ghost">
+            Cancel
+          </Button>
+          <Switch>
+            <Case condition={authMethod === "oauth2"}>
+              <Button
+                onClick={handleOAuthConnect}
+                variant="primary"
+                disabled={isRedirecting || !oauthClientId}
+              >
+                {isRedirecting ? "Connecting..." : "Connect"}
+              </Button>
+            </Case>
+            <Default>
+              <Button
+                onClick={handleCreate}
+                variant="primary"
+                disabled={!connectionName || !inputsAreValid || isCreating}
+              >
+                {isCreating ? "Creating..." : "Create"}
+              </Button>
+            </Default>
+          </Switch>
+        </div>
       </ContentFooter>
     </Content>
   );

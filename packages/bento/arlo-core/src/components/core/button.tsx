@@ -1,3 +1,4 @@
+import { Intent } from "@/intent";
 import { cva, type VariantProps } from "class-variance-authority";
 import { ButtonHTMLAttributes, forwardRef } from "react";
 
@@ -6,30 +7,27 @@ const buttonVariants = cva(
   {
     variants: {
       align: {
-        default: "justify-center",
+        center: "justify-center",
         start: "justify-start",
         end: "justify-end",
       },
       variant: {
-        default:
-          "bg-neutral-surface text-neutral-content hover:bg-neutral-surface-hover",
-        primary: "bg-accent text-accent-contrast hover:bg-accent-hover",
-        destructive:
-          "bg-destructive text-destructive-contrast hover:bg-destructive-hover",
-        "subtle-destructive":
-          "bg-neutral-content/10 text-neutral-content hover:bg-destructive hover:text-destructive-contrast",
-        outline:
-          "border border-neutral-border bg-transparent hover:bg-neutral-surface text-neutral-content",
+        primary: "bg-intent text-intent-contrast hover:bg-intent-hover",
         secondary:
-          "bg-neutral-surface text-neutral-content hover:bg-neutral-surface-hover",
-        ghost: "hover:bg-neutral-content/10 hover:text-neutral-content",
-        link: "text-accent underline-offset-4 hover:underline",
+          "bg-intent-content/5 text-intent-content hover:bg-intent-content/10",
+        "secondary-destructive":
+          "bg-intent-content/5 text-intent-content hover:bg-destructive hover:text-destructive-contrast",
+        outline:
+          "border border-intent-border bg-transparent hover:bg-intent-surface text-intent-content",
+        ghost:
+          "text-intent-content hover:bg-intent-content/10 hover:text-intent-content",
+        link: "text-intent-content-subtle hover:text-intent-content",
       },
       size: {
-        sm: "h-6 px-2",
-        md: "h-8 px-4",
-        lg: "h-10 px-4",
-        icon: "h-7 w-7",
+        sm: "",
+        md: "",
+        lg: "",
+        icon: "",
       },
       shape: {
         rounded: "",
@@ -37,6 +35,7 @@ const buttonVariants = cva(
       },
     },
     compoundVariants: [
+      // shape + size
       {
         size: "sm",
         shape: "rounded",
@@ -57,11 +56,59 @@ const buttonVariants = cva(
         shape: "rounded",
         className: "rounded-xl",
       },
+
+      // variant + size
+      {
+        // all variants except link
+        variant: [
+          "primary",
+          "secondary",
+          "secondary-destructive",
+          "outline",
+          "ghost",
+        ],
+        size: "sm",
+        className: "h-6 px-2",
+      },
+      {
+        variant: [
+          "primary",
+          "secondary",
+          "secondary-destructive",
+          "outline",
+          "ghost",
+        ],
+        size: "md",
+        className: "h-8 px-4",
+      },
+      {
+        variant: [
+          "primary",
+          "secondary",
+          "secondary-destructive",
+          "outline",
+          "ghost",
+        ],
+        size: "lg",
+        className: "h-10 px-4",
+      },
+      {
+        variant: [
+          "primary",
+          "secondary",
+          "secondary-destructive",
+          "outline",
+          "ghost",
+        ],
+        size: "icon",
+        className: "h-8 w-8",
+      },
     ],
     defaultVariants: {
-      variant: "default",
+      variant: "secondary",
       size: "md",
       shape: "rounded",
+      align: "center",
     },
   },
 );
@@ -71,14 +118,28 @@ export interface ButtonProps
     ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
+  intent?: Intent;
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, shape, asChild = false, ...props }, ref) => {
+  (
+    {
+      className,
+      variant,
+      size,
+      shape,
+      align,
+      intent,
+      asChild = false,
+      ...props
+    },
+    ref,
+  ) => {
     return (
       <button
-        className={buttonVariants({ variant, size, shape, className })}
+        className={buttonVariants({ variant, size, shape, align, className })}
         ref={ref}
+        data-intent={intent}
         {...props}
       />
     );

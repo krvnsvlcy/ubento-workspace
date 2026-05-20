@@ -1,8 +1,9 @@
+import { Intent } from "@/intent";
 import { cva, type VariantProps } from "class-variance-authority";
 import { forwardRef, HTMLAttributes } from "react";
 
 export const cardVariants = cva(
-  "rounded-xl border border-neutral-border bg-background text-neutral-content",
+  "rounded-xl border border-intent-border bg-background text-intent-content",
   {
     variants: {
       variant: {
@@ -19,10 +20,11 @@ export const cardVariants = cva(
 export interface CardProps
   extends HTMLAttributes<HTMLDivElement>, VariantProps<typeof cardVariants> {
   gap?: number | string;
+  intent?: Intent;
 }
 
 export const Card = forwardRef<HTMLDivElement, CardProps>(
-  ({ className, variant, style, gap, ...props }, ref) => (
+  ({ className, variant, style, gap, intent, ...props }, ref) => (
     <div
       ref={ref}
       className={cardVariants({ variant, className })}
@@ -32,6 +34,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
         gap: typeof gap === "number" ? `${gap}px` : gap,
         ...style,
       }}
+      data-intent={intent}
       {...props}
     />
   ),

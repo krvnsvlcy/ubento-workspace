@@ -26,13 +26,13 @@
   /* =========================================
      Neutral Theme (Zinc/Slate)
      ========================================= */
-  --color-neutral: #71717a;
-  --color-neutral-hover: #52525b;
-  --color-neutral-active: #3f3f46;
+  --color-neutral: #18181b;
+  --color-neutral-hover: #1c1c1c;
+  --color-neutral-active: #262626;
   --color-neutral-contrast: #ffffff;
 
   --color-neutral-surface: #f4f4f5;
-  --color-neutral-surface-hover: #e4e4e7;
+  --color-neutral-surface-hover: #f9f9fa;
   --color-neutral-surface-active: #d4d4d8;
 
   --color-neutral-border: #e4e4e7;
@@ -126,22 +126,22 @@
   /* =========================================
      Destructive Theme (Red/Rose)
      ========================================= */
-  --color-destructive: #ef4444;
-  --color-destructive-hover: #dc2626;
-  --color-destructive-active: #b91c1c;
+  --color-destructive: #f21621;
+  --color-destructive-hover: #ff2a34;
+  --color-destructive-active: #dd0b16;
   --color-destructive-contrast: #ffffff;
 
-  --color-destructive-surface: #fee2e2;
-  --color-destructive-surface-hover: #fecaca;
-  --color-destructive-surface-active: #fca5a5;
+  --color-destructive-surface: #fff0f0;
+  --color-destructive-surface-hover: #fff3f3;
+  --color-destructive-surface-active: #ffdcdc;
 
-  --color-destructive-border: #fca5a5;
-  --color-destructive-border-hover: #f87171;
-  --color-destructive-border-active: #ef4444;
+  --color-destructive-border: #ffd7d7;
+  --color-destructive-border-hover: #ffbbbb;
+  --color-destructive-border-active: #ff9292;
 
-  --color-destructive-content: #7f1d1d;
-  --color-destructive-content-subtle: #991b1b;
-  --color-destructive-content-muted: #b91c1c;
+  --color-destructive-content: #a30000;
+  --color-destructive-content-subtle: #bb3434;
+  --color-destructive-content-muted: #c14f4f;
 
   /* =========================================
      Fonts
@@ -149,4 +149,21 @@
   --font-heading: "Inter", sans-serif;
   --font-body: "Inter", sans-serif;
   --font-mono: "JetBrains Mono", monospace;
+
+  /* =========================================
+     Fallback Intent Theme (Neutral)
+     ========================================= */
+  --color-intent: var(--color-neutral);
+  --color-intent-hover: var(--color-neutral-hover);
+  --color-intent-active: var(--color-neutral-active);
+  --color-intent-contrast: var(--color-neutral-contrast);
+  --color-intent-surface: var(--color-neutral-surface);
+  --color-intent-surface-hover: var(--color-neutral-surface-hover);
+  --color-intent-surface-active: var(--color-neutral-surface-active);
+  --color-intent-border: var(--color-neutral-border);
+  --color-intent-border-hover: var(--color-neutral-border-hover);
+  --color-intent-border-active: var(--color-neutral-border-active);
+  --color-intent-content: var(--color-neutral-content);
+  --color-intent-content-subtle: var(--color-neutral-content-subtle);
+  --color-intent-content-muted: var(--color-neutral-content-muted);
 }

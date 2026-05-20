@@ -99,7 +99,8 @@ export function InstallControl({
             </Badge>
             <Button
               onClick={handleUninstall}
-              variant="destructive"
+              variant="primary"
+              intent="destructive"
               size="sm"
               className="gap-2"
             >
@@ -155,7 +156,8 @@ export function InstallControl({
       {isInstalledWithActiveConnection ? (
         <Button
           onClick={handleUninstall}
-          variant="destructive"
+          variant="primary"
+          intent="destructive"
           size="sm"
           className="gap-2"
         >

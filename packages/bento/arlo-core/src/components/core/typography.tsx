@@ -1,3 +1,4 @@
+import { Intent } from "@/intent";
 import { cva, cx, type VariantProps } from "class-variance-authority";
 import * as React from "react";
 
@@ -13,8 +14,9 @@ const heading = cva("font-medium leading-tight tracking-tight", {
       h4: "text-sm font-semibold",
     },
     tone: {
-      default: "text-default",
-      muted: "text-muted",
+      default: "text-intent-content",
+      subtle: "text-intent-content-subtle",
+      muted: "text-intent-content-muted",
     },
   },
   defaultVariants: {
@@ -26,16 +28,25 @@ const heading = cva("font-medium leading-tight tracking-tight", {
 type HeadingProps = React.ComponentProps<"h1"> &
   VariantProps<typeof heading> & {
     as?: "h1" | "h2" | "h3" | "h4" | "div";
+    intent?: Intent;
   };
 
 export function Heading({
   as: Tag = "h2",
   level,
   tone,
+  intent,
   className,
+
   ...props
 }: HeadingProps) {
-  return <Tag className={cx(heading({ level, tone }), className)} {...props} />;
+  return (
+    <Tag
+      className={cx(heading({ level, tone }), className)}
+      {...props}
+      data-intent={intent}
+    />
+  );
 }
 
 /* ---------- Text ---------- */
@@ -54,13 +65,9 @@ const text = cva("leading-normal", {
       semibold: "font-semibold",
     },
     tone: {
-      default: "text-neutral-content",
-      muted: "text-neutral-content-muted",
-      subtle: "text-neutral-content-subtle",
-      danger: "text-red-500",
-      warning: "text-orange-500",
-      success: "text-green-500",
-      primary: "text-accent",
+      default: "text-intent-content",
+      muted: "text-intent-content-muted",
+      subtle: "text-intent-content-subtle",
     },
   },
   defaultVariants: {
@@ -73,6 +80,7 @@ const text = cva("leading-normal", {
 type TextProps = React.ComponentProps<"p"> &
   VariantProps<typeof text> & {
     as?: "p" | "span" | "div";
+    intent?: Intent;
   };
 
 export function Text({
@@ -81,10 +89,15 @@ export function Text({
   weight,
   tone,
   className,
+  intent,
   ...props
 }: TextProps) {
   return (
-    <Tag className={cx(text({ size, weight, tone }), className)} {...props} />
+    <Tag
+      className={cx(text({ size, weight, tone }), className)}
+      {...props}
+      data-intent={intent}
+    />
   );
 }
 
@@ -95,7 +108,7 @@ export function Code({ className, ...props }: React.ComponentProps<"pre">) {
     <pre
       className={cx(
         "text-xs leading-snug rounded-md p-3 bg-muted overflow-auto",
-        className
+        className,
       )}
       {...props}
     />
@@ -110,7 +123,7 @@ export function InlineCode({
     <code
       className={cx(
         "text-xs font-medium leading-snug rounded-sm px-1 py-0.5 bg-muted",
-        className
+        className,
       )}
       {...props}
     />

@@ -13,7 +13,7 @@ export const HistoryTab: FC = () => {
   });
 
   return (
-    <div className="space-y-2 animate-in fade-in duration-300">
+    <div className="space-y-2">
       {isFetching && (
         <div className="py-12 text-center text-neutral-content-muted">
           <p className="text-[13px]">Loading invoice history...</p>

@@ -69,6 +69,7 @@ router.get(
     validate({
       query: z.object({
         team_id: z.string().optional(),
+        provider_id: z.string().optional(),
         cursor: z.string().optional(),
         limit: z.coerce.number().optional(),
       }),
@@ -113,7 +114,11 @@ router.post(
       let credentials = req.body;
       let name: string | undefined;
 
-      if (req.body && typeof req.body === "object" && "credentials" in (req.body as any)) {
+      if (
+        req.body &&
+        typeof req.body === "object" &&
+        "credentials" in (req.body as any)
+      ) {
         credentials = (req.body as any).credentials;
         name = (req.body as any).name;
       }

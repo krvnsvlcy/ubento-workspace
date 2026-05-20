@@ -10,7 +10,7 @@ export function GoBack() {
   }
 
   return (
-    <Button onClick={() => goBack()} variant="ghost">
+    <Button onClick={() => goBack()} variant="link-subtle">
       <ArrowLeft size={16} />
       Go Back
     </Button>

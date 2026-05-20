@@ -1,22 +1,17 @@
 import { useSession } from "@/contexts/session";
-import { PrimitiveButton as Button, Content, ContentBody, ContentHeader, Field, FieldLabel, Heading, PrimitiveInput as Input, ScrollArea, Text } from "@ubento/bento.arlo-core";
-import { User } from "lucide-react";
-import { FC, useState } from "react";
+import { Content, ContentBody, ContentHeader, Field, FieldLabel, Heading, PrimitiveInput as Input, ScrollArea, Text } from "@ubento/bento.arlo-core";
+import { Info, User } from "lucide-react";
+import { FC } from "react";
 
 export const GeneralTab: FC = () => {
   const session = useSession();
-  const [name, setName] = useState(session.name);
-
-  const handleSave = () => {
-    // Save operation placeholder or backend integration
-  };
 
   return (
     <Content>
       <ContentHeader>
         <div className="space-y-1">
           <Heading>Profile Info</Heading>
-          <Text tone="subtle">Update your profile photo and personal details.</Text>
+          <Text tone="subtle">Your personal profile details.</Text>
         </div>
       </ContentHeader>
       <ContentBody
@@ -49,13 +44,21 @@ export const GeneralTab: FC = () => {
                 </div>
               </div>
 
+              <div className="flex gap-3 p-4 rounded-xl bg-neutral-surface-hover/30 border border-neutral-border text-sm text-neutral-content-subtle">
+                <Info className="h-5 w-5 shrink-0 text-neutral-content-subtle" />
+                <div>
+                  <p className="font-medium text-neutral-content">Managed by your provider</p>
+                  <p className="mt-0.5">These details are synced from your identity provider and can be changed in your provider account.</p>
+                </div>
+              </div>
+
               <div className="grid gap-6">
                 <Field>
                   <FieldLabel>Full Name</FieldLabel>
                   <Input
                     type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    value={session.name}
+                    disabled
                     placeholder="Full Name"
                   />
                 </Field>
@@ -70,12 +73,6 @@ export const GeneralTab: FC = () => {
                 </Field>
               </div>
             </section>
-
-            <div className="flex justify-end pt-4 border-t border-neutral-border/20">
-              <Button onClick={handleSave} variant="primary" size="lg">
-                Save Changes
-              </Button>
-            </div>
           </div>
         </ScrollArea>
       </ContentBody>

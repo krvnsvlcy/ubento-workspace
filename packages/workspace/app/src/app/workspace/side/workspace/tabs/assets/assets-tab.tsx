@@ -89,9 +89,9 @@ export function AssetsTab() {
         </div>
 
         {filteredModules?.length === 0 && !modules.isLoading && (
-          <EmptyView>
-            {query ? "No results found." : "No components found."}
-          </EmptyView>
+          <EmptyView
+            message={query ? "No results found." : "No components found."}
+          />
         )}
       </div>
     </div>

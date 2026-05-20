@@ -1,11 +1,9 @@
 import { PrimitiveButton as Button, Content, ContentBody, ContentHeader, Heading, RailLayout, RailLayoutMain, RailLayoutSide, Text } from "@ubento/bento.arlo-core";
-import { Bell, Shield, User } from "lucide-react";
+import { User } from "lucide-react";
 import { Case, Switch } from "react-if";
 import { useAppModal } from "../hook.js";
 import { appModalRoutes, routeMatch } from "../routes.js";
 import { GeneralTab } from "./tabs/general.js";
-import { NotificationsTab } from "./tabs/notifications.js";
-import { SecurityTab } from "./tabs/security.js";
 
 export function AccountModal() {
   const { path, push: navigate } = useAppModal();
@@ -16,18 +14,6 @@ export function AccountModal() {
       label: "General",
       icon: User,
       path: appModalRoutes.account.general,
-    },
-    {
-      key: "security",
-      label: "Security",
-      icon: Shield,
-      path: appModalRoutes.account.security,
-    },
-    {
-      key: "notifications",
-      label: "Notifications",
-      icon: Bell,
-      path: appModalRoutes.account.notifications,
     },
   ];
 
@@ -64,14 +50,6 @@ export function AccountModal() {
         <Switch>
           <Case condition={routeMatch(path, appModalRoutes.account.general)}>
             <GeneralTab />
-          </Case>
-          <Case condition={routeMatch(path, appModalRoutes.account.security)}>
-            <SecurityTab />
-          </Case>
-          <Case
-            condition={routeMatch(path, appModalRoutes.account.notifications)}
-          >
-            <NotificationsTab />
           </Case>
         </Switch>
       </RailLayoutMain>

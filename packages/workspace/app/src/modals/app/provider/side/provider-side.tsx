@@ -1,7 +1,14 @@
+import {
+  PrimitiveBadge as Badge,
+  Content,
+  ContentHeader,
+  Heading,
+  Text,
+} from "@ubento/bento.arlo-core";
 import { vertexClient } from "@ubento/services.sdk";
 import { ConnectionProviderConfig } from "@ubento/vertex.core";
-import { PrimitiveBadge as Badge, Heading, Text } from "@ubento/bento.arlo-core";
 import { Globe } from "lucide-react";
+import { GoBack } from "../../go-back.js";
 
 export function ProviderSidebar({
   data,
@@ -23,23 +30,23 @@ export function ProviderSidebar({
   }
 
   return (
-    <div className="w-full p-6 space-y-4">
-      <div className="h-12 w-12 rounded-xl flex items-center justify-center bg-neutral-surface border border-neutral-border text-neutral-content">
-        <Globe className="h-6 w-6" />
-      </div>
-      <div className="space-y-2">
-        <Heading className="text-lg font-bold">{data?.name}</Heading>
-        <div className="flex gap-2">
+    <Content>
+      <ContentHeader>
+        <GoBack />
+        <div className="flex items-center justify-center h-14 w-14 bg-background rounded-xl">
+          <Globe className="h-7 w-7" />
+        </div>
+
+        <div className="space-y-2">
+          <Heading>{data?.name}</Heading>
+          <Text tone="subtle">{data?.description}</Text>
+        </div>
+        <div className="flex gap-2 flex-wrap">
           {supportedAuth.map((auth) => (
-            <Badge variant="secondary" key={auth.label}>
-              {auth.label}
-            </Badge>
+            <Badge key={auth.label}>{auth.label}</Badge>
           ))}
         </div>
-      </div>
-      <Text tone="subtle" className="text-sm">
-        {data?.description}
-      </Text>
-    </div>
+      </ContentHeader>
+    </Content>
   );
 }

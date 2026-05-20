@@ -1,6 +1,11 @@
 import { useSession } from "@/contexts/session";
 import { useUbento } from "@/engine/app/engine";
-import { PrimitiveButton as Button, PrimitiveInput as Input, ScrollArea } from "@ubento/bento.arlo-core";
+import { useInfiniteScroll } from "@/hooks/use-infinite-scroll.js";
+import {
+  PrimitiveButton as Button,
+  PrimitiveInput as Input,
+  ScrollArea,
+} from "@ubento/bento.arlo-core";
 import { Globe, Plus, Settings, Trash2 } from "lucide-react";
 import { FC, useState } from "react";
 
@@ -21,11 +26,22 @@ export const ConnectionsTab: FC<ConnectionsTabProps> = ({
 
   const [connectionSearch, setConnectionSearch] = useState("");
 
-  const { data: connections = [], isFetching: isFetchingConnections } =
+  const { data: connectionsData, isFetching: isFetchingConnections, fetchNextPage, hasNextPage } =
     ubento.vertex.useConnections({
-      team_id: teamId,
+      teamId: teamId,
     });
-  const { data: allProviders = [] } = ubento.vertex.useConnectionProviders();
+  const connections =
+    connectionsData?.pages.flatMap((page) => page.data) ?? [];
+
+  const sentinelRef = useInfiniteScroll({
+    hasNextPage: !!hasNextPage,
+    isFetching: isFetchingConnections,
+    onLoadMore: fetchNextPage,
+  });
+
+  const { data: allProvidersData } = ubento.vertex.useConnectionProviders();
+  const allProviders =
+    allProvidersData?.pages.flatMap((page) => page.data) ?? [];
   const { mutate: deleteConnection } = ubento.vertex.useDeleteConnection();
 
   const getProvider = (providerId: string) =>
@@ -133,6 +149,11 @@ export const ConnectionsTab: FC<ConnectionsTabProps> = ({
               </div>
             );
           })}
+
+          <div
+            ref={sentinelRef}
+            className="flex justify-center h-6"
+          />
         </div>
       </ScrollArea>
     </section>

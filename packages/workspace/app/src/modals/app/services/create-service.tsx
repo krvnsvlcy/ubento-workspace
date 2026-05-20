@@ -1,6 +1,6 @@
 import { useSession } from "@/contexts/session";
 import { useUbento } from "@/engine/app/engine";
-import { useModal } from "@/utils/modal-store";
+import { useAppModal } from "@/modals/app/hook.js";
 import { PrimitiveButton as Button, Content, ContentBody, ContentFooter, ContentHeader, Field, FieldLabel, Heading, PrimitiveInput as Input, Textarea } from "@ubento/bento.arlo-core";
 import { useState } from "react";
 
@@ -17,7 +17,7 @@ function slugify(text: string) {
 export function CreateServiceModal() {
   const ubento = useUbento();
   const session = useSession();
-  const { close } = useModal();
+  const { goBack } = useAppModal();
 
   const [displayName, setDisplayName] = useState("");
   const [name, setName] = useState("");
@@ -55,7 +55,7 @@ export function CreateServiceModal() {
       },
       {
         onSuccess: (createdService: any) => {
-          close(createdService); // resolve the modal promise with the new service object!
+          goBack();
         },
         onError: (err: any) => {
           setError(
@@ -114,7 +114,7 @@ export function CreateServiceModal() {
       </ContentBody>
 
       <ContentFooter className="flex justify-end gap-2 border-t border-neutral-border/30 pt-5 space-y-0">
-        <Button onClick={() => close(null)} variant="ghost" size="sm">
+        <Button onClick={() => goBack()} variant="ghost" size="sm">
           Cancel
         </Button>
         <Button

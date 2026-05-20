@@ -1,17 +1,74 @@
 import { useSession } from "@/contexts/session";
 import { useUbento } from "@/engine/app/engine";
+import { useAppModal } from "@/modals/app/hook.js";
+import {
+  PrimitiveButton as Button,
+  Content,
+  ContentBody,
+  ContentFooter,
+  ContentHeader,
+  Field,
+  FieldLabel,
+  Heading,
+  PrimitiveInput as Input,
+  Spinner,
+} from "@ubento/bento.arlo-core";
 import { vertexClient } from "@ubento/services.sdk";
 import {
   ConnectionCredentials,
   ConnectionProviderConfig,
 } from "@ubento/vertex.core";
-import { PrimitiveButton as Button, Content, ContentBody, ContentFooter, ContentHeader, Field, FieldLabel, Heading, PrimitiveInput as Input } from "@ubento/bento.arlo-core";
 import { useState } from "react";
 import { Case, Default, If, Switch } from "react-if";
-import { extractProviderAuthMethods } from "./utils";
 import { AuthMethodSelector, OAuthClientSelector } from "./shared";
+import { extractProviderAuthMethods } from "./utils";
 
-export function EditConnection({
+export function EditConnection() {
+  const ubento = useUbento();
+  const { params, goBack } = useAppModal();
+  const connectionId = params.connectionId;
+  const providerCode = params.providerCode;
+
+  const { data: connection, isLoading: isLoadingConnection } =
+    ubento.vertex.useConnection(connectionId || "");
+
+  const { data: providerData, isLoading: isLoadingProvider } =
+    ubento.vertex.useConnectionProviderByCode(providerCode || "");
+
+  const config = (providerData as any)?.config as
+    | ConnectionProviderConfig
+    | undefined;
+
+  const isLoading = isLoadingConnection || isLoadingProvider;
+
+  if (isLoading) {
+    return (
+      <Content className="flex items-center justify-center p-6">
+        <Spinner />
+      </Content>
+    );
+  }
+
+  if (!connection || !providerData || !config) {
+    return (
+      <Content className="p-6 text-sm text-destructive">
+        Connection or Provider not found.
+      </Content>
+    );
+  }
+
+  return (
+    <EditConnectionForm
+      connection={connection}
+      providerData={providerData}
+      config={config}
+      onSuccess={goBack}
+      onCancel={goBack}
+    />
+  );
+}
+
+function EditConnectionForm({
   connection,
   providerData,
   config,
@@ -178,44 +235,42 @@ export function EditConnection({
         </Switch>
       </ContentBody>
 
-      <ContentFooter className="flex justify-end gap-2 space-y-0 border-t border-neutral-border/30 pt-5">
-        <Button onClick={onCancel} variant="ghost" size="sm">
-          Cancel
-        </Button>
-        <Switch>
-          <Case condition={authMethod === "oauth2"}>
-            <div className="flex gap-2">
+      <ContentFooter>
+        <div className="flex justify-end gap-2">
+          <Button onClick={onCancel} variant="ghost">
+            Cancel
+          </Button>
+          <Switch>
+            <Case condition={authMethod === "oauth2"}>
+              <div className="flex gap-2">
+                <Button
+                  onClick={handleSave}
+                  variant="ghost"
+                  disabled={!connectionName || isUpdating}
+                >
+                  {isUpdating ? "Saving..." : "Save"}
+                </Button>
+                <Button
+                  onClick={handleOAuthConnect}
+                  variant="primary"
+                  disabled={isRedirecting || !oauthClientId}
+                >
+                  {isRedirecting ? "Connecting..." : "Reconnect OAuth"}
+                </Button>
+              </div>
+            </Case>
+            <Default>
               <Button
                 onClick={handleSave}
-                variant="outline"
-                size="sm"
+                variant="primary"
                 disabled={!connectionName || isUpdating}
               >
-                {isUpdating ? "Saving..." : "Save Name"}
+                {isUpdating ? "Saving..." : "Save"}
               </Button>
-              <Button
-                onClick={handleOAuthConnect}
-                variant="primary"
-                size="sm"
-                disabled={isRedirecting || !oauthClientId}
-              >
-                {isRedirecting ? "Connecting..." : "Reconnect OAuth"}
-              </Button>
-            </div>
-          </Case>
-          <Default>
-            <Button
-              onClick={handleSave}
-              variant="primary"
-              size="sm"
-              disabled={!connectionName || isUpdating}
-            >
-              {isUpdating ? "Saving..." : "Save"}
-            </Button>
-          </Default>
-        </Switch>
+            </Default>
+          </Switch>
+        </div>
       </ContentFooter>
     </Content>
   );
 }
-

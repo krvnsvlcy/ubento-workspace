@@ -45,7 +45,7 @@ export const UsageTab: FC = () => {
   }
 
   return (
-    <div className="space-y-4 animate-in fade-in duration-300">
+    <div className="space-y-4">
       {usageItems.map((item) => (
         <div
           key={item.label}
