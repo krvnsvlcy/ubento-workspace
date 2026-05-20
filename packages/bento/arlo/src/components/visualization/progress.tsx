@@ -1,6 +1,6 @@
 import { createComponent } from "@ubento/bento.core";
 import { z } from "zod";
-import { ProgressBar as CoreProgressBar } from "../../core/visualization/progress-bar.js";
+import { ProgressBar as CoreProgressBar } from "@ubento/bento.arlo-core";
 import * as React from "react";
 
 export const Progress = createComponent({

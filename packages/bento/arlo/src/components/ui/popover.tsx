@@ -4,7 +4,7 @@ import {
   Popover as CorePopover,
   PopoverContent,
   PopoverTrigger,
-} from "../../core/ui/popover.js";
+} from "@ubento/bento.arlo-core";
 import * as React from "react";
 
 export const Popover = createComponent({

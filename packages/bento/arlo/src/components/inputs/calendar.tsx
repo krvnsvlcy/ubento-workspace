@@ -1,7 +1,6 @@
+import { Calendar as CoreCalendar } from "@ubento/bento.arlo-core";
 import { createComponent } from "@ubento/bento.core";
 import { z } from "zod";
-import { Calendar as CoreCalendar } from "../../core/inputs/calendar.js";
-import * as React from "react";
 
 export const Calendar = createComponent({
   props: z.object({

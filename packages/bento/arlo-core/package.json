@@ -10,6 +10,22 @@
     ".": {
       "types": "./build/index.d.ts",
       "import": "./build/index.js"
+    },
+    "./ui/*.js": {
+      "types": "./build/ui/*.d.ts",
+      "import": "./build/ui/*.js"
+    },
+    "./inputs/*.js": {
+      "types": "./build/inputs/*.d.ts",
+      "import": "./build/inputs/*.js"
+    },
+    "./visualization/*.js": {
+      "types": "./build/visualization/*.d.ts",
+      "import": "./build/visualization/*.js"
+    },
+    "./hooks/*.js": {
+      "types": "./build/hooks/*.d.ts",
+      "import": "./build/hooks/*.js"
     }
   },
   "scripts": {

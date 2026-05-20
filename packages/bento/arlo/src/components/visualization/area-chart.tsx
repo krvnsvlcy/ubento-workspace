@@ -1,6 +1,6 @@
 import { createComponent } from "@ubento/bento.core";
 import { z } from "zod";
-import { AreaChart as CoreAreaChart } from "../../core/visualization/area-chart.js";
+import { AreaChart as CoreAreaChart } from "@ubento/bento.arlo-core";
 import * as React from "react";
 
 export const AreaChart = createComponent({

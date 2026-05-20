@@ -4,7 +4,7 @@ import { z } from "zod";
 import {
   RadioGroup as CoreRadioGroup,
   RadioGroupItem,
-} from "../../core/inputs/radio-group.js";
+} from "@ubento/bento.arlo-core";
 
 export const RadioGroup = createComponent({
   props: z.object({

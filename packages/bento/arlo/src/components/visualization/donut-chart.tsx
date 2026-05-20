@@ -1,6 +1,6 @@
 import { createComponent } from "@ubento/bento.core";
 import { z } from "zod";
-import { DonutChart as CoreDonutChart } from "../../core/visualization/donut-chart.js";
+import { DonutChart as CoreDonutChart } from "@ubento/bento.arlo-core";
 import * as React from "react";
 
 export const DonutChart = createComponent({

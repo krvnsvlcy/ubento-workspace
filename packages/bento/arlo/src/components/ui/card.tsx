@@ -1,6 +1,6 @@
 import { createComponent } from "@ubento/bento.core";
 import { z } from "zod";
-import { Card as CoreCard } from "../../core/ui/card.js";
+import { Card as CoreCard } from "@ubento/bento.arlo-core";
 import * as React from "react";
 
 export const Card = createComponent({

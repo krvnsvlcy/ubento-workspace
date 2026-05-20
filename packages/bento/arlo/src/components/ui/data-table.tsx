@@ -1,6 +1,6 @@
 import { createComponent } from "@ubento/bento.core";
 import { z } from "zod";
-import { DataTable as CoreDataTable } from "../../core/ui/data-table.js";
+import { DataTable as CoreDataTable } from "@ubento/bento.arlo-core";
 import * as React from "react";
 
 export const DataTable = createComponent({

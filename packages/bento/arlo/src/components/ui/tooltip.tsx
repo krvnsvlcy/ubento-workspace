@@ -1,6 +1,6 @@
 import { createComponent } from "@ubento/bento.core";
 import { z } from "zod";
-import { Tooltip as CoreTooltip } from "../../core/ui/tooltip.js";
+import { Tooltip as CoreTooltip } from "@ubento/bento.arlo-core";
 import * as React from "react";
 
 export const Tooltip = createComponent({

@@ -3,7 +3,7 @@ import { z } from "zod";
 import {
   ToggleGroup as CoreToggleGroup,
   ToggleGroupItem,
-} from "../../core/inputs/toggle.js";
+} from "@ubento/bento.arlo-core";
 import * as React from "react";
 
 export const ToggleGroup = createComponent({

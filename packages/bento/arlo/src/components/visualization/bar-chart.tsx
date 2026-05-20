@@ -1,6 +1,6 @@
 import { createComponent } from "@ubento/bento.core";
 import { z } from "zod";
-import { BarChart as CoreBarChart } from "../../core/visualization/bar-chart.js";
+import { BarChart as CoreBarChart } from "@ubento/bento.arlo-core";
 import * as React from "react";
 
 export const BarChart = createComponent({

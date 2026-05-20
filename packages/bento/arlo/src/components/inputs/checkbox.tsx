@@ -1,7 +1,6 @@
+import { Checkbox as CoreCheckbox } from "@ubento/bento.arlo-core";
 import { createComponent } from "@ubento/bento.core";
 import { z } from "zod";
-import { Checkbox as CoreCheckbox } from "../../core/inputs/checkbox.js";
-import * as React from "react";
 
 export const Checkbox = createComponent({
   props: z.object({

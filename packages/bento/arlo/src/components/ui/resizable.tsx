@@ -4,7 +4,7 @@ import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup as CoreResizablePanelGroup,
-} from "../../core/ui/resizable.js";
+} from "@ubento/bento.arlo-core";
 import * as React from "react";
 
 export const Resizable = createComponent({

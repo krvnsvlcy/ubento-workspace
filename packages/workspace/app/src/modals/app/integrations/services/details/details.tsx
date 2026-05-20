@@ -4,18 +4,7 @@ import { useUbento } from "@/engine/app/engine";
 import { WorkspaceEngine } from "@/engine/workspace/engine";
 import { useModal } from "@/utils/modal-store";
 import { serviceSpecV1Schema } from "@ubento/vertex.core";
-import {
-  Button,
-  Content,
-  ContentBody,
-  ContentFooter,
-  ContentHeader,
-  PendingView,
-  RailLayout,
-  RailLayoutMain,
-  RailLayoutSide,
-  Text,
-} from "@ubento/bento.arlo-core";
+import { PrimitiveButton as Button, Content, ContentBody, ContentFooter, ContentHeader, PendingView, RailLayout, RailLayoutMain, RailLayoutSide, Text } from "@ubento/bento.arlo-core";
 import { ArrowLeft, Edit, Server } from "lucide-react";
 import { useEffect, useState } from "react";
 import { EditServiceModal } from "../edit-service";

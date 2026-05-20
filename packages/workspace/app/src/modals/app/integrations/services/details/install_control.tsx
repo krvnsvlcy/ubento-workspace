@@ -5,7 +5,7 @@ import {
 } from "@/hooks/workspace";
 import { useAppModal } from "@/modals/app/hook";
 import { appModalRoutes } from "@/modals/app/routes";
-import { Badge, Button } from "@ubento/bento.arlo-core";
+import { PrimitiveBadge as Badge, PrimitiveButton as Button } from "@ubento/bento.arlo-core";
 import { vertexClient } from "@ubento/services.sdk";
 import { ServiceSpecV1 } from "@ubento/vertex.core";
 import { Plus, Settings, Sparkles, Trash2 } from "lucide-react";

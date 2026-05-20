@@ -1,6 +1,6 @@
 import { useSession } from "@/contexts/session";
 import { useUbento } from "@/engine/app/engine";
-import { Button, Input, ScrollArea } from "@ubento/bento.arlo-core";
+import { PrimitiveButton as Button, PrimitiveInput as Input, ScrollArea } from "@ubento/bento.arlo-core";
 import { Globe, Plus, Settings, Trash2 } from "lucide-react";
 import { FC, useState } from "react";
 

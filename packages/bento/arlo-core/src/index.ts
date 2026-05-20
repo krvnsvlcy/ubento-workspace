@@ -16,6 +16,14 @@ export * from "./ui/toast.js";
 export * from "./ui/data-table.js";
 export * from "./ui/list-view.js";
 export * from "./ui/resizable.js";
+export * from "./ui/context-menu.js";
+export * from "./ui/button.js";
+export * from "./ui/badge.js";
+export * from "./ui/card.js";
+export * from "./ui/dialog.js";
+export * from "./ui/popover.js";
+export * from "./ui/tooltip.js";
+export * from "./ui/tabs.js";
 
 // Input Components (Non-conflicting)
 export * from "./inputs/dropdown-menu.js";
@@ -24,6 +32,16 @@ export * from "./inputs/input-group.js";
 export * from "./inputs/radio-card-group.js";
 export * from "./inputs/calendar.js";
 export * from "./inputs/date-picker.js";
+export * from "./inputs/slider.js";
+export * from "./inputs/combobox.js";
+export * from "./inputs/checkbox.js";
+export * from "./inputs/input.js";
+export * from "./inputs/label.js";
+export * from "./inputs/radio-group.js";
+export * from "./inputs/select.js";
+export * from "./inputs/switch.js";
+export * from "./inputs/textarea.js";
+export * from "./inputs/toggle.js";
 
 // Visualization Components (Non-conflicting)
 export * from "./visualization/tracker.js";
@@ -35,6 +53,8 @@ export * from "./visualization/area-chart.js";
 export * from "./visualization/donut-chart.js";
 export * from "./visualization/combo-chart.js";
 export * from "./visualization/spack-chart.js";
+export * from "./visualization/progress-bar.js";
+export * from "./visualization/progress-circle.js";
 
 // Hooks
 export * from "./hooks/useOnWindowResize.js";

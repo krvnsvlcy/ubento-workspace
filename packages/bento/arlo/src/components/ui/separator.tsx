@@ -1,7 +1,7 @@
 import { cx } from "@/lib/utils.js";
 import { createComponent } from "@ubento/bento.core";
 import { z } from "zod";
-import { Divider as CoreDivider } from "../../core/ui/divider.js";
+import { Divider as CoreDivider } from "@ubento/bento.arlo-core";
 
 export const Separator = createComponent({
   props: z.object({

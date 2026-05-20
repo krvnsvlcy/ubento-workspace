@@ -1,21 +1,5 @@
 import { useUbento } from "@/engine/app/engine";
-import {
-  Button,
-  Content,
-  ContentBody,
-  ContentFooter,
-  ContentHeader,
-  Field,
-  FieldLabel,
-  Heading,
-  Input,
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@ubento/bento.arlo-core";
+import { PrimitiveButton as Button, Content, ContentBody, ContentFooter, ContentHeader, Field, FieldLabel, Heading, PrimitiveInput as Input, Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@ubento/bento.arlo-core";
 import { FC, useState } from "react";
 import { useAppModal } from "../../hook.js";
 

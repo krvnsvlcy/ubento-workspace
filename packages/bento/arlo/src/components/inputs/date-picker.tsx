@@ -1,6 +1,6 @@
 import { createComponent } from "@ubento/bento.core";
 import { z } from "zod";
-import { SingleDatePicker, RangeDatePicker } from "../../core/inputs/date-picker.js";
+import { SingleDatePicker, RangeDatePicker } from "@ubento/bento.arlo-core";
 import * as React from "react";
 
 export const DatePicker = createComponent({

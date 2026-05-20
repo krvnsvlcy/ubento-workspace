@@ -6,7 +6,7 @@ import {
   ComboboxInput,
   ComboboxItem,
   ComboboxList,
-} from "../../core/inputs/combobox.js";
+} from "@ubento/bento.arlo-core";
 import * as React from "react";
 
 export const Combobox = createComponent({

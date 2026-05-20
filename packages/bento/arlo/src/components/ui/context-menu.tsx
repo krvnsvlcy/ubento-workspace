@@ -5,7 +5,7 @@ import {
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
-} from "../../core/ui/context-menu.js";
+} from "@ubento/bento.arlo-core";
 import * as React from "react";
 
 export const ContextMenu = createComponent({

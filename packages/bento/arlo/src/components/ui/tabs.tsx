@@ -4,7 +4,7 @@ import {
   Tabs as CoreTabs,
   TabsList,
   TabsTrigger,
-} from "../../core/ui/tabs.js";
+} from "@ubento/bento.arlo-core";
 import * as React from "react";
 
 export const Tabs = createComponent({

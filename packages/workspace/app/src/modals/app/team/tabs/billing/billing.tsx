@@ -1,12 +1,4 @@
-import {
-  Content,
-  ContentBody,
-  ContentHeader,
-  Heading,
-  ScrollArea,
-  TabSwitch,
-  Text,
-} from "@ubento/bento.arlo-core";
+import { Content, ContentBody, ContentHeader, Heading, ScrollArea, TabSwitch, Text } from "@ubento/bento.arlo-core";
 import { useState } from "react";
 import { Case, Switch } from "react-if";
 import { AddonsTab } from "./tabs/addons";

@@ -1,6 +1,6 @@
 import { createComponent } from "@ubento/bento.core";
 import { z } from "zod";
-import { Toast as CoreToast } from "../../core/ui/toast.js";
+import { Toast as CoreToast } from "@ubento/bento.arlo-core";
 import * as React from "react";
 
 export const Toast = createComponent({

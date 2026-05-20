@@ -2,19 +2,7 @@ import { useSession } from "@/contexts/session";
 import { useUbento } from "@/engine/app/engine";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { vertexClient } from "@ubento/services.sdk";
-import {
-  Button,
-  Field,
-  FieldLabel,
-  Heading,
-  Input,
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@ubento/bento.arlo-core";
+import { PrimitiveButton as Button, Field, FieldLabel, Heading, PrimitiveInput as Input, Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@ubento/bento.arlo-core";
 import { useEffect, useState } from "react";
 
 export function AuthMethodSelector({

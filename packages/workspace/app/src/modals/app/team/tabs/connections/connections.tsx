@@ -1,13 +1,5 @@
 import { useSession } from "@/contexts/session";
-import {
-  Content,
-  ContentBody,
-  ContentHeader,
-  Heading,
-  TabSwitch,
-  TabSwitchOption,
-  Text,
-} from "@ubento/bento.arlo-core";
+import { Content, ContentBody, ContentHeader, Heading, TabSwitch, TabSwitchOption, Text } from "@ubento/bento.arlo-core";
 import { FC, useState } from "react";
 import { Case, Switch } from "react-if";
 import { ConnectionsTab } from "./tabs/connections.js";

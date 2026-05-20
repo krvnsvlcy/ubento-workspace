@@ -1,17 +1,6 @@
 import { useSession } from "@/contexts/session";
 import { useUbento } from "@/engine/app/engine";
-import {
-  Button,
-  Content,
-  ContentBody,
-  ContentHeader,
-  Field,
-  FieldLabel,
-  Heading,
-  Input,
-  ScrollArea,
-  Text,
-} from "@ubento/bento.arlo-core";
+import { PrimitiveButton as Button, Content, ContentBody, ContentHeader, Field, FieldLabel, Heading, PrimitiveInput as Input, ScrollArea, Text } from "@ubento/bento.arlo-core";
 import { Loader2 } from "lucide-react";
 import { FC, useEffect, useState } from "react";
 

@@ -1,4 +1,4 @@
-import { Button } from "@ubento/bento.arlo-core";
+import { PrimitiveButton as Button } from "@ubento/bento.arlo-core";
 import { Box, Building2, Home, Sidebar } from "lucide-react";
 import { useUbentoEngine } from "../../../../engine/app/engine";
 

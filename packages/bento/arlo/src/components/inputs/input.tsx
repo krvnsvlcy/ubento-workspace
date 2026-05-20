@@ -1,6 +1,6 @@
 import { createComponent } from "@ubento/bento.core";
 import { z } from "zod";
-import { Input as CoreInput } from "../../core/inputs/input.js";
+import { Input as CoreInput } from "@ubento/bento.arlo-core";
 
 export const Input = createComponent({
   props: z.object({

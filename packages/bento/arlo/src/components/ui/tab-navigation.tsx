@@ -3,7 +3,7 @@ import { z } from "zod";
 import {
   TabNavigation as CoreTabNavigation,
   TabNavigationLink,
-} from "../../core/ui/tab-navigation.js";
+} from "@ubento/bento.arlo-core";
 import * as React from "react";
 
 export const TabNavigation = createComponent({

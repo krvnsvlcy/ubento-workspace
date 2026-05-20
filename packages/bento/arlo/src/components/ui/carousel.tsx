@@ -6,7 +6,7 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "../../core/ui/carousel.js";
+} from "@ubento/bento.arlo-core";
 import * as React from "react";
 
 export const Carousel = createComponent({

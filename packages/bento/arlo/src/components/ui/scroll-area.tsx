@@ -1,6 +1,6 @@
 import { createComponent } from "@ubento/bento.core";
 import { z } from "zod";
-import { ScrollArea as CoreScrollArea } from "../../core/ui/scroll-area.js";
+import { ScrollArea as CoreScrollArea } from "@ubento/bento.arlo-core";
 
 export const ScrollArea = createComponent({
   props: z.object({

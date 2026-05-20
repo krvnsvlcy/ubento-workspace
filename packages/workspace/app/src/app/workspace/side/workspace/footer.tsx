@@ -1,11 +1,6 @@
 import { useAppModal } from "@/modals/app/hook";
 import { appModalRoutes } from "@/modals/app/routes";
-import {
-  Popper,
-  PopperMenu,
-  PopperProvider,
-  PopperTrigger,
-} from "@ubento/bento.arlo-core";
+import { Popper, PopperMenu, PopperProvider, PopperTrigger } from "@ubento/bento.arlo-core";
 import { LogOut, Settings, User } from "lucide-react";
 import { useUbentoEngine } from "../../../../engine/app/engine";
 

@@ -1,18 +1,7 @@
 import { useSession } from "@/contexts/session";
 import { useUbento } from "@/engine/app/engine";
 import { useModal } from "@/utils/modal-store";
-import {
-  Button,
-  Content,
-  ContentBody,
-  ContentFooter,
-  ContentHeader,
-  Field,
-  FieldLabel,
-  Heading,
-  Input,
-  Textarea,
-} from "@ubento/bento.arlo-core";
+import { PrimitiveButton as Button, Content, ContentBody, ContentFooter, ContentHeader, Field, FieldLabel, Heading, PrimitiveInput as Input, Textarea } from "@ubento/bento.arlo-core";
 import { useState } from "react";
 
 // Helper function to slugify display name into a clean, machine-readable name

@@ -1,16 +1,5 @@
 import { useUbento } from "@/engine/app/engine";
-import {
-  Button,
-  Content,
-  ContentBody,
-  Heading,
-  Input,
-  ScrollArea,
-  RailLayout,
-  RailLayoutMain,
-  RailLayoutSide,
-  Text,
-} from "@ubento/bento.arlo-core";
+import { PrimitiveButton as Button, Content, ContentBody, Heading, PrimitiveInput as Input, ScrollArea, RailLayout, RailLayoutMain, RailLayoutSide, Text } from "@ubento/bento.arlo-core";
 import { Globe, Search, Plus } from "lucide-react";
 import { FC, useState } from "react";
 import { useAppModal } from "../../hook.js";

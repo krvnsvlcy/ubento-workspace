@@ -5,17 +5,7 @@ import {
   ConnectionCredentials,
   ConnectionProviderConfig,
 } from "@ubento/vertex.core";
-import {
-  Button,
-  Content,
-  ContentBody,
-  ContentFooter,
-  ContentHeader,
-  Field,
-  FieldLabel,
-  Heading,
-  Input,
-} from "@ubento/bento.arlo-core";
+import { PrimitiveButton as Button, Content, ContentBody, ContentFooter, ContentHeader, Field, FieldLabel, Heading, PrimitiveInput as Input } from "@ubento/bento.arlo-core";
 import { useState } from "react";
 import { Case, Default, If, Switch } from "react-if";
 import { extractProviderAuthMethods } from "./utils";

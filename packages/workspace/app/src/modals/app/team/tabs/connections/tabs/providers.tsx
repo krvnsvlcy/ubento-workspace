@@ -1,7 +1,7 @@
 import { useUbento } from "@/engine/app/engine";
 import { useAppModal } from "@/modals/app/hook";
 import { appModalRoutes } from "@/modals/app/routes";
-import { Badge, Button, Input, ScrollArea } from "@ubento/bento.arlo-core";
+import { PrimitiveBadge as Badge, PrimitiveButton as Button, PrimitiveInput as Input, ScrollArea } from "@ubento/bento.arlo-core";
 import { Globe, Plus } from "lucide-react";
 import { FC, useState } from "react";
 

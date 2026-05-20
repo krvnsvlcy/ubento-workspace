@@ -1,6 +1,6 @@
 import { createComponent } from "@ubento/bento.core";
 import { z } from "zod";
-import { Callout as CoreCallout } from "../../core/ui/callout.js";
+import { Callout as CoreCallout } from "@ubento/bento.arlo-core";
 
 export const Alert = createComponent({
   props: z.object({

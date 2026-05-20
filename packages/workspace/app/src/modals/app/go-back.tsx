@@ -1,4 +1,4 @@
-import { Button } from "@ubento/bento.arlo-core";
+import { PrimitiveButton as Button } from "@ubento/bento.arlo-core";
 import { ArrowLeft } from "lucide-react";
 import { useAppModal } from "./hook";
 

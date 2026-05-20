@@ -6,7 +6,7 @@ import {
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
-} from "../../core/ui/empty.js";
+} from "@ubento/bento.arlo-core";
 import * as React from "react";
 
 export const Empty = createComponent({

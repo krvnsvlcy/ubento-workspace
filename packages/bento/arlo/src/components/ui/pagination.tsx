@@ -8,7 +8,7 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "../../core/ui/pagination.js";
+} from "@ubento/bento.arlo-core";
 import * as React from "react";
 
 export const Pagination = createComponent({

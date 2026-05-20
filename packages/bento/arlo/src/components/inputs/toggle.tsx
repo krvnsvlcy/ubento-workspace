@@ -1,6 +1,6 @@
 import { createComponent } from "@ubento/bento.core";
 import { z } from "zod";
-import { Toggle as CoreToggle } from "../../core/inputs/toggle.js";
+import { Toggle as CoreToggle } from "@ubento/bento.arlo-core";
 import * as React from "react";
 
 export const Toggle = createComponent({

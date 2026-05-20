@@ -1,6 +1,6 @@
 import { createComponent } from "@ubento/bento.core";
 import { z } from "zod";
-import { ProgressCircle as CoreProgressCircle } from "../../core/visualization/progress-circle.js";
+import { ProgressCircle as CoreProgressCircle } from "@ubento/bento.arlo-core";
 import * as React from "react";
 
 export const ProgressCircle = createComponent({

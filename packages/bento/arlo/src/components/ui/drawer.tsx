@@ -7,7 +7,7 @@ import {
   DrawerDescription,
   DrawerHeader,
   DrawerTitle,
-} from "../../core/ui/drawer.js";
+} from "@ubento/bento.arlo-core";
 import * as React from "react";
 
 export const Drawer = createComponent({

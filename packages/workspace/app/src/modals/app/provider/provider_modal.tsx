@@ -1,11 +1,7 @@
 import { useSession } from "@/contexts/session";
 import { useUbento } from "@/engine/app/engine";
 import { ConnectionProviderConfig } from "@ubento/vertex.core";
-import {
-  RailLayout,
-  RailLayoutMain,
-  RailLayoutSide,
-} from "@ubento/bento.arlo-core";
+import { RailLayout, RailLayoutMain, RailLayoutSide } from "@ubento/bento.arlo-core";
 import { useAppModal } from "../hook.js";
 import { ProviderSidebar } from "./side/provider-side.js";
 import { ConnectionMain } from "./main/connection-main.js";

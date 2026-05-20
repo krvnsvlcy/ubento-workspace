@@ -3,18 +3,7 @@ import { useUbento } from "@/engine/app/engine";
 import { WorkspaceEngine } from "@/engine/workspace/engine";
 import { useModal } from "@/utils/modal-store";
 import { CreateServiceModal } from "./create-service";
-import {
-  Button,
-  Content,
-  ContentBody,
-  ContentFooter,
-  ContentHeader,
-  Heading,
-  RailLayout,
-  RailLayoutMain,
-  RailLayoutSide,
-  Text,
-} from "@ubento/bento.arlo-core";
+import { PrimitiveButton as Button, Content, ContentBody, ContentFooter, ContentHeader, Heading, RailLayout, RailLayoutMain, RailLayoutSide, Text } from "@ubento/bento.arlo-core";
 import {
   Briefcase,
   Code2,

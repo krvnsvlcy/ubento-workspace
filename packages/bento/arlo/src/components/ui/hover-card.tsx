@@ -4,7 +4,7 @@ import {
   HoverCard as CoreHoverCard,
   HoverCardContent,
   HoverCardTrigger,
-} from "../../core/ui/hover-card.js";
+} from "@ubento/bento.arlo-core";
 import * as React from "react";
 
 export const HoverCard = createComponent({

@@ -1,6 +1,6 @@
 import { createComponent } from "@ubento/bento.core";
 import { z } from "zod";
-import { BarList as CoreBarList } from "../../core/visualization/bar-list.js";
+import { BarList as CoreBarList } from "@ubento/bento.arlo-core";
 import * as React from "react";
 
 export const BarList = createComponent({

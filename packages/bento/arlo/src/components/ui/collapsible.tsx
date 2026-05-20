@@ -4,7 +4,7 @@ import {
   Collapsible as CoreCollapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "../../core/ui/collapsible.js";
+} from "@ubento/bento.arlo-core";
 import * as React from "react";
 
 export const Collapsible = createComponent({

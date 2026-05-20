@@ -5,7 +5,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "../../core/inputs/dropdown-menu.js";
+} from "@ubento/bento.arlo-core";
 
 export const DropdownMenu = createComponent({
   props: z.object({

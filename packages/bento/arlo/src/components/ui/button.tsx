@@ -1,6 +1,6 @@
 import { createComponent } from "@ubento/bento.core";
 import { z } from "zod";
-import { Button as CoreButton } from "../../core/ui/button.js";
+import { Button as CoreButton } from "@ubento/bento.arlo-core";
 
 export const Button = createComponent({
   props: z.object({

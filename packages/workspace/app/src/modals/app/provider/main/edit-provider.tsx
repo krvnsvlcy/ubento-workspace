@@ -2,17 +2,7 @@ import { useSession } from "@/contexts/session";
 import { useUbento } from "@/engine/app/engine";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { vertexClient } from "@ubento/services.sdk";
-import {
-  Button,
-  Content,
-  ContentBody,
-  ContentFooter,
-  ContentHeader,
-  Field,
-  FieldLabel,
-  Heading,
-  Input,
-} from "@ubento/bento.arlo-core";
+import { PrimitiveButton as Button, Content, ContentBody, ContentFooter, ContentHeader, Field, FieldLabel, Heading, PrimitiveInput as Input } from "@ubento/bento.arlo-core";
 import { useState } from "react";
 
 export function EditProvider({

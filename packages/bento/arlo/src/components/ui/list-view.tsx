@@ -1,6 +1,6 @@
 import { createComponent } from "@ubento/bento.core";
 import { z } from "zod";
-import { ListView as CoreListView } from "../../core/ui/list-view.js";
+import { ListView as CoreListView } from "@ubento/bento.arlo-core";
 import * as React from "react";
 
 export const ListView = createComponent({

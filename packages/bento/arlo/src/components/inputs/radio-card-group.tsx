@@ -4,7 +4,7 @@ import {
   RadioCardGroup as CoreRadioCardGroup,
   RadioCardItem,
   RadioCardIndicator,
-} from "../../core/inputs/radio-card-group.js";
+} from "@ubento/bento.arlo-core";
 import * as React from "react";
 
 export const RadioCardGroup = createComponent({

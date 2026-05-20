@@ -1,13 +1,7 @@
 import { useUbento } from "@/engine/app/engine";
 import { vertexClient } from "@ubento/services.sdk";
 import { ConnectionProviderConfig } from "@ubento/vertex.core";
-import {
-  Button,
-  Content,
-  ContentBody,
-  ContentHeader,
-  Heading,
-} from "@ubento/bento.arlo-core";
+import { PrimitiveButton as Button, Content, ContentBody, ContentHeader, Heading } from "@ubento/bento.arlo-core";
 import { Globe, Plus, Trash2, Edit2 } from "lucide-react";
 
 interface ConnectionListProps {

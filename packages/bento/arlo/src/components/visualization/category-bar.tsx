@@ -1,6 +1,6 @@
 import { createComponent } from "@ubento/bento.core";
 import { z } from "zod";
-import { CategoryBar as CoreCategoryBar } from "../../core/visualization/category-bar.js";
+import { CategoryBar as CoreCategoryBar } from "@ubento/bento.arlo-core";
 import * as React from "react";
 
 export const CategoryBar = createComponent({

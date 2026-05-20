@@ -1,5 +1,5 @@
 import { Icon } from "@/components/icon/icon";
-import { Button } from "@ubento/bento.arlo-core";
+import { PrimitiveButton as Button } from "@ubento/bento.arlo-core";
 import clsx from "clsx";
 import { useEffect, useMemo } from "react";
 import { useUbentoEngine } from "../../../../engine/app/engine";

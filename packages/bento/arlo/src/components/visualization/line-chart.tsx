@@ -1,6 +1,6 @@
 import { createComponent } from "@ubento/bento.core";
 import { z } from "zod";
-import { LineChart as CoreLineChart } from "../../core/visualization/line-chart.js";
+import { LineChart as CoreLineChart } from "@ubento/bento.arlo-core";
 import * as React from "react";
 
 export const LineChart = createComponent({

@@ -1,6 +1,6 @@
 import { createComponent } from "@ubento/bento.core";
 import { z } from "zod";
-import { Switch as CoreSwitch } from "../../core/inputs/switch.js";
+import { Switch as CoreSwitch } from "@ubento/bento.arlo-core";
 import * as React from "react";
 
 export const Switch = createComponent({

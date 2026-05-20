@@ -4,7 +4,7 @@ import {
   SparkAreaChart,
   SparkBarChart,
   SparkLineChart,
-} from "../../core/visualization/spack-chart.js";
+} from "@ubento/bento.arlo-core";
 
 const tempData = [
   { date: 1, sales: 120 },

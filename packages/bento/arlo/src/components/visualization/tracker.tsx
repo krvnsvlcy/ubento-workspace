@@ -1,6 +1,6 @@
 import { createComponent } from "@ubento/bento.core";
 import { z } from "zod";
-import { Tracker as CoreTracker } from "../../core/visualization/tracker.js";
+import { Tracker as CoreTracker } from "@ubento/bento.arlo-core";
 import * as React from "react";
 
 export const Tracker = createComponent({

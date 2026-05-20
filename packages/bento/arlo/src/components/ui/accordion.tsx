@@ -5,7 +5,7 @@ import {
   AccordionItem,
   AccordionTrigger,
   Accordion as CoreAccordion,
-} from "../../core/ui/accordion.js";
+} from "@ubento/bento.arlo-core";
 
 export const Accordion = createComponent({
   props: z.object({

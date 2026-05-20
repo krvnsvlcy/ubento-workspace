@@ -44,6 +44,7 @@
     "@react-stately/datepicker": "^3.17.0",
     "@tanstack/react-table": "^8.21.3",
     "@ubento/bento.core": "workspace:*",
+    "@ubento/bento.arlo-core": "workspace:*",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",

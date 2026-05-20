@@ -1,6 +1,6 @@
 import { createComponent } from "@ubento/bento.core";
 import { z } from "zod";
-import { FileDropzone as CoreFileDropzone } from "../../core/inputs/file-dropzone.js";
+import { FileDropzone as CoreFileDropzone } from "@ubento/bento.arlo-core";
 import * as React from "react";
 
 export const FileDropzone = createComponent({

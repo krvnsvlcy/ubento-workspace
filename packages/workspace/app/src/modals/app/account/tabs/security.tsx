@@ -1,10 +1,4 @@
-import {
-  Content,
-  ContentBody,
-  ContentHeader,
-  Heading,
-  Text,
-} from "@ubento/bento.arlo-core";
+import { Content, ContentBody, ContentHeader, Heading, Text } from "@ubento/bento.arlo-core";
 import { Shield } from "lucide-react";
 import { FC } from "react";
 

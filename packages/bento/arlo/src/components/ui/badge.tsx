@@ -1,6 +1,6 @@
 import { createComponent } from "@ubento/bento.core";
 import { z } from "zod";
-import { Badge as CoreBadge } from "../../core/ui/badge.js";
+import { Badge as CoreBadge } from "@ubento/bento.arlo-core";
 
 export const Badge = createComponent({
   props: z.object({

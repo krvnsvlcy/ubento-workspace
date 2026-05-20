@@ -1,6 +1,6 @@
 import { createComponent } from "@ubento/bento.core";
 import { z } from "zod";
-import { Slider as CoreSlider } from "../../core/inputs/slider.js";
+import { Slider as CoreSlider } from "@ubento/bento.arlo-core";
 import * as React from "react";
 
 export const Slider = createComponent({

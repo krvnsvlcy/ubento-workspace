@@ -67,9 +67,9 @@ const engine = createUbentoEngine({
       getToken,
     },
     serviceBaseUrls: {
-      module: "http://localhost:28888",
-      intelligence: "http://localhost:44513",
-      vertex: "http://localhost:28642",
+      // module: "http://localhost:28888",
+      // intelligence: "http://localhost:44513",
+      // vertex: "http://localhost:28642",
     },
   }),
   workspaceRuntimeUrl:

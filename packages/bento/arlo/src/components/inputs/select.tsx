@@ -6,7 +6,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../../core/inputs/select.js";
+} from "@ubento/bento.arlo-core";
 import * as React from "react";
 
 export const Select = createComponent({

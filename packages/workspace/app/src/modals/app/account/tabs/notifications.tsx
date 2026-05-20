@@ -1,10 +1,4 @@
-import {
-  Content,
-  ContentBody,
-  ContentHeader,
-  Heading,
-  Text,
-} from "@ubento/bento.arlo-core";
+import { Content, ContentBody, ContentHeader, Heading, Text } from "@ubento/bento.arlo-core";
 import { Bell } from "lucide-react";
 import { FC } from "react";
 

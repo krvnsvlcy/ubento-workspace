@@ -6,7 +6,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "../../core/ui/dialog.js";
+} from "@ubento/bento.arlo-core";
 import * as React from "react";
 
 export const Dialog = createComponent({

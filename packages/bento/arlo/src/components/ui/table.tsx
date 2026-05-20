@@ -10,7 +10,7 @@ import {
   TableHeaderCell,
   TableRoot,
   TableRow,
-} from "../../core/ui/table.js";
+} from "@ubento/bento.arlo-core";
 
 export const Table = createComponent({
   props: z.object({
