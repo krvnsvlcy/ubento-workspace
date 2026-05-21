@@ -15,13 +15,13 @@ import {
 import { ChevronDown } from "lucide-react";
 import * as React from "react";
 
+import { Input } from "@base-ui/react";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "../inputs/dropdown-menu.js";
-import { Input } from "../inputs/input.js";
 import { Button } from "./button.js";
 import {
   Table,

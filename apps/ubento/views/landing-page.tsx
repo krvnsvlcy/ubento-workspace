@@ -244,38 +244,6 @@ export function LandingPage() {
               Connect your essential digital services natively. No writing
               complex API wrappers or setting up insecure proxy gateways.
             </p>
-
-            {/* Premium Bullet Points */}
-            <div className="space-y-4 pt-4 border-t border-neutral-border/50">
-              <div className="flex gap-3">
-                <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded bg-neutral-surface border border-neutral-border text-neutral-content">
-                  <Check className="h-3 w-3" />
-                </div>
-                <div>
-                  <h4 className="text-sm font-semibold text-neutral-content">
-                    Server-Side Encrypted Vault
-                  </h4>
-                  <p className="text-xs text-neutral-content-muted mt-0.5">
-                    Credentials never touch the browser, secured strictly on the
-                    server.
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-3">
-                <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded bg-neutral-surface border border-neutral-border text-neutral-content">
-                  <Check className="h-3 w-3" />
-                </div>
-                <div>
-                  <h4 className="text-sm font-semibold text-neutral-content">
-                    Zero-Latency Proxy Routes
-                  </h4>
-                  <p className="text-xs text-neutral-content-muted mt-0.5">
-                    Proxy remote data structures with high-speed endpoint
-                    piping.
-                  </p>
-                </div>
-              </div>
-            </div>
           </div>
 
           {/* Right Column: Visual Mockup */}
@@ -607,38 +575,6 @@ export function LandingPage() {
               Tell the engine what you are trying to accomplish, and watch it
               structure the exact tools and data you need in seconds.
             </p>
-
-            {/* Premium Bullet Points */}
-            <div className="space-y-4 pt-4 border-t border-neutral-border/50">
-              <div className="flex gap-3">
-                <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded bg-neutral-surface border border-neutral-border text-neutral-content">
-                  <Check className="h-3 w-3" />
-                </div>
-                <div>
-                  <h4 className="text-sm font-semibold text-neutral-content">
-                    Contextual NLP Compiler
-                  </h4>
-                  <p className="text-xs text-neutral-content-muted mt-0.5">
-                    Parse dynamic prompt flows into beautiful data widget
-                    schemas.
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-3">
-                <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded bg-neutral-surface border border-neutral-border text-neutral-content">
-                  <Check className="h-3 w-3" />
-                </div>
-                <div>
-                  <h4 className="text-sm font-semibold text-neutral-content">
-                    Instant Live Renders
-                  </h4>
-                  <p className="text-xs text-neutral-content-muted mt-0.5">
-                    Review compiled workspace interfaces with live responsive
-                    previews.
-                  </p>
-                </div>
-              </div>
-            </div>
           </div>
 
           {/* Right Column: Visual Mockup */}
@@ -952,38 +888,6 @@ export function LandingPage() {
               Rearrange components, toggle viewports, and mold your workspace
               tools to match your exact rhythm in real-time.
             </p>
-
-            {/* Premium Bullet Points */}
-            <div className="space-y-4 pt-4 border-t border-neutral-border/50">
-              <div className="flex gap-3">
-                <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded bg-neutral-surface border border-neutral-border text-neutral-content">
-                  <Check className="h-3 w-3" />
-                </div>
-                <div>
-                  <h4 className="text-sm font-semibold text-neutral-content">
-                    Custom Modular Viewports
-                  </h4>
-                  <p className="text-xs text-neutral-content-muted mt-0.5">
-                    Toggle split screens, multi-col grids, and focus modes on
-                    the fly.
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-3">
-                <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded bg-neutral-surface border border-neutral-border text-neutral-content">
-                  <Check className="h-3 w-3" />
-                </div>
-                <div>
-                  <h4 className="text-sm font-semibold text-neutral-content">
-                    Live Widget Orchestrator
-                  </h4>
-                  <p className="text-xs text-neutral-content-muted mt-0.5">
-                    Instantly mount finance metrics, dev console systems, or
-                    activity tickers.
-                  </p>
-                </div>
-              </div>
-            </div>
           </div>
 
           {/* Right Column: Visual Mockup */}
