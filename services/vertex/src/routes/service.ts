@@ -7,6 +7,7 @@ import {
   validate,
 } from "@ubento/services.toolkit";
 import { Request, Response, Router } from "express";
+import multer from "multer";
 import { z } from "zod";
 import {
   createService,
@@ -16,7 +17,6 @@ import {
   updateService,
   uploadServiceImage,
 } from "../entities/service.js";
-import multer from "multer";
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -34,6 +34,7 @@ router.get(
       query: z.object({
         team_id: z.string().optional(),
         scope: z.string().optional(),
+        handle: z.string().optional(),
         name: z.string().optional(),
         cursor: z.string().optional(),
         limit: z.coerce.number().optional(),
@@ -50,6 +51,7 @@ router.get(
         ...parseCursorQuery(req),
         team_id: parseStringQuery(req, "team_id"),
         scope: parseStringQuery(req, "scope"),
+        handle: parseStringQuery(req, "handle"),
         name: parseStringQuery(req, "name"),
         tags: parseStringQuery(req, "tags")?.split(","),
       });
@@ -83,8 +85,8 @@ router.post(
       body: z.object({
         scope: z.string().optional(),
         team_id: z.string().min(1),
+        handle: z.string().min(1),
         name: z.string().min(1),
-        display_name: z.string().min(1),
         description: z.string().optional(),
         config: z.unknown().optional(),
         tags: z.array(z.string()).optional(),
@@ -94,8 +96,8 @@ router.post(
       const service = await createService({
         scope: req.body.scope,
         team_id: req.body.team_id,
+        handle: req.body.handle,
         name: req.body.name,
-        display_name: req.body.display_name,
         description: req.body.description,
         tags: req.body.tags,
       });
@@ -112,8 +114,8 @@ router.patch(
         service_id: z.string(),
       }),
       body: z.object({
+        handle: z.string().optional(),
         name: z.string().optional(),
-        display_name: z.string().optional(),
         description: z.string().optional().nullable(),
         config: z.unknown().optional().nullable(),
         tags: z.array(z.string()).optional(),
@@ -167,7 +169,6 @@ router.post(
     },
   ),
 );
-
 
 router.get(
   "/:service_id/channels",

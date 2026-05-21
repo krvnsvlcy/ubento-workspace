@@ -34,6 +34,7 @@ export class VertexService {
     options: {
       team_id?: string;
       name?: string;
+      handle?: string;
       limit?: number;
       cursor?: string;
       tags?: string[];
@@ -45,18 +46,18 @@ export class VertexService {
     return extractResponseData(result, true);
   }
 
-  async getProviderByCode(code: string): Promise<ConnectionProvider> {
+  async getProviderByHandle(handle: string): Promise<ConnectionProvider> {
     const result = await this.vertexClient.get(
-      "/vertex/connection-providers/by-code/{code}" as any,
+      "/vertex/connection-providers/by-handle/{handle}" as any,
       {
-        params: { path: { code } },
+        params: { path: { handle } },
       },
     );
     return extractResponseData(result, true);
   }
 
   async createConnectionProvider(data: {
-    code: string;
+    handle: string;
     type: string;
     name: string;
     description?: string;
@@ -75,7 +76,7 @@ export class VertexService {
   async updateConnectionProvider(
     providerId: string,
     data: {
-      code?: string;
+      handle?: string;
       type?: string;
       name?: string;
       description?: string;
@@ -265,6 +266,7 @@ export class VertexService {
       team_id?: string;
       scope?: string;
       name?: string;
+      handle?: string;
       limit?: number;
       cursor?: string;
       tags?: string[];
@@ -289,8 +291,8 @@ export class VertexService {
   async createService(data: {
     team_id: string;
     scope: string;
+    handle: string;
     name: string;
-    display_name: string;
     description?: string;
     config?: Record<string, any>;
     tags?: string[];
@@ -304,8 +306,8 @@ export class VertexService {
   async updateService(
     serviceId: string,
     data: {
+      handle?: string;
       name?: string;
-      display_name?: string;
       description?: string;
       tags?: string[];
     },
@@ -509,4 +511,3 @@ export class VertexService {
     return extractResponseData(result, true);
   }
 }
-

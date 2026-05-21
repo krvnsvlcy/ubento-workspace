@@ -23,7 +23,7 @@ export function TreeEntry({
         "group h-8 text-sm cursor-pointer flex items-center rounded-lg px-1",
         className,
         {
-          "text-neutral-content-muted hover:bg-current/7": !active,
+          "text-neutral-content-subtle hover:bg-current/7": !active,
           "bg-accent text-accent-contrast hover:bg-accent-hover font-medium":
             active,
         },

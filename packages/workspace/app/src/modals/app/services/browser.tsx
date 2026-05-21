@@ -1,5 +1,5 @@
 import { useWorkspaceEngine } from "@/contexts/workspace";
-import { useUbento } from "@/engine/app/engine";
+import { useUbentoEngine } from "@/engine/app/engine";
 import { useDebounce } from "@/hooks/use-debouce.js";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll.js";
 import { useAppModal } from "@/modals/app/hook.js";
@@ -19,6 +19,7 @@ import {
   RailLayoutSide,
   ScrollArea,
   Spinner,
+  TabSwitch,
   Text,
 } from "@ubento/bento.arlo-core";
 import { vertexClient } from "@ubento/services.sdk";
@@ -76,7 +77,7 @@ const ServiceCard: FC<ServiceCardProps> = ({
           <Case condition={!!service.image_url}>
             <img
               src={service.image_url!}
-              alt={service.display_name}
+              alt={service.name}
               className="w-full h-full object-cover"
             />
           </Case>
@@ -87,7 +88,7 @@ const ServiceCard: FC<ServiceCardProps> = ({
       </div>
       <div className="w-full flex items-center justify-between gap-2 mb-1">
         <h4 className="text-sm font-bold text-neutral-content group-hover:text-foreground transition-colors truncate">
-          {service.display_name}
+          {service.name}
         </h4>
         {isInstalled && (
           <span className="px-2 py-0.5 rounded-full bg-success/10 border border-success/20 text-success text-[9px] font-bold uppercase tracking-wider shrink-0">
@@ -103,7 +104,9 @@ const ServiceCard: FC<ServiceCardProps> = ({
 };
 
 export const ServiceBrowser: FC = () => {
-  const ubento = useUbento();
+  const engine = useUbentoEngine();
+  const ubento = engine.ubento;
+  const session = engine.useState((s) => s.session);
   const { push } = useAppModal();
   const activeWorkspaceEngine = useWorkspaceEngine();
 
@@ -115,11 +118,18 @@ export const ServiceBrowser: FC = () => {
   const [query, setQuery] = useState("");
   const debouncedSearch = useDebounce(query, 500);
   const [activeCategory, setActiveCategory] = useState("all");
+  const [activeTab, setActiveTab] = useState("public");
+
+  const serviceTabs = [
+    { key: "public", label: "Public" },
+    { key: "private", label: "Private" },
+  ];
 
   const { data, fetchNextPage, hasNextPage, isFetching } =
     ubento.vertex.useInfiniteServices({
       name: debouncedSearch,
       tags: activeCategory === "all" ? undefined : [activeCategory],
+      scope: activeTab === "private" ? session.teamId : "public",
     });
 
   const sentinelRef = useInfiniteScroll({
@@ -176,7 +186,7 @@ export const ServiceBrowser: FC = () => {
       </RailLayoutSide>
       <RailLayoutMain>
         <Content>
-          <ContentHeader>
+          <ContentHeader className="space-y-4">
             <Input
               prefix={<Search className="h-4 w-4 text-neutral-content-muted" />}
               value={query}
@@ -184,6 +194,11 @@ export const ServiceBrowser: FC = () => {
               placeholder="Search for services, integrations, and tools..."
               className="w-full"
               autoFocus
+            />
+            <TabSwitch
+              options={serviceTabs}
+              value={activeTab}
+              onChange={setActiveTab}
             />
           </ContentHeader>
           <ContentBody

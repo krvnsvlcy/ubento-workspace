@@ -16,7 +16,7 @@ export function ProviderModal() {
   const { params } = useAppModal();
   const providerCode = params.providerCode;
 
-  const { data: providerData } = ubento.vertex.useConnectionProviderByCode(
+  const { data: providerData } = ubento.vertex.useConnectionProviderByHandle(
     providerCode || "",
   );
 

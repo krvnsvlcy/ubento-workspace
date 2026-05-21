@@ -129,7 +129,7 @@ export async function getTeamConnectionWithAuth(
   const connection = await prisma.connection.findFirst({
     where: {
       provider: {
-        code: connectionSpec.provider,
+        handle: connectionSpec.provider,
       },
       team_id,
     },
@@ -189,7 +189,7 @@ export async function createConnection({
   );
   if (!parsedConfig.success) {
     throw new InternalServerError(
-      `Invalid connection provider config for ${provider.code}: ${parsedConfig.error.message}`,
+      `Invalid connection provider config for ${provider.handle}: ${parsedConfig.error.message}`,
     );
   }
 
@@ -240,40 +240,23 @@ export async function createConnection({
   }
 
   const encryptedData = await cryptoUtils.encrypt(JSON.stringify(authData));
-  const existingConnection = await prisma.connection.findFirst({
-    where: { provider_id, team_id },
+
+  const result = await prisma.connection.create({
+    data: {
+      id: newConnectionId,
+      team_id,
+      provider_id,
+      name: name || `Connection for ${provider.name}`,
+      description,
+      credentials: {
+        iv: encryptedData.iv,
+        auth_tag: encryptedData.authTag,
+        cipher_text: encryptedData.cipherText,
+      },
+    },
   });
 
-  let result;
-  if (existingConnection) {
-    result = await prisma.connection.update({
-      where: { id: existingConnection.id },
-      data: {
-        credentials: {
-          iv: encryptedData.iv,
-          auth_tag: encryptedData.authTag,
-          cipher_text: encryptedData.cipherText,
-        },
-      },
-    });
-  } else {
-    result = await prisma.connection.create({
-      data: {
-        id: newConnectionId,
-        team_id,
-        provider_id,
-        name: name || `Connection for ${provider.name}`,
-        description,
-        credentials: {
-          iv: encryptedData.iv,
-          auth_tag: encryptedData.authTag,
-          cipher_text: encryptedData.cipherText,
-        },
-      },
-    });
-  }
-
-  return safeConnection(result); // FIXED: Protect raw return
+  return safeConnection(result);
 }
 
 export async function updateConnectionAuth(

@@ -43,7 +43,7 @@ function ComboboxClear({ className, ...props }: ComboboxPrimitive.Clear.Props) {
       className={cn(className)}
       {...props}
       render={
-        <InputGroupButton variant="ghost" size="icon-xs">
+        <InputGroupButton variant="ghost" size="icon-sm">
           <XIcon className="pointer-events-none" />
         </InputGroupButton>
       }
@@ -71,7 +71,7 @@ function ComboboxInput({
       <InputGroupAddon align="inline-end">
         {showTrigger && (
           <InputGroupButton
-            size="icon-xs"
+            size="icon-sm"
             variant="ghost"
             render={<ComboboxTrigger />}
             data-slot="input-group-button"
@@ -260,7 +260,7 @@ function ComboboxChip({
           className="-ml-1 opacity-50 hover:opacity-100"
           data-slot="combobox-chip-remove"
           render={
-            <Button variant="ghost" size="icon-xs">
+            <Button variant="ghost" size="icon-sm">
               <XIcon className="pointer-events-none" />
             </Button>
           }

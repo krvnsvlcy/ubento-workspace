@@ -18,34 +18,69 @@ const buttonVariants = cva(
         primary: "bg-intent text-intent-contrast hover:bg-intent-hover",
         secondary:
           "bg-intent-content/5 text-intent-content hover:bg-intent-content/10",
-        "secondary-destructive":
-          "bg-intent-content/5 text-intent-content hover:bg-destructive hover:text-destructive-contrast",
         outline:
           "border border-intent-border bg-transparent hover:bg-intent-surface text-intent-content",
         ghost:
           "text-intent-content hover:bg-intent-content/10 hover:text-intent-content",
         link: "text-intent-content-subtle hover:text-intent-content",
-        // Tremor variants
-        light:
-          "shadow-none border-transparent text-neutral-content bg-neutral-surface hover:bg-neutral-surface-hover disabled:bg-neutral-surface disabled:text-neutral-content-muted",
+
+        "secondary-destructive":
+          "bg-intent-content/5 text-intent-content hover:bg-destructive hover:text-destructive-contrast",
         destructive:
           "text-destructive-contrast border-transparent bg-destructive hover:bg-destructive-hover disabled:bg-destructive-surface disabled:text-destructive-content-muted",
       },
       size: {
-        sm: "h-6 px-2 text-xs",
-        md: "h-8 px-4",
-        lg: "h-10 px-4",
+        sm: "text-xs",
+        md: "text-sm",
+        lg: "text-base",
         icon: "h-8 w-8 p-0",
-        // Tremor sizes
-        default: "h-8 px-4",
-        "icon-xs": "p-1 size-7",
-        "icon-sm": "p-1.5 size-8",
+        "icon-sm": "size-10",
+        "icon-lg": "size-6",
       },
       shape: {
         rounded: "rounded-xl",
         circle: "rounded-full",
       },
     },
+    compoundVariants: [
+      // variant + size
+      {
+        variant: [
+          "primary",
+          "secondary",
+          "secondary-destructive",
+          "outline",
+          "ghost",
+          "destructive",
+        ],
+        size: "sm",
+        class: "h-6 px-2 text-xs",
+      },
+      {
+        variant: [
+          "primary",
+          "secondary",
+          "secondary-destructive",
+          "outline",
+          "ghost",
+          "destructive",
+        ],
+        size: "md",
+        class: "h-8 px-4",
+      },
+      {
+        variant: [
+          "primary",
+          "secondary",
+          "secondary-destructive",
+          "outline",
+          "ghost",
+          "destructive",
+        ],
+        size: "lg",
+        class: "h-10 px-4",
+      },
+    ],
     defaultVariants: {
       variant: "secondary",
       size: "md",

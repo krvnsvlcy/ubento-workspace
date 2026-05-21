@@ -19,28 +19,28 @@ export function CreateServiceModal() {
   const session = useSession();
   const { goBack } = useAppModal();
 
-  const [displayName, setDisplayName] = useState("");
   const [name, setName] = useState("");
+  const [handle, setHandle] = useState("");
   const [description, setDescription] = useState("");
   const [error, setError] = useState("");
 
   const { mutate: createService, isPending } = ubento.vertex.useCreateService();
 
-  const handleDisplayNameChange = (value: string) => {
-    setDisplayName(value);
-    setName(slugify(value));
+  const handleNameChange = (value: string) => {
+    setName(value);
+    setHandle(slugify(value));
   };
 
   const handleCreate = () => {
     setError("");
-    const trimmedName = name.trim();
-    if (!trimmedName) {
-      setError("Service name/identifier is required.");
+    const trimmedHandle = handle.trim();
+    if (!trimmedHandle) {
+      setError("Service identifier is required.");
       return;
     }
-    if (!/^[a-z0-9-_]+$/.test(trimmedName)) {
+    if (!/^[a-z0-9-_]+$/.test(trimmedHandle)) {
       setError(
-        "Service name must only contain lowercase letters, numbers, hyphens, and underscores.",
+        "Service identifier must only contain lowercase letters, numbers, hyphens, and underscores.",
       );
       return;
     }
@@ -49,8 +49,8 @@ export function CreateServiceModal() {
       {
         team_id: session.teamId,
         scope: "team", // standard scope for custom team services
-        name: trimmedName,
-        display_name: displayName.trim(),
+        handle: trimmedHandle,
+        name: name.trim(),
         description: description.trim(),
       },
       {
@@ -80,20 +80,20 @@ export function CreateServiceModal() {
         )}
 
         <Field>
-          <FieldLabel>Display Name</FieldLabel>
+          <FieldLabel>Name</FieldLabel>
           <Input
-            value={displayName}
-            onChange={(e) => handleDisplayNameChange(e.target.value)}
+            value={name}
+            onChange={(e) => handleNameChange(e.target.value)}
             placeholder="e.g. My Custom Analytics"
             autoFocus
           />
         </Field>
 
         <Field>
-          <FieldLabel>Service Identifier (Name)</FieldLabel>
+          <FieldLabel>Service Identifier (Handle)</FieldLabel>
           <Input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={handle}
+            onChange={(e) => setHandle(e.target.value)}
             placeholder="e.g. my-custom-analytics"
           />
           <span className="text-[11px] text-neutral-content-muted">
@@ -121,7 +121,7 @@ export function CreateServiceModal() {
           onClick={handleCreate}
           variant="primary"
           size="sm"
-          disabled={!displayName || !name || isPending}
+          disabled={!name || !handle || isPending}
         >
           {isPending ? "Creating..." : "Create"}
         </Button>

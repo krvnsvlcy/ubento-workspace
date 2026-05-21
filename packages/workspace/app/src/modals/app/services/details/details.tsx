@@ -1,19 +1,33 @@
 import { ErrorView } from "@/components/error";
-import { useSession } from "@/contexts/session";
 import { useWorkspaceEngine } from "@/contexts/workspace";
-import { useUbento } from "@/engine/app/engine";
+import { useUbentoEngine } from "@/engine/app/engine";
 import { useAppModal } from "@/modals/app/hook.js";
 import { appModalRoutes } from "@/modals/app/routes.js";
+import {
+  Button,
+  Content,
+  ContentBody,
+  ContentFooter,
+  ContentHeader,
+  PendingView,
+  RailLayout,
+  RailLayoutMain,
+  RailLayoutSide,
+  ScrollArea,
+  Text,
+} from "@ubento/bento.arlo-core";
 import { serviceSpecV1Schema } from "@ubento/vertex.core";
-import { Button, Content, ContentBody, ContentFooter, ContentHeader, PendingView, RailLayout, RailLayoutMain, RailLayoutSide, Text } from "@ubento/bento.arlo-core";
-import { ArrowLeft, Edit, Server } from "lucide-react";
+import { Edit, Server } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Case, Default, Switch } from "react-if";
+import { GoBack } from "../../go-back";
 import { DetailsBody } from "./body";
 import { DetailsHeader } from "./header";
 
 export function ServiceDetails() {
-  const session = useSession();
-  const ubento = useUbento();
+  const engine = useUbentoEngine();
+  const ubento = engine.ubento;
+  const session = engine.useState((s) => s.session);
   const { params, goBack, push } = useAppModal();
   const serviceId = params.serviceId || params.id || "";
   const workspaceEngine = useWorkspaceEngine();
@@ -69,19 +83,23 @@ export function ServiceDetails() {
       <RailLayoutSide>
         <Content>
           <ContentHeader>
-            <Button
-              onClick={goBack}
-              variant="ghost"
-              className="w-full justify-start gap-2"
-            >
-              <ArrowLeft size={16} />
-              Back to marketplace
-            </Button>
+            <GoBack />
           </ContentHeader>
           <ContentBody className="space-y-4">
             {/* Service Icon */}
-            <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-lg border border-neutral-border/50 text-neutral-content backdrop-blur-sm">
-              <Server size={32} />
+            <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-neutral-border/50 text-neutral-content backdrop-blur-sm overflow-hidden bg-background">
+              <Switch>
+                <Case condition={!!serviceData.image_url}>
+                  <img
+                    src={serviceData.image_url!}
+                    alt={serviceData.name}
+                    className="w-full h-full object-cover"
+                  />
+                </Case>
+                <Default>
+                  <Server size={32} />
+                </Default>
+              </Switch>
             </div>
 
             {/* Description */}
@@ -92,8 +110,8 @@ export function ServiceDetails() {
           {serviceData.team_id === session?.teamId && (
             <ContentFooter className="border-t border-neutral-border/30 pt-3">
               <Button
-                variant="outline"
-                className="w-full justify-center gap-2"
+                variant="primary"
+                className="w-full"
                 onClick={() => {
                   push(appModalRoutes.services.edit, { serviceId });
                 }}
@@ -106,7 +124,7 @@ export function ServiceDetails() {
       </RailLayoutSide>
       <RailLayoutMain>
         <Content className="bg-gradient-to-br from-neutral-background to-neutral-surface/20">
-          <ContentHeader className="pb-6 border-b border-neutral-border/30">
+          <ContentHeader>
             <DetailsHeader
               service={serviceData}
               specData={specData}
@@ -122,14 +140,20 @@ export function ServiceDetails() {
               onSearchChange={setSearchQuery}
             />
           </ContentHeader>
-          <ContentBody className="overflow-auto pt-6">
-            <DetailsBody
-              isLoadingSpec={isLoadingSpec}
-              specData={specData}
-              specError={parsedSpec?.error?.message}
-              service={serviceData}
-              searchQuery={searchQuery}
-            />
+          <ContentBody
+            paddingX={false}
+            paddingY={false}
+            className="overflow-hidden"
+          >
+            <ScrollArea className="pb-6 px-6">
+              <DetailsBody
+                isLoadingSpec={isLoadingSpec}
+                specData={specData}
+                specError={parsedSpec?.error?.message}
+                service={serviceData}
+                searchQuery={searchQuery}
+              />
+            </ScrollArea>
           </ContentBody>
         </Content>
       </RailLayoutMain>

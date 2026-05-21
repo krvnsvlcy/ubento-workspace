@@ -8,6 +8,7 @@ import {
 import { vertexClient } from "@ubento/services.sdk";
 import { ConnectionProviderConfig } from "@ubento/vertex.core";
 import { Globe } from "lucide-react";
+import { Case, Default, Switch } from "react-if";
 import { GoBack } from "../../go-back.js";
 
 export function ProviderSidebar({
@@ -33,8 +34,19 @@ export function ProviderSidebar({
     <Content>
       <ContentHeader>
         <GoBack />
-        <div className="flex items-center justify-center h-14 w-14 bg-background rounded-xl">
-          <Globe className="h-7 w-7" />
+        <div className="flex items-center justify-center h-14 w-14 bg-background rounded-2xl overflow-hidden">
+          <Switch>
+            <Case condition={!!data?.image_url}>
+              <img
+                src={data?.image_url!}
+                alt={data?.name}
+                className="w-full h-full object-cover"
+              />
+            </Case>
+            <Default>
+              <Globe className="h-7 w-7" />
+            </Default>
+          </Switch>
         </div>
 
         <div className="space-y-2">

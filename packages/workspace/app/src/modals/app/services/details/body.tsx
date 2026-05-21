@@ -1,11 +1,6 @@
 import { Text } from "@ubento/bento.arlo-core";
-import { Terminal, AlertCircle } from "lucide-react";
-import {
-  AboutSection,
-  ActionsSection,
-  EntitiesSection,
-  QueriesSection,
-} from "./sections";
+import { AlertCircle, Terminal } from "lucide-react";
+import { ActionsSection, EntitiesSection, QueriesSection } from "./sections";
 
 interface DetailsBodyProps {
   isLoadingSpec: boolean;
@@ -18,7 +13,6 @@ interface DetailsBodyProps {
 export function DetailsBody({
   isLoadingSpec,
   specData,
-  service,
   searchQuery,
   specError,
 }: DetailsBodyProps) {
@@ -71,12 +65,6 @@ export function DetailsBody({
                 </p>
               </div>
             </div>
-          )}
-
-          {(specData?.description || service.description) && (
-            <AboutSection
-              description={specData?.description || service.description}
-            />
           )}
 
           {specData?.entities && Object.keys(specData.entities).length > 0 && (

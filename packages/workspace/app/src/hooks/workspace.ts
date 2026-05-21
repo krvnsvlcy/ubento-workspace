@@ -30,7 +30,7 @@ export function useServiceWorkspaceState(
   const ubento = useUbento();
   const provider = service.provider;
 
-  const { data: connections, isLoading: isLoadingConnections } = useQuery({
+  const { data: connections, isPending } = useQuery({
     queryKey: ["team-connections", session.teamId, provider],
     queryFn: async () => {
       const result = await ubento.sdk.vertex.listConnections({
@@ -42,5 +42,10 @@ export function useServiceWorkspaceState(
     enabled: !!session.teamId && !!provider,
   });
 
-  return { isInstalled, installedServices, connections, isLoadingConnections };
+  return {
+    isInstalled,
+    installedServices,
+    connections,
+    isPending,
+  };
 }

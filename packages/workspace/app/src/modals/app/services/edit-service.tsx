@@ -13,8 +13,8 @@ function EditServiceContent({ service }: { service: any }) {
   const ubento = useUbento();
   const { goBack, push } = useAppModal();
 
-  const [displayName, setDisplayName] = useState(service.display_name || "");
   const [name, setName] = useState(service.name || "");
+  const [handle, setHandle] = useState(service.handle || "");
   const [description, setDescription] = useState(service.description || "");
   const [error, setError] = useState("");
 
@@ -147,7 +147,7 @@ function EditServiceContent({ service }: { service: any }) {
       const spec = generateServiceSpecFromOpenApi({
         openapi: openapiObj,
         template: {
-          name: name || "custom-service",
+          name: handle || "custom-service",
           connection: {
             provider: selectedProviderId,
             baseUrl: openapiObj.servers?.[0]?.url || "https://api.example.com",
@@ -170,14 +170,14 @@ function EditServiceContent({ service }: { service: any }) {
 
   const handleSave = () => {
     setError("");
-    const trimmedName = name.trim();
-    if (!trimmedName) {
-      setError("Service name/identifier is required.");
+    const trimmedHandle = handle.trim();
+    if (!trimmedHandle) {
+      setError("Service identifier is required.");
       return;
     }
-    if (!/^[a-z0-9-_]+$/.test(trimmedName)) {
+    if (!/^[a-z0-9-_]+$/.test(trimmedHandle)) {
       setError(
-        "Service name must only contain lowercase letters, numbers, hyphens, and underscores.",
+        "Service identifier must only contain lowercase letters, numbers, hyphens, and underscores.",
       );
       return;
     }
@@ -197,8 +197,8 @@ function EditServiceContent({ service }: { service: any }) {
       {
         serviceId: service.id,
         data: {
-          name: trimmedName,
-          display_name: displayName.trim(),
+          handle: trimmedHandle,
+          name: name.trim(),
           description: description.trim(),
         },
       },
@@ -252,20 +252,20 @@ function EditServiceContent({ service }: { service: any }) {
             )}
 
             <Field>
-              <FieldLabel>Display Name</FieldLabel>
+              <FieldLabel>Name</FieldLabel>
               <Input
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. My Custom Analytics"
                 autoFocus
               />
             </Field>
 
             <Field>
-              <FieldLabel>Service Identifier (Name)</FieldLabel>
+              <FieldLabel>Service Identifier (Handle)</FieldLabel>
               <Input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                value={handle}
+                onChange={(e) => setHandle(e.target.value)}
                 placeholder="e.g. my-custom-analytics"
               />
               <span className="text-[11px] text-neutral-content-muted">
@@ -500,7 +500,7 @@ function EditServiceContent({ service }: { service: any }) {
           onClick={handleSave}
           variant="primary"
           size="sm"
-          disabled={!displayName || !name || isPending || isUploadingSpec}
+          disabled={!name || !handle || isPending || isUploadingSpec}
         >
           {isPending || isUploadingSpec ? "Saving..." : "Save Changes"}
         </Button>

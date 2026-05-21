@@ -26,6 +26,7 @@ export function serializeService<T extends WithImageHash<object>>(
 export async function listServices({
   team_id,
   scope,
+  handle,
   name,
   cursor,
   limit,
@@ -33,6 +34,7 @@ export async function listServices({
 }: {
   team_id?: string;
   scope?: string;
+  handle?: string;
   name?: string;
   cursor?: string;
   limit?: number;
@@ -48,12 +50,8 @@ export async function listServices({
       },
       ...(team_id && { team_id }),
       ...(scope && { scope }),
-      ...(name && {
-        OR: [
-          { name: { contains: name, mode: "insensitive" } },
-          { display_name: { contains: name, mode: "insensitive" } },
-        ],
-      }),
+      ...(handle && { handle: { contains: handle, mode: "insensitive" } }),
+      ...(name && { name: { contains: name, mode: "insensitive" } }),
       ...(tags &&
         tags.length > 0 && {
           tags: { hasSome: tags },
@@ -83,20 +81,20 @@ export async function getService(id: string) {
 
 export async function createService({
   team_id,
-  scope = "__public__",
+  scope,
+  handle,
   name,
-  display_name,
   description,
   tags,
 }: {
   team_id: string;
-  scope?: string;
+  scope: "public" | "private";
+  handle: string;
   name: string;
-  display_name: string;
   description?: string | null;
   tags?: string[];
 }) {
-  console.log({ scope, name });
+  console.log({ scope, handle });
   const s = await prisma.service.create({
     data: {
       id: makeEntityId({
@@ -104,9 +102,9 @@ export async function createService({
         bareId: generateBareId(),
       }),
       team_id,
-      scope: scope === "team" ? team_id : "__public__",
-      name: name.toLowerCase(),
-      display_name,
+      scope: scope === "public" ? "public" : team_id,
+      handle: handle.toLowerCase(),
+      name,
       description,
       ...(tags !== undefined && { tags }),
     },
@@ -121,8 +119,8 @@ export async function createService({
 export async function updateService(
   id: string,
   data: {
+    handle?: string;
     name?: string;
-    display_name?: string;
     description?: string | null;
     tags?: string[];
   },
@@ -131,7 +129,7 @@ export async function updateService(
     where: { id },
     data: {
       ...data,
-      ...(data.name !== undefined && { name: data.name.toLowerCase() }),
+      ...(data.handle !== undefined && { handle: data.handle.toLowerCase() }),
     },
   });
   return serializeService(s);

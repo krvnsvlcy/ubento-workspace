@@ -3,7 +3,7 @@ import { Icon, IconKey } from "../icon/icon";
 
 export type ActionProps = {
   title: string;
-  icon: IconKey;
+  icon: IconKey | React.ReactNode;
   handler: (e: React.MouseEvent) => void;
   size?: number;
   iconSize?: number;
@@ -23,13 +23,17 @@ export function Action({
           height: size * 4,
           width: size * 4,
         }}
-        className="flex items-center justify-center text-current/80 hover:bg-current/10 hover:text-current cursor-pointer rounded"
+        className="flex items-center justify-center text-current/80 hover:bg-current/10 hover:text-current cursor-pointer rounded-md"
         onClick={(e) => {
           e.stopPropagation();
           handler(e);
         }}
       >
-        <Icon icon={icon} size={iconSize * 4} />
+        {typeof icon === "string" ? (
+          <Icon icon={icon as IconKey} size={iconSize * 4} />
+        ) : (
+          icon
+        )}
       </button>
     </Tooltip>
   );

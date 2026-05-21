@@ -27,7 +27,7 @@ model ConnectionProvider {
     id     String @id @map("_id")
     entity String @default("connection_provider")
 
-    code        String   @unique // eg. "stripe", "shopify" (machine-readable)
+    handle      String   @unique // eg. "stripe", "shopify" (machine-readable)
     type        String // eg. "http", "database", (protocol)
     name        String // eg. "Stripe", "Shopify", "PostgreSQL" (human-readable)
     description String?
@@ -105,15 +105,15 @@ model Service {
     id     String @id @map("_id")
     entity String @default("service")
 
-    team_id    String
-    scope      String  @default("__public__")
-    name       String
-    image_hash String? // hash of the image
+    team_id String
+    scope   String @default("public")
+    handle  String
 
-    display_name String
-    description  String?
-    config       Json?
-    tags         String[] @default([])
+    name        String
+    description String?
+    config      Json?
+    tags        String[] @default([])
+    image_hash  String? // hash of the image
 
     channels ServiceChannel[]
 
@@ -122,7 +122,7 @@ model Service {
     updated_at DateTime  @updatedAt
     deleted_at DateTime?
 
-    @@unique([scope, name])
+    @@unique([scope, handle])
     @@map("services")
 }
 

@@ -64,7 +64,7 @@ export const ProvidersTab: FC = () => {
                 key={p.id}
                 onClick={() =>
                   navigate(appModalRoutes.provider.provider, {
-                    providerCode: p.code,
+                    providerCode: p.handle,
                   })
                 }
                 className="flex flex-col text-left items-start p-5 rounded-2xl bg-neutral-surface border border-neutral-border hover:border-neutral-border-hover hover:bg-neutral-surface-hover/30 hover:shadow-lg transition-all group duration-200 cursor-pointer"

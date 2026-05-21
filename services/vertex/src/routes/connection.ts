@@ -89,13 +89,17 @@ router.post(
   chain(
     validate({
       body: z.object({
+        name: z.string().min(1),
         team_id: z.string().min(1),
         provider_id: z.string().min(1),
         credentials: z.unknown().optional(),
+        description: z.string().optional(),
       }),
     }),
     async (req: Request, res: Response) => {
+      console.log("creating connection", req.body);
       const connection = await createConnection(req.body);
+      console.log("created connection", connection);
       res.json(toSerializable(connection));
     },
   ),

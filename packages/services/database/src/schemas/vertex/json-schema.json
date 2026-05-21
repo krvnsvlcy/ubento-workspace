@@ -11,7 +11,7 @@
           "type": "string",
           "default": "connection_provider"
         },
-        "code": {
+        "handle": {
           "type": "string"
         },
         "type": {
@@ -63,7 +63,7 @@
       },
       "required": [
         "id",
-        "code",
+        "handle",
         "type",
         "name",
         "updated_at"
@@ -230,18 +230,12 @@
         },
         "scope": {
           "type": "string",
-          "default": "__public__"
+          "default": "public"
         },
-        "name": {
+        "handle": {
           "type": "string"
         },
-        "image_hash": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "display_name": {
+        "name": {
           "type": "string"
         },
         "description": {
@@ -266,6 +260,12 @@
             "type": "string"
           }
         },
+        "image_hash": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "version": {
           "type": "integer",
           "default": 1
@@ -289,8 +289,8 @@
       "required": [
         "id",
         "team_id",
+        "handle",
         "name",
-        "display_name",
         "updated_at"
       ]
     },

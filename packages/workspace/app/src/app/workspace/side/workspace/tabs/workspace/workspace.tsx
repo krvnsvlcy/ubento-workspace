@@ -5,14 +5,15 @@ import {
   WorkspaceEngineProvider,
 } from "@/contexts/workspace";
 import { useUbento, useUbentoEngine } from "@/engine/app/engine";
+import { DeleteBoardModal } from "@/modals/delete_board/delete_board";
+import { useModal } from "@/utils/modal-store";
 import { ServiceData } from "@ubento/bento.core";
 import { workspaceClient } from "@ubento/services.sdk";
 import React from "react";
-import { useModal } from "@/utils/modal-store";
-import { DeleteBoardModal } from "@/modals/delete_board/delete_board";
 
 import { useAppModal } from "@/modals/app/hook";
 import { appModalRoutes } from "@/modals/app/routes";
+import { Globe } from "lucide-react";
 import { TabDefinition } from "../../../types";
 
 interface BoardEntryProps {
@@ -52,11 +53,7 @@ function BoardEntry({
 
   if (isEditing) {
     return (
-      <TreeEntry
-        icon="board"
-        active={active}
-        actionMode="hidden"
-      >
+      <TreeEntry icon="board" active={active} actionMode="hidden">
         <input
           autoFocus
           className="w-full bg-transparent border-none outline-none p-0 text-[13px] text-foreground placeholder:text-neutral-content-muted"
@@ -126,6 +123,7 @@ function BoardsSection({
   return (
     <SideSection
       title="Boards"
+      actionMode="visible"
       actions={[
         {
           icon: "plus",
@@ -182,6 +180,94 @@ function BoardsSection({
   );
 }
 
+interface ServiceEntryProps {
+  name: string;
+  service: ServiceData;
+  onRename: (newName: string) => void;
+  onUninstall: () => void;
+  onOpen: () => void;
+}
+
+function ServiceEntry({
+  name,
+  service,
+  onRename,
+  onUninstall,
+  onOpen,
+}: ServiceEntryProps) {
+  const [isEditing, setIsEditing] = React.useState(false);
+  const [editName, setEditName] = React.useState(name);
+
+  React.useEffect(() => {
+    setEditName(name);
+  }, [name]);
+
+  const handleSave = () => {
+    setIsEditing(false);
+    const trimmed = editName.trim();
+    if (trimmed && trimmed !== name) {
+      onRename(trimmed);
+    }
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    setEditName(name);
+  };
+
+  if (isEditing) {
+    return (
+      <TreeEntry icon="service" actionMode="hidden">
+        <input
+          autoFocus
+          className="w-full bg-transparent border-none outline-none p-0 text-[13px] text-foreground placeholder:text-neutral-content-muted"
+          value={editName}
+          onChange={(e) => setEditName(e.target.value)}
+          onBlur={handleSave}
+          onFocus={(e) => e.target.select()}
+          placeholder="Service name"
+          onClick={(e) => e.stopPropagation()}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleSave();
+            } else if (e.key === "Escape") {
+              handleCancel();
+            }
+            e.stopPropagation();
+          }}
+        />
+      </TreeEntry>
+    );
+  }
+
+  return (
+    <TreeEntry
+      icon="service"
+      onClick={onOpen}
+      actions={[
+        {
+          icon: "edit",
+          title: "Rename",
+          handler: (e) => {
+            e.stopPropagation();
+            setIsEditing(true);
+          },
+        },
+        {
+          icon: "trash",
+          title: "Uninstall",
+          handler: (e) => {
+            e.stopPropagation();
+            onUninstall();
+          },
+        },
+      ]}
+    >
+      {name}
+    </TreeEntry>
+  );
+}
+
 function ServicesSection() {
   const workspaceEngine = useWorkspaceEngine();
   const services = workspaceEngine.useState((s) => {
@@ -195,13 +281,27 @@ function ServicesSection() {
   const serviceEntries = Object.entries(services);
   const { push } = useAppModal();
 
+  const handleUninstall = (name: string) => {
+    const updated = { ...services };
+    delete updated[name];
+    workspaceEngine.updateWorkspaceSpec({ spec: { services: updated } });
+  };
+
+  const handleRename = (oldName: string, newName: string) => {
+    const updated = { ...services };
+    updated[newName] = updated[oldName];
+    delete updated[oldName];
+    workspaceEngine.updateWorkspaceSpec({ spec: { services: updated } });
+  };
+
   return (
     <SideSection
       title="Services"
+      actionMode="visible"
       actions={[
         {
-          icon: "plus",
-          title: "Install Service",
+          icon: <Globe size={16} />,
+          title: "Browse Services",
           handler: () => push(appModalRoutes.services.services),
         },
       ]}
@@ -214,17 +314,16 @@ function ServicesSection() {
         </div>
       ) : (
         serviceEntries.map(([name, service]) => (
-          <TreeEntry
+          <ServiceEntry
             key={name}
-            icon="service"
-            onClick={() =>
-              push(appModalRoutes.services.service, {
-                serviceId: service.id,
-              })
+            name={name}
+            service={service}
+            onOpen={() =>
+              push(appModalRoutes.services.service, { serviceId: service.id })
             }
-          >
-            {name}
-          </TreeEntry>
+            onRename={(newName) => handleRename(name, newName)}
+            onUninstall={() => handleUninstall(name)}
+          />
         ))
       )}
     </SideSection>

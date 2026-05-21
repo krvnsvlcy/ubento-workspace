@@ -1,3 +1,4 @@
+import { useUbentoEngine } from "@/engine/app/engine";
 import { WorkspaceEngine } from "@/engine/workspace/engine";
 import {
   useServiceWorkspaceState,
@@ -5,7 +6,16 @@ import {
 } from "@/hooks/workspace";
 import { useAppModal } from "@/modals/app/hook";
 import { appModalRoutes } from "@/modals/app/routes";
-import { Badge, Button } from "@ubento/bento.arlo-core";
+import {
+  Badge,
+  Button,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Spinner,
+} from "@ubento/bento.arlo-core";
 import { vertexClient } from "@ubento/services.sdk";
 import { ServiceSpecV1 } from "@ubento/vertex.core";
 import { Plus, Settings, Sparkles, Trash2 } from "lucide-react";
@@ -22,15 +32,20 @@ export function InstallControl({
   specData?: ServiceSpecV1;
   activeChannelId: string | null;
 }) {
-  const { push: navigate } = useAppModal();
-  const { installedServices } = useWorkspaceServices(workspaceEngine);
-  const { connections, isLoadingConnections } = useServiceWorkspaceState(
-    workspaceEngine,
+  const engine = useUbentoEngine();
+  const provider = engine.ubento.vertex.useConnectionProviderByHandle(
+    specData?.connection?.provider || "",
     {
-      id: service.id,
-      provider: specData?.connection?.provider,
+      enabled: !!specData?.connection?.provider,
     },
   );
+  const { push: navigate } = useAppModal();
+  const { installedServices } = useWorkspaceServices(workspaceEngine);
+  const { connections, isPending: isLoadingConnections } =
+    useServiceWorkspaceState(workspaceEngine, {
+      id: service.id,
+      provider: specData?.connection?.provider,
+    });
 
   const [selectedConnectionId, setSelectedConnectionId] = useState<
     string | null
@@ -55,10 +70,9 @@ export function InstallControl({
 
   if (isLoadingConnections) {
     return (
-      <div className="flex items-center gap-2 text-neutral-content-muted">
-        <div className="w-4 h-4 border-2 border-neutral-border border-t-accent rounded-full animate-spin" />
-        <span className="text-[12px]">Loading connections...</span>
-      </div>
+      <Button disabled variant="primary">
+        <Spinner /> Connection
+      </Button>
     );
   }
 
@@ -74,7 +88,7 @@ export function InstallControl({
         variant="primary"
         className="gap-2"
       >
-        <Plus size={16} /> Connect {specData?.connection?.provider}
+        <Plus size={16} /> Connect {provider.data?.name}
       </Button>
     );
   }
@@ -141,26 +155,24 @@ export function InstallControl({
   // Case 3: Multiple connections
   return (
     <div className="flex items-center gap-2">
-      <select
+      <Select
         value={selectedConnectionId ?? ""}
-        onChange={(e) => setSelectedConnectionId(e.target.value)}
-        className="bg-neutral-surface/50 border border-neutral-border/30 rounded-lg px-2 py-0.5 text-[12px] font-medium text-neutral-content focus:outline-none focus:ring-1 focus:ring-accent cursor-pointer"
+        onValueChange={setSelectedConnectionId}
       >
-        {connections.map((c: any) => (
-          <option key={c.id} value={c.id}>
-            {c.name || c.id}
-          </option>
-        ))}
-      </select>
+        <SelectTrigger>
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {connections.map((c: any) => (
+            <SelectItem key={c.id} value={c.id}>
+              {c.name || c.id}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
 
       {isInstalledWithActiveConnection ? (
-        <Button
-          onClick={handleUninstall}
-          variant="primary"
-          intent="destructive"
-          size="sm"
-          className="gap-2"
-        >
+        <Button onClick={handleUninstall} variant="destructive">
           <Trash2 size={16} /> Uninstall
         </Button>
       ) : (
@@ -184,9 +196,10 @@ export function InstallControl({
             providerCode: specData?.connection?.provider || "",
           });
         }}
-        variant="ghost"
+        variant="secondary"
         size="icon"
         title="Manage Connections"
+        className="shrink-0"
       >
         <Settings size={16} />
       </Button>

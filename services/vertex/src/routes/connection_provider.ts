@@ -13,7 +13,7 @@ import {
   createConnectionProvider,
   deleteConnectionProvider,
   getConnectionProvider,
-  getConnectionProviderByCode,
+  getConnectionProviderByHandle,
   listConnectionProviders,
   updateConnectionProvider,
   uploadConnectionProviderImage,
@@ -47,20 +47,20 @@ router.get(
 );
 
 router.get(
-  "/by-code/:code",
+  "/by-handle/:handle",
   chain(
     validate({
       params: z.object({
-        code: z.string(),
+        handle: z.string(),
       }),
     }),
     async (req: Request, res: Response) => {
-      const provider = await getConnectionProviderByCode(
-        req.params.code as string,
+      const provider = await getConnectionProviderByHandle(
+        req.params.handle as string,
       );
       if (!provider) {
         throw new NotFoundError(
-          `connection_provider with name ${req.params.name}`,
+          `connection_provider with handle ${req.params.handle}`,
         );
       }
       res.json(toSerializable(provider));
@@ -75,6 +75,7 @@ router.get(
       query: z.object({
         team_id: z.string().optional(),
         name: z.string().optional(),
+        handle: z.string().optional(),
         cursor: z.string().optional(),
         limit: z.coerce.number().optional(),
         tags: z
@@ -89,6 +90,7 @@ router.get(
       const result = await listConnectionProviders({
         ...parseCursorQuery(req),
         name: parseStringQuery(req, "name"),
+        handle: parseStringQuery(req, "handle"),
         tags: parseStringQuery(req, "tags")?.split(","),
       });
       res.json(result);
@@ -101,7 +103,7 @@ router.post(
   chain(
     validate({
       body: z.object({
-        code: z.string().min(1),
+        handle: z.string().min(1),
         type: z.string().min(1),
         name: z.string().min(1),
         description: z.string().optional(),
@@ -124,7 +126,7 @@ router.patch(
         provider_id: z.string(),
       }),
       body: z.object({
-        code: z.string().optional(),
+        handle: z.string().optional(),
         type: z.string().optional(),
         name: z.string().optional(),
         description: z.string().optional(),

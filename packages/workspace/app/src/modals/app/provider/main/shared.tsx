@@ -36,7 +36,7 @@ export function AuthMethodSelector({
       {authMethods.map((authMethod) => (
         <Button
           key={authMethod.code}
-          variant={value === authMethod.code ? "primary" : "default"}
+          variant={value === authMethod.code ? "primary" : "secondary"}
           onClick={() => onChange(authMethod.code)}
         >
           {authMethod.name}

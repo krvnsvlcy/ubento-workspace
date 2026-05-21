@@ -26,7 +26,7 @@ export function OAuthClientView() {
   const providerCode = params.providerCode;
 
   const { data: providerData, isLoading: isLoadingProvider } =
-    ubento.vertex.useConnectionProviderByCode(providerCode || "");
+    ubento.vertex.useConnectionProviderByHandle(providerCode || "");
 
   const { data: clients = [], isLoading: isLoadingClients } = useQuery({
     queryKey: ["oauth-clients", providerData?.id],
@@ -79,7 +79,7 @@ export function OAuthClientView() {
     }
   };
 
-  if (1 || isLoading) {
+  if (isLoading) {
     return <PendingView message="OAuth Client" />;
   }
 

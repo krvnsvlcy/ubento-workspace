@@ -33,7 +33,7 @@ export function EditConnection() {
     ubento.vertex.useConnection(connectionId || "");
 
   const { data: providerData, isLoading: isLoadingProvider } =
-    ubento.vertex.useConnectionProviderByCode(providerCode || "");
+    ubento.vertex.useConnectionProviderByHandle(providerCode || "");
 
   const config = (providerData as any)?.config as
     | ConnectionProviderConfig

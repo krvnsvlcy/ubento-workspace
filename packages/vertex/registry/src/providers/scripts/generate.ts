@@ -50,6 +50,9 @@ function createHttpHandler(
       method,
       path: cleanUrl,
     },
+    response: {
+      type: "json",
+    },
   };
 
   try {
@@ -124,7 +127,7 @@ export function groupNangoProviders(
 // --- 4. Pipeline Step 2: Generation & Validation ---
 
 interface ProviderOverride {
-  code?: string;
+  handle?: string;
   name?: string;
   auth?: Partial<HttpConnectionProviderConfig["auth"]>;
   customFields?: Record<string, any>;
@@ -132,47 +135,47 @@ interface ProviderOverride {
 
 const providerOverrides: Record<string, ProviderOverride> = {
   activecampaign: { name: "ActiveCampaign" },
-  "amplitude-event-streaming-api": { code: "amplitude", name: "Amplitude" },
-  "apollo-oauth": { code: "apollo", name: "Apollo" },
-  "asana-scim-api": { code: "asana", name: "Asana" },
+  "amplitude-event-streaming-api": { handle: "amplitude", name: "Amplitude" },
+  "apollo-oauth": { handle: "apollo", name: "Apollo" },
+  "asana-scim-api": { handle: "asana", name: "Asana" },
   ashby: { name: "Ashby" },
   auth0: { name: "Auth0" },
-  "aws-iam": { code: "aws", name: "AWS" },
-  "aws-scim": { code: "aws", name: "AWS" },
-  aws: { code: "aws", name: "AWS" },
+  "aws-iam": { handle: "aws", name: "AWS" },
+  "aws-scim": { handle: "aws", name: "AWS" },
+  aws: { handle: "aws", name: "AWS" },
   "bamboo-hr": { name: "BambooHR" },
-  "brex-staging-oauth": { code: "brex", name: "Brex" },
-  "cal-com-v1": { code: "cal-com", name: "Cal.com" },
-  "cal-com-v2": { code: "cal-com", name: "Cal.com" },
+  "brex-staging-oauth": { handle: "brex", name: "Brex" },
+  "cal-com-v1": { handle: "cal-com", name: "Cal.com" },
+  "cal-com-v2": { handle: "cal-com", name: "Cal.com" },
   "clari-copilot": { name: "Clari Copilot" },
   "customer-io": { name: "Customer.io" },
   datadog: { name: "Datadog" },
   discord: { name: "Discord" },
-  "eleven-labs": { code: "elevenlabs", name: "ElevenLabs" },
-  "figma-scim": { code: "figma", name: "Figma" },
-  "github-app": { code: "github", name: "GitHub" },
+  "eleven-labs": { handle: "elevenlabs", name: "ElevenLabs" },
+  "figma-scim": { handle: "figma", name: "Figma" },
+  "github-app": { handle: "github", name: "GitHub" },
   gitlab: { name: "GitLab" },
-  "gong-basic-auth": { code: "gong", name: "Gong" },
-  "google-gemini": { code: "google-gemini", name: "Google Gemini" },
-  "google-maps": { code: "google-maps", name: "Google Maps" },
-  "greenhouse-job-board-api": { code: "greenhouse", name: "Greenhouse" },
-  "gusto-demo": { code: "gusto", name: "Gusto" },
-  "hibob-service-user": { code: "hibob", name: "HiBob" },
+  "gong-basic-auth": { handle: "gong", name: "Gong" },
+  "google-gemini": { handle: "google-gemini", name: "Google Gemini" },
+  "google-maps": { handle: "google-maps", name: "Google Maps" },
+  "greenhouse-job-board-api": { handle: "greenhouse", name: "Greenhouse" },
+  "gusto-demo": { handle: "gusto", name: "Gusto" },
+  "hibob-service-user": { handle: "hibob", name: "HiBob" },
   hubspot: { name: "HubSpot" },
-  "jira-basic-auth": { code: "jira", name: "Jira" },
-  "jira-oauth": { code: "jira", name: "Jira" },
-  "loops-so": { code: "loops", name: "Loops" },
+  "jira-basic-auth": { handle: "jira", name: "Jira" },
+  "jira-oauth": { handle: "jira", name: "Jira" },
+  "loops-so": { handle: "loops", name: "Loops" },
   mailchimp: { name: "Mailchimp" },
-  "microsoft-tenant": { code: "microsoft", name: "Microsoft" },
-  "openai-admin": { code: "openai", name: "OpenAI" },
+  "microsoft-tenant": { handle: "microsoft", name: "Microsoft" },
+  "openai-admin": { handle: "openai", name: "OpenAI" },
   posthog: { name: "PostHog" },
   recharge: { name: "Recharge" },
-  "reply-io": { code: "reply", name: "Reply" },
-  "sage-hr": { code: "sage", name: "Sage" },
-  "sap-s-4hana-cloud-basic-auth": { code: "sap", name: "SAP" },
-  "shopify-partner": { code: "shopify", name: "Shopify" },
-  "smartlead-ai": { code: "smartlead", name: "Smartlead" },
-  "stripe-connect": { code: "stripe", name: "Stripe" },
+  "reply-io": { handle: "reply", name: "Reply" },
+  "sage-hr": { handle: "sage", name: "Sage" },
+  "sap-s-4hana-cloud-basic-auth": { handle: "sap", name: "SAP" },
+  "shopify-partner": { handle: "shopify", name: "Shopify" },
+  "smartlead-ai": { handle: "smartlead", name: "Smartlead" },
+  "stripe-connect": { handle: "stripe", name: "Stripe" },
 };
 
 export function buildUbentoProviders(
@@ -193,7 +196,7 @@ export function buildUbentoProviders(
     const override =
       providerOverrides[groupKey] || providerOverrides[primaryNangoKey];
 
-    let code = override?.code ? override.code : groupKey;
+    let handle = override?.handle ? override.handle : groupKey;
     let name = override?.name ? override.name : primaryNangoConfig.display_name;
 
     name = name
@@ -203,13 +206,13 @@ export function buildUbentoProviders(
       .trim();
 
     // Collision handling
-    if (ubentoProviders[code]) {
-      code = `${code}-${Math.random().toString(36).substring(2, 6)}`;
+    if (ubentoProviders[handle]) {
+      handle = `${handle}-${Math.random().toString(36).substring(2, 6)}`;
     }
 
     const provider: HttpConnectionProviderConfig = {
       type: "http",
-      code,
+      handle,
       name,
       baseUrl: group.proxyUrl,
       auth: {},
@@ -243,16 +246,17 @@ export function buildUbentoProviders(
         };
       } else if (type === "oauth2") {
         if (nangoConfig.authorization_url && nangoConfig.token_url) {
+          const authorize = createHttpHandler(
+            nangoConfig.authorization_url,
+            "GET",
+            nangoConfig.authorization_params,
+          );
+          const token = createHttpHandler(nangoConfig.token_url, "POST");
           provider.auth.oauth2 = {
-            type: "oauth2",
             // authorization_params injected directly into the GET request's query object
-            authorize: createHttpHandler(
-              nangoConfig.authorization_url,
-              "GET",
-              nangoConfig.authorization_params,
-            ),
-            // token_url is standard POST. If Nango ever adds token_params, they can be merged here too.
-            token: createHttpHandler(nangoConfig.token_url, "POST"),
+            authorize,
+            baseUrl: authorize.request.baseUrl!,
+            token,
             defaultScopes: nangoConfig.default_scopes,
             disablePkce: nangoConfig.disable_pkce ?? false,
           };
@@ -284,9 +288,9 @@ export function buildUbentoProviders(
     try {
       // Final schema validation before adding to the registry
       httpConnectionProviderConfigSchema.parse(provider);
-      ubentoProviders[code] = provider;
+      ubentoProviders[handle] = provider;
     } catch (e) {
-      console.error(`[Generator] Validation failed for provider ${code}:`, e);
+      console.error(`[Generator] Validation failed for provider ${handle}:`, e);
     }
   }
 

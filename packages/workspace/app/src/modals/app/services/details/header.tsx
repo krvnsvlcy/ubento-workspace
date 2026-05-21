@@ -1,7 +1,15 @@
 import { WorkspaceEngine } from "@/engine/workspace/engine";
+import {
+  Heading,
+  Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@ubento/bento.arlo-core";
 import { vertexClient } from "@ubento/services.sdk";
 import { ServiceSpecV1 } from "@ubento/vertex.core";
-import { Button, Heading, Text } from "@ubento/bento.arlo-core";
 import { Search } from "lucide-react";
 import { InstallControl } from "./install_control";
 
@@ -34,28 +42,34 @@ export function DetailsHeader({
       <div className="flex items-start gap-4">
         {/* Service Info */}
         <div className="flex-1 space-y-1">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-4">
             <Heading className="text-2xl font-bold tracking-tight">
-              {service.display_name || service.name}
+              {service.name || service.handle}
             </Heading>
-            {channels && channels.length > 0 && (
-              <select
-                value={activeChannelId ?? ""}
-                onChange={(e) => setActiveChannelId(e.target.value)}
-                className="bg-neutral-surface/50 border border-neutral-border/30 rounded-lg px-2 py-0.5 text-[12px] font-medium text-neutral-content-muted hover:text-neutral-content focus:outline-none focus:ring-1 focus:ring-accent transition-colors cursor-pointer"
-              >
-                {channels.map((channel: any) => (
-                  <option key={channel.id} value={channel.id}>
-                    {channel.name}
-                  </option>
-                ))}
-              </select>
-            )}
           </div>
         </div>
 
-        {/* Actions Column */}
-        <div className="flex flex-col items-end gap-2">
+        <div className="flex items-center gap-2">
+          {channels && channels.length > 0 && (
+            <div style={{ width: 120 }}>
+              <Select
+                value={activeChannelId ?? ""}
+                onValueChange={setActiveChannelId}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {channels.map((channel: any) => (
+                    <SelectItem key={channel.id} value={channel.id}>
+                      {channel.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
           <InstallControl
             workspaceEngine={workspaceEngine}
             service={service}
@@ -66,16 +80,13 @@ export function DetailsHeader({
       </div>
 
       {/* Search Bar */}
-      <div className="relative">
-        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-content-muted" />
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => onSearchChange(e.target.value)}
-          placeholder="Filter operations..."
-          className="w-full pl-10 pr-4 py-2 bg-neutral-surface/50 border border-neutral-border/30 rounded-lg text-sm text-neutral-content placeholder-neutral-content-muted focus:outline-none focus:ring-1 focus:ring-accent transition-colors"
-        />
-      </div>
+      <Input
+        type="text"
+        value={searchQuery}
+        onChange={(e) => onSearchChange(e.target.value)}
+        placeholder="Filter operations..."
+        prefix={<Search size={16} />}
+      />
     </div>
   );
 }

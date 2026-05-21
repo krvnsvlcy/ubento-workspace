@@ -43,7 +43,7 @@ export const ProvidersBrowser: FC = () => {
 
   const handleSelect = (provider: any) => {
     navigate(appModalRoutes.provider.provider, {
-      providerCode: provider.code,
+      providerCode: provider.handle,
     });
   };
 
@@ -144,11 +144,11 @@ const ProviderCard: FC<ProviderCardProps> = ({ provider, onSelect }) => {
         <Globe className="h-5 w-5" />
       </div>
       <h4 className="text-sm font-bold text-neutral-content group-hover:text-foreground transition-colors mb-1">
-        {provider.name || provider.code}
+        {provider.name || provider.handle}
       </h4>
       <p className="text-xs text-neutral-content-muted line-clamp-2">
         {provider.description ||
-          `Integrate ${provider.name || provider.code} services with your team.`}
+          `Integrate ${provider.name || provider.handle} services with your team.`}
       </p>
     </Card>
   );

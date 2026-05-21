@@ -50,7 +50,7 @@ async function getAuthUrl({
 
   if (!authConfig) {
     throw new ValidationError(
-      `Provider ${provider.code} is not configured for oauth2 flow`,
+      `Provider ${provider.handle} is not configured for oauth2 flow`,
     );
   }
 

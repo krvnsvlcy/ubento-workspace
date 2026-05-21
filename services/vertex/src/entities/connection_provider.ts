@@ -33,14 +33,14 @@ export async function listConnectionProviders({
   name,
   cursor,
   limit,
-  code,
+  handle,
   tags,
 }: {
   team_id?: string;
   name?: string;
   cursor?: string;
   limit?: number;
-  code?: string;
+  handle?: string;
   tags?: string[];
 } = {}) {
   const page = await prismaListWithCursor(prisma.connectionProvider, {
@@ -51,8 +51,8 @@ export async function listConnectionProviders({
       ...(name && {
         name: { contains: name, mode: "insensitive" },
       }),
-      ...(code && {
-        code,
+      ...(handle && {
+        handle,
       }),
       ...(team_id && {
         team_id,
@@ -75,8 +75,8 @@ export async function getConnectionProvider(id: string) {
   return p ? serializeConnectionProvider(p) : null;
 }
 
-export async function getConnectionProviderByCode(code: string) {
-  const p = await prisma.connectionProvider.findUnique({ where: { code } });
+export async function getConnectionProviderByHandle(handle: string) {
+  const p = await prisma.connectionProvider.findUnique({ where: { handle } });
   return p ? serializeConnectionProvider(p) : null;
 }
 
@@ -85,14 +85,14 @@ export async function getConnectionProviderByCode(code: string) {
 // ---------------------------------------------------------------------------
 
 export async function createConnectionProvider({
-  code,
+  handle,
   type,
   name,
   description,
   config,
   tags,
 }: {
-  code: string;
+  handle: string;
   type: string;
   name: string;
   description?: string | null;
@@ -105,7 +105,7 @@ export async function createConnectionProvider({
         code: ubentoEntities.connectionProvider.code,
         bareId: generateBareId(),
       }),
-      code,
+      handle,
       type,
       name,
       description,
@@ -123,6 +123,7 @@ export async function createConnectionProvider({
 export async function updateConnectionProvider(
   id: string,
   data: {
+    handle?: string;
     type?: string;
     name?: string;
     description?: string | null;

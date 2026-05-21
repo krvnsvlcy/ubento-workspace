@@ -135,7 +135,7 @@ export const ConnectionsTab: FC<ConnectionsTabProps> = ({
                         const provider = getProvider(conn.provider_id);
                         if (provider) {
                           navigate(appModalRoutes.provider.provider, {
-                            providerCode: provider.code,
+                            providerCode: provider.handle,
                           });
                         }
                       }}

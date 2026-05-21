@@ -20,7 +20,7 @@ export function CreateProviderModal({ provider }: CreateProviderModalProps = {})
       return JSON.stringify(
         {
           type: "http",
-          code: "custom-basic-provider",
+          handle: "custom-basic-provider",
           name: "My Custom Basic Provider",
           baseUrl: "https://api.example.com",
           auth: {
@@ -35,7 +35,7 @@ export function CreateProviderModal({ provider }: CreateProviderModalProps = {})
       return JSON.stringify(
         {
           type: "http",
-          code: "custom-apikey-provider",
+          handle: "custom-apikey-provider",
           name: "My Custom API Key Provider",
           baseUrl: "https://api.example.com",
           auth: {
@@ -53,7 +53,7 @@ export function CreateProviderModal({ provider }: CreateProviderModalProps = {})
     return JSON.stringify(
       {
         type: "http",
-        code: "custom-oauth2-provider",
+        handle: "custom-oauth2-provider",
         name: "My Custom OAuth2 Provider",
         baseUrl: "https://api.example.com",
         auth: {
@@ -115,17 +115,17 @@ export function CreateProviderModal({ provider }: CreateProviderModalProps = {})
       return;
     }
 
-    const { code, name } = parsedConfig;
+    const { handle, name } = parsedConfig;
 
-    if (!code || typeof code !== "string" || !code.trim()) {
+    if (!handle || typeof handle !== "string" || !handle.trim()) {
       setError(
-        "A string property 'code' must be defined in the JSON configuration.",
+        "A string property 'handle' must be defined in the JSON configuration.",
       );
       return;
     }
-    if (!/^[a-z0-9-_]+$/.test(code.trim())) {
+    if (!/^[a-z0-9-_]+$/.test(handle.trim())) {
       setError(
-        "Provider 'code' must only contain lowercase letters, numbers, hyphens, and underscores.",
+        "Provider 'handle' must only contain lowercase letters, numbers, hyphens, and underscores.",
       );
       return;
     }
@@ -141,7 +141,7 @@ export function CreateProviderModal({ provider }: CreateProviderModalProps = {})
         {
           providerId: provider.id,
           data: {
-            code: code.trim(),
+            handle: handle.trim(),
             name: name.trim(),
             type: "http",
             description: description.trim(),
@@ -163,7 +163,7 @@ export function CreateProviderModal({ provider }: CreateProviderModalProps = {})
     } else {
       createProvider(
         {
-          code: code.trim(),
+          handle: handle.trim(),
           name: name.trim(),
           type: "http",
           description: description.trim(),

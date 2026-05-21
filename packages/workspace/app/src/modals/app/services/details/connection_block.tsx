@@ -11,7 +11,7 @@ export function ConnectionBlock({
 }) {
   const ubento = useUbento();
   const { data: providerData } =
-    ubento.vertex.useConnectionProviderByCode(providerName);
+    ubento.vertex.useConnectionProviderByHandle(providerName);
 
   if (!isMissing) return null;
 

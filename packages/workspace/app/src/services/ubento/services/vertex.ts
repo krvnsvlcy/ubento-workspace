@@ -154,13 +154,13 @@ export function createUbentoVertexService({
         ...options,
       });
     },
-    useConnectionProviderByCode: (code: string, options?: any) => {
+    useConnectionProviderByHandle: (handle: string, options?: any) => {
       return useQuery<vertexClient.ConnectionProvider>({
-        queryKey: ["connection-provider-by-code", code],
+        queryKey: ["connection-provider-by-handle", handle],
         queryFn: async () => {
-          return await ubentoSdk.vertex.getProviderByCode(code);
+          return await (ubentoSdk.vertex as any).getProviderByHandle(handle);
         },
-        enabled: !!code,
+        enabled: !!handle,
         ...options,
       });
     },
@@ -291,7 +291,13 @@ export function createUbentoVertexService({
       return useStoreEntities(serviceStore, params, options);
     },
     useInfiniteServices: (
-      params?: { team_id?: string; name?: string; tags?: string[] },
+      params?: {
+        team_id?: string;
+        name?: string;
+        handle?: string;
+        tags?: string[];
+        scope?: string;
+      },
       options?: any,
     ) => {
       return useInfiniteQuery({
@@ -313,8 +319,8 @@ export function createUbentoVertexService({
         mutationFn: async (data: {
           team_id: string;
           scope: string;
+          handle: string;
           name: string;
-          display_name: string;
           description?: string;
           config?: Record<string, any>;
           tags?: string[];
@@ -334,8 +340,8 @@ export function createUbentoVertexService({
         }: {
           serviceId: string;
           data: {
+            handle?: string;
             name?: string;
-            display_name?: string;
             description?: string;
             config?: Record<string, any>;
             tags?: string[];
@@ -352,7 +358,7 @@ export function createUbentoVertexService({
       const queryClient = useQueryClient();
       return useMutation({
         mutationFn: async (data: {
-          code: string;
+          handle: string;
           type: string;
           name: string;
           description?: string;
@@ -378,7 +384,7 @@ export function createUbentoVertexService({
         }: {
           providerId: string;
           data: {
-            code?: string;
+            handle?: string;
             type?: string;
             name?: string;
             description?: string;

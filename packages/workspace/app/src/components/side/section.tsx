@@ -6,10 +6,12 @@ import { TreeEntry } from "../tree/tree-entry";
 export function SideSection({
   children,
   title,
+  actionMode,
   actions,
 }: {
   children: React.ReactNode;
   title: string;
+  actionMode?: "hidden" | "visible" | "hover";
   actions?: ActionProps[];
 }) {
   const [open, setOpen] = useState(true);
@@ -18,6 +20,7 @@ export function SideSection({
       <TreeEntry
         onClick={() => setOpen((s) => !s)}
         className="text-[11px] uppercase tracking-wider"
+        actionMode={actionMode}
         actions={actions}
       >
         <div className="flex items-center gap-1">

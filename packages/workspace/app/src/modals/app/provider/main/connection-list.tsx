@@ -26,7 +26,7 @@ export function ConnectionList() {
   const { params, push } = useAppModal();
   const providerCode = params.providerCode;
 
-  const { data: providerData } = ubento.vertex.useConnectionProviderByCode(
+  const { data: providerData } = ubento.vertex.useConnectionProviderByHandle(
     providerCode || "",
   );
   const config = (providerData as any)?.config as

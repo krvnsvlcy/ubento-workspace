@@ -29,7 +29,7 @@ export function AddConnection() {
   const providerCode = params.providerCode;
 
   const { data: providerData, isLoading } =
-    ubento.vertex.useConnectionProviderByCode(providerCode || "");
+    ubento.vertex.useConnectionProviderByHandle(providerCode || "");
 
   const config = (providerData as any)?.config as
     | ConnectionProviderConfig
@@ -87,9 +87,8 @@ function AddConnectionForm({
   const [error, setError] = useState("");
   const [isRedirecting, setIsRedirecting] = useState(false);
 
-  const { mutate: createConnection, isLoading: isCreating } = (
-    ubento.vertex as any
-  ).useCreateConnection();
+  const { mutate: createConnection, isPending: isCreating } =
+    ubento.vertex.useCreateConnection();
 
   const handleOAuthConnect = async () => {
     try {

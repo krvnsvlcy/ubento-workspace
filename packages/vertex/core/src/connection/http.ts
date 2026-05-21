@@ -47,8 +47,8 @@ export const oauth2StrategySchema = z.object({
 
 export const httpConnectionProviderConfigSchema = z.object({
   type: z.literal("http"),
-  code: z.string(), // unique identifier for the provider
-  name: z.string(), // display name of the provider
+  handle: z.string(), // unique identifier for the provider (e.g., "salesforce")
+  name: z.string(), // display name of the provider (e.g., "Salesforce")
   baseUrl: z.string().optional(),
 
   // Dynamic UI variables collected before authentication begins

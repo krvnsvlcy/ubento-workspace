@@ -1,6 +1,7 @@
 // Tremor Select [v1.0.0]
 
 import * as SelectPrimitives from "@radix-ui/react-select";
+import { cva, type VariantProps } from "class-variance-authority";
 import { Check, ChevronDown, ChevronsUpDown, ChevronUp } from "lucide-react";
 import React from "react";
 
@@ -15,10 +16,10 @@ SelectGroup.displayName = "SelectGroup";
 const SelectValue = SelectPrimitives.Value;
 SelectValue.displayName = "SelectValue";
 
-const selectTriggerStyles = [
+const selectTriggerVariants = cva(
   cx(
     // base
-    "group/trigger flex w-full select-none items-center justify-between gap-2 truncate rounded-xl border px-3 py-2 outline-hidden transition sm:text-sm",
+    "group/trigger flex w-full select-none items-center justify-between gap-2 truncate rounded-xl border outline-hidden transition",
     // border color
     "border-neutral-border",
     // text color
@@ -32,22 +33,33 @@ const selectTriggerStyles = [
     // disabled
     "data-disabled:bg-neutral-surface data-disabled:text-neutral-content-muted",
     focusInput,
-    // invalid (optional)
-    // "dark:aria-invalid:ring-red-400/20 aria-invalid:ring-2 aria-invalid:ring-red-200 aria-invalid:border-red-500 invalid:ring-2 invalid:ring-red-200 invalid:border-red-500"
   ),
-];
+  {
+    variants: {
+      size: {
+        sm: "h-6 px-2 text-xs",
+        md: "h-8 px-3 text-sm",
+        lg: "h-10 px-4 text-base",
+      },
+    },
+    defaultVariants: {
+      size: "md",
+    },
+  },
+);
 
 const SelectTrigger = React.forwardRef<
   React.ElementRef<typeof SelectPrimitives.Trigger>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitives.Trigger> & {
-    hasError?: boolean;
-  }
->(({ className, hasError, children, ...props }, forwardedRef) => {
+  React.ComponentPropsWithoutRef<typeof SelectPrimitives.Trigger> &
+    VariantProps<typeof selectTriggerVariants> & {
+      hasError?: boolean;
+    }
+>(({ className, size, hasError, children, ...props }, forwardedRef) => {
   return (
     <SelectPrimitives.Trigger
       ref={forwardedRef}
       className={cx(
-        selectTriggerStyles,
+        selectTriggerVariants({ size }),
         hasError ? hasErrorInput : "",
         className,
       )}
