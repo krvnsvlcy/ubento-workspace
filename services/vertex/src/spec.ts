@@ -16,6 +16,7 @@ export const spec = {
           { name: "name", in: "query", schema: { type: "string" } },
           { name: "cursor", in: "query", schema: { type: "string" } },
           { name: "limit", in: "query", schema: { type: "number" } },
+          { name: "tags", in: "query", schema: { type: "array", items: { type: "string" } } },
         ],
         responses: {
           "200": {
@@ -43,6 +44,7 @@ export const spec = {
                   display_name: { type: "string" },
                   description: { type: "string", nullable: true },
                   config: { type: "object", nullable: true },
+                  tags: { type: "array", items: { type: "string" } },
                 },
                 required: ["team_id", "name", "display_name"],
               },
@@ -95,6 +97,7 @@ export const spec = {
                   display_name: { type: "string" },
                   description: { type: "string", nullable: true },
                   config: { type: "object", nullable: true },
+                  tags: { type: "array", items: { type: "string" } },
                 },
               },
             },
@@ -122,6 +125,42 @@ export const spec = {
                   type: "object",
                   properties: { id: { type: "string" } },
                 },
+              },
+            },
+          },
+        },
+      },
+    },
+    "/vertex/connection-providers/{provider_id}/image": {
+      parameters: [
+        {
+          name: "provider_id",
+          in: "path",
+          schema: { type: "string" },
+          required: true,
+        },
+      ],
+      post: {
+        summary: "Upload image for connection provider",
+        requestBody: {
+          content: {
+            "multipart/form-data": {
+              schema: {
+                type: "object",
+                properties: {
+                  image: { type: "string", format: "binary" },
+                },
+                required: ["image"],
+              },
+            },
+          },
+        },
+        responses: {
+          "200": {
+            description: "The updated connection provider with image_url",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ConnectionProvider" },
               },
             },
           },
@@ -310,6 +349,7 @@ export const spec = {
           { name: "name", in: "query", schema: { type: "string" } },
           { name: "cursor", in: "query", schema: { type: "string" } },
           { name: "limit", in: "query", schema: { type: "number" } },
+          { name: "tags", in: "query", schema: { type: "array", items: { type: "string" } } },
         ],
         responses: {
           "200": {
@@ -338,6 +378,7 @@ export const spec = {
                   display_name: { type: "string" },
                   description: { type: "string", nullable: true },
                   config: { type: "object", nullable: true },
+                  tags: { type: "array", items: { type: "string" } },
                 },
                 required: ["team_id", "name", "display_name"],
               },
@@ -390,6 +431,7 @@ export const spec = {
                   display_name: { type: "string" },
                   description: { type: "string", nullable: true },
                   config: { type: "object", nullable: true },
+                  tags: { type: "array", items: { type: "string" } },
                 },
               },
             },
@@ -417,6 +459,42 @@ export const spec = {
                   type: "object",
                   properties: { id: { type: "string" } },
                 },
+              },
+            },
+          },
+        },
+      },
+    },
+    "/vertex/services/{service_id}/image": {
+      parameters: [
+        {
+          name: "service_id",
+          in: "path",
+          schema: { type: "string" },
+          required: true,
+        },
+      ],
+      post: {
+        summary: "Upload image for service",
+        requestBody: {
+          content: {
+            "multipart/form-data": {
+              schema: {
+                type: "object",
+                properties: {
+                  image: { type: "string", format: "binary" },
+                },
+                required: ["image"],
+              },
+            },
+          },
+        },
+        responses: {
+          "200": {
+            description: "The updated service with image_url",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Service" },
               },
             },
           },
@@ -808,11 +886,23 @@ export const spec = {
   },
   components: {
     schemas: {
-      ConnectionProvider: prismaSchemas.definitions.ConnectionProvider,
+      ConnectionProvider: {
+        ...prismaSchemas.definitions.ConnectionProvider,
+        properties: {
+          ...prismaSchemas.definitions.ConnectionProvider.properties,
+          image_url: { type: "string", nullable: true },
+        },
+      },
       Connection: prismaSchemas.definitions.Connection,
       OAuthConnectionState: prismaSchemas.definitions.OAuthConnectionState,
       EncryptedData: prismaSchemas.definitions.EncryptedData,
-      Service: prismaSchemas.definitions.Service,
+      Service: {
+        ...prismaSchemas.definitions.Service,
+        properties: {
+          ...prismaSchemas.definitions.Service.properties,
+          image_url: { type: "string", nullable: true },
+        },
+      },
       ServiceChannel: prismaSchemas.definitions.ServiceChannel,
       OAuthClient: prismaSchemas.definitions.OAuthClient,
     },

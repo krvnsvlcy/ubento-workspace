@@ -20,6 +20,7 @@ export * from "./components/ui/popover.js";
 export * from "./components/ui/resizable.js";
 export * from "./components/ui/scroll-area.js";
 export * from "./components/ui/separator.js";
+export * from "./components/ui/divider.js";
 export * from "./components/ui/skeleton.js";
 export * from "./components/ui/spinner.js";
 export * from "./components/ui/tab-navigation.js";
@@ -64,7 +65,9 @@ export * from "./components/visualization/tracker.js";
 export * from "./components/data-items/avatar.js";
 
 // Typography Components
-export * from "./components/typography/typography.js";
+export * from "./components/typography/code-block.js";
+export * from "./components/typography/paragraph.js";
+export * from "./components/typography/text-line.js";
 
 // Lib
 export * from "./lib/style.js";

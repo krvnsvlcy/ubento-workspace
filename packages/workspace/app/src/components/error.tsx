@@ -1,4 +1,4 @@
-import { PrimitiveButton as Button } from "@ubento/bento.arlo-core";
+import { Button } from "@ubento/bento.arlo-core";
 import { ReactNode } from "react";
 
 export function ErrorView({

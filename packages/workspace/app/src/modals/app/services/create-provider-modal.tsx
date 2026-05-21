@@ -1,6 +1,6 @@
 import { useUbento } from "@/engine/app/engine";
 import { useAppModal } from "@/modals/app/hook.js";
-import { PrimitiveButton as Button, Content, ContentBody, ContentFooter, ContentHeader, Field, FieldLabel, Heading } from "@ubento/bento.arlo-core";
+import { Button, Content, ContentBody, ContentFooter, ContentHeader, Field, FieldLabel, Heading } from "@ubento/bento.arlo-core";
 import { useState } from "react";
 
 interface CreateProviderModalProps {

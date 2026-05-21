@@ -3,7 +3,7 @@ import { useUbento } from "@/engine/app/engine";
 import { useAppModal } from "@/modals/app/hook.js";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  PrimitiveButton as Button,
+  Button,
   Content,
   ContentBody,
   ContentFooter,
@@ -12,7 +12,7 @@ import {
   Field,
   FieldLabel,
   Heading,
-  PrimitiveInput as Input,
+  Input,
   PendingView,
   Text,
 } from "@ubento/bento.arlo-core";

@@ -1,4 +1,4 @@
-import { BoardView, Interactor } from "@ubento/bento.core";
+import { BoardApi, BoardView, Interactor } from "@ubento/bento.core";
 import { useStoreEntity } from "@ubento/fabric";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { queryClient } from "../query";
@@ -89,12 +89,25 @@ export function BentoBoardView({
 
   const isEditMode = mode === "edit";
 
+  const boardApi: BoardApi = {
+    id: board.id,
+    title: board.title,
+    setTitle: (newTitle) => {
+      const updatedBoard = {
+        ...board,
+        title: newTitle,
+      };
+      runtime.boardStore.push(updatedBoard);
+    },
+  };
+
   return (
     <div className="h-full overflow-y-auto bg-background">
       <BoardView
         queryClient={queryClient}
         spec={board.spec.data}
         params={params}
+        board={boardApi}
       >
         {isEditMode ? <Interactor /> : <></>}
       </BoardView>

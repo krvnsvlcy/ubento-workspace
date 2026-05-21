@@ -15,13 +15,6 @@ export type ComponentProps<
     event: E,
     payload: z.infer<TEvents>[E],
   ) => void;
-  // 2. Extract the inferred type of TBindings for the two-way sync tuple
-  bindings: {
-    [K in keyof z.infer<TBindings>]: [
-      value: z.infer<TBindings>[K],
-      setValue: (value: z.infer<TBindings>[K]) => void,
-    ];
-  };
   ref: RefHandler;
   children?: React.ReactNode;
 };

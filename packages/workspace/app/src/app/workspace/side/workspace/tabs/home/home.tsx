@@ -40,23 +40,8 @@ export function HomeTab() {
     team_id: session?.teamId,
   });
 
-  const { mutateAsync: createWorkspace } =
-    ubento.workspace.useCreateWorkspace();
-
   const handleCreateWorkspace = async () => {
-    await open(CreateWorkspaceModal, {
-      onSubmit: async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        const formData = new FormData(e.currentTarget);
-        const name = formData.get("name") as string;
-        try {
-          await createWorkspace({ name, team_id: session?.teamId!, data: {} });
-        } catch (err) {
-          console.error("Error creating workspace:", err);
-        }
-      },
-      isCreating: false,
-    });
+    await open(CreateWorkspaceModal, {});
   };
 
   return (

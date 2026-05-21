@@ -5,6 +5,7 @@ import {
   Product,
   Subscription,
   UsageCounter,
+  UsageHold,
 } from "~/clients/billing/client.js";
 import { extractResponseData } from "~/lib/client.js";
 import { TokenManager } from "~/lib/token_manager.js";
@@ -178,6 +179,59 @@ export class BillingService {
         code: data.code,
         amount: data.value,
         group: data.group,
+      },
+    });
+    return extractResponseData(result, true);
+  }
+
+  // ===== Usage Holds =====
+
+  async reserveUsage(data: {
+    organization_id: string;
+    feature_code: string;
+    group?: string;
+    amount: number;
+    note: string;
+    duration: number;
+    ref: string;
+    metadata?: Record<string, any>;
+  }): Promise<UsageHold> {
+    const result = await this.billingClient.post("/billing/usage/holds", {
+      body: {
+        organization_id: data.organization_id,
+        code: data.feature_code,
+        group: data.group,
+        amount: data.amount,
+        note: data.note,
+        duration: data.duration,
+        ref: data.ref,
+        data: data.metadata as any,
+      },
+    });
+    return extractResponseData(result, true);
+  }
+
+  async commitUsageHold(data: {
+    ref: string;
+    organization_id: string;
+  }): Promise<Record<string, never>> {
+    const result = await this.billingClient.post("/billing/usage/holds/commit", {
+      body: {
+        ref: data.ref,
+        organization_id: data.organization_id,
+      },
+    });
+    return extractResponseData(result, true);
+  }
+
+  async releaseUsageHold(data: {
+    ref: string;
+    organization_id: string;
+  }): Promise<UsageHold> {
+    const result = await this.billingClient.post("/billing/usage/holds/release", {
+      body: {
+        ref: data.ref,
+        organization_id: data.organization_id,
       },
     });
     return extractResponseData(result, true);

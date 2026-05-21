@@ -1,8 +1,11 @@
 import type { ServiceSpecV1 } from "@ubento/vertex.core";
+import { tags } from "../tags.js";
 
 export const spec: ServiceSpecV1 = {
   spec: 1,
   name: "lemonsqueezy",
+  description: "Sell digital products, manage subscriptions, and handle licensing.",
+  tags: [tags.category.finance],
   type: "http",
   connection: {
     provider: "lemonsqueezy",

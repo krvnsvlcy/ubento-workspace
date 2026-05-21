@@ -1,9 +1,15 @@
 import { createContext, PropsWithChildren, useContext } from "react";
 import { SessionApi, WorkspaceApi } from "../../environment/environment.js";
 
+export type BoardApi = {
+  id: string;
+  title: string;
+  setTitle: (title: string) => void;
+};
 export type BoardRenderingContextType = {
   session: SessionApi;
   workspace: WorkspaceApi;
+  board: BoardApi;
   params: Record<string, unknown>;
   state: Record<string, unknown>;
   setState: (

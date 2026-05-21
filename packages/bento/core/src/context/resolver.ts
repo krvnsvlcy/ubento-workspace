@@ -71,10 +71,20 @@ export async function resolveBoardContextSchema({
         },
         required: ["goTo"],
       },
+      // Hardcoded Board API
+      board: {
+        type: "object",
+        properties: {
+          id: { type: "string" },
+          title: { type: "string" },
+          setTitle: { type: "function" },
+        },
+        required: ["id", "title", "setTitle"],
+      },
       // Hardcoded setState binding function
       setState: { type: "function" },
     },
-    required: ["session", "workspace", "params", "state", "store", "setState"],
+    required: ["session", "workspace", "board", "params", "state", "store", "setState"],
   };
 
   // ---------------------------------------------------------

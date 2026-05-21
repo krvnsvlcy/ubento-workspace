@@ -2,8 +2,8 @@ import { useSession } from "@/contexts/session";
 import { useUbento } from "@/engine/app/engine";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll.js";
 import {
-  PrimitiveButton as Button,
-  PrimitiveInput as Input,
+  Button,
+  Input,
   ScrollArea,
 } from "@ubento/bento.arlo-core";
 import { Globe, Plus, Settings, Trash2 } from "lucide-react";

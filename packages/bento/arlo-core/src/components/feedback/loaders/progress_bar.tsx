@@ -1,6 +1,6 @@
 import type { JSX } from "react";
 
-export function ProgressBar({
+export function LoadingProgressBar({
   height = 2,
   naked,
 }: {
@@ -17,4 +17,4 @@ export function ProgressBar({
   );
 }
 
-export default ProgressBar;
+export default LoadingProgressBar;

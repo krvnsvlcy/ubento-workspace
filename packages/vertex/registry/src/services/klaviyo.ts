@@ -1,4 +1,5 @@
 import { generateServiceSpecFromOpenApi } from "@ubento/vertex.core";
+import { tags } from "../tags.js";
 import { getOpenApiSpec } from "../utils/openapi.js";
 
 export async function getSpec() {
@@ -7,6 +8,8 @@ export async function getSpec() {
     template: {
       name: "Klaviyo",
       discover: true,
+      tags: [tags.category.crm],
+      summary: "Build and automate email, SMS, and push notification marketing campaigns.",
       connection: {
         provider: "klaviyo",
         baseUrl: "https://a.klaviyo.com",

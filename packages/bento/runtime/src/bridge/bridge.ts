@@ -17,6 +17,11 @@ export type BentoEngineHostRpcInterface = {
     parentId?: string;
   }) => Promise<{ boards: BentoBoardData[]; nextCursor?: string }>;
   goTo: ({ location }: { location?: BentoLocation }) => Promise<void>;
+  createBoard: (args?: {
+    title?: string;
+    parentId?: string;
+    spec?: any;
+  }) => Promise<BentoBoardData>;
 
   // sync
   boardUpdated: ({ data }: { data: BentoBoardData }) => Promise<void>;

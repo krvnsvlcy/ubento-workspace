@@ -2,7 +2,7 @@ import { useUbento } from "@/engine/app/engine";
 import { useDebounce } from "@/hooks/use-debouce.js";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll.js";
 import {
-  PrimitiveButton as Button,
+  Button,
   Card,
   Content,
   ContentBody,
@@ -10,7 +10,7 @@ import {
   ContentHeader,
   EmptyView,
   Heading,
-  PrimitiveInput as Input,
+  Input,
   RailLayout,
   RailLayoutMain,
   RailLayoutSide,

@@ -1,41 +1,62 @@
 import { Intent } from "@/intent";
+import { cx } from "@/lib/utils.js";
 import { cva, type VariantProps } from "class-variance-authority";
-import { forwardRef, HTMLAttributes } from "react";
+import { ComponentProps } from "react";
 
-export const cardVariants = cva(
-  "rounded-xl border border-intent-border bg-background text-intent-content",
-  {
-    variants: {
-      variant: {
-        default: "",
-        ghost: "border-none shadow-none bg-transparent",
-      },
+const cardVariants = cva("relative w-full rounded-2xl text-left", {
+  variants: {
+    variant: {
+      outline: "bg-background border border-intent-border",
+      surface: "bg-intent-surface border border-intent-border",
+      "surface-interactive":
+        "bg-intent-surface border border-intent-border hover:border-intent-border-hover hover:bg-intent-surface-hover transition-colors cursor-pointer",
+      ghost: "border-transparent bg-transparent",
     },
-    defaultVariants: {
-      variant: "default",
+    padding: {
+      none: "p-0",
+      sm: "p-4",
+      md: "p-6", // Your original 24px default
+      lg: "p-8",
     },
   },
-);
+  defaultVariants: {
+    variant: "surface",
+    padding: "md",
+  },
+});
 
 export interface CardProps
-  extends HTMLAttributes<HTMLDivElement>, VariantProps<typeof cardVariants> {
-  gap?: number | string;
+  extends ComponentProps<"div">, VariantProps<typeof cardVariants> {
   intent?: Intent;
+  gap?: number | string;
 }
 
-export const Card = forwardRef<HTMLDivElement, CardProps>(
-  ({ className, variant, style, gap, intent, ...props }, ref) => (
+export const Card = ({
+  className,
+  variant,
+  padding,
+  intent,
+  gap,
+  style,
+  ...props
+}: CardProps) => {
+  const gapStyle = gap !== undefined ? {
+    display: "flex",
+    flexDirection: "column" as const,
+    gap: typeof gap === "number" ? `${gap}px` : gap,
+  } : {};
+
+  return (
     <div
-      ref={ref}
-      className={cardVariants({ variant, className })}
+      className={cx(cardVariants({ variant, padding }), className)}
       style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: typeof gap === "number" ? `${gap}px` : gap,
+        ...gapStyle,
         ...style,
       }}
       data-intent={intent}
       {...props}
     />
-  ),
-);
+  );
+};
+
+Card.displayName = "Card";

@@ -1,4 +1,5 @@
 import { generateServiceSpecFromOpenApi } from "@ubento/vertex.core";
+import { tags } from "../tags.js";
 import { getOpenApiSpec } from "../utils/openapi.js";
 
 export async function getSpec() {
@@ -7,6 +8,8 @@ export async function getSpec() {
     template: {
       name: "Todoist",
       discover: true,
+      tags: [tags.category.productivity],
+      summary: "Create and manage tasks, projects, and deadlines across your team.",
       connection: {
         provider: "todoist",
         baseUrl: "https://api.todoist.com",

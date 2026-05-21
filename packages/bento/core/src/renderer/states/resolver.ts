@@ -159,35 +159,55 @@ export function useResolvedValue<T>(
 }
 
 export function useResolvedBindings(
-  bindings: Record<string, string>,
+  bindings: Record<string, string | { value: string; setValue: string }>,
   context: BoardRenderingContextType,
 ) {
   const bindingTupples = Object.fromEntries(
     Object.entries(bindings).map(([key, ref]) => {
-      return [
-        key,
-        [
-          // 1. The getter still resolves against the FULL context tree
-          { $use: ref },
+      if (typeof ref === "string") {
+        return [
+          key,
+          [
+            // 1. The getter still resolves against the FULL context tree
+            { $use: ref },
 
-          // 2. The setter strictly updates the state tree
-          (v: any) => {
-            context.setState((currentState) => {
-              // We assume 'ref' might be formatted as "$.state.user.name"
-              // We need to strip "$.state." so setByPath operates cleanly on currentState
-              let statePath = ref;
-              if (statePath.startsWith("$.state.")) {
-                statePath = statePath.slice(8);
-              } else if (statePath.startsWith("$.")) {
-                statePath = statePath.slice(2);
+            // 2. The setter strictly updates the state tree
+            (v: any) => {
+              context.setState((currentState) => {
+                // We assume 'ref' might be formatted as "$.state.user.name"
+                // We need to strip "$.state." so setByPath operates cleanly on currentState
+                let statePath = ref;
+                if (statePath.startsWith("$.state.")) {
+                  statePath = statePath.slice(8);
+                } else if (statePath.startsWith("$.")) {
+                  statePath = statePath.slice(2);
+                }
+
+                // Update the currentState immutably
+                return setByPath(currentState, statePath, v);
+              });
+            },
+          ] as [any, (s: any) => void],
+        ];
+      } else {
+        return [
+          key,
+          [
+            // 1. The getter still resolves against the FULL context tree
+            { $use: ref.value },
+
+            // 2. The setter tries to run context handler if it exists, otherwise log error
+            (v: any) => {
+              const handler = resolveValue({ $use: ref.setValue }, context);
+              if (typeof handler === "function") {
+                handler(v);
+              } else {
+                console.error(`${ref.setValue} is not a function.`);
               }
-
-              // Update the currentState immutably
-              return setByPath(currentState, statePath, v);
-            });
-          },
-        ] as [any, (s: any) => void],
-      ];
+            },
+          ] as [any, (s: any) => void],
+        ];
+      }
     }),
   );
 

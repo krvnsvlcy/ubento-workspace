@@ -1,5 +1,6 @@
 import { UbentoEngine, UbentoEngineState } from "@/engine/app/engine";
 import { JsonPatch } from "@/utils/json";
+import { createZustandStateController } from "@ubento/bento.arlo-core";
 import {
   resolveBoardContextSchema as __resolveBoardContextSchema,
   BoardSpec,
@@ -24,7 +25,6 @@ import {
 import { createDuplexRpc, createWindowPort, DuplexRpc } from "@ubento/rpc";
 import { workspaceClient } from "@ubento/services.sdk";
 import { OperationSpec, serviceSpecV1Schema } from "@ubento/vertex.core";
-import { createZustandStateController } from "@ubento/bento.arlo-core";
 import { registerStore, unregisterStore } from "@ubento/zustand-devtool";
 import { dequal } from "dequal/lite";
 import { applyPatch } from "fast-json-patch";
@@ -551,7 +551,7 @@ export function createWorkspaceEngine({
     const workspaceId = state.workspace.id;
 
     const parsed = parseSpecData(boardSpecSchema, {
-      ...(spec || generateInitialBoardSpec({ title: title })),
+      ...(spec || generateInitialBoardSpec()),
       title: title,
     });
     const validated = parsed.isValid
@@ -897,6 +897,15 @@ export function createWorkspaceEngine({
           boardUpdated,
           selectionUpdated,
           runServiceOperation,
+          createBoard: async (args) => {
+            const title = args?.title || "";
+            const result = await createBoard({
+              title,
+              parentId: args?.parentId,
+              spec: args?.spec,
+            });
+            return await getBoard({ boardId: result.id });
+          },
         },
       });
 

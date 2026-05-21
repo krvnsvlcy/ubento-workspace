@@ -24,7 +24,7 @@ export function createUbentoVertexService({
 
   const connectionProviderStore = createStore<
     vertexClient.ConnectionProvider,
-    { team_id?: string; name?: string },
+    { team_id?: string; name?: string; tags?: string[] },
     UbentoApiPage
   >({
     namespace: ubentoEntities.connectionProvider.name,
@@ -39,6 +39,7 @@ export function createUbentoVertexService({
           limit: page?.limit,
           team_id: params?.team_id,
           name: params?.name,
+          tags: params?.tags,
         }),
       );
     },
@@ -48,6 +49,12 @@ export function createUbentoVertexService({
           if (
             params?.name &&
             !cp.name.toLowerCase().includes(params.name.toLowerCase())
+          )
+            return false;
+          if (
+            params?.tags &&
+            params.tags.length > 0 &&
+            !params.tags.some((t) => cp.tags?.includes(t))
           )
             return false;
           return true;
@@ -85,7 +92,7 @@ export function createUbentoVertexService({
 
   const serviceStore = createStore<
     vertexClient.Service,
-    { team_id?: string; name?: string },
+    { team_id?: string; name?: string; tags?: string[] },
     UbentoApiPage
   >({
     namespace: "service",
@@ -100,6 +107,7 @@ export function createUbentoVertexService({
           limit: page?.limit || 100,
           team_id: params?.team_id,
           name: params?.name,
+          tags: params?.tags,
         }),
       );
     },
@@ -108,6 +116,12 @@ export function createUbentoVertexService({
         if (
           params?.name &&
           !s.name.toLowerCase().includes(params.name.toLowerCase())
+        )
+          return false;
+        if (
+          params?.tags &&
+          params.tags.length > 0 &&
+          !params.tags.some((t) => s.tags?.includes(t))
         )
           return false;
         return true;
@@ -123,7 +137,7 @@ export function createUbentoVertexService({
       return useStoreEntity(connectionProviderStore, providerId, options);
     },
     useConnectionProviders: (
-      params?: { team_id?: string; name?: string },
+      params?: { team_id?: string; name?: string; tags?: string[] },
       options?: any,
     ) => {
       return useInfiniteQuery({
@@ -270,10 +284,29 @@ export function createUbentoVertexService({
         name?: string;
         limit?: number;
         cursor?: string;
+        tags?: string[];
       },
       options?: UseStoreOptions,
     ) => {
       return useStoreEntities(serviceStore, params, options);
+    },
+    useInfiniteServices: (
+      params?: { team_id?: string; name?: string; tags?: string[] },
+      options?: any,
+    ) => {
+      return useInfiniteQuery({
+        queryKey: ["infinite-services", params],
+        queryFn: async ({ pageParam }) => {
+          return await ubentoSdk.vertex.listServices({
+            ...params,
+            cursor: pageParam as string | undefined,
+          });
+        },
+        initialPageParam: undefined as string | undefined,
+        getNextPageParam: (lastPage) => lastPage.nextPage?.cursor,
+        placeholderData: keepPreviousData,
+        ...options,
+      });
     },
     useCreateService: () => {
       return useMutation({
@@ -284,6 +317,7 @@ export function createUbentoVertexService({
           display_name: string;
           description?: string;
           config?: Record<string, any>;
+          tags?: string[];
         }) => {
           return await ubentoSdk.vertex.createService(data);
         },
@@ -304,6 +338,7 @@ export function createUbentoVertexService({
             display_name?: string;
             description?: string;
             config?: Record<string, any>;
+            tags?: string[];
           };
         }) => {
           return await ubentoSdk.vertex.updateService(serviceId, data);
@@ -322,6 +357,7 @@ export function createUbentoVertexService({
           name: string;
           description?: string;
           config?: Record<string, any>;
+          tags?: string[];
         }) => {
           const provider =
             await ubentoSdk.vertex.createConnectionProvider(data);
@@ -347,6 +383,7 @@ export function createUbentoVertexService({
             name?: string;
             description?: string;
             config?: Record<string, any>;
+            tags?: string[];
           };
         }) => {
           const provider = await ubentoSdk.vertex.updateConnectionProvider(

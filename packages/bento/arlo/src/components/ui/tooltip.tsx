@@ -20,15 +20,16 @@ export const Tooltip = createComponent({
 
   render: ({ ref, props, children }) => {
     return (
-      <CoreTooltip
-        ref={ref}
-        content={props.content}
-        side={props.side}
-        showArrow={props.showArrow}
-        asChild
-      >
-        {children || <button className="hidden" />}
-      </CoreTooltip>
+      <div ref={ref} className="contents">
+        <CoreTooltip
+          content={props.content}
+          side={props.side}
+          showArrow={props.showArrow}
+          asChild
+        >
+          {children || <button className="hidden" />}
+        </CoreTooltip>
+      </div>
     );
   },
 });

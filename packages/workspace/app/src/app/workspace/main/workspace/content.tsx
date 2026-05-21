@@ -51,14 +51,8 @@ function InvalidSpecOverlay({ engine }: { engine: WorkspaceEngine }) {
   }
 
   const handleReset = () => {
-    const state = engine.getState();
     engine.updateWorkspaceSpec({
-      spec: {
-        id: state.workspace.id,
-        title: state.workspace.title,
-        description: "",
-        services: {},
-      },
+      spec: {},
     });
   };
 
@@ -76,7 +70,11 @@ function InvalidSpecOverlay({ engine }: { engine: WorkspaceEngine }) {
         details={
           specIssues && specIssues.length > 0 ? (
             <pre className="max-w-[600px] max-h-[200px] overflow-auto text-[12px] whitespace-pre-wrap text-left">
-              {specIssues.join("\n")}
+              {specIssues
+                ?.map(
+                  (issue) => `${issue.location.join(".")}: ${issue.message}`,
+                )
+                .join("\n")}
             </pre>
           ) : undefined
         }

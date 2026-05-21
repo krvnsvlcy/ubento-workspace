@@ -10,6 +10,13 @@ export const badgeVariants = cva(
         secondary: "border-transparent bg-neutral-surface text-neutral-content hover:bg-neutral-surface-hover",
         destructive: "border-transparent bg-destructive text-destructive-contrast hover:bg-destructive-hover",
         outline: "text-neutral-content border-neutral-border",
+        // Tremor variants
+        accent: "bg-accent-surface text-accent-content border-accent-border",
+        neutral: "bg-neutral-surface text-neutral-content border-neutral-border",
+        success: "bg-success-surface text-success-content border-success-border",
+        warning: "bg-warning-surface text-warning-content border-warning-border",
+        info: "bg-info-surface text-info-content border-info-border",
+        inverse: "bg-inverse-surface text-inverse-content border-inverse-border",
       },
     },
     defaultVariants: {
@@ -19,13 +26,13 @@ export const badgeVariants = cva(
 );
 
 export interface BadgeProps
-  extends HTMLAttributes<HTMLDivElement>,
+  extends HTMLAttributes<HTMLSpanElement>,
     VariantProps<typeof badgeVariants> {}
 
-export const Badge = forwardRef<HTMLDivElement, BadgeProps>(
+export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
   ({ className, variant, ...props }, ref) => {
     return (
-      <div ref={ref} className={badgeVariants({ variant, className })} {...props} />
+      <span ref={ref} className={badgeVariants({ variant, className })} {...props} />
     );
   }
 );

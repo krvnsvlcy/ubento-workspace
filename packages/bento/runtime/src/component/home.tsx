@@ -1,10 +1,4 @@
-import {
-  PrimitiveButton as Button,
-  Card,
-  Heading,
-  Input,
-  Text,
-} from "@ubento/bento.arlo-core";
+import { Button, Card, Heading, Input, Text } from "@ubento/bento.arlo-core";
 import { useStoreEntities } from "@ubento/fabric";
 import { ArrowRight, Layout, Plus, Search } from "lucide-react";
 import { BentoRuntime } from "../runtime/runtime";
@@ -28,7 +22,15 @@ export function BentoHomeView({ runtime }: { runtime: BentoRuntime }) {
             Start by creating your first board to organize your tasks and
             visualize your data in this workspace.
           </Text>
-          <Button variant="primary">Create your first board</Button>
+          <Button
+            variant="primary"
+            onClick={async () => {
+              const board = await runtime.createBoard();
+              runtime.goToBoard(board.id);
+            }}
+          >
+            Create your first board
+          </Button>
         </div>
       </div>
     );
@@ -107,7 +109,7 @@ function BoardCard({
         </div>
       </div>
       <div>
-        <Text weight="semibold">{board.title}</Text>
+        <Text weight="semibold">{(board.title && board.title.trim()) || "Untitled"}</Text>
         <Text tone="subtle" size="sm">
           Click to open board
         </Text>

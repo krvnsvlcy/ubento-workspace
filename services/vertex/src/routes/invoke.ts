@@ -91,7 +91,7 @@ function createInvokeRoute(operationType: "query" | "action") {
           connection && connectionSpec
             ? {
                 spec: connectionSpec,
-                provider: connection.provider.config,
+                provider: connection.provider.config as any,
                 credentials: connection.auth as any,
               }
             : undefined,

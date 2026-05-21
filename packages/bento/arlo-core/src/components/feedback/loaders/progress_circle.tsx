@@ -1,7 +1,7 @@
 import cx from "clsx";
 import type { JSX } from "react";
 
-export function ProgressCircle({
+export function LoadingProgressCircle({
   strokeWidth = 1.2,
   inline,
   className,
@@ -57,4 +57,4 @@ export function ProgressCircle({
   );
 }
 
-export default ProgressCircle;
+export default LoadingProgressCircle;

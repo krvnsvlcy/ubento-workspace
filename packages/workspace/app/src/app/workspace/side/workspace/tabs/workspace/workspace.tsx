@@ -7,10 +7,107 @@ import {
 import { useUbento, useUbentoEngine } from "@/engine/app/engine";
 import { ServiceData } from "@ubento/bento.core";
 import { workspaceClient } from "@ubento/services.sdk";
+import React from "react";
+import { useModal } from "@/utils/modal-store";
+import { DeleteBoardModal } from "@/modals/delete_board/delete_board";
 
 import { useAppModal } from "@/modals/app/hook";
 import { appModalRoutes } from "@/modals/app/routes";
 import { TabDefinition } from "../../../types";
+
+interface BoardEntryProps {
+  board: { id: string; name: string };
+  active: boolean;
+  onClick: () => void;
+  onRename: (newName: string) => Promise<void>;
+  onDelete: () => Promise<void>;
+}
+
+function BoardEntry({
+  board,
+  active,
+  onClick,
+  onRename,
+  onDelete,
+}: BoardEntryProps) {
+  const { open } = useModal();
+  const [isEditing, setIsEditing] = React.useState(false);
+  const [editName, setEditName] = React.useState(board.name);
+
+  React.useEffect(() => {
+    setEditName(board.name);
+  }, [board.name]);
+
+  const handleSave = async () => {
+    setIsEditing(false);
+    if (editName.trim() !== board.name) {
+      await onRename(editName.trim());
+    }
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    setEditName(board.name);
+  };
+
+  if (isEditing) {
+    return (
+      <TreeEntry
+        icon="board"
+        active={active}
+        actionMode="hidden"
+      >
+        <input
+          autoFocus
+          className="w-full bg-transparent border-none outline-none p-0 text-[13px] text-foreground placeholder:text-neutral-content-muted"
+          value={editName}
+          onChange={(e) => setEditName(e.target.value)}
+          onBlur={handleSave}
+          onFocus={(e) => e.target.select()}
+          placeholder="Untitled"
+          onClick={(e) => e.stopPropagation()}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleSave();
+            } else if (e.key === "Escape") {
+              handleCancel();
+            }
+            e.stopPropagation();
+          }}
+        />
+      </TreeEntry>
+    );
+  }
+
+  return (
+    <TreeEntry
+      icon="board"
+      active={active}
+      onClick={onClick}
+      actions={[
+        {
+          icon: "edit",
+          title: "Rename",
+          handler: () => {
+            setIsEditing(true);
+          },
+        },
+        {
+          icon: "trash",
+          title: "Delete",
+          handler: () => {
+            open(DeleteBoardModal, {
+              boardName: board.name,
+              onConfirm: onDelete,
+            });
+          },
+        },
+      ]}
+    >
+      {board.name.trim() || "Untitled"}
+    </TreeEntry>
+  );
+}
 
 function BoardsSection({
   workspace,
@@ -34,21 +131,18 @@ function BoardsSection({
           icon: "plus",
           title: "Create Board",
           handler: async () => {
-            const title = window.prompt("Enter new board name:");
-            if (title?.trim()) {
-              try {
-                const res = await workspaceEngine.createBoard({
-                  title: title.trim(),
+            try {
+              const res = await workspaceEngine.createBoard({
+                title: "",
+              });
+              if (res.boardId) {
+                engine.goToLocation({
+                  board: res.boardId,
+                  params: {},
                 });
-                if (res.boardId) {
-                  engine.goToLocation({
-                    board: res.boardId,
-                    params: {},
-                  });
-                }
-              } catch (err) {
-                console.error("Failed to create board:", err);
               }
+            } catch (err) {
+              console.error("Failed to create board:", err);
             }
           },
         },
@@ -62,9 +156,9 @@ function BoardsSection({
         </div>
       ) : (
         rootBoards?.map((board) => (
-          <TreeEntry
+          <BoardEntry
             key={board.id}
-            icon="board"
+            board={board}
             active={location.board === board.id}
             onClick={() => {
               engine.goToLocation({
@@ -72,40 +166,16 @@ function BoardsSection({
                 params: {},
               });
             }}
-            actions={[
-              {
-                icon: "edit",
-                title: "Rename",
-                handler: async () => {
-                  const newName = window.prompt(
-                    "Enter new board name:",
-                    board.name,
-                  );
-                  if (newName && newName !== board.name) {
-                    await workspaceEngine.updateBoard({
-                      boardId: board.id,
-                      update: { title: newName },
-                    });
-                  }
-                },
-              },
-              {
-                icon: "trash",
-                title: "Delete",
-                handler: async () => {
-                  if (
-                    window.confirm(
-                      `Are you sure you want to delete board "${board.name}"?`,
-                    )
-                  ) {
-                    await workspaceEngine.deleteBoard({ boardId: board.id });
-                  }
-                },
-              },
-            ]}
-          >
-            {board.name}
-          </TreeEntry>
+            onRename={async (newName) => {
+              await workspaceEngine.updateBoard({
+                boardId: board.id,
+                update: { title: newName },
+              });
+            }}
+            onDelete={async () => {
+              await workspaceEngine.deleteBoard({ boardId: board.id });
+            }}
+          />
         ))
       )}
     </SideSection>

@@ -4,6 +4,8 @@ import { ServiceSpecV1_r } from "./service.js";
 
 export interface ServiceSpecTemplate {
   name: string;
+  summary?: string;
+  tags?: string[];
   baseUrl?: string;
   connection: HttpConnectionSpec;
   discover?: boolean;
@@ -153,6 +155,8 @@ export function generateServiceSpecFromOpenApi({
   const spec: ServiceSpecV1_r = {
     spec: 1,
     name: template.name,
+    description: template.summary,
+    tags: template.tags,
     type: "http",
     connection: template.connection,
     schemas,

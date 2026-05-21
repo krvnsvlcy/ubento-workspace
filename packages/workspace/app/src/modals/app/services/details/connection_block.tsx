@@ -1,6 +1,6 @@
 import { useUbento } from "@/engine/app/engine";
 import { ConnectionProviderConfig } from "@ubento/vertex.core";
-import { PrimitiveButton as Button, Text } from "@ubento/bento.arlo-core";
+import { Button, Text } from "@ubento/bento.arlo-core";
 
 export function ConnectionBlock({
   providerName,

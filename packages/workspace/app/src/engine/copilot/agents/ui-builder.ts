@@ -1,5 +1,6 @@
 import { BoardSpec, boardSpecSchema } from "@ubento/bento.core";
 import { renderYaml } from "@ubento/workspace.agent";
+import { defaultBoardLayoutInstruction } from "./shared.js";
 
 const boardSpec = renderYaml(
   boardSpecSchema
@@ -235,6 +236,8 @@ Example: Bind a state entry to a Text input field
 \`\`\`
 
 ** DO NOT HALUCINATE COMPONENTS. BEFORE USING ANY COMPONENT, YOU MUST CALL \`describe_components\` WITH A LIST OF ALL COMPONENTS YOU INTEND TO USE IN ORDER TO LEARN THEIR SUPPORTED INTERFACE. **
+
+${defaultBoardLayoutInstruction}
 
 ## Examples
 

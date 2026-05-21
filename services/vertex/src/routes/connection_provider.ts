@@ -16,7 +16,11 @@ import {
   getConnectionProviderByCode,
   listConnectionProviders,
   updateConnectionProvider,
+  uploadConnectionProviderImage,
 } from "../entities/connection_provider.js";
+import multer from "multer";
+
+const upload = multer({ storage: multer.memoryStorage() });
 
 const router: Router = Router();
 
@@ -73,12 +77,19 @@ router.get(
         name: z.string().optional(),
         cursor: z.string().optional(),
         limit: z.coerce.number().optional(),
+        tags: z
+          .union([z.array(z.string()), z.string()])
+          .optional()
+          .transform((v) =>
+            v === undefined ? undefined : Array.isArray(v) ? v : [v],
+          ),
       }),
     }),
     async (req: Request, res: Response) => {
       const result = await listConnectionProviders({
         ...parseCursorQuery(req),
         name: parseStringQuery(req, "name"),
+        tags: parseStringQuery(req, "tags")?.split(","),
       });
       res.json(result);
     },
@@ -95,6 +106,7 @@ router.post(
         name: z.string().min(1),
         description: z.string().optional(),
         config: connectionProviderConfigSchema.optional(),
+        tags: z.array(z.string()).optional(),
       }),
     }),
     async (req: Request, res: Response) => {
@@ -117,6 +129,7 @@ router.patch(
         name: z.string().optional(),
         description: z.string().optional(),
         config: connectionProviderConfigSchema.optional(),
+        tags: z.array(z.string()).optional(),
       }),
     }),
     async (req: Request, res: Response) => {
@@ -140,6 +153,30 @@ router.delete(
     async (req: Request, res: Response) => {
       await deleteConnectionProvider(req.params.provider_id as string);
       res.json({ id: req.params.provider_id });
+    },
+  ),
+);
+
+router.post(
+  "/:provider_id/image",
+  upload.single("image"),
+  chain(
+    validate({
+      params: z.object({
+        provider_id: z.string(),
+      }),
+    }),
+    async (req: Request, res: Response) => {
+      if (!req.file) {
+        res.status(400).json({ error: "No image file provided" });
+        return;
+      }
+      const provider = await uploadConnectionProviderImage(
+        req.params.provider_id as string,
+        req.file.buffer,
+        req.file.mimetype,
+      );
+      res.json(toSerializable(provider));
     },
   ),
 );

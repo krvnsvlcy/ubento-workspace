@@ -33,7 +33,7 @@ export type EncryptedData = {
 };
 
 export const cryptoUtils = {
-  encrypt: async (data: string): RunHttpHandlerErrorCode<EncryptedData> => {
+  encrypt: async (data: string): Promise<EncryptedData> => {
     const iv = crypto.randomBytes(12);
     const cipher = crypto.createCipheriv(ALGORITHM, await getMasterKey(), iv);
 
@@ -48,7 +48,7 @@ export const cryptoUtils = {
     };
   },
 
-  decrypt: async (data: EncryptedData): RunHttpHandlerErrorCode<string> => {
+  decrypt: async (data: EncryptedData): Promise<string> => {
     const decipher = crypto.createDecipheriv(
       ALGORITHM,
       await getMasterKey(),

@@ -1,14 +1,14 @@
 import { useSession } from "@/contexts/session";
 import { useUbento } from "@/engine/app/engine";
 import {
-  PrimitiveButton as Button,
+  Button,
   Content,
   ContentBody,
   ContentHeader,
   Field,
   FieldLabel,
   Heading,
-  PrimitiveInput as Input,
+  Input,
   ScrollArea,
   Text,
 } from "@ubento/bento.arlo-core";

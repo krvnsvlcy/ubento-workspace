@@ -1,5 +1,5 @@
 import { useSession } from "@/contexts/session";
-import { Content, ContentBody, ContentHeader, Field, FieldLabel, Heading, PrimitiveInput as Input, ScrollArea, Text } from "@ubento/bento.arlo-core";
+import { Content, ContentBody, ContentHeader, Field, FieldLabel, Heading, Input, ScrollArea, Text } from "@ubento/bento.arlo-core";
 import { Info, User } from "lucide-react";
 import { FC } from "react";
 

@@ -27,11 +27,13 @@ model ConnectionProvider {
     id     String @id @map("_id")
     entity String @default("connection_provider")
 
-    code        String  @unique // eg. "stripe", "shopify" (machine-readable)
+    code        String   @unique // eg. "stripe", "shopify" (machine-readable)
     type        String // eg. "http", "database", (protocol)
     name        String // eg. "Stripe", "Shopify", "PostgreSQL" (human-readable)
     description String?
     config      Json? // eg. Auth strategy, default headers
+    tags        String[] @default([])
+    image_hash  String? // hash of the image
 
     // Relations
     connections   Connection[]
@@ -103,13 +105,15 @@ model Service {
     id     String @id @map("_id")
     entity String @default("service")
 
-    team_id String
-    scope   String @default("__public__")
-    name    String
+    team_id    String
+    scope      String  @default("__public__")
+    name       String
+    image_hash String? // hash of the image
 
     display_name String
     description  String?
     config       Json?
+    tags         String[] @default([])
 
     channels ServiceChannel[]
 

@@ -1,8 +1,11 @@
 import type { ServiceSpecV1 } from "@ubento/vertex.core";
+import { tags } from "../tags.js";
 
 export const spec: ServiceSpecV1 = {
   spec: 1,
   name: "hubspot",
+  description: "Manage contacts, deals, marketing campaigns, and CRM pipelines.",
+  tags: [tags.category.crm],
   type: "http",
   connection: {
     provider: "hubspot",
@@ -10,7 +13,7 @@ export const spec: ServiceSpecV1 = {
   },
   schemas: {},
   queries: {},
-  actions: {}
+  actions: {},
 };
 
 export default spec;

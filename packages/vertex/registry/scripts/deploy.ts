@@ -60,13 +60,38 @@ async function deploySpec(serviceName: string, sdk: UbentoSDK) {
     if (existingService) {
       serviceId = existingService.id;
       console.log(`✅ Found existing service: ${serviceName} (${serviceId})`);
+
+      // Sync display_name, description, tags if out of date
+      const desiredDisplayName = spec.name || serviceName;
+      const desiredDescription = spec.summary ?? spec.description ?? null;
+      const desiredTags: string[] = spec.tags || [];
+
+      const tagsMatch =
+        [...(existingService.tags || [])].sort().join(",") ===
+        [...desiredTags].sort().join(",");
+      const needsUpdate =
+        existingService.display_name !== desiredDisplayName ||
+        (existingService.description ?? null) !== desiredDescription ||
+        !tagsMatch;
+
+      if (needsUpdate) {
+        console.log(`- Updating service metadata: ${serviceName}...`);
+        await sdk.vertex.updateService(serviceId, {
+          display_name: desiredDisplayName,
+          description: desiredDescription,
+          tags: desiredTags,
+        });
+        console.log(`✅ Updated service metadata: ${serviceName}`);
+      }
     } else {
       console.log(`- Creating new service: ${serviceName}...`);
       const newService = await sdk.vertex.createService({
         team_id: teamId,
         name: serviceName,
         display_name: spec.name || serviceName,
-        scope: "private",
+        description: spec.summary ?? spec.description,
+        tags: spec.tags || [],
+        scope: "public",
       });
       serviceId = newService.id;
       console.log(`✅ Created service: ${serviceName} (${serviceId})`);
@@ -74,6 +99,23 @@ async function deploySpec(serviceName: string, sdk: UbentoSDK) {
   } catch (err) {
     console.error(`❌ Failed to find or create service ${serviceName}:`, err);
     return;
+  }
+
+  // Auto upload service image from logos folder
+  const providerName = spec.connection?.provider;
+  if (providerName) {
+    const logoPath = path.join(root, "logos", `${providerName}.webp`);
+    if (fs.existsSync(logoPath)) {
+      console.log(`- Uploading logo for service: ${serviceName}...`);
+      try {
+        const logoBuffer = fs.readFileSync(logoPath);
+        const logoBlob = new Blob([logoBuffer], { type: "image/webp" });
+        await sdk.vertex.uploadServiceImage(serviceId, logoBlob);
+        console.log(`✅ Logo uploaded successfully for service: ${serviceName}`);
+      } catch (err) {
+        console.error(`❌ Failed to upload logo for service ${serviceName}:`, err);
+      }
+    }
   }
 
   // 3. Find or create Service Channel (default to "v0")
@@ -143,6 +185,7 @@ async function deployProvider(providerName: string, sdk: UbentoSDK) {
     const providersResponse = await sdk.vertex.getProviderByCode(code);
     const existingProvider = providersResponse;
 
+    let providerId: string;
     if (existingProvider) {
       console.log(
         `✅ Found existing provider: ${code} (${existingProvider.id})`,
@@ -154,6 +197,7 @@ async function deployProvider(providerName: string, sdk: UbentoSDK) {
         description: config.description,
         config: config as any,
       });
+      providerId = existingProvider.id;
       console.log(`✅ Updated provider config: ${code}`);
     } else {
       console.log(`- Creating new provider: ${code}...`);
@@ -164,7 +208,22 @@ async function deployProvider(providerName: string, sdk: UbentoSDK) {
         description: config.description,
         config: config as any,
       });
+      providerId = newProvider.id;
       console.log(`✅ Created provider: ${code} (${newProvider.id})`);
+    }
+
+    // Auto upload provider image from logos folder
+    const logoPath = path.join(root, "logos", `${code}.webp`);
+    if (fs.existsSync(logoPath)) {
+      console.log(`- Uploading logo for provider: ${code}...`);
+      try {
+        const logoBuffer = fs.readFileSync(logoPath);
+        const logoBlob = new Blob([logoBuffer], { type: "image/webp" });
+        await sdk.vertex.uploadConnectionProviderImage(providerId, logoBlob);
+        console.log(`✅ Logo uploaded successfully for provider: ${code}`);
+      } catch (err) {
+        console.error(`❌ Failed to upload logo for provider ${code}:`, err);
+      }
     }
   } catch (err) {
     console.error(`❌ Failed to find or create provider ${code}:`, err);

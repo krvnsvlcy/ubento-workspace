@@ -21,9 +21,6 @@ export const serviceDataSchema = z.object({
 export type ServiceData = z.infer<typeof serviceDataSchema>;
 
 export const workspaceSpecSchema = z.object({
-  id: z.string(),
-  title: z.string(),
-  description: z.string(),
   state: stateSpecSchema.optional(),
   services: z.record(z.string(), serviceDataSchema).optional(),
 });

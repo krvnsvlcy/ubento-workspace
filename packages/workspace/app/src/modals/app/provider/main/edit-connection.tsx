@@ -2,7 +2,7 @@ import { useSession } from "@/contexts/session";
 import { useUbento } from "@/engine/app/engine";
 import { useAppModal } from "@/modals/app/hook.js";
 import {
-  PrimitiveButton as Button,
+  Button,
   Content,
   ContentBody,
   ContentFooter,
@@ -10,7 +10,7 @@ import {
   Field,
   FieldLabel,
   Heading,
-  PrimitiveInput as Input,
+  Input,
   Spinner,
 } from "@ubento/bento.arlo-core";
 import { vertexClient } from "@ubento/services.sdk";

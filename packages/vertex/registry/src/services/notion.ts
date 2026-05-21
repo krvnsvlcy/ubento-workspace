@@ -1,4 +1,5 @@
 import { generateServiceSpecFromOpenApi } from "@ubento/vertex.core";
+import { tags } from "../tags.js";
 import { getOpenApiSpec } from "../utils/openapi.js";
 
 export async function getSpec() {
@@ -7,6 +8,8 @@ export async function getSpec() {
     template: {
       name: "Notion",
       discover: true,
+      tags: [tags.category.productivity],
+      summary: "Read and write pages, databases, and blocks in Notion workspaces.",
       connection: {
         provider: "notion",
         baseUrl: "https://api.notion.com",

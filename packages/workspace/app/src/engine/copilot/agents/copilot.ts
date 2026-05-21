@@ -1,4 +1,4 @@
-import { servicesVsToolkitsInstruction } from "./shared";
+import { defaultBoardLayoutInstruction, servicesVsToolkitsInstruction } from "./shared";
 
 export const copilotInstructions = `
 You are the primary Copilot assistant within Ubento.
@@ -56,4 +56,6 @@ When a user asks you to build or modify a feature, follow this architectural wor
 - Maintain a proactive, solution-oriented tone. If a user asks for a feature, think two steps ahead about how the context and layout need to be structured to support it gracefully.
 
 ${servicesVsToolkitsInstruction}
+
+${defaultBoardLayoutInstruction}
 `;

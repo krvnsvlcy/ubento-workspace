@@ -14,6 +14,7 @@ export interface paths {
                     name?: string;
                     cursor?: string;
                     limit?: number;
+                    tags?: string[];
                 };
                 header?: never;
                 path?: never;
@@ -59,6 +60,7 @@ export interface paths {
                         display_name: string;
                         description?: string | null;
                         config?: Record<string, never> | null;
+                        tags?: string[];
                     };
                 };
             };
@@ -158,6 +160,7 @@ export interface paths {
                         display_name?: string;
                         description?: string | null;
                         config?: Record<string, never> | null;
+                        tags?: string[];
                     };
                 };
             };
@@ -173,6 +176,53 @@ export interface paths {
                 };
             };
         };
+        trace?: never;
+    };
+    "/vertex/connection-providers/{provider_id}/image": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                provider_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Upload image for connection provider */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    provider_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "multipart/form-data": {
+                        /** Format: binary */
+                        image: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The updated connection provider with image_url */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ConnectionProvider"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/vertex/connection-providers/by-name/{name}": {
@@ -459,6 +509,7 @@ export interface paths {
                     name?: string;
                     cursor?: string;
                     limit?: number;
+                    tags?: string[];
                 };
                 header?: never;
                 path?: never;
@@ -505,6 +556,7 @@ export interface paths {
                         display_name: string;
                         description?: string | null;
                         config?: Record<string, never> | null;
+                        tags?: string[];
                     };
                 };
             };
@@ -604,6 +656,7 @@ export interface paths {
                         display_name?: string;
                         description?: string | null;
                         config?: Record<string, never> | null;
+                        tags?: string[];
                     };
                 };
             };
@@ -619,6 +672,53 @@ export interface paths {
                 };
             };
         };
+        trace?: never;
+    };
+    "/vertex/services/{service_id}/image": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                service_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Upload image for service */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    service_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "multipart/form-data": {
+                        /** Format: binary */
+                        image: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The updated service with image_url */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Service"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/vertex/services/{service_id}/channels": {
@@ -1155,12 +1255,15 @@ export interface components {
             name: string;
             description?: string;
             config?: Record<string, never>;
+            tags?: string[];
+            image_hash?: string;
             /** @default 1 */
             version: number;
             /** Format: date-time */
             created_at: string;
             /** Format: date-time */
             updated_at: string;
+            image_url?: string | null;
         };
         Connection: {
             id: string;
@@ -1208,9 +1311,11 @@ export interface components {
             /** @default __public__ */
             scope: string;
             name: string;
+            image_hash?: string;
             display_name: string;
             description?: string;
             config?: Record<string, never>;
+            tags?: string[];
             /** @default 1 */
             version: number;
             /** Format: date-time */
@@ -1219,6 +1324,7 @@ export interface components {
             updated_at: string;
             /** Format: date-time */
             deleted_at?: string;
+            image_url?: string | null;
         };
         ServiceChannel: {
             id: string;

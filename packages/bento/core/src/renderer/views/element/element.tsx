@@ -1,3 +1,4 @@
+import { createContext, useContext } from "react";
 import { RefHandler } from "../../../environment/environment";
 import { useBoardRenderingContext } from "../../context/context";
 import { useBoardElement } from "../../states/board";
@@ -18,14 +19,20 @@ function FallbackElement({ ref }: { ref: RefHandler }) {
   const FallbackComponent = useEnvironmentFallBackComponent();
   if (!FallbackComponent) return <></>;
 
-  return (
-    <FallbackComponent.render
-      ref={ref}
-      props={{}}
-      bindings={{}}
-      emit={() => {}}
-    />
-  );
+  return <FallbackComponent.render ref={ref} props={{}} emit={() => {}} />;
+}
+
+export const BindingContext = createContext<
+  Record<string, [any, (v: any) => void]>
+>({});
+export function useBinding<T = any>(
+  key: string,
+): [T | undefined, (v: T) => void, boolean] {
+  const bindings = useContext(BindingContext);
+  const pair = bindings[key];
+
+  if (!pair) return [undefined, () => {}, false];
+  return [pair[0], pair[1], true];
 }
 
 function UnsafeElementView({
@@ -56,14 +63,15 @@ function UnsafeElementView({
   ));
 
   return (
-    <Component.render
-      props={resolvedProps}
-      ref={handleRef}
-      bindings={resolvedBindings}
-      emit={resolvedEventHandler}
-    >
-      {children}
-    </Component.render>
+    <BindingContext.Provider value={resolvedBindings}>
+      <Component.render
+        props={resolvedProps}
+        ref={handleRef}
+        emit={resolvedEventHandler}
+      >
+        {children}
+      </Component.render>
+    </BindingContext.Provider>
   );
 }
 

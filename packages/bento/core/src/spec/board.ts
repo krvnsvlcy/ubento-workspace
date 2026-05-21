@@ -118,7 +118,16 @@ export const elementSpecSchema = z
         "Static prop values passed directly to the component. Keys are prop names.",
       ),
     bindings: z
-      .record(z.string(), z.string())
+      .record(
+        z.string(),
+        z.union([
+          z.string(),
+          z.object({
+            value: z.string(),
+            setValue: z.string(),
+          }),
+        ]),
+      )
       .optional()
       .describe(
         "Dynamic prop mappings. Keys are component prop names, values are JSON paths or expression strings pointing to the board's state or parameters.",

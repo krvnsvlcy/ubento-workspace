@@ -1,6 +1,27 @@
 import { generateBareId, makeEntityId } from "@ubento/services.primitives";
 import { prismaListWithCursor } from "@ubento/services.toolkit";
 import prisma from "../lib/prisma.js";
+import { resolveImageUrl, uploadImage } from "../lib/storage.js";
+
+// ---------------------------------------------------------------------------
+// Serialization — replaces image_hash with image_url
+// ---------------------------------------------------------------------------
+
+type WithImageHash<T> = T & { image_hash?: string | null };
+
+export function serializeService<T extends WithImageHash<object>>(
+  service: T,
+): Omit<T, "image_hash"> & { image_url: string | null } {
+  const { image_hash, ...rest } = service as any;
+  return {
+    ...rest,
+    image_url: image_hash ? resolveImageUrl(image_hash) : null,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// List
+// ---------------------------------------------------------------------------
 
 export async function listServices({
   team_id,
@@ -8,14 +29,16 @@ export async function listServices({
   name,
   cursor,
   limit,
+  tags,
 }: {
   team_id?: string;
   scope?: string;
   name?: string;
   cursor?: string;
   limit?: number;
+  tags?: string[];
 } = {}) {
-  return prismaListWithCursor(prisma.service, {
+  const page = await prismaListWithCursor(prisma.service, {
     limit,
     cursor,
     orderBy: [{ id: "asc" }],
@@ -31,16 +54,32 @@ export async function listServices({
           { display_name: { contains: name, mode: "insensitive" } },
         ],
       }),
+      ...(tags &&
+        tags.length > 0 && {
+          tags: { hasSome: tags },
+        }),
     },
     resolveCursor: (p) => ({ id: p.id }),
   });
+  return {
+    ...page,
+    data: page.data.map(serializeService),
+  };
 }
 
+// ---------------------------------------------------------------------------
+// Get
+// ---------------------------------------------------------------------------
+
 export async function getService(id: string) {
-  const service = await prisma.service.findUnique({ where: { id } });
-  if (service?.deleted_at) return null;
-  return service;
+  const s = await prisma.service.findUnique({ where: { id } });
+  if (s?.deleted_at) return null;
+  return s ? serializeService(s) : null;
 }
+
+// ---------------------------------------------------------------------------
+// Create
+// ---------------------------------------------------------------------------
 
 export async function createService({
   team_id,
@@ -48,18 +87,17 @@ export async function createService({
   name,
   display_name,
   description,
+  tags,
 }: {
   team_id: string;
   scope?: string;
   name: string;
   display_name: string;
   description?: string | null;
+  tags?: string[];
 }) {
-  console.log({
-    scope,
-    name,
-  });
-  return prisma.service.create({
+  console.log({ scope, name });
+  const s = await prisma.service.create({
     data: {
       id: makeEntityId({
         code: "srv",
@@ -70,9 +108,15 @@ export async function createService({
       name: name.toLowerCase(),
       display_name,
       description,
+      ...(tags !== undefined && { tags }),
     },
   });
+  return serializeService(s);
 }
+
+// ---------------------------------------------------------------------------
+// Update
+// ---------------------------------------------------------------------------
 
 export async function updateService(
   id: string,
@@ -80,16 +124,39 @@ export async function updateService(
     name?: string;
     display_name?: string;
     description?: string | null;
+    tags?: string[];
   },
 ) {
-  return prisma.service.update({
+  const s = await prisma.service.update({
     where: { id },
     data: {
       ...data,
       ...(data.name !== undefined && { name: data.name.toLowerCase() }),
     },
   });
+  return serializeService(s);
 }
+
+// ---------------------------------------------------------------------------
+// Upload image
+// ---------------------------------------------------------------------------
+
+export async function uploadServiceImage(
+  id: string,
+  buffer: Buffer,
+  contentType: string,
+) {
+  const hash = await uploadImage(buffer, contentType);
+  const s = await prisma.service.update({
+    where: { id },
+    data: { image_hash: hash },
+  });
+  return serializeService(s);
+}
+
+// ---------------------------------------------------------------------------
+// Delete
+// ---------------------------------------------------------------------------
 
 export async function deleteService(id: string) {
   return prisma.service.update({

@@ -1,4 +1,4 @@
-import { PrimitiveButton as Button, Content, ContentBody, ContentHeader, Heading, RailLayout, RailLayoutMain, RailLayoutSide, Text } from "@ubento/bento.arlo-core";
+import { Button, Content, ContentBody, ContentHeader, Heading, RailLayout, RailLayoutMain, RailLayoutSide, Text } from "@ubento/bento.arlo-core";
 import { CreditCard, Link as LinkIcon, Settings } from "lucide-react";
 import { Case, Switch } from "react-if";
 import { useAppModal } from "../hook.js";

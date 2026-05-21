@@ -44,6 +44,16 @@ export function createClientFactory<Paths extends {}>() {
     const client = createClient<Paths>({
       baseUrl,
       fetch: fetcher,
+      bodySerializer(body: any) {
+        if (
+          body instanceof FormData ||
+          body instanceof Blob ||
+          body instanceof ArrayBuffer
+        ) {
+          return body;
+        }
+        return JSON.stringify(body);
+      },
     });
 
     return {

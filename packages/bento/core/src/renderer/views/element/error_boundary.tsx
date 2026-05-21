@@ -25,7 +25,6 @@ export class ErrorBoundary extends React.Component<{
           <ErrorComponent.render
             props={{}}
             ref={this.props.refHandler}
-            bindings={{}}
             emit={() => {}}
           />
         );

@@ -1,10 +1,6 @@
 import { BoardSpec } from "@ubento/bento.core";
 
-export function generateInitialBoardSpec({
-  title,
-}: {
-  title: string;
-}): BoardSpec {
+export function generateInitialBoardSpec(): BoardSpec {
   return {
     style: {
       layout: "column",
@@ -12,24 +8,34 @@ export function generateInitialBoardSpec({
       flow: "scroll",
       padding: { top: 32, right: 32, bottom: 32, left: 32 },
     },
-    children: ["header", "description"],
+    children: ["header", "divider", "body"],
     elements: {
       header: {
-        component: "Heading",
+        component: "TextLine",
         props: {
-          text: title,
-          level: "h1",
-          size: 32,
-          weight: 700,
-          color: "#0f172a",
+          variant: "h1",
+        },
+        bindings: {
+          text: { value: "board.title", setValue: "board.setTitle" },
         },
       },
+      divider: {
+        component: "Divider",
+        props: {
+          noMargin: true,
+        },
+      },
+      body: {
+        component: "Stack",
+        props: {
+          gap: 16,
+        },
+        children: ["description"],
+      },
       description: {
-        component: "Text",
+        component: "Paragraph",
         props: {
           text: "Welcome to your new board! This is a starting point for your interface. You can add more components and configure their behavior.",
-          size: 16,
-          color: "#64748b",
         },
       },
     },

@@ -1,5 +1,5 @@
 import { OperationSpec } from "@ubento/vertex.core";
-import { PrimitiveCard as Card, Heading, Text, PrimitiveButton as Button } from "@ubento/bento.arlo-core";
+import { Card, Heading, Text, Button } from "@ubento/bento.arlo-core";
 import {
   Boxes,
   ChevronDown,

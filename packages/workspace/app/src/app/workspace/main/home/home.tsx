@@ -1,15 +1,20 @@
 import { CreateWorkspaceModal } from "@/modals/create_workspace/create_workspace";
+import { DeleteWorkspaceModal } from "@/modals/delete_workspace/delete_workspace";
 import { useModal } from "@/utils/modal-store";
 import {
-  PrimitiveButton as Button,
+  Button,
   Card,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
   ErrorView,
   Heading,
   PendingView,
   Text,
 } from "@ubento/bento.arlo-core";
-import { Box, Plus } from "lucide-react";
-import React, { useMemo } from "react";
+import { Box, MoreHorizontal, Plus, Trash2 } from "lucide-react";
+import { useMemo } from "react";
 import { useUbento, useUbentoEngine } from "../../../../engine/app/engine";
 
 function Greeting({ name }: { name?: string }) {
@@ -31,7 +36,7 @@ export function Home() {
   const ubento = useUbento();
   const engine = useUbentoEngine();
   const session = engine.useState((s) => s.session);
-  const { open, close } = useModal();
+  const { open } = useModal();
 
   const {
     data: workspaces,
@@ -42,31 +47,11 @@ export function Home() {
     team_id: session?.teamId,
   });
 
-  const { mutateAsync: createWorkspace } =
-    ubento.workspace.useCreateWorkspace();
+  const { mutateAsync: deleteWorkspace } =
+    ubento.workspace.useDeleteWorkspace();
 
   const handleCreateWorkspace = async () => {
-    await open(CreateWorkspaceModal, {
-      onSubmit: async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        const formData = new FormData(e.currentTarget);
-        const name = formData.get("name") as string;
-        try {
-          const ws = await createWorkspace({
-            name,
-            team_id: session?.teamId!,
-            data: {},
-          });
-          close();
-          if (ws) {
-            engine.openWorkspace(ws.slug);
-          }
-        } catch (err) {
-          console.error("Error creating workspace:", err);
-        }
-      },
-      isCreating: false,
-    });
+    await open(CreateWorkspaceModal, {});
   };
 
   if (isLoading) {
@@ -88,11 +73,14 @@ export function Home() {
   // The Full-Page Centered Replacement
   if (!workspaces || workspaces.length === 0) {
     return (
-      <div className="h-full w-full flex flex-col items-center justify-center bg-background p-8 selection:bg-neutral-800 selection:text-white">
+      <div
+        key="empty"
+        className="h-full w-full flex flex-col items-center justify-center bg-background p-8 selection:bg-neutral-800 selection:text-white"
+      >
         <div className="flex flex-col items-center text-center max-w-md animate-in fade-in duration-500 gap-6">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-neutral-border bg-neutral-surface text-neutral-content-muted">
-            <Box size={28} strokeWidth={1.5} />
-          </div>
+          <Text tone="muted" size="sm">
+            Hi, {session?.name}
+          </Text>
           <Heading level="display">Welcome to Ubento!</Heading>
           <Text tone="subtle">
             It's a blank slate right now. Create your first workspace to start
@@ -129,6 +117,9 @@ export function Home() {
                 key={workspace.id}
                 workspace={workspace}
                 onClick={() => engine.openWorkspace(workspace.slug)}
+                onDelete={async () => {
+                  await deleteWorkspace(workspace.id);
+                }}
               />
             ))}
           </div>
@@ -141,19 +132,56 @@ export function Home() {
 export function WorkspaceCard({
   workspace,
   onClick,
+  onDelete,
 }: {
   workspace: { id: string; name: string; slug: string };
   onClick: () => void;
+  onDelete?: () => Promise<void>;
 }) {
+  const { open } = useModal();
+
+  const handleDeleteClick = async (e: Event) => {
+    e.stopPropagation();
+    await open(DeleteWorkspaceModal, {
+      workspaceName: workspace.name,
+      onConfirm: onDelete,
+    });
+  };
+
   return (
     <Card
       onClick={onClick}
       variant="surface-interactive"
-      className="space-y-3 cursor-pointer group"
+      className="space-y-3 cursor-pointer group relative"
     >
-      <div className="w-12 h-12 rounded-xl border border-neutral-border bg-background flex items-center justify-center text-neutral-content group-hover:bg-neutral-content group-hover:text-background transition-colors shrink-0">
-        <Box size={18} />
+      <div className="flex items-start justify-between">
+        <div className="w-12 h-12 rounded-xl border border-neutral-border bg-background flex items-center justify-center text-neutral-content group-hover:bg-neutral-content group-hover:text-background transition-colors shrink-0">
+          <Box size={18} />
+        </div>
+
+        {/* More button + dropdown menu */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              onClick={(e) => e.stopPropagation()}
+              className="flex h-7 w-7 items-center justify-center rounded-lg text-neutral-content-muted opacity-0 group-hover:opacity-100 transition-all hover:bg-neutral-surface hover:text-neutral-content"
+              aria-label="More options"
+            >
+              <MoreHorizontal size={15} />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+            <DropdownMenuItem
+              className="text-destructive-content focus:text-destructive-content focus:bg-destructive-surface"
+              onSelect={handleDeleteClick}
+            >
+              <Trash2 size={13} className="mr-2 shrink-0" />
+              Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
+
       <div>
         <Text weight="semibold">{workspace.name}</Text>
         <Text tone="subtle" size="sm">

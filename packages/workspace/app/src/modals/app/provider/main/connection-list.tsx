@@ -4,7 +4,7 @@ import { useInfiniteScroll } from "@/hooks/use-infinite-scroll.js";
 import { useAppModal } from "@/modals/app/hook.js";
 import { appModalRoutes } from "@/modals/app/routes.js";
 import {
-  PrimitiveButton as Button,
+  Button,
   Card,
   Content,
   ContentBody,

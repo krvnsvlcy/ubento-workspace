@@ -2,12 +2,12 @@ import { useSession } from "@/contexts/session";
 import { useUbento } from "@/engine/app/engine";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  PrimitiveButton as Button,
+  Button,
   Card,
   Field,
   FieldLabel,
   Heading,
-  PrimitiveInput as Input,
+  Input,
   Select,
   SelectContent,
   SelectGroup,

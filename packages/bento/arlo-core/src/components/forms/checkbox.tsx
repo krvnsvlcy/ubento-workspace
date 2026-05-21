@@ -1,29 +1,84 @@
-import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
-import cn from "clsx";
-import { CheckIcon } from "lucide-react";
-import * as React from "react";
+import * as CheckboxPrimitives from "@radix-ui/react-checkbox";
+import React from "react";
 
-function Checkbox({
-  className,
-  ...props
-}: React.ComponentProps<typeof CheckboxPrimitive.Root>) {
+import { cx, focusRing } from "@/lib/utils.js";
+
+const Checkbox = React.forwardRef<
+  React.ElementRef<typeof CheckboxPrimitives.Root>,
+  React.ComponentPropsWithoutRef<typeof CheckboxPrimitives.Root>
+>(({ className, checked, ...props }, forwardedRef) => {
   return (
-    <CheckboxPrimitive.Root
-      data-slot="checkbox"
-      className={cn(
-        "peer border dark:bg-neutral-surface/50/30 data-[state=checked]:bg-accent data-[state=checked]:text-accent-ctr dark:data-[state=checked]:bg-accent data-[state=checked]:border-accent focus-visible:border-accent focus-visible:ring-accent/50 aria-invalid:ring-red/20 dark:aria-invalid:ring-red/40 aria-invalid:border-red size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50",
+    <CheckboxPrimitives.Root
+      ref={forwardedRef}
+      {...props}
+      checked={checked}
+      className={cx(
+        // base
+        "relative inline-flex size-4 shrink-0 appearance-none items-center justify-center rounded-sm shadow-xs outline-hidden ring-1 ring-inset transition duration-100 enabled:cursor-pointer",
+        // text color
+        "text-accent-contrast",
+        // background color
+        "bg-neutral-surface",
+        // ring color
+        "ring-neutral-border",
+        // disabled
+        "data-disabled:bg-neutral-surface data-disabled:text-neutral-content-muted data-disabled:ring-neutral-border",
+        // checked and enabled
+        "enabled:data-[state=checked]:bg-accent enabled:data-[state=checked]:ring-0 enabled:data-[state=checked]:ring-transparent",
+        // indeterminate
+        "enabled:data-[state=indeterminate]:bg-accent enabled:data-[state=indeterminate]:ring-0 enabled:data-[state=indeterminate]:ring-transparent",
+        // focus
+        focusRing,
         className,
       )}
-      {...props}
+      tremor-id="tremor-raw"
     >
-      <CheckboxPrimitive.Indicator
-        data-slot="checkbox-indicator"
-        className="grid place-content-center text-current transition-none"
+      <CheckboxPrimitives.Indicator
+        asChild
+        className="flex size-full items-center justify-center"
       >
-        <CheckIcon className="size-3.5" />
-      </CheckboxPrimitive.Indicator>
-    </CheckboxPrimitive.Root>
+        {checked === "indeterminate" ? (
+          <svg
+            aria-hidden="true"
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <line
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeWidth="2"
+              x1="4"
+              x2="12"
+              y1="8"
+              y2="8"
+            ></line>
+          </svg>
+        ) : (
+          <svg
+            aria-hidden="true"
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M11.2 5.59998L6.79999 9.99998L4.79999 7.99998"
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+            ></path>
+          </svg>
+        )}
+      </CheckboxPrimitives.Indicator>
+    </CheckboxPrimitives.Root>
   );
-}
+});
+
+Checkbox.displayName = "Checkbox";
 
 export { Checkbox };

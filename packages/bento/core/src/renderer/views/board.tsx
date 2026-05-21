@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { PropsWithChildren } from "react";
 import { BoardSpec, BoardStyle } from "../../spec/board.js";
-import { BoardRenderingContext } from "../context/context.js";
+import { BoardApi, BoardRenderingContext } from "../context/context.js";
 import { BoardStateProvider } from "../context/state.js";
 import { StoreProvider } from "../context/store.js";
 import { useEnvironment } from "../renderer.js";
@@ -54,10 +54,12 @@ export function BoardView({
   children,
   params,
   queryClient,
+  board,
 }: PropsWithChildren<{
   spec: BoardSpec;
   params: Record<string, unknown>;
   queryClient: QueryClient;
+  board: BoardApi;
 }>) {
   const environment = useEnvironment();
   const content =
@@ -73,6 +75,7 @@ export function BoardView({
             value={{
               workspace: environment.workspaceApi,
               session: environment.sessionApi,
+              board,
               params,
               state: {},
               store: {},

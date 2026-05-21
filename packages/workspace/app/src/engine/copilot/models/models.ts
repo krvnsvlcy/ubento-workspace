@@ -24,8 +24,6 @@ function joinUrl(...parts: string[]) {
     if (v.endsWith("/")) v = v.slice(0, -1);
     if (v.length) p.push(v);
   }
-
-  alert(p.join("/"));
   return p.join("/");
 }
 

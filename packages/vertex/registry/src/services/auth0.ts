@@ -1,4 +1,5 @@
 import { generateServiceSpecFromOpenApi } from "@ubento/vertex.core";
+import { tags } from "../tags.js";
 import { getOpenApiSpec } from "../utils/openapi.js";
 
 export async function getSpec() {
@@ -7,6 +8,8 @@ export async function getSpec() {
     template: {
       name: "Auth0",
       discover: true,
+      tags: [tags.category.iam],
+      summary: "Manage users, roles, and authentication policies for your applications.",
       connection: {
         provider: "auth0",
         baseUrl: "https://${connectionConfig.subdomain}.auth0.com",

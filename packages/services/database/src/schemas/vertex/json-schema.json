@@ -36,6 +36,18 @@
             "null"
           ]
         },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "image_hash": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "version": {
           "type": "integer",
           "default": 1
@@ -223,6 +235,12 @@
         "name": {
           "type": "string"
         },
+        "image_hash": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "display_name": {
           "type": "string"
         },
@@ -241,6 +259,12 @@
             "array",
             "null"
           ]
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "version": {
           "type": "integer",

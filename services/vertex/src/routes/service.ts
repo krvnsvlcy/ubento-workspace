@@ -14,7 +14,12 @@ import {
   getService,
   listServices,
   updateService,
+  uploadServiceImage,
 } from "../entities/service.js";
+import multer from "multer";
+
+const upload = multer({ storage: multer.memoryStorage() });
+
 import {
   createServiceChannel,
   listServiceChannels,
@@ -32,6 +37,12 @@ router.get(
         name: z.string().optional(),
         cursor: z.string().optional(),
         limit: z.coerce.number().optional(),
+        tags: z
+          .union([z.array(z.string()), z.string()])
+          .optional()
+          .transform((v) =>
+            v === undefined ? undefined : Array.isArray(v) ? v : [v],
+          ),
       }),
     }),
     async (req: Request, res: Response) => {
@@ -40,6 +51,7 @@ router.get(
         team_id: parseStringQuery(req, "team_id"),
         scope: parseStringQuery(req, "scope"),
         name: parseStringQuery(req, "name"),
+        tags: parseStringQuery(req, "tags")?.split(","),
       });
       res.json(result);
     },
@@ -75,6 +87,7 @@ router.post(
         display_name: z.string().min(1),
         description: z.string().optional(),
         config: z.unknown().optional(),
+        tags: z.array(z.string()).optional(),
       }),
     }),
     async (req: Request, res: Response) => {
@@ -84,6 +97,7 @@ router.post(
         name: req.body.name,
         display_name: req.body.display_name,
         description: req.body.description,
+        tags: req.body.tags,
       });
       res.json(toSerializable(service));
     },
@@ -102,6 +116,7 @@ router.patch(
         display_name: z.string().optional(),
         description: z.string().optional().nullable(),
         config: z.unknown().optional().nullable(),
+        tags: z.array(z.string()).optional(),
       }),
     }),
     async (req: Request, res: Response) => {
@@ -128,6 +143,31 @@ router.delete(
     },
   ),
 );
+
+router.post(
+  "/:service_id/image",
+  upload.single("image"),
+  chain(
+    validate({
+      params: z.object({
+        service_id: z.string(),
+      }),
+    }),
+    async (req: Request, res: Response) => {
+      if (!req.file) {
+        res.status(400).json({ error: "No image file provided" });
+        return;
+      }
+      const service = await uploadServiceImage(
+        req.params.service_id as string,
+        req.file.buffer,
+        req.file.mimetype,
+      );
+      res.json(toSerializable(service));
+    },
+  ),
+);
+
 
 router.get(
   "/:service_id/channels",

@@ -3,7 +3,7 @@ import { useUbento } from "@/engine/app/engine";
 import { useAppModal } from "@/modals/app/hook.js";
 import { appModalRoutes } from "@/modals/app/routes.js";
 import { generateServiceSpecFromOpenApi } from "@ubento/vertex.core";
-import { PrimitiveButton as Button, Content, ContentBody, ContentFooter, ContentHeader, Field, FieldLabel, Heading, PrimitiveInput as Input, PendingView, Textarea } from "@ubento/bento.arlo-core";
+import { Button, Content, ContentBody, ContentFooter, ContentHeader, Field, FieldLabel, Heading, Input, PendingView, Textarea } from "@ubento/bento.arlo-core";
 import { useState, useEffect } from "react";
 import { parse as parseYaml } from "yaml";
 

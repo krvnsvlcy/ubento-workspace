@@ -186,12 +186,22 @@ export function createBentoRuntime({
   return {
     ...controller,
     environment,
+    rpc,
     boardStore,
     goHome: () => {
       rpc.egress.goTo({ location: undefined });
     },
     goToBoard: (boardId: string, params: Record<string, string> = {}) => {
       rpc.egress.goTo({ location: { boardId, params } });
+    },
+    createBoard: async (args?: {
+      title?: string;
+      parentId?: string;
+      spec?: any;
+    }) => {
+      const board = await rpc.egress.createBoard(args);
+      boardStore.push(board);
+      return board;
     },
   };
 }

@@ -26,6 +26,7 @@ export function serviceSpecV1SchemaFactory<
     type: z.literal(type),
     name: z.string(),
     description: z.string().optional(),
+    tags: z.array(z.string()).optional(),
     // Connection
     connection: connection.optional(),
     // Types

@@ -36,6 +36,7 @@ export class VertexService {
       name?: string;
       limit?: number;
       cursor?: string;
+      tags?: string[];
     } = {},
   ) {
     const result = await this.vertexClient.get("/vertex/connection-providers", {
@@ -60,6 +61,7 @@ export class VertexService {
     name: string;
     description?: string;
     config?: Record<string, any>;
+    tags?: string[];
   }): Promise<ConnectionProvider> {
     const result = await this.vertexClient.post(
       "/vertex/connection-providers",
@@ -78,6 +80,7 @@ export class VertexService {
       name?: string;
       description?: string;
       config?: Record<string, any>;
+      tags?: string[];
     },
   ): Promise<ConnectionProvider> {
     const result = await this.vertexClient.patch(
@@ -264,6 +267,7 @@ export class VertexService {
       name?: string;
       limit?: number;
       cursor?: string;
+      tags?: string[];
     } = {},
   ) {
     const result = await this.vertexClient.get("/vertex/services", {
@@ -289,6 +293,7 @@ export class VertexService {
     display_name: string;
     description?: string;
     config?: Record<string, any>;
+    tags?: string[];
   }): Promise<Service> {
     const result = await this.vertexClient.post("/vertex/services", {
       body: data as any,
@@ -302,6 +307,7 @@ export class VertexService {
       name?: string;
       display_name?: string;
       description?: string;
+      tags?: string[];
     },
   ): Promise<Service> {
     const result = await this.vertexClient.patch(
@@ -468,4 +474,39 @@ export class VertexService {
     });
     return extractResponseData(result, true);
   }
+
+  async uploadConnectionProviderImage(
+    providerId: string,
+    file: Blob | File,
+  ): Promise<ConnectionProvider> {
+    const formData = new FormData();
+    const filename = (file as any).name || "logo.webp";
+    formData.append("image", file, filename);
+    const result = await this.vertexClient.post(
+      "/vertex/connection-providers/{provider_id}/image" as any,
+      {
+        params: { path: { provider_id: providerId } } as any,
+        body: formData as any,
+      },
+    );
+    return extractResponseData(result, true);
+  }
+
+  async uploadServiceImage(
+    serviceId: string,
+    file: Blob | File,
+  ): Promise<Service> {
+    const formData = new FormData();
+    const filename = (file as any).name || "logo.webp";
+    formData.append("image", file, filename);
+    const result = await this.vertexClient.post(
+      "/vertex/services/{service_id}/image" as any,
+      {
+        params: { path: { service_id: serviceId } } as any,
+        body: formData as any,
+      },
+    );
+    return extractResponseData(result, true);
+  }
 }
+

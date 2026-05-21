@@ -1,5 +1,5 @@
 import { useCopilot } from "@/contexts/copilot";
-import { PrimitiveButton as Button } from "@ubento/bento.arlo-core";
+import { Button } from "@ubento/bento.arlo-core";
 import {
   Box,
   Database,

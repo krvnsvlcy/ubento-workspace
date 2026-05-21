@@ -1,5 +1,5 @@
 import {
-  PrimitiveBadge as Badge,
+  Badge,
   Content,
   ContentHeader,
   Heading,

@@ -5,7 +5,7 @@ import { useUbento } from "@/engine/app/engine";
 import { useAppModal } from "@/modals/app/hook.js";
 import { appModalRoutes } from "@/modals/app/routes.js";
 import { serviceSpecV1Schema } from "@ubento/vertex.core";
-import { PrimitiveButton as Button, Content, ContentBody, ContentFooter, ContentHeader, PendingView, RailLayout, RailLayoutMain, RailLayoutSide, Text } from "@ubento/bento.arlo-core";
+import { Button, Content, ContentBody, ContentFooter, ContentHeader, PendingView, RailLayout, RailLayoutMain, RailLayoutSide, Text } from "@ubento/bento.arlo-core";
 import { ArrowLeft, Edit, Server } from "lucide-react";
 import { useEffect, useState } from "react";
 import { DetailsBody } from "./body";

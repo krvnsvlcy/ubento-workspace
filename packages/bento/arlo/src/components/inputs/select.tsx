@@ -1,5 +1,3 @@
-import { createComponent } from "@ubento/bento.core";
-import { z } from "zod";
 import {
   Select as CoreSelect,
   SelectContent,
@@ -7,7 +5,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@ubento/bento.arlo-core";
-import * as React from "react";
+import { createComponent, useBinding } from "@ubento/bento.core";
+import { z } from "zod";
 
 export const Select = createComponent({
   props: z.object({
@@ -36,10 +35,8 @@ export const Select = createComponent({
     "The `placeholder` prop sets the text when no option is selected.",
   ].join("\n"),
 
-  render: ({ ref, props, bindings }) => {
-    const {
-      value: [value, setValue],
-    } = bindings;
+  render: ({ ref, props }) => {
+    const [value, setValue] = useBinding<string>("value");
 
     return (
       <CoreSelect
@@ -52,7 +49,11 @@ export const Select = createComponent({
         </SelectTrigger>
         <SelectContent>
           {props.options.map((opt) => (
-            <SelectItem key={opt.value} value={opt.value} disabled={opt.disabled}>
+            <SelectItem
+              key={opt.value}
+              value={opt.value}
+              disabled={opt.disabled}
+            >
               {opt.label}
             </SelectItem>
           ))}
