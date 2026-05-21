@@ -1171,7 +1171,7 @@ export function LandingPage() {
           </h2>
           <p className="text-neutral-content-subtle text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed">
             Experience a customizable, localized, high-agency workspace engine
-            built from the ground up for developer speed and autonomy.
+            built for speed and autonomy.
           </p>
           <div className="pt-4">
             <a
