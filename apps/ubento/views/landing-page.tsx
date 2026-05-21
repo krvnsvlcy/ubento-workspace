@@ -1,3 +1,5 @@
+"use client";
+
 import { AnimatedHeadline } from "@/components/animated-headline";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
@@ -251,11 +253,11 @@ export function LandingPage() {
                 </div>
                 <div>
                   <h4 className="text-sm font-semibold text-neutral-content">
-                    Hardware Enclave Key Store
+                    Server-Side Encrypted Vault
                   </h4>
                   <p className="text-xs text-neutral-content-muted mt-0.5">
-                    Sync credentials safely using dedicated client-side
-                    enclaves.
+                    Credentials never touch the browser, secured strictly on the
+                    server.
                   </p>
                 </div>
               </div>
@@ -374,11 +376,11 @@ export function LandingPage() {
                       <ShieldCheck className="h-6 w-6 text-success shrink-0" />
                       <div>
                         <div className="text-xs font-semibold text-neutral-content">
-                          Encrypted OAuth Proxy
+                          Pre-Authenticated Proxy
                         </div>
                         <div className="text-[10px] text-neutral-content-muted">
-                          Client credentials stored in a hardware secure
-                          enclave.
+                          Server-injected auth ensures keys remain invisible to
+                          the client.
                         </div>
                       </div>
                     </div>
@@ -441,7 +443,7 @@ export function LandingPage() {
                         </div>
                         <div className="space-y-1.5">
                           <span className="text-[10px] uppercase font-bold text-neutral-content-muted tracking-wider">
-                            Enclave Key Hash
+                            Encrypted Server Hash
                           </span>
                           <input
                             type="text"
@@ -557,7 +559,9 @@ export function LandingPage() {
                               <p className="pl-4">"expires_in": 3599,</p>
                             </>
                           )}
-                          <p className="pl-4">"status": "secured_in_enclave"</p>
+                          <p className="pl-4">
+                            "status": "server_encrypted_vault"
+                          </p>
                           <p>{"}"}</p>
                         </div>
                       ) : (
