@@ -147,8 +147,9 @@ export class WorkspaceService {
   async createBoard(data: {
     workspace_id: string;
     name: string;
-    parent_id?: string;
+    parent_id?: string | null;
     data: any;
+    index?: string | null;
   }) {
     const result = await this.workspaceClient.post("/boards", {
       body: data as any,
@@ -158,13 +159,18 @@ export class WorkspaceService {
 
   async updateBoard(
     boardId: string,
-    data: { name?: string; parent_id?: string; data?: any },
+    data: {
+      name?: string;
+      parent_id?: string | null;
+      data?: any;
+      index?: string | null;
+    },
   ) {
     const result = await this.workspaceClient.patch("/boards/{board_id}", {
       params: {
         path: { board_id: boardId },
       },
-      body: data,
+      body: data as any,
     });
     return extractResponseData(result, true);
   }

@@ -86,6 +86,17 @@ export function createBentoRuntime({
     setInteractionMode: async ({ mode }) => {
       controller.setState({ mode });
     },
+    select: async ({ selection }) => {
+      environment.interactionManager.select(selection);
+    },
+    hover: async ({ elementId }) => {
+      environment.interactionManager.hover(elementId);
+    },
+    unhover: async ({ elementId }) => {
+      if (environment.interactionManager.getState().hovered === elementId) {
+        environment.interactionManager.hover(undefined);
+      }
+    },
     readBoard: async ({ boardId }) => {
       return boardStore.getCached(boardId);
     },
@@ -190,6 +201,7 @@ export function createBentoRuntime({
 
   environment.interactionManager.subscribe((state) => {
     rpc.egress.selectionUpdated({ selection: state.selection });
+    rpc.egress.hoverUpdated({ hovered: state.hovered });
   });
 
   return {

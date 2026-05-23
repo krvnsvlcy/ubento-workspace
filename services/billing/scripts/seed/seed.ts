@@ -103,9 +103,10 @@ async function syncCatalog(): Promise<SyncStats> {
 
       // Sync product links
       if (productData.lsId) {
+        console.log(`📦 Syncing product: ${productData.lsId}`);
         const productResult = await getProduct(productData.lsId);
-        if (!productResult.data) {
-          console.log(productResult);
+        if (!productResult.data?.data) {
+          console.log(productResult.error?.message);
           throw new Error(`Product not found for product ${productData.code}`);
         }
         const product = productResult.data.data;

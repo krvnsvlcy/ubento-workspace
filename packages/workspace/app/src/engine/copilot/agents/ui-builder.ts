@@ -1,6 +1,6 @@
 import { BoardSpec, boardSpecSchema } from "@ubento/bento.core";
 import { renderYaml } from "@ubento/workspace.agent";
-import { defaultBoardLayoutInstruction } from "./shared.js";
+import { defaultBoardLayoutInstruction, directivesInstruction } from "./shared.js";
 
 const boardSpec = renderYaml(
   boardSpecSchema
@@ -201,12 +201,14 @@ Example: To navigate to another board when a button is clicked
   },
   "listeners": {
     "click": {
-      "handler": "workspace.goTo", // Note: no $use here. 
-      "args": {
-        "boardId": "brd_123", // id of the board to navigate to
-        "params": {
-          "itemId": {
-            $use: "state.selectedItem.id" // use $use inside the args field here 
+      "$call": {
+        "fn": "workspace.goTo",
+        "args": {
+          "boardId": "brd_123",
+          "params": {
+            "itemId": {
+              "$use": "state.selectedItem.id"
+            }
           }
         }
       }
@@ -236,6 +238,8 @@ Example: Bind a state entry to a Text input field
 \`\`\`
 
 ** DO NOT HALUCINATE COMPONENTS. BEFORE USING ANY COMPONENT, YOU MUST CALL \`describe_components\` WITH A LIST OF ALL COMPONENTS YOU INTEND TO USE IN ORDER TO LEARN THEIR SUPPORTED INTERFACE. **
+
+${directivesInstruction}
 
 ${defaultBoardLayoutInstruction}
 

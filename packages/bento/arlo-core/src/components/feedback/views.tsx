@@ -1,8 +1,8 @@
+import { Button } from "@/components/core/button.js";
+import { Text } from "@/components/core/typography.js";
 import { Spinner } from "@/components/feedback/spinner.js";
 import { AlertCircle } from "lucide-react";
 import React from "react";
-import { Button } from "@/components/core/button.js";
-import { Text } from "@/components/core/typography.js";
 
 export interface ViewProps {
   message?: string;
@@ -66,7 +66,7 @@ export function ErrorView({
 }) {
   return (
     <div
-      className={`text-intent-content h-full w-full flex flex-col items-center justify-center p-8 gap-4 text-center ${className}`}
+      className={`text-tone-content h-full w-full flex flex-col items-center justify-center p-8 gap-4 text-center ${className}`}
     >
       <AlertCircle size={16} />
       {message && <Text>{message}</Text>}

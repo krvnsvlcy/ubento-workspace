@@ -1,6 +1,6 @@
 import { BoardSpec, boardSpecSchema } from "@ubento/bento.core";
 import { renderYaml } from "@ubento/workspace.agent";
-import { servicesVsToolkitsInstruction } from "./shared";
+import { servicesVsToolkitsInstruction, directivesInstruction } from "./shared";
 
 const boardSpec = renderYaml(
   boardSpecSchema
@@ -197,6 +197,8 @@ Example: A query that fetches the orders for the current user
 ** DO NOT HALUCINATE QUERIES AND ACTIONS. BEFORE USING ANY EXTERNAL RESOURCE, CALL THE CORRESPONDING DESCRIBE TOOL TO OBTAIN THE CORRECT SCHEMA **
 
 The interface of each service can be obtained by calling \`describe_queries\` or \`describe_actions\`. In the response, the \`schema\` value represents the returned type while \`args\` defines the accepted parameters.
+
+${directivesInstruction}
 
 ${servicesVsToolkitsInstruction}
 

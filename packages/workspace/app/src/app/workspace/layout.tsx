@@ -45,7 +45,7 @@ export function Layout() {
       <SideSplitView
         left={{
           content: leftPanelPinned ? (
-            <div className="h-full bg-neutral-surface border-r border-neutral-border">
+            <div className="h-full">
               <Side />
             </div>
           ) : null,

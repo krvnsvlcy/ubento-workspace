@@ -14,6 +14,10 @@ export function createEventPublisher({
     payload: any,
     attributes: Record<string, string> = {},
   ) {
+    if (1) {
+      console.log("Skipping event publishing");
+      return;
+    }
     const messageId = await eventTopic.publishMessage({
       json: {
         type,

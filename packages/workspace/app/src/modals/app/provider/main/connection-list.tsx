@@ -151,7 +151,7 @@ const ConnectionCard: FC<ConnectionCardProps> = ({
       <Card
         key="destructive"
         padding="sm"
-        intent="destructive"
+        tone="destructive"
         className="flex items-center justify-between"
       >
         <div className="flex flex-col gap-1">
@@ -167,7 +167,7 @@ const ConnectionCard: FC<ConnectionCardProps> = ({
           </Button>
           <Button
             variant="primary"
-            intent="destructive"
+            tone="destructive"
             onClick={() => onDelete(connection.id)}
           >
             Delete

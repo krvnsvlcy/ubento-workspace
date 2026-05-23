@@ -95,7 +95,7 @@ export class BillingService {
 
   async listSubscriptions(
     options: {
-      organization_id?: string;
+      team_id?: string;
       product_code?: string;
       offer_code?: string;
       status?: "ACTIVE" | "CANCELLED" | "EXPIRED" | "PAUSED" | "PENDING";
@@ -130,7 +130,7 @@ export class BillingService {
 
   async listInvoices(
     options: {
-      organization_id?: string;
+      team_id?: string;
       status?: "PAID" | "PENDING" | "REFUNDED" | "VOID";
       limit?: number;
       cursor?: string;
@@ -148,7 +148,7 @@ export class BillingService {
   // ===== Usage =====
 
   async listUsageCounters(options: {
-    organization_id: string;
+    team_id: string;
     code?: string;
     group?: string;
     limit?: number;
@@ -171,14 +171,14 @@ export class BillingService {
   }
 
   async reportUsage(data: {
-    organization_id: string;
+    team_id: string;
     code: string;
     value: number;
     group?: string;
   }) {
     const result = await this.billingClient.post("/billing/usage/increment", {
       body: {
-        organization_id: data.organization_id,
+        team_id: data.team_id,
         code: data.code,
         amount: data.value,
         group: data.group,
@@ -227,14 +227,14 @@ export class BillingService {
 
   async commitUsageHold(data: {
     ref: string;
-    organization_id: string;
+    team_id: string;
   }): Promise<Record<string, never>> {
     const result = await this.billingClient.post(
       "/billing/usage/holds/commit",
       {
         body: {
           ref: data.ref,
-          organization_id: data.organization_id,
+          team_id: data.team_id,
         },
       },
     );
@@ -243,14 +243,14 @@ export class BillingService {
 
   async releaseUsageHold(data: {
     ref: string;
-    organization_id: string;
+    team_id: string;
   }): Promise<UsageHold> {
     const result = await this.billingClient.post(
       "/billing/usage/holds/release",
       {
         body: {
           ref: data.ref,
-          organization_id: data.organization_id,
+          team_id: data.team_id,
         },
       },
     );
@@ -259,9 +259,9 @@ export class BillingService {
 
   // ===== Entitlements =====
 
-  async getEntitlements(organization_id: string) {
+  async getEntitlements(team_id: string) {
     const result = await this.billingClient.get("/billing/entitlements", {
-      params: { query: { organization_id } },
+      params: { query: { team_id } },
     });
     return extractResponseData(result, true);
   }
@@ -269,7 +269,7 @@ export class BillingService {
   // ===== Checkout =====
 
   async createCheckout(data: {
-    organization_id: string;
+    team_id: string;
     product_code: string;
     offer_code: string;
     quantity?: number;
@@ -279,7 +279,7 @@ export class BillingService {
   }): Promise<Checkout> {
     const result = await this.billingClient.post("/billing/checkout", {
       body: {
-        organization_id: data.organization_id,
+        team_id: data.team_id,
         product_code: data.product_code,
         offer_code: data.offer_code,
         quantity: data.quantity ?? 1,

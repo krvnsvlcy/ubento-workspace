@@ -53,6 +53,7 @@ function createInvokeRoute(operationType: "query" | "action") {
         ubentoAuth.scopes.team({ team_id: params.team_id as string }),
     }),
     async (req, res) => {
+      console.log("step 1");
       const { team_id } = req.params;
       const { service_channel_id, args } = req.body as {
         service_channel_id: string;
@@ -61,11 +62,11 @@ function createInvokeRoute(operationType: "query" | "action") {
       const operationName = req.body[operationType] as string;
 
       const spec: ServiceSpecV1 = await getServiceSpec(service_channel_id);
-
+      console.log("step 2");
       const ref = crypto.randomUUID();
       const reserveUsage = await ubento.billing.reserveUsage({
         team_id: team_id,
-        feature_code: ubentoFeatures.vertex.requests.code,
+        feature_code: ubentoFeatures.vertex.weeklyRequests.code,
         amount: 1,
         note: `Vertex ${operationType}: ${spec.name}`,
         duration: 60_000, // 60 seconds
@@ -82,7 +83,7 @@ function createInvokeRoute(operationType: "query" | "action") {
           }),
         );
       }
-
+      console.log("step 3");
       const operation =
         operationType === "query"
           ? spec.queries?.[operationName]
@@ -98,7 +99,7 @@ function createInvokeRoute(operationType: "query" | "action") {
           }),
         );
       }
-
+      console.log("step 4");
       const connectionSpec = spec.connection;
 
       let connection;
@@ -115,7 +116,7 @@ function createInvokeRoute(operationType: "query" | "action") {
           );
         }
       }
-
+      console.log("step 5");
       const result = await invokeHttpService({
         handler: operation.handler,
         connection:
@@ -128,11 +129,9 @@ function createInvokeRoute(operationType: "query" | "action") {
             : undefined,
         args: args ?? {},
       });
-
+      console.log("step 6");
       if (result.error) {
-        ubento.billing
-          .releaseUsageHold({ organization_id: team_id, ref })
-          .catch(console.error);
+        ubento.billing.releaseUsageHold({ team_id, ref }).catch(console.error);
 
         switch (result.error.code) {
           case "INVALID_REQUEST_ERROR":
@@ -169,10 +168,8 @@ function createInvokeRoute(operationType: "query" | "action") {
             );
         }
       }
-      ubento.billing
-        .commitUsageHold({ organization_id: team_id, ref })
-        .catch(console.error);
-
+      ubento.billing.commitUsageHold({ team_id, ref }).catch(console.error);
+      console.log("step 7");
       res.status(200).json(
         vertexResult({
           data: result.data,

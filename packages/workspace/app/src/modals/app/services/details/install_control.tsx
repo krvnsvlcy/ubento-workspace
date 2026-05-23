@@ -114,7 +114,7 @@ export function InstallControl({
             <Button
               onClick={handleUninstall}
               variant="primary"
-              intent="destructive"
+              tone="destructive"
               size="sm"
               className="gap-2"
             >

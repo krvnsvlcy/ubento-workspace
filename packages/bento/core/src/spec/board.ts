@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { callDirectiveSchema, runDirectiveSchema } from "./directives.js";
 import { stateSpecSchema } from "./state.js";
 import { storeSpecSchema } from "./store.js";
 import { edgesSpec } from "./utils.js";
@@ -86,24 +87,6 @@ export const boardStyleSchema = z
 
 export type BoardStyle = z.infer<typeof boardStyleSchema>;
 
-export const listenerSpecSchema = z
-  .object({
-    handler: z
-      .string()
-      .describe(
-        "The name of the action, mutation, or workflow to execute when the event triggers.",
-      ),
-    args: z
-      .record(z.string(), z.unknown())
-      .optional()
-      .describe("Arguments to pass into the action."),
-  })
-  .describe(
-    "Defines an event handler that connects UI interactions to state mutations or external actions.",
-  );
-
-export type ListenerSpec = z.infer<typeof listenerSpecSchema>;
-
 export const elementSpecSchema = z
   .object({
     component: z
@@ -133,10 +116,10 @@ export const elementSpecSchema = z
         "Dynamic prop mappings. Keys are component prop names, values are JSON paths or expression strings pointing to the board's state or parameters.",
       ),
     listeners: z
-      .record(z.string(), listenerSpecSchema)
+      .record(z.string(), z.union([callDirectiveSchema, runDirectiveSchema]))
       .optional()
       .describe(
-        "Event handlers attached to the component. Keys are event names (e.g., 'onClick', 'onChange'), values are the listener specifications.",
+        "Event handlers attached to the component. Keys are event names (e.g., 'click', 'hover', etc), values are the function to execute when the event is triggered.",
       ),
     children: z
       .array(z.string())

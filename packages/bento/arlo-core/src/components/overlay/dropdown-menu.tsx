@@ -107,13 +107,13 @@ const DropdownMenuContent = React.forwardRef<
         ref={forwardedRef}
         className={cx(
           // base
-          "relative z-50 overflow-hidden rounded-md border p-1 shadow-xl shadow-black/[2.5%]",
+          "relative z-50 overflow-hidden rounded-xl border p-1 shadow-xl shadow-black/[2.5%]",
           // widths
           "min-w-48",
           // heights
           "max-h-[var(--radix-popper-available-height)]",
           // background color
-          "bg-neutral-surface",
+          "bg-background",
           // text color
           "text-neutral-content",
           // border color
@@ -149,7 +149,7 @@ const DropdownMenuItem = React.forwardRef<
     ref={forwardedRef}
     className={cx(
       // base
-      "group/DropdownMenuItem relative flex cursor-pointer select-none items-center rounded-sm py-1.5 pl-2 pr-1 outline-hidden transition-colors data-[state=checked]:font-semibold sm:text-sm",
+      "group/DropdownMenuItem relative flex cursor-pointer select-none items-center rounded-lg py-1.5 pl-2 pr-1 outline-hidden transition-colors data-[state=checked]:font-semibold sm:text-sm",
       // text color
       "text-neutral-content",
       // disabled
@@ -164,11 +164,9 @@ const DropdownMenuItem = React.forwardRef<
     {...props}
   >
     {children}
-      <span
-        className={cx("ml-auto pl-2 text-sm text-neutral-content-muted")}
-      >
-        {hint || shortcut}
-      </span>
+    <span className={cx("ml-auto pl-2 text-sm text-neutral-content-muted")}>
+      {hint || shortcut}
+    </span>
   </DropdownMenuPrimitives.Item>
 ));
 DropdownMenuItem.displayName = "DropdownMenuItem";

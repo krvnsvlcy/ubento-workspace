@@ -1,21 +1,15 @@
 export const ubentoProducts = {
-  ide: {
-    code: "ide",
-    name: "Ubento IDE",
+  ubento: {
+    code: "ubento",
+    name: "Ubento",
     description:
-      "Ubento is a visual-first web development platform that lets developers and teams scaffold, build, and ship real production apps using composable primitives, integrations, and workflows.",
+      "Ubento is a powerful WorkOS that empowers business professionals and teams to connect their everyday services, automate workflows, and build custom workspaces to manage their daily operations.",
   },
   aiCreditAddOn: {
     code: "ai_credit_add_on",
     name: "Ubento AI Credit Add-On",
     description:
-      "Ubento AI Credit Add-On is a subscription-based service that provides a fixed number of AI credits for use in the Ubento platform.",
-  },
-  storageAddOn: {
-    code: "storage_add_on",
-    name: "Ubento Storage Add-On",
-    description:
-      "Ubento Storage Add-On is a subscription-based service that provides additional storage for the Ubento platform.",
+      "A recurring monthly subscription that provides additional AI credits to power intelligent automations, data processing, and smart workflows across your connected services.",
   },
 } satisfies Record<
   string,

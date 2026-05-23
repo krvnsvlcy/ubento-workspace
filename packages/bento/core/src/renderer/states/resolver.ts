@@ -1,5 +1,4 @@
 import { useCallback } from "react";
-import { ListenerSpec } from "../../spec/board";
 import { BoardRenderingContextType } from "../context/context";
 
 /**
@@ -23,9 +22,6 @@ function getByPath(obj: Record<string, any>, path: string): any {
     resolvingPath = resolvingPath.slice(1);
   }
 
-  // 3. Remove optional chaining '?'
-  // 4. Convert bracket notation '[0]' to dot notation '.0'
-  // 5. Split by '.' and filter out empty strings
   const normalizedKeys = resolvingPath
     .replace(/\?/g, "")
     .replace(/\[([^\]]+)\]/g, ".$1")
@@ -39,8 +35,6 @@ function getByPath(obj: Record<string, any>, path: string): any {
 
 /**
  * Safely sets a nested value in an object immutably.
- * Supports dot notation, bracket notation, and the "$" root token.
- * Returns a new object with the updated path, preserving structural sharing.
  */
 export function setByPath(
   obj: Record<string, any>,
@@ -49,12 +43,10 @@ export function setByPath(
 ): Record<string, any> {
   if (!path) return obj;
 
-  // 1. If the path is exactly the root token, the new value replaces the root
   if (path === "$") {
     return value;
   }
 
-  // 2. Normalize the path (matching getByPath logic)
   let resolvingPath = path;
   if (resolvingPath.startsWith("$.")) {
     resolvingPath = resolvingPath.slice(2);
@@ -70,34 +62,26 @@ export function setByPath(
 
   if (normalizedKeys.length === 0) return obj;
 
-  // 3. Recursive function to immutably update the path
   function update(current: any, keys: string[], idx: number): any {
     const key = keys[idx];
     const isLastKey = idx === keys.length - 1;
 
-    // Determine the type of the current node to clone it properly
     let clone: any;
     if (Array.isArray(current)) {
       clone = [...current];
     } else if (current !== null && typeof current === "object") {
       clone = { ...current };
     } else {
-      // If the current node doesn't exist, we must initialize it.
-      // If the current key is a number, we initialize an array; otherwise, an object.
       const isNumericKey = Number.isInteger(Number(key));
       clone = isNumericKey ? [] : {};
     }
 
-    // Base case: set the value at the leaf node
     if (isLastKey) {
       clone[key] = value;
-    }
-    // Recursive case: continue drilling down
-    else {
+    } else {
       const nextKey = keys[idx + 1];
       const isNextNumeric = Number.isInteger(Number(nextKey));
 
-      // Pass down the existing nested object/array, or initialize a new one if undefined
       const nextVal =
         current && current[key] !== undefined
           ? current[key]
@@ -134,13 +118,108 @@ export function resolveValue(
   // 3. Objects: Check for Directives
   const node = raw as Record<string, unknown>;
 
-  // Intercept the $use directive
+  // --- EAGER: $use (Path Resolver) ---
   if ("$use" in node && typeof node.$use === "string") {
-    // We now pass the entire `context` object to allow `$` to represent the root
-    return getByPath(context as unknown as Record<string, any>, node.$use);
+    return getByPath(context as Record<string, any>, node.$use);
   }
 
-  // (Future directives like $function or $if can be added here)
+  // --- EAGER: $eval (Computed Expression) ---
+  if ("$eval" in node && typeof node.$eval === "string") {
+    try {
+      const keys = Object.keys(context);
+      const values = Object.values(context);
+      const evaluator = new Function(...keys, `return ${node.$eval}`);
+      return evaluator(...values);
+    } catch (err) {
+      console.warn(`[Ubento] $eval failed: ${node.$eval}`, err);
+      return undefined;
+    }
+  }
+
+  // --- EAGER: $apply (Context Function Transformation) ---
+  if (
+    "$apply" in node &&
+    typeof node.$apply === "object" &&
+    node.$apply !== null
+  ) {
+    const applyNode = node.$apply as { fn: string; args?: Record<string, any> };
+    const targetFn = getByPath(context as Record<string, any>, applyNode.fn);
+
+    if (typeof targetFn !== "function") {
+      console.warn(
+        `[Ubento] $apply failed: "${applyNode.fn}" is not a valid function.`,
+      );
+      return undefined;
+    }
+
+    const resolvedArgs = applyNode.args
+      ? resolveValue(applyNode.args, context)
+      : undefined;
+    try {
+      return targetFn(resolvedArgs);
+    } catch (err) {
+      console.error(
+        `[Ubento] $apply execution failed for: ${applyNode.fn}`,
+        err,
+      );
+      return undefined;
+    }
+  }
+
+  // --- LAZY: $call (RPC / Dispatcher) ---
+  if (
+    "$call" in node &&
+    typeof node.$call === "object" &&
+    node.$call !== null
+  ) {
+    const callNode = node.$call as { fn: string; args?: Record<string, any> };
+    const targetFn = getByPath(context as Record<string, any>, callNode.fn);
+
+    if (typeof targetFn !== "function") {
+      console.warn(
+        `[Ubento] $call failed: "${callNode.fn}" is not a valid function.`,
+      );
+      return async () => {}; // Return safe no-op to prevent crashes
+    }
+
+    // Return a closure waiting for an event to trigger it
+    return async (runtimeArgs: Record<string, any> = {}) => {
+      try {
+        const currentContext = { ...context, ...runtimeArgs };
+        // Resolve arguments AT THE TIME OF THE EVENT
+        const resolvedArgs = callNode.args
+          ? resolveValue(callNode.args, currentContext)
+          : undefined;
+        return await targetFn(resolvedArgs);
+      } catch (err) {
+        console.error(
+          `[Ubento] $call execution failed for: ${callNode.fn}`,
+          err,
+        );
+        throw err;
+      }
+    };
+  }
+
+  // --- LAZY: $run (Side-Effect Handler) ---
+  if ("$run" in node && typeof node.$run === "string") {
+    return async (arg: Record<string, any> = {}) => {
+      try {
+        const finalContext = { ...context, ...arg };
+        const keys = Object.keys(finalContext);
+        const values = Object.values(finalContext);
+
+        const AsyncFunction = Object.getPrototypeOf(
+          async function () {},
+        ).constructor;
+        const runner = new AsyncFunction(...keys, node.$run);
+        return await runner(...values);
+      } catch (err) {
+        console.error(`[Ubento] $run failed: ${node.$run}`, err);
+        throw err;
+      }
+    };
+  }
 
   // 4. Standard Objects: Recursively resolve each property
   return Object.fromEntries(
@@ -168,22 +247,15 @@ export function useResolvedBindings(
         return [
           key,
           [
-            // 1. The getter still resolves against the FULL context tree
             { $use: ref },
-
-            // 2. The setter strictly updates the state tree
             (v: any) => {
               context.setState((currentState) => {
-                // We assume 'ref' might be formatted as "$.state.user.name"
-                // We need to strip "$.state." so setByPath operates cleanly on currentState
                 let statePath = ref;
                 if (statePath.startsWith("$.state.")) {
                   statePath = statePath.slice(8);
                 } else if (statePath.startsWith("$.")) {
                   statePath = statePath.slice(2);
                 }
-
-                // Update the currentState immutably
                 return setByPath(currentState, statePath, v);
               });
             },
@@ -193,10 +265,7 @@ export function useResolvedBindings(
         return [
           key,
           [
-            // 1. The getter still resolves against the FULL context tree
             { $use: ref.value },
-
-            // 2. The setter tries to run context handler if it exists, otherwise log error
             (v: any) => {
               const handler = resolveValue({ $use: ref.setValue }, context);
               if (typeof handler === "function") {
@@ -216,32 +285,31 @@ export function useResolvedBindings(
     [any, (s: any) => void]
   >;
 }
+
 export function useResolvedEventHandler(
-  listeners: Record<string, ListenerSpec>,
+  listeners: Record<string, unknown>, // Expects a dictionary of directives (like $call or $run)
   context: BoardRenderingContextType,
 ) {
   return useCallback(
     async (event: string, payload: any) => {
-      const listener = listeners[event];
-      if (!listener) {
-        console.warn(`Unsupported event: ${event}`);
-        return;
-      }
+      const listenerDirective = listeners[event];
+      if (!listenerDirective) return;
 
-      const handler = resolveValue({ $use: listener.handler }, context);
-      const args = resolveValue(listener.args || {}, {
-        ...context,
-        event: payload,
-      });
+      // Since the listener is a $call or $run, resolving it returns an async function.
+      const handler = resolveValue(listenerDirective, context);
+
       if (typeof handler !== "function") {
-        console.error(`${listener.handler} is not a function.`);
+        console.error(
+          `[Ubento] Listener for event "${event}" did not resolve to an executable function.`,
+        );
         return;
       }
 
       try {
-        await handler(args);
-      } catch {
-        console.error(`${listener.handler} failed.`);
+        // We pass { event: payload } into the resolved lazy function as the runtime argument
+        await handler({ event: payload });
+      } catch (err) {
+        console.error(`[Ubento] Execution failed for event: ${event}`, err);
       }
     },
     [listeners, context],

@@ -92,7 +92,7 @@ export function createUbentoBillingService({
         await ubentoSdk.billing.listSubscriptions({
           cursor: page?.cursor,
           limit: page?.limit,
-          organization_id: params?.organization_id,
+          team_id: params?.organization_id,
           product_code: params?.product_code,
           offer_code: params?.offer_code,
           status: params?.status as any,
@@ -134,7 +134,7 @@ export function createUbentoBillingService({
         await ubentoSdk.billing.listInvoices({
           cursor: page?.cursor,
           limit: page?.limit,
-          organization_id: params?.organization_id,
+          team_id: params?.organization_id,
           status: params?.status,
         }),
       );
@@ -170,7 +170,7 @@ export function createUbentoBillingService({
         await ubentoSdk.billing.listUsageCounters({
           cursor: page?.cursor,
           limit: page?.limit,
-          organization_id: params.organization_id,
+          team_id: params.organization_id,
           code: params.feature_code,
           group: params.group,
         }),
@@ -262,7 +262,15 @@ export function createUbentoBillingService({
           duration?: number;
           metadata?: Record<string, any>;
         }) => {
-          return await ubentoSdk.billing.createCheckout(data);
+          return await ubentoSdk.billing.createCheckout({
+            team_id: data.organization_id,
+            product_code: data.product_code,
+            offer_code: data.offer_code,
+            quantity: data.quantity,
+            redirect_url: data.redirect_url,
+            duration: data.duration,
+            metadata: data.metadata,
+          });
         },
       });
     },
@@ -298,7 +306,7 @@ export function createUbentoBillingService({
     },
     useUsageCounters: (
       params: {
-        organization_id: string;
+        team_id: string;
         code?: string;
         group?: string;
       },
@@ -314,7 +322,12 @@ export function createUbentoBillingService({
           value: number;
           group?: string;
         }) => {
-          return await ubentoSdk.billing.reportUsage(data);
+          return await ubentoSdk.billing.reportUsage({
+            team_id: data.organization_id,
+            code: data.code,
+            value: data.value,
+            group: data.group,
+          });
         },
       });
     },
@@ -376,7 +389,13 @@ export function createUbentoBillingService({
       limit?: number;
       cursor?: string;
     }) => {
-      const res = await ubentoSdk.billing.listUsageCounters(params);
+      const res = await ubentoSdk.billing.listUsageCounters({
+        team_id: params.organization_id,
+        code: params.code,
+        group: params.group,
+        limit: params.limit,
+        cursor: params.cursor,
+      });
       usageCounterStore.pushMany(res.data);
       return res;
     },

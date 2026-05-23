@@ -1,25 +1,25 @@
 import { Icon } from "@/components/icon/icon";
-import { Button } from "@ubento/bento.arlo-core";
+import { Button, useStoreState } from "@ubento/bento.arlo-core";
 import clsx from "clsx";
 import { useEffect, useMemo } from "react";
 import { useUbentoEngine } from "../../../../engine/app/engine";
 import { TabDefinition } from "../types";
-import { WorkspaceHeader } from "./header";
 import { WorkspaceFooter } from "./footer";
+import { WorkspaceHeader } from "./header";
 import { homeTab } from "./tabs/home/home";
 import { workspaceTab } from "./tabs/workspace/workspace";
+import { boardTab } from "./tabs/board/board";
+import { WorkspaceTabDefinition } from "./types";
 
-const tabs: TabDefinition[] = [homeTab, workspaceTab];
+const tabs: WorkspaceTabDefinition[] = [homeTab, workspaceTab, boardTab];
 
 function TabButton({
   tab,
   isActive,
-  location,
   onClick,
 }: {
   tab: TabDefinition;
   isActive: boolean;
-  location: any;
   onClick: () => void;
 }) {
   const icon = tab.icon;
@@ -31,6 +31,7 @@ function TabButton({
       className={clsx("transition-opacity", {
         "opacity-50 hover:opacity-70": !isActive,
       })}
+      variant={isActive ? "secondary" : "ghost"}
     >
       <Icon icon={icon} size={16} />
     </Button>
@@ -40,11 +41,15 @@ function TabButton({
 export function WorkspaceSide() {
   const engine = useUbentoEngine();
   const location = engine.useState((s) => s.location);
+  const workspace = engine.useState((s) => s.workspace);
+  const workspaceMode = useStoreState(workspace?.store, (s) => s.mode);
   const activeTabId = location.workspaceTab || tabs[0].id;
 
   const enabledTabs = useMemo(() => {
-    return tabs.filter((tab) => tab.enabled(location));
-  }, [location]);
+    return tabs.filter(
+      (tab) => tab.enabled?.({ location, workspaceMode }) ?? true,
+    );
+  }, [location, workspaceMode]);
 
   useEffect(() => {
     if (!enabledTabs.find((t) => t.id === activeTabId)) {
@@ -74,7 +79,6 @@ export function WorkspaceSide() {
               key={tab.id}
               tab={tab}
               isActive={activeTabId === tab.id}
-              location={location}
               onClick={() =>
                 engine.setState((s) => ({
                   ...s,

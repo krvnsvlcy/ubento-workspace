@@ -762,7 +762,7 @@
         }
       },
       "ServiceUnavailable": {
-        "description": "Either the upstream service is unavailable to the API, or the API has been intentionally shut off.",
+        "description": "Either the upstream service is unavailable to the API, or the API has been toneionally shut off.",
         "content": {
           "application/json": {
             "schema": {

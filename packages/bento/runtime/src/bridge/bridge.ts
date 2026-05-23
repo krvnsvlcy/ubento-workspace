@@ -26,6 +26,7 @@ export type BentoEngineHostRpcInterface = {
   // sync
   boardUpdated: ({ data }: { data: BentoBoardData }) => Promise<void>;
   selectionUpdated: ({ selection }: { selection: string[] }) => Promise<void>;
+  hoverUpdated: ({ hovered }: { hovered?: string }) => Promise<void>;
 
   // services
   runServiceOperation: (args: {
@@ -39,6 +40,9 @@ export type BentoEngineHostRpcInterface = {
 export type BentoEngineRuntimeRpcInterface = {
   setLocation: ({ location }: { location?: BentoLocation }) => Promise<void>;
   setInteractionMode: ({ mode }: { mode: "edit" | "live" }) => Promise<void>;
+  select: ({ selection }: { selection: string[] }) => Promise<void>;
+  hover: ({ elementId }: { elementId: string }) => Promise<void>;
+  unhover: ({ elementId }: { elementId: string }) => Promise<void>;
 
   readBoard: ({
     boardId,

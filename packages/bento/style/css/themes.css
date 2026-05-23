@@ -1,5 +1,5 @@
 @import "./themes/default.css";
-@import "./themes/intents.css";
+@import "./themes/tones.css";
 @import "./animation.css";
 @import "./scrollbar.css";
 
@@ -18,12 +18,7 @@ body {
   color: var(--color-neutral-content);
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: var(--font-heading);
-  color: var(--color-neutral-content);
+input::placeholder,
+textarea::placeholder {
+  color: color-mix(in srgb, currentColor 50%, transparent 50%);
 }

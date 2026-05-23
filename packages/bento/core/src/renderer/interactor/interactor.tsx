@@ -58,29 +58,25 @@ function ElementHandle({ id, rootRect }: { id: string; rootRect: DOMRect }) {
           : isHovered
             ? "1px solid var(--color-accent)"
             : "none",
-        backgroundColor: isSelected
-          ? "rgba(99, 102, 241, 0.05)"
-          : isHovered
-            ? "rgba(99, 102, 241, 0.03)"
-            : "transparent",
         pointerEvents: "auto",
         cursor: "pointer",
         zIndex: element.parents.length, // we want the most nested elements to be on top
         transition: "outline 0.1s ease-out, background-color 0.1s ease-out",
+        borderRadius: 2,
       }}
     >
       {(isSelected || isHovered) && (
         <div
           style={{
             position: "absolute",
-            top: rect.y < 20 ? 0 : -18,
+            top: rect.y < 20 ? 0 : -24,
             left: -1,
             backgroundColor: "var(--color-accent)",
             color: "white",
             fontSize: "10px",
             fontWeight: "bold",
             padding: "2px 6px",
-            borderRadius: "2px 2px 0 0",
+            borderRadius: 4,
             whiteSpace: "nowrap",
             pointerEvents: "none",
           }}
@@ -131,8 +127,8 @@ export function Interactor() {
         position: "absolute",
         inset: 0,
         zIndex: 9999,
-        boxShadow:
-          "inset 0 0 8px color-mix(in srgb, var(--color-accent), transparent 50%)",
+        // boxShadow:
+        //   "inset 0 0 8px color-mix(in srgb, var(--color-accent), transparent 50%)",
       }}
     >
       {rootRect ? (

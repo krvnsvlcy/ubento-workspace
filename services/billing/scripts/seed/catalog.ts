@@ -48,58 +48,51 @@ export type Catalog = CatalogProduct[];
 
 type Ids = {
   products: {
-    ide: string;
+    ubento: string;
     aiCreditPack: string;
-    storagePack: string;
   };
   offers: {
-    ideHobby: string;
-    idePro: string;
+    ubentoHobby: string;
+    ubentoPro: string;
     aiCreditPack: string;
-    storagePack: string;
   };
 };
 const testIds: Ids = {
   products: {
-    ide: "650481",
+    ubento: "650481",
     aiCreditPack: "650500",
-    storagePack: "787914",
   },
   offers: {
-    ideHobby: "",
-    idePro: "1021421",
+    ubentoHobby: "",
+    ubentoPro: "1021421",
     aiCreditPack: "1021423",
-    storagePack: "1242759",
   },
 };
 const prodIds: Ids = {
   products: {
-    ide: "884321",
-    aiCreditPack: "884322",
-    storagePack: "884323",
+    ubento: "1078588",
+    aiCreditPack: "1078707",
   },
   offers: {
-    ideHobby: "",
-    idePro: "1391839",
-    aiCreditPack: "1391840",
-    storagePack: "1391841",
+    ubentoHobby: "",
+    ubentoPro: "1690651",
+    aiCreditPack: "1690827",
   },
 };
 const ids = env.NODE_ENV === "production" ? prodIds : testIds;
 
 export const catalog: Catalog = [
   {
-    code: ubentoProducts.ide.code,
-    name: ubentoProducts.ide.name,
-    description: ubentoProducts.ide.description,
-    default_offer_code: "ide.hobby",
-    lsId: ids.products.ide,
+    code: ubentoProducts.ubento.code,
+    name: ubentoProducts.ubento.name,
+    description: ubentoProducts.ubento.description,
+    default_offer_code: "ubento.hobby",
+    lsId: ids.products.ubento,
     offers: [
       {
-        code: "ide.hobby",
+        code: "ubento.hobby",
         name: "Hobby",
-        description:
-          "For experimenting, learning, and small personal projects.",
+        description: "For experimenting and personal use.",
         active: true,
         entitlements: [
           // Ai
@@ -147,12 +140,11 @@ export const catalog: Catalog = [
         },
       },
       {
-        code: "ide.pro",
+        code: "ubento.pro",
         name: "Pro",
-        description:
-          "For professional teams building and shipping internal tools and apps.",
+        description: "For professional use.",
         active: true,
-        lsId: ids.offers.idePro,
+        lsId: ids.offers.ubentoPro,
         entitlements: [
           // Ai
           {

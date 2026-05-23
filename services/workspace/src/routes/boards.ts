@@ -46,7 +46,7 @@ boardsRouter.get(
     async (req, res) => {
       const result = await listBoards({
         workspace_id: req.query.workspace_id as string,
-        parent_id: req.query.parent_id as string | undefined,
+        parent_id: req.query.parent_id === "null" ? null : (req.query.parent_id as string | undefined),
         limit: req.query.limit ? Number(req.query.limit) : undefined,
         cursor: req.query.cursor as string | undefined,
       });
@@ -95,10 +95,10 @@ boardsRouter.post(
     validate({
       body: z.object({
         workspace_id: z.string(),
-        parent_id: z.string().optional(),
+        parent_id: z.string().nullable().optional(),
         name: z.string(),
         data: z.any(),
-        index: z.string(),
+        index: z.string().nullable().optional(),
       }),
     }),
     enforce({
@@ -131,7 +131,7 @@ boardsRouter.patch(
         name: z.string().optional(),
         parent_id: z.string().nullable().optional(),
         data: z.any().optional(),
-        index: z.string().optional(),
+        index: z.string().nullable().optional(),
       }),
     }),
     enforce({

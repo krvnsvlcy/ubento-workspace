@@ -18,7 +18,7 @@ export function BentoHomeView({ runtime }: { runtime: BentoRuntime }) {
       >
         <div className="flex flex-col items-center text-center max-w-md duration-500 gap-6">
           <Heading level="display">{workspace.title}</Heading>
-          <Text tone="subtle">
+          <Text shade="subtle">
             Start by creating your first board to organize your tasks and
             visualize your data in this workspace.
           </Text>
@@ -110,7 +110,7 @@ function BoardCard({
       </div>
       <div>
         <Text weight="semibold">{(board.title && board.title.trim()) || "Untitled"}</Text>
-        <Text tone="subtle" size="sm">
+        <Text shade="subtle" size="sm">
           Click to open board
         </Text>
       </div>

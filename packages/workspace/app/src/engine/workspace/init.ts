@@ -8,7 +8,7 @@ export function generateInitialBoardSpec(): BoardSpec {
       flow: "scroll",
       padding: { top: 32, right: 32, bottom: 32, left: 32 },
     },
-    children: ["header", "divider", "body"],
+    children: ["header", "body"],
     elements: {
       header: {
         component: "TextLine",
@@ -17,12 +17,6 @@ export function generateInitialBoardSpec(): BoardSpec {
         },
         bindings: {
           text: { value: "board.title", setValue: "board.setTitle" },
-        },
-      },
-      divider: {
-        component: "Divider",
-        props: {
-          noMargin: true,
         },
       },
       body: {

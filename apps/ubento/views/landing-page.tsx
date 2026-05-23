@@ -108,7 +108,7 @@ export function LandingPage() {
     const startGenerating = () => {
       let progress = 0;
       const progressLogs = {
-        15: "[System] Parsing user intent...",
+        15: "[System] Parsing user tone...",
         40: `[System] Connecting linked service APIs...`,
         70: "[System] Designing optimal grid layout...",
         90: "[System] Initializing React workspace view...",

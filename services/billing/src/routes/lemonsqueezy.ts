@@ -323,7 +323,7 @@ async function upsertOrder(payload: Extract<LSPayload, { data: LSOrderData }>) {
   const { data, meta } = payload;
   const a = data.attributes;
 
-  // Orders require team_id (intent) - should be present from checkout custom_data
+  // Orders require team_id (tone) - should be present from checkout custom_data
   const customData = customDataSchema.parse(meta.custom_data);
   const teamId = customData.team_id;
 

@@ -31,12 +31,9 @@ const Table = React.forwardRef<
 >(({ className, ...props }, forwardedRef) => (
   <table
     ref={forwardedRef}
-    tremor-id="tremor-raw"
     className={cx(
       // base
-      "w-full caption-bottom border-b",
-      // border color
-      "border-neutral-border",
+      "w-full caption-bottom",
       className,
     )}
     {...props}

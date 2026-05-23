@@ -88,7 +88,7 @@ export function createUbentoWorkspaceService({
 
           return true;
         })
-        .sort((a, b) => a.name.localeCompare(b.name));
+        .sort((a, b) => (a.index || "").localeCompare(b.index || "") || a.name.localeCompare(b.name));
     },
   });
 
@@ -237,7 +237,8 @@ export function createUbentoWorkspaceService({
           workspace_id: string;
           name: string;
           data: any;
-          parent_id?: string;
+          parent_id?: string | null;
+          index?: string | null;
         }) => {
           return await ubentoSdk.workspace.createBoard(data);
         },
@@ -251,7 +252,8 @@ export function createUbentoWorkspaceService({
         mutationFn: async (data: {
           name?: string;
           data?: any;
-          parent_id?: string;
+          parent_id?: string | null;
+          index?: string | null;
         }) => {
           return await ubentoSdk.workspace.updateBoard(boardId, data);
         },
@@ -407,7 +409,7 @@ export function createUbentoWorkspaceService({
       workspaceId: string;
       limit?: number;
       cursor?: string;
-      parentId?: string;
+      parentId?: string | null;
     }) => {
       const res = await ubentoSdk.workspace.listBoards({
         workspace_id: params.workspaceId,
@@ -422,9 +424,16 @@ export function createUbentoWorkspaceService({
       name: string;
       workspace_id: string;
       data: Record<string, unknown>;
-      parentId?: string;
+      parentId?: string | null;
+      index?: string | null;
     }) => {
-      const board = await ubentoSdk.workspace.createBoard(data);
+      const board = await ubentoSdk.workspace.createBoard({
+        workspace_id: data.workspace_id,
+        name: data.name,
+        data: data.data,
+        parent_id: data.parentId,
+        index: data.index,
+      });
       boardStore.push(board);
       return board;
     },
@@ -433,10 +442,16 @@ export function createUbentoWorkspaceService({
       update: {
         name?: string;
         data?: Record<string, unknown>;
-        parentId?: string;
+        parentId?: string | null;
+        index?: string | null;
       },
     ) => {
-      const board = await ubentoSdk.workspace.updateBoard(boardId, update);
+      const board = await ubentoSdk.workspace.updateBoard(boardId, {
+        name: update.name,
+        data: update.data,
+        parent_id: update.parentId,
+        index: update.index,
+      });
       boardStore.push(board);
       return board;
     },

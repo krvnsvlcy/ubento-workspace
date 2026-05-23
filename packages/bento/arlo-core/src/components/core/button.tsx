@@ -1,4 +1,4 @@
-import { Intent } from "@/intent";
+import { Tone } from "@/tone";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 import cn from "clsx";
@@ -15,17 +15,15 @@ const buttonVariants = cva(
         end: "justify-end",
       },
       variant: {
-        primary: "bg-intent text-intent-contrast hover:bg-intent-hover",
-        secondary:
-          "bg-intent-content/5 text-intent-content hover:bg-intent-content/10",
+        primary: "bg-tone text-tone-contrast hover:bg-tone-hover",
+        secondary: "bg-current/8 hover:bg-current/15",
         outline:
-          "border border-intent-border bg-transparent hover:bg-intent-surface text-intent-content",
-        ghost:
-          "text-intent-content hover:bg-intent-content/10 hover:text-intent-content",
-        link: "text-intent-content-subtle hover:text-intent-content",
+          "border border-tone-border bg-transparent hover:bg-tone-surface text-tone-content",
+        ghost: "hover:bg-current/15 hover:text-current",
+        link: "text-current/80 hover:text-current",
 
         "secondary-destructive":
-          "bg-intent-content/5 text-intent-content hover:bg-destructive hover:text-destructive-contrast",
+          "bg-current/8 hover:bg-destructive hover:text-destructive-contrast",
         destructive:
           "text-destructive-contrast border-transparent bg-destructive hover:bg-destructive-hover disabled:bg-destructive-surface disabled:text-destructive-content-muted",
       },
@@ -95,7 +93,7 @@ export interface ButtonProps
     ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
-  intent?: Intent;
+  tone?: Tone;
   isLoading?: boolean;
   loadingText?: string;
 }
@@ -108,7 +106,7 @@ export let Button = forwardRef<HTMLButtonElement, ButtonProps>(
       size,
       shape,
       align,
-      intent,
+      tone,
       asChild = false,
       isLoading = false,
       loadingText,
@@ -125,7 +123,7 @@ export let Button = forwardRef<HTMLButtonElement, ButtonProps>(
           buttonVariants({ variant, size, shape, align, className }),
         )}
         ref={ref as any}
-        data-intent={intent}
+        data-tone={tone}
         disabled={disabled || isLoading}
         {...props}
       >

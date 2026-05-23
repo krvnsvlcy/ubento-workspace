@@ -62,7 +62,7 @@ export type EnvInterface<D extends EnvDefinition> = {
 /* ──────────────────────────── low-level getters ─────────────────────────── */
 
 export function getEnv(name: string, required = false): string | undefined {
-  // Intentionally trim so stray whitespace/newlines don’t cause subtle bugs.
+  // Toneionally trim so stray whitespace/newlines don’t cause subtle bugs.
   const raw = process.env[name];
   const value = raw?.trim();
   if (required && (value === undefined || value === "")) {

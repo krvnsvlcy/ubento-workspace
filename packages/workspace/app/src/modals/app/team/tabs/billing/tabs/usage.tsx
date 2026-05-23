@@ -1,5 +1,6 @@
 import { useSession } from "@/contexts/session";
 import { useUbento } from "@/engine/app/engine";
+import { ubentoFeatures } from "@ubento/services.primitives";
 import { FC } from "react";
 
 export const UsageTab: FC = () => {
@@ -9,7 +10,7 @@ export const UsageTab: FC = () => {
 
   const { data: usageCounters = [], isFetching } =
     ubento.billing.useUsageCounters({
-      organization_id: teamId,
+      team_id: teamId,
     });
 
   const usageItems = usageCounters
@@ -22,7 +23,10 @@ export const UsageTab: FC = () => {
     }))
     .filter((item: any) => {
       // Hide unlimited vertex requests on paid plans
-      if (item.code === "vertex.requests" && (item.total === "inf" || typeof item.total === "string")) {
+      if (
+        item.code === ubentoFeatures.vertex.weeklyRequests.code &&
+        (item.total === "inf" || typeof item.total === "string")
+      ) {
         return false;
       }
       return true;
@@ -69,7 +73,10 @@ export const UsageTab: FC = () => {
             <div
               className="h-full bg-accent transition-all duration-1000"
               style={{
-                width: item.total === "inf" ? "100%" : `${(item.used / Math.max(Number(item.total), 1)) * 100}%`,
+                width:
+                  item.total === "inf"
+                    ? "100%"
+                    : `${(item.used / Math.max(Number(item.total), 1)) * 100}%`,
               }}
             />
           </div>

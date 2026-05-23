@@ -1,15 +1,15 @@
-import { Intent } from "@/intent";
 import { cx } from "@/lib/utils.js";
 import { cva, type VariantProps } from "class-variance-authority";
 import { ComponentProps } from "react";
+import { Tone } from "../../tone";
 
 const cardVariants = cva("relative w-full rounded-2xl text-left", {
   variants: {
     variant: {
-      outline: "bg-background border border-intent-border",
-      surface: "bg-intent-surface border border-intent-border",
+      outline: "bg-background border border-tone-border",
+      surface: "bg-tone-surface border border-tone-border",
       "surface-interactive":
-        "bg-intent-surface border border-intent-border hover:border-intent-border-hover hover:bg-intent-surface-hover transition-colors cursor-pointer",
+        "bg-tone-surface border border-tone-border hover:border-tone-border-hover hover:bg-tone-surface-hover transition-colors cursor-pointer",
       ghost: "border-transparent bg-transparent",
     },
     padding: {
@@ -20,14 +20,14 @@ const cardVariants = cva("relative w-full rounded-2xl text-left", {
     },
   },
   defaultVariants: {
-    variant: "surface",
+    variant: "outline",
     padding: "md",
   },
 });
 
 export interface CardProps
   extends ComponentProps<"div">, VariantProps<typeof cardVariants> {
-  intent?: Intent;
+  tone?: Tone;
   gap?: number | string;
 }
 
@@ -35,16 +35,19 @@ export const Card = ({
   className,
   variant,
   padding,
-  intent,
+  tone,
   gap,
   style,
   ...props
 }: CardProps) => {
-  const gapStyle = gap !== undefined ? {
-    display: "flex",
-    flexDirection: "column" as const,
-    gap: typeof gap === "number" ? `${gap}px` : gap,
-  } : {};
+  const gapStyle =
+    gap !== undefined
+      ? {
+          display: "flex",
+          flexDirection: "column" as const,
+          gap: typeof gap === "number" ? `${gap}px` : gap,
+        }
+      : {};
 
   return (
     <div
@@ -53,7 +56,7 @@ export const Card = ({
         ...gapStyle,
         ...style,
       }}
-      data-intent={intent}
+      data-tone={tone}
       {...props}
     />
   );

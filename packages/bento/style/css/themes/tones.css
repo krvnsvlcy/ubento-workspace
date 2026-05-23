@@ -1,0 +1,111 @@
+[data-tone="neutral"] {
+  --color-tone: var(--color-neutral);
+  --color-tone-hover: var(--color-neutral-hover);
+  --color-tone-active: var(--color-neutral-active);
+  --color-tone-contrast: var(--color-neutral-contrast);
+  --color-tone-surface: var(--color-neutral-surface);
+  --color-tone-surface-hover: var(--color-neutral-surface-hover);
+  --color-tone-surface-active: var(--color-neutral-surface-active);
+  --color-tone-border: var(--color-neutral-border);
+  --color-tone-border-hover: var(--color-neutral-border-hover);
+  --color-tone-border-active: var(--color-neutral-border-active);
+  --color-tone-content: var(--color-neutral-content);
+  --color-tone-content-subtle: var(--color-neutral-content-subtle);
+  --color-tone-content-muted: var(--color-neutral-content-muted);
+}
+
+[data-tone="accent"] {
+  --color-tone: var(--color-accent);
+  --color-tone-hover: var(--color-accent-hover);
+  --color-tone-active: var(--color-accent-active);
+  --color-tone-contrast: var(--color-accent-contrast);
+  --color-tone-surface: var(--color-accent-surface);
+  --color-tone-surface-hover: var(--color-accent-surface-hover);
+  --color-tone-surface-active: var(--color-accent-surface-active);
+  --color-tone-border: var(--color-accent-border);
+  --color-tone-border-hover: var(--color-accent-border-hover);
+  --color-tone-border-active: var(--color-accent-border-active);
+  --color-tone-content: var(--color-accent-content);
+  --color-tone-content-subtle: var(--color-accent-content-subtle);
+  --color-tone-content-muted: var(--color-accent-content-muted);
+}
+
+[data-tone="inverse"] {
+  --color-tone: var(--color-inverse);
+  --color-tone-hover: var(--color-inverse-hover);
+  --color-tone-active: var(--color-inverse-active);
+  --color-tone-contrast: var(--color-inverse-contrast);
+  --color-tone-surface: var(--color-inverse-surface);
+  --color-tone-surface-hover: var(--color-inverse-surface-hover);
+  --color-tone-surface-active: var(--color-inverse-surface-active);
+  --color-tone-border: var(--color-inverse-border);
+  --color-tone-border-hover: var(--color-inverse-border-hover);
+  --color-tone-border-active: var(--color-inverse-border-active);
+  --color-tone-content: var(--color-inverse-content);
+  --color-tone-content-subtle: var(--color-inverse-content-subtle);
+  --color-tone-content-muted: var(--color-inverse-content-muted);
+}
+
+[data-tone="success"] {
+  --color-tone: var(--color-success);
+  --color-tone-hover: var(--color-success-hover);
+  --color-tone-active: var(--color-success-active);
+  --color-tone-contrast: var(--color-success-contrast);
+  --color-tone-surface: var(--color-success-surface);
+  --color-tone-surface-hover: var(--color-success-surface-hover);
+  --color-tone-surface-active: var(--color-success-surface-active);
+  --color-tone-border: var(--color-success-border);
+  --color-tone-border-hover: var(--color-success-border-hover);
+  --color-tone-border-active: var(--color-success-border-active);
+  --color-tone-content: var(--color-success-content);
+  --color-tone-content-subtle: var(--color-success-content-subtle);
+  --color-tone-content-muted: var(--color-success-content-muted);
+}
+
+[data-tone="warning"] {
+  --color-tone: var(--color-warning);
+  --color-tone-hover: var(--color-warning-hover);
+  --color-tone-active: var(--color-warning-active);
+  --color-tone-contrast: var(--color-warning-contrast);
+  --color-tone-surface: var(--color-warning-surface);
+  --color-tone-surface-hover: var(--color-warning-surface-hover);
+  --color-tone-surface-active: var(--color-warning-surface-active);
+  --color-tone-border: var(--color-warning-border);
+  --color-tone-border-hover: var(--color-warning-border-hover);
+  --color-tone-border-active: var(--color-warning-border-active);
+  --color-tone-content: var(--color-warning-content);
+  --color-tone-content-subtle: var(--color-warning-content-subtle);
+  --color-tone-content-muted: var(--color-warning-content-muted);
+}
+
+[data-tone="info"] {
+  --color-tone: var(--color-info);
+  --color-tone-hover: var(--color-info-hover);
+  --color-tone-active: var(--color-info-active);
+  --color-tone-contrast: var(--color-info-contrast);
+  --color-tone-surface: var(--color-info-surface);
+  --color-tone-surface-hover: var(--color-info-surface-hover);
+  --color-tone-surface-active: var(--color-info-surface-active);
+  --color-tone-border: var(--color-info-border);
+  --color-tone-border-hover: var(--color-info-border-hover);
+  --color-tone-border-active: var(--color-info-border-active);
+  --color-tone-content: var(--color-info-content);
+  --color-tone-content-subtle: var(--color-info-content-subtle);
+  --color-tone-content-muted: var(--color-info-content-muted);
+}
+
+[data-tone="destructive"] {
+  --color-tone: var(--color-destructive);
+  --color-tone-hover: var(--color-destructive-hover);
+  --color-tone-active: var(--color-destructive-active);
+  --color-tone-contrast: var(--color-destructive-contrast);
+  --color-tone-surface: var(--color-destructive-surface);
+  --color-tone-surface-hover: var(--color-destructive-surface-hover);
+  --color-tone-surface-active: var(--color-destructive-surface-active);
+  --color-tone-border: var(--color-destructive-border);
+  --color-tone-border-hover: var(--color-destructive-border-hover);
+  --color-tone-border-active: var(--color-destructive-border-active);
+  --color-tone-content: var(--color-destructive-content);
+  --color-tone-content-subtle: var(--color-destructive-content-subtle);
+  --color-tone-content-muted: var(--color-destructive-content-muted);
+}

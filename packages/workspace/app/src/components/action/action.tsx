@@ -23,7 +23,7 @@ export function Action({
           height: size * 4,
           width: size * 4,
         }}
-        className="flex items-center justify-center text-current/80 hover:bg-current/10 hover:text-current cursor-pointer rounded-md"
+        className="flex items-center justify-center text-current/80 hover:bg-current/10 hover:text-current cursor-pointer rounded-lg"
         onClick={(e) => {
           e.stopPropagation();
           handler(e);

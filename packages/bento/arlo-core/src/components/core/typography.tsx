@@ -1,4 +1,4 @@
-import { Intent } from "@/intent";
+import { Tone } from "@/tone";
 import { cva, cx, type VariantProps } from "class-variance-authority";
 import * as React from "react";
 
@@ -13,38 +13,37 @@ const heading = cva("font-medium leading-tight tracking-tight", {
       h3: "text-md font-semibold",
       h4: "text-sm font-semibold",
     },
-    tone: {
-      default: "text-intent-content",
-      subtle: "text-intent-content-subtle",
-      muted: "text-intent-content-muted",
+    shade: {
+      default: "text-current",
+      subtle: "text-current/75",
+      muted: "text-current/50",
     },
   },
   defaultVariants: {
     level: "h2",
-    tone: "default",
+    shade: "default",
   },
 });
 
 type HeadingProps = React.ComponentProps<"h1"> &
   VariantProps<typeof heading> & {
     as?: "h1" | "h2" | "h3" | "h4" | "div";
-    intent?: Intent;
+    tone?: Tone;
   };
 
 export function Heading({
   as: Tag = "h2",
   level,
+  shade,
   tone,
-  intent,
   className,
-
   ...props
 }: HeadingProps) {
   return (
     <Tag
-      className={cx(heading({ level, tone }), className)}
+      className={cx(heading({ level, shade }), className)}
       {...props}
-      data-intent={intent}
+      data-tone={tone}
     />
   );
 }
@@ -64,39 +63,39 @@ const text = cva("leading-normal", {
       medium: "font-medium",
       semibold: "font-semibold",
     },
-    tone: {
-      default: "text-intent-content",
-      muted: "text-intent-content-muted",
-      subtle: "text-intent-content-subtle",
+    shade: {
+      default: "text-tone-content",
+      muted: "text-tone-content-muted",
+      subtle: "text-tone-content-subtle",
     },
   },
   defaultVariants: {
     size: "md",
     weight: "regular",
-    tone: "default",
+    shade: "default",
   },
 });
 
 type TextProps = React.ComponentProps<"p"> &
   VariantProps<typeof text> & {
     as?: "p" | "span" | "div";
-    intent?: Intent;
+    tone?: Tone;
   };
 
 export function Text({
   as: Tag = "p",
   size,
   weight,
+  shade,
   tone,
   className,
-  intent,
   ...props
 }: TextProps) {
   return (
     <Tag
-      className={cx(text({ size, weight, tone }), className)}
+      className={cx(text({ size, weight, shade }), className)}
       {...props}
-      data-intent={intent}
+      data-tone={tone}
     />
   );
 }

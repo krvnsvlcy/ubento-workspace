@@ -77,7 +77,7 @@ m = ((r.scp == "/public" && p.role == "guest") || g(r.sub, p.role, r.scp)) && (p
   }
 
   // 1. Add User to Role (Scoped)
-  async RunHttpHandlerErrorCode(user: string, role: string, scope: string) {
+  async assignRole(user: string, role: string, scope: string) {
     const enforcer = await this.getEnforcer();
     await enforcer.addGroupingPolicy(user, role, scope);
   }

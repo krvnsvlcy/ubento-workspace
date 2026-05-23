@@ -14,10 +14,10 @@ export async function getBoard(id: string) {
 
 export async function createBoard(data: {
   workspace_id: string;
-  parent_id?: string;
+  parent_id?: string | null;
   name: string;
   data: any;
-  index: string;
+  index?: string | null;
 }) {
   const id = makeEntityId({
     code: ubentoEntities.board.code,
@@ -38,7 +38,7 @@ export async function updateBoard(
     name: string;
     parent_id: string | null;
     data: any;
-    index: string;
+    index: string | null;
   }>,
 ) {
   return await prisma.board.update({

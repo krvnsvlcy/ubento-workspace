@@ -214,6 +214,7 @@ export function createWorkspaceEngine({
     },
     boards: {},
     selection: [],
+    hover: undefined,
     dropRects: [],
     leftPanelOpen: true,
     workspace: {
@@ -336,6 +337,21 @@ export function createWorkspaceEngine({
 
   async function describeComponents(names: string[]) {
     return rpc?.egress.describeComponents({ names }) || {};
+  }
+
+  async function getCatalog() {
+    return (await rpc?.egress.getCatalog({})) as
+      | Record<
+          string,
+          {
+            props: any;
+            events?: any;
+            bindings?: any;
+            summary?: string;
+            instruction?: string;
+          }
+        >
+      | undefined;
   }
 
   async function updateWorkspace(data: Partial<WorkspaceState>) {
@@ -507,8 +523,25 @@ export function createWorkspaceEngine({
             typeof valueAtPath.$use === "string" &&
             Object.keys(valueAtPath).length === 1; // Strict check to prevent bloated objects
 
+          const isEvalDirective =
+            valueAtPath &&
+            typeof valueAtPath === "object" &&
+            "$eval" in valueAtPath &&
+            typeof valueAtPath.$eval === "string" &&
+            Object.keys(valueAtPath).length === 1;
+
+          const isRunDirective =
+            valueAtPath &&
+            typeof valueAtPath === "object" &&
+            "$run" in valueAtPath &&
+            typeof valueAtPath.$run === "string" &&
+            Object.keys(valueAtPath).length === 1;
+
+          const isDirective =
+            isUseDirective || isEvalDirective || isRunDirective;
+
           // 3. Only register the error if it is NOT a directive
-          if (!isUseDirective) {
+          if (!isDirective) {
             issues.push({
               location: ["elements", elementId, ...issue.path.map(String)],
               message: issue.message,
@@ -529,9 +562,14 @@ export function createWorkspaceEngine({
     update,
   }: {
     boardId: string;
-    update: Partial<Pick<BentoBoardData, "title">>;
+    update: Partial<Pick<BentoBoardData, "title">> &
+      Partial<{ parentId: string | null; index: string | null }>;
   }) {
-    await workspaceService.updateBoard(boardId, { name: update.title });
+    await workspaceService.updateBoard(boardId, {
+      name: update.title,
+      parentId: update.parentId,
+      index: update.index,
+    });
   }
 
   // delete board
@@ -544,10 +582,12 @@ export function createWorkspaceEngine({
     title,
     parentId,
     spec,
+    index,
   }: {
     title: string;
-    parentId?: string;
+    parentId?: string | null;
     spec?: any;
+    index?: string | null;
   }): Promise<ParsedSpec<BoardSpec> & { boardId: string; id: string }> {
     const state = store.getState();
     const workspaceId = state.workspace.id;
@@ -565,6 +605,7 @@ export function createWorkspaceEngine({
       parentId,
       workspace_id: workspaceId,
       data: validated.data as any,
+      index,
     });
 
     return {
@@ -591,6 +632,10 @@ export function createWorkspaceEngine({
 
   function selectionUpdated({ selection }: { selection: string[] }) {
     store.setState({ selection });
+  }
+
+  function hoverUpdated({ hovered }: { hovered?: string }) {
+    store.setState({ hover: hovered });
   }
 
   async function getServiceSpec(channelId: string) {
@@ -941,6 +986,7 @@ export function createWorkspaceEngine({
     appEngine,
     logger,
     copilot,
+    store,
     ...controller,
 
     connect,
@@ -959,9 +1005,21 @@ export function createWorkspaceEngine({
     createBoard,
     updateWorkspaceSpec,
     resolveBoardContextSchema,
+    listComponents,
+    describeComponents,
+    getCatalog,
     setInteractionMode: async (mode: "edit" | "live") => {
       await rpc?.egress.setInteractionMode({ mode });
       store.setState({ mode });
+    },
+    select: async (selection: string[]) => {
+      await rpc?.egress.select({ selection });
+    },
+    hover: async (elementId: string) => {
+      await rpc?.egress.hover({ elementId });
+    },
+    unhover: async (elementId: string) => {
+      await rpc?.egress.unhover({ elementId });
     },
 
     init: async (target: Window) => {
@@ -979,13 +1037,15 @@ export function createWorkspaceEngine({
           listBoards,
           boardUpdated,
           selectionUpdated,
+          hoverUpdated,
           runServiceOperation,
           createBoard: async (args) => {
             const title = args?.title || "";
             const result = await createBoard({
               title,
-              parentId: args?.parentId,
+              parentId: (args as any)?.parentId,
               spec: args?.spec,
+              index: (args as any)?.index,
             });
             return await getBoard({ boardId: result.id });
           },

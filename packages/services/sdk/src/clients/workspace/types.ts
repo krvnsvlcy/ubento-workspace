@@ -227,7 +227,7 @@ export interface paths {
                     cursor?: components["parameters"]["queryCursor"];
                     limit?: components["parameters"]["queryLimit"];
                     workspace_id: string;
-                    parent_id?: string;
+                    parent_id?: string | null;
                 };
                 header?: never;
                 path?: never;
@@ -269,9 +269,10 @@ export interface paths {
                 content: {
                     "application/json": {
                         workspace_id: string;
-                        parent_id?: string;
+                        parent_id?: string | null;
                         name: string;
-                        path: string;
+                        data?: Record<string, unknown> | null;
+                        index?: string | null;
                     };
                 };
             };
@@ -370,6 +371,8 @@ export interface paths {
                     "application/json": {
                         name?: string;
                         parent_id?: string | null;
+                        data?: Record<string, unknown> | null;
+                        index?: string | null;
                     };
                 };
             };
@@ -664,7 +667,8 @@ export interface components {
             /** @default board */
             entity: string;
             workspace_id: string;
-            parent_id?: string;
+            parent_id?: string | null;
+            index?: string | null;
             name: string;
             data: Record<string, never>;
             /** @default 1 */

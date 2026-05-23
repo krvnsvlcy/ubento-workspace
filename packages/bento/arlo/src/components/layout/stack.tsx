@@ -3,14 +3,14 @@ import * as React from "react";
 import { z } from "zod";
 import {
   getEdgesStyle,
-  getLayoutElementStyle,
+  getResizableElementStyle,
   LayoutContext,
-  layoutElementStyleSchema,
+  resizableElementStyleSchema,
   useLayoutContext,
   type LayoutContextType,
-} from "../../lib/style.js";
+} from "../../lib/style/style.js";
 
-export const stackPropsSchema = layoutElementStyleSchema.extend({
+export const stackPropsSchema = resizableElementStyleSchema.extend({
   direction: z.enum(["row", "column"]),
   padding: z.union([edgesSpec(z.number()), z.number()]).optional(),
   gap: z.number().optional(),
@@ -27,7 +27,7 @@ export const stackPropsSchema = layoutElementStyleSchema.extend({
   align: z.enum(["start", "end", "center", "stretch"]).optional(),
   wrap: z.boolean().optional(),
   overflow: z.enum(["visible", "hidden", "scroll", "auto"]).optional(),
-  intent: z
+  tone: z
     .enum(["accent", "neutral", "success", "warning", "info", "destructive"])
     .optional(),
   border: z.boolean().optional(),
@@ -47,14 +47,14 @@ function getStackStyle(
     align,
     wrap,
     overflow,
-    intent,
+    tone,
     border,
     radius,
   } = props;
-  const themePrefix = intent ? `--color-${intent}` : null;
+  const themePrefix = tone ? `--color-${tone}` : null;
 
   return {
-    ...getLayoutElementStyle(props, layoutContext),
+    ...getResizableElementStyle(props, layoutContext),
     position: "relative",
     gap: gap ? `${gap}px` : undefined,
     display: "flex",

@@ -151,19 +151,19 @@
   --font-mono: "JetBrains Mono", monospace;
 
   /* =========================================
-     Fallback Intent Theme (Neutral)
+     Fallback Tone Theme (Neutral)
      ========================================= */
-  --color-intent: var(--color-neutral);
-  --color-intent-hover: var(--color-neutral-hover);
-  --color-intent-active: var(--color-neutral-active);
-  --color-intent-contrast: var(--color-neutral-contrast);
-  --color-intent-surface: var(--color-neutral-surface);
-  --color-intent-surface-hover: var(--color-neutral-surface-hover);
-  --color-intent-surface-active: var(--color-neutral-surface-active);
-  --color-intent-border: var(--color-neutral-border);
-  --color-intent-border-hover: var(--color-neutral-border-hover);
-  --color-intent-border-active: var(--color-neutral-border-active);
-  --color-intent-content: var(--color-neutral-content);
-  --color-intent-content-subtle: var(--color-neutral-content-subtle);
-  --color-intent-content-muted: var(--color-neutral-content-muted);
+  --color-tone: var(--color-neutral);
+  --color-tone-hover: var(--color-neutral-hover);
+  --color-tone-active: var(--color-neutral-active);
+  --color-tone-contrast: var(--color-neutral-contrast);
+  --color-tone-surface: var(--color-neutral-surface);
+  --color-tone-surface-hover: var(--color-neutral-surface-hover);
+  --color-tone-surface-active: var(--color-neutral-surface-active);
+  --color-tone-border: var(--color-neutral-border);
+  --color-tone-border-hover: var(--color-neutral-border-hover);
+  --color-tone-border-active: var(--color-neutral-border-active);
+  --color-tone-content: var(--color-neutral-content);
+  --color-tone-content-subtle: var(--color-neutral-content-subtle);
+  --color-tone-content-muted: var(--color-neutral-content-muted);
 }

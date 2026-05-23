@@ -24,7 +24,7 @@ export const DEFAULT_SPEC: BoardSpec = {
         justify: "space-between",
         align: "center",
         padding: 24,
-        intent: "neutral",
+        tone: "neutral",
         border: true,
         radius: 12,
       },
@@ -37,7 +37,7 @@ export const DEFAULT_SPEC: BoardSpec = {
     },
     logo: {
       component: "Avatar",
-      inputs: { fallback: "A", intent: "accent", size: 32 },
+      inputs: { fallback: "A", tone: "accent", size: 32 },
     },
     header_title: {
       component: "Heading",
@@ -50,7 +50,7 @@ export const DEFAULT_SPEC: BoardSpec = {
     },
     status_badge: {
       component: "Badge",
-      inputs: { label: "Live Preview", intent: "success", variant: "surface" },
+      inputs: { label: "Live Preview", tone: "success", variant: "surface" },
     },
     profile_avatar: {
       component: "Avatar",
@@ -67,7 +67,14 @@ export const DEFAULT_SPEC: BoardSpec = {
     form_section: {
       component: "Card",
       inputs: { padding: 32, gap: 24 },
-      children: ["form_heading", "field_name", "field_email", "field_bio", "field_options", "form_footer"],
+      children: [
+        "form_heading",
+        "field_name",
+        "field_email",
+        "field_bio",
+        "field_options",
+        "form_footer",
+      ],
     },
     form_heading: {
       component: "Stack",
@@ -80,7 +87,11 @@ export const DEFAULT_SPEC: BoardSpec = {
     },
     form_subtitle: {
       component: "Text",
-      inputs: { text: "Manage your account settings and preferences.", subtle: true, size: 14 },
+      inputs: {
+        text: "Manage your account settings and preferences.",
+        subtle: true,
+        size: 14,
+      },
     },
     field_name: {
       component: "Stack",
@@ -93,7 +104,7 @@ export const DEFAULT_SPEC: BoardSpec = {
     },
     input_name: {
       component: "Input",
-      inputs: { value: "Jane Doe", placeholder: "Enter name", intent: "neutral" },
+      inputs: { value: "Jane Doe", placeholder: "Enter name", tone: "neutral" },
     },
     field_email: {
       component: "Stack",
@@ -106,7 +117,7 @@ export const DEFAULT_SPEC: BoardSpec = {
     },
     input_email: {
       component: "Input",
-      inputs: { type: "email", value: "jane@ubento.com", intent: "neutral" },
+      inputs: { type: "email", value: "jane@ubento.com", tone: "neutral" },
     },
     field_bio: {
       component: "Stack",
@@ -123,7 +134,12 @@ export const DEFAULT_SPEC: BoardSpec = {
     },
     field_options: {
       component: "Stack",
-      inputs: { direction: "row", gap: 24, align: "center", padding: { top: 12, bottom: 12 } },
+      inputs: {
+        direction: "row",
+        gap: 24,
+        align: "center",
+        padding: { top: 12, bottom: 12 },
+      },
       children: ["theme_select_field", "notification_switch_field"],
     },
     theme_select_field: {
@@ -157,11 +173,16 @@ export const DEFAULT_SPEC: BoardSpec = {
     },
     switch_notif: {
       component: "Switch",
-      inputs: { checked: true, intent: "success" },
+      inputs: { checked: true, tone: "success" },
     },
     form_footer: {
       component: "Stack",
-      inputs: { direction: "row", justify: "end", gap: 12, padding: { top: 16 } },
+      inputs: {
+        direction: "row",
+        justify: "end",
+        gap: 12,
+        padding: { top: 16 },
+      },
       children: ["btn_cancel", "btn_save"],
     },
     btn_cancel: {
@@ -170,7 +191,7 @@ export const DEFAULT_SPEC: BoardSpec = {
     },
     btn_save: {
       component: "Button",
-      inputs: { label: "Save Changes", variant: "primary", intent: "accent" },
+      inputs: { label: "Save Changes", variant: "primary", tone: "accent" },
     },
     visuals_section: {
       component: "Stack",
@@ -180,7 +201,12 @@ export const DEFAULT_SPEC: BoardSpec = {
     feedback_card: {
       component: "Card",
       inputs: { padding: 32, gap: 20 },
-      children: ["feedback_heading", "progress_field", "feedback_separator", "alert_stack"],
+      children: [
+        "feedback_heading",
+        "progress_field",
+        "feedback_separator",
+        "alert_stack",
+      ],
     },
     feedback_heading: {
       component: "Heading",
@@ -197,11 +223,11 @@ export const DEFAULT_SPEC: BoardSpec = {
     },
     progress_bar: {
       component: "Progress",
-      inputs: { value: 85, intent: "info" },
+      inputs: { value: 85, tone: "info" },
     },
     feedback_separator: {
       component: "Separator",
-      inputs: { intent: "neutral" },
+      inputs: { tone: "neutral" },
     },
     alert_stack: {
       component: "Stack",
@@ -210,28 +236,44 @@ export const DEFAULT_SPEC: BoardSpec = {
     },
     checkbox_alert: {
       component: "Checkbox",
-      inputs: { checked: true, intent: "destructive" },
+      inputs: { checked: true, tone: "destructive" },
     },
     label_alert: {
       component: "Label",
-      inputs: { text: "Critical updates available", intent: "destructive", weight: 600 },
+      inputs: {
+        text: "Critical updates available",
+        tone: "destructive",
+        weight: 600,
+      },
     },
     skeleton_card: {
       component: "Card",
-      inputs: { padding: 32, gap: 16, intent: "neutral", border: true },
+      inputs: { padding: 32, gap: 16, tone: "neutral", border: true },
       children: ["skel_title", "skel_line_1", "skel_line_2"],
     },
     skel_title: {
       component: "Skeleton",
-      inputs: { height: { value: 24, unit: "px" }, width: { value: 200, unit: "px" }, radius: 4 },
+      inputs: {
+        height: { value: 24, unit: "px" },
+        width: { value: 200, unit: "px" },
+        radius: 4,
+      },
     },
     skel_line_1: {
       component: "Skeleton",
-      inputs: { height: { value: 16, unit: "px" }, width: { value: 1, unit: "fr" }, radius: 4 },
+      inputs: {
+        height: { value: 16, unit: "px" },
+        width: { value: 1, unit: "fr" },
+        radius: 4,
+      },
     },
     skel_line_2: {
       component: "Skeleton",
-      inputs: { height: { value: 16, unit: "px" }, width: { value: 0.7, unit: "fr" }, radius: 4 },
+      inputs: {
+        height: { value: 16, unit: "px" },
+        width: { value: 0.7, unit: "fr" },
+        radius: 4,
+      },
     },
   },
 };
