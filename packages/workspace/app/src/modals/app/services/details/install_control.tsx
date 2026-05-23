@@ -1,4 +1,3 @@
-import { useUbentoEngine } from "@/engine/app/engine";
 import { WorkspaceEngine } from "@/engine/workspace/engine";
 import {
   useServiceWorkspaceState,
@@ -18,7 +17,7 @@ import {
 } from "@ubento/bento.arlo-core";
 import { vertexClient } from "@ubento/services.sdk";
 import { ServiceSpecV1 } from "@ubento/vertex.core";
-import { Plus, Settings, Sparkles, Trash2 } from "lucide-react";
+import { AlertCircle, Plus, Settings, Sparkles, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export function InstallControl({
@@ -32,19 +31,12 @@ export function InstallControl({
   specData?: ServiceSpecV1;
   activeChannelId: string | null;
 }) {
-  const engine = useUbentoEngine();
-  const provider = engine.ubento.vertex.useConnectionProviderByHandle(
-    specData?.connection?.provider || "",
-    {
-      enabled: !!specData?.connection?.provider,
-    },
-  );
   const { push: navigate } = useAppModal();
   const { installedServices } = useWorkspaceServices(workspaceEngine);
-  const { connections, isPending: isLoadingConnections } =
+  const { connections, isPending, isError, provider } =
     useServiceWorkspaceState(workspaceEngine, {
-      id: service.id,
-      provider: specData?.connection?.provider,
+      serviceId: service.id,
+      specData,
     });
 
   const [selectedConnectionId, setSelectedConnectionId] = useState<
@@ -68,10 +60,18 @@ export function InstallControl({
     });
   };
 
-  if (isLoadingConnections) {
+  if (isPending) {
     return (
       <Button disabled variant="primary">
         <Spinner /> Connection
+      </Button>
+    );
+  }
+
+  if (isError) {
+    return (
+      <Button disabled variant="primary">
+        <AlertCircle size={16} /> Failed to load connection
       </Button>
     );
   }
@@ -88,7 +88,7 @@ export function InstallControl({
         variant="primary"
         className="gap-2"
       >
-        <Plus size={16} /> Connect {provider.data?.name}
+        <Plus size={16} /> Connect {provider?.name}
       </Button>
     );
   }

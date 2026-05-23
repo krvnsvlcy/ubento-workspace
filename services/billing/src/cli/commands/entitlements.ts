@@ -12,21 +12,21 @@ export function registerEntitlementsCommands(program: Command) {
   entitlements
     .command("resolve-grant-table")
     .description("Resolve entitlement grant table")
-    .argument("<organization_id>", "Organization ID")
-    .action(async (organization_id) => {
-      const table = await resolveEntitlementGrantTable(organization_id);
+    .argument("<team_id>", "Organization ID")
+    .action(async (team_id) => {
+      const table = await resolveEntitlementGrantTable(team_id);
       console.log(JSON.stringify(table, null, 2));
     });
   entitlements
     .command("issue-manual-grant")
     .description("Issue a manual entitlement grant")
-    .argument("<organization_id>", "Organization ID")
+    .argument("<team_id>", "Organization ID")
     .argument("<feature_code>", "Feature Code")
     .argument("<type>", "Entitlement Type (QUOTA or ACCESS)")
     .argument("<expires_in>", "Duration until expiration (e.g. 5d, 2w, 1m, 1y)")
     .option("-a, --amount <amount>", "Amount for QUOTA type")
     .action(
-      async (organization_id, feature_code, type, expires_in, options) => {
+      async (team_id, feature_code, type, expires_in, options) => {
         const amount = options.amount ? parseInt(options.amount, 10) : null;
 
         const match = expires_in.trim().match(/^(\d+)([dwmy])$/);
@@ -74,7 +74,7 @@ export function registerEntitlementsCommands(program: Command) {
         ).default.entitlementGrant.create({
           data: {
             id: crypto.randomUUID(),
-            organization_id,
+            team_id,
             data,
             expires_at: date,
           },

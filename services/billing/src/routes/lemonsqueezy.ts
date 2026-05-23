@@ -31,7 +31,7 @@ import { logger } from "../logger.js";
 const LOCK_TTL_MS = 5 * 60_000; // 5 minutes
 
 const customDataSchema = z.object({
-  organization_id: z.string(),
+  team_id: z.string(),
 });
 export type CustomData = z.infer<typeof customDataSchema>;
 
@@ -323,9 +323,9 @@ async function upsertOrder(payload: Extract<LSPayload, { data: LSOrderData }>) {
   const { data, meta } = payload;
   const a = data.attributes;
 
-  // Orders require organization_id (intent) - should be present from checkout custom_data
+  // Orders require team_id (intent) - should be present from checkout custom_data
   const customData = customDataSchema.parse(meta.custom_data);
-  const organizationId = customData.organization_id;
+  const teamId = customData.team_id;
 
   const item = must(
     a.first_order_item,
@@ -369,7 +369,7 @@ async function upsertOrder(payload: Extract<LSPayload, { data: LSOrderData }>) {
     },
     create: {
       id: newId,
-      organization_id: organizationId,
+      team_id: teamId,
       provider: Provider.LEMON_SQUEEZY,
       provider_id: data.id,
 
@@ -401,7 +401,7 @@ async function upsertOrder(payload: Extract<LSPayload, { data: LSOrderData }>) {
 
 async function upsertSubscriptionInvoice(
   payload: Extract<LSPayload, { data: LSSubInvoiceData }>,
-  subscription: { id: string; organization_id: string },
+  subscription: { id: string; team_id: string },
 ) {
   const { data } = payload;
   const a = data.attributes;
@@ -420,7 +420,7 @@ async function upsertSubscriptionInvoice(
     },
     create: {
       id: newId,
-      organization_id: subscription.organization_id,
+      team_id: subscription.team_id,
       subscription_id: subscription.id,
 
       provider: Provider.LEMON_SQUEEZY,
@@ -545,9 +545,9 @@ async function getSubscriptionUpdateData(
 async function upsertSubscription(
   payload: Extract<LSPayload, { data: LSSubData }>,
 ) {
-  // subscription_created must contain organization_id
+  // subscription_created must contain team_id
   const customData = customDataSchema.parse(payload.meta.custom_data);
-  const organizationId = customData.organization_id;
+  const teamId = customData.team_id;
 
   const updateData = await getSubscriptionUpdateData(payload);
 
@@ -565,7 +565,7 @@ async function upsertSubscription(
     },
     create: {
       id: newId,
-      organization_id: organizationId,
+      team_id: teamId,
       provider: Provider.LEMON_SQUEEZY,
       provider_id: payload.data.id,
       ...updateData,
@@ -760,7 +760,7 @@ async function handleLemonEvent(payload: LSPayload) {
    Router factory
    ======================= */
 
-export const lemonsqueezyWebhookRouter = express.Router();
+export const lemonsqueezyWebhookRouter: express.Router = express.Router();
 
 const secret = env.LEMONSQUEEZY_WEBHOOK_SECRET;
 

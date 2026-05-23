@@ -15,7 +15,7 @@ export function registerCheckoutCommands(program: Command) {
   checkout
     .command("create")
     .description("Create a checkout session")
-    .argument("<organization_id>", "Organization ID")
+    .argument("<team_id>", "Organization ID")
     .argument("<product_code>", "Product code")
     .argument("<offer_code>", "Offer code")
     .argument("<quantity>", "Quantity", parseFloat)
@@ -25,7 +25,7 @@ export function registerCheckoutCommands(program: Command) {
     .option("--duration <duration>", "Session duration in seconds", parseFloat)
     .action(
       async (
-        organization_id,
+        team_id,
         product_code,
         offer_code,
         quantity,
@@ -33,7 +33,7 @@ export function registerCheckoutCommands(program: Command) {
         options,
       ) => {
         const session = await createCheckout({
-          organization_id,
+          team_id,
           product_code,
           offer_code,
           quantity,
@@ -61,7 +61,7 @@ export function registerCheckoutCommands(program: Command) {
     .command("list")
     .description("List checkout sessions")
     .option(
-      "-t, --organization_id <organization_id>",
+      "-t, --team_id <team_id>",
       "Filter by organization ID",
     )
     .option("-p, --product_code <product_code>", "Filter by product code")

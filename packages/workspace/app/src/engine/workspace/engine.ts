@@ -1,4 +1,5 @@
 import { UbentoEngine, UbentoEngineState } from "@/engine/app/engine";
+import { appModalRoutes } from "@/modals/app/routes";
 import { JsonPatch } from "@/utils/json";
 import { createZustandStateController } from "@ubento/bento.arlo-core";
 import {
@@ -20,10 +21,12 @@ import {
   boardDataSchema,
   DropRect,
   ParsedSpec,
+  ServiceOperationErrorData,
+  ServiceOperationResult,
   SpecIssue,
 } from "@ubento/bento.runtime";
 import { createDuplexRpc, createWindowPort, DuplexRpc } from "@ubento/rpc";
-import { workspaceClient } from "@ubento/services.sdk";
+import { vertexClient, workspaceClient } from "@ubento/services.sdk";
 import { OperationSpec, serviceSpecV1Schema } from "@ubento/vertex.core";
 import { registerStore, unregisterStore } from "@ubento/zustand-devtool";
 import { dequal } from "dequal/lite";
@@ -195,7 +198,6 @@ export function createWorkspaceEngine({
 }) {
   const id = i;
   i++;
-  console.log("create workspace engine", id);
   let rpc: DuplexRpc<
     BentoEngineHostRpcInterface,
     BentoEngineRuntimeRpcInterface
@@ -615,7 +617,7 @@ export function createWorkspaceEngine({
     type: "query" | "action";
     name: string;
     args?: Record<string, unknown>;
-  }) {
+  }): Promise<ServiceOperationResult> {
     const workspaceSpec = readWorkspaceSpec();
     if (!workspaceSpec) {
       throw new Error("Workspace spec not found");
@@ -632,21 +634,108 @@ export function createWorkspaceEngine({
       throw new Error(`Invalid service spec for ${channelId}.`);
     }
 
+    // Renamed local variable to avoid collision with the 'result' return key
+    let vertexResponse: vertexClient.VertexResult;
+
     if (type === "query") {
-      return await appEngine.ubento.sdk.vertex.runQuery({
+      vertexResponse = await appEngine.ubento.sdk.vertex.runQuery({
         teamId: session.teamId,
         serviceChannelId: channelId,
         query: name,
         args: args,
       });
     } else {
-      return await appEngine.ubento.sdk.vertex.runAction({
+      vertexResponse = await appEngine.ubento.sdk.vertex.runAction({
         teamId: session.teamId,
         serviceChannelId: channelId,
         action: name,
         args: args,
       });
     }
+
+    // Determine idempotency: Queries are always safe to retry.
+    // Actions are assumed false to prevent duplicate state changes unless explicitly mapped.
+    const isIdempotent = type === "query";
+
+    if (vertexResponse.error) {
+      // Base template for our structured error
+      const errorTemplate: ServiceOperationErrorData = {
+        code: vertexResponse.error.code,
+        message: vertexResponse.error.message || "An unknown error occurred",
+        isTransient: false, // Default to terminal unless we know it's a network glitch
+        isIdempotent,
+      };
+
+      switch (vertexResponse.error.code) {
+        case "INVALID_CREDENTIALS": {
+          appEngine.notify({
+            title: "Invalid Connection",
+            message: `Request failed due to invalid credentials. Please setup a valid connection for service ${service}.`,
+            type: "error",
+          });
+          return {
+            ok: false,
+            error: errorTemplate,
+            result: undefined,
+          };
+        }
+        case "INVALID_REQUEST_ERROR": {
+          appEngine.notify({
+            title: "Invalid Request",
+            message: `Please check the arguments for ${service}.${name}.`,
+            type: "error",
+          });
+          return {
+            ok: false,
+            error: errorTemplate,
+            result: undefined,
+          };
+        }
+        case "USAGE_LIMIT_EXCEEDED": {
+          appEngine.notify({
+            title: "Usage Limit Exceeded",
+            message: `Please upgrade your plan for Vertex requests.`,
+            type: "error",
+            duration: 20_000,
+            action: {
+              label: "Upgrade",
+              onClick: () => {
+                appEngine.pushAppModal(appModalRoutes.team.billing);
+              },
+            },
+          });
+          return {
+            ok: false,
+            error: errorTemplate,
+            result: undefined,
+          };
+        }
+        case "UPSTREAM_ERROR": {
+          return {
+            ok: false,
+            error: {
+              ...errorTemplate,
+              isTransient: true, // Upstream errors (like 502/504) are classic transient candidates
+            },
+            result: undefined,
+          };
+        }
+        default: {
+          // Instead of throwing and breaking the RPC boundary, we return the unknown error safely
+          return {
+            ok: false,
+            error: errorTemplate,
+            result: undefined,
+          };
+        }
+      }
+    }
+
+    return {
+      ok: true,
+      error: undefined,
+      result: vertexResponse.data,
+    };
   }
 
   const persistWorkspace = debounce(async (data: BentoWorkspaceData) => {
@@ -847,12 +936,6 @@ export function createWorkspaceEngine({
     mainAgentName: "copilot",
   });
 
-  // watch theme changes
-  const handleThemeChanged = ((e: CustomEvent<{ css: string }>) => {
-    rpc?.egress.setTheme({ css: e.detail.css });
-  }) as EventListener;
-  window.addEventListener("ubento:theme-changed", handleThemeChanged);
-
   return {
     id,
     appEngine,
@@ -922,7 +1005,6 @@ export function createWorkspaceEngine({
       unregisterStore("workspaceEngine");
       unsubscribeBoards();
       unsubscribeWorkspace();
-      window.removeEventListener("ubento:theme-changed", handleThemeChanged);
     },
   };
 }

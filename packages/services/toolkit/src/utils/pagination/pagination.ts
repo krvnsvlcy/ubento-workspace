@@ -54,6 +54,10 @@ export interface CursorPagedResponse<T> {
   previousPage?: CursorPage;
 }
 
+export function makeCursorPageResponse<T>(res: CursorPagedResponse<T>): CursorPagedResponse<T> {
+  return res;
+}
+
 export function makeCursorPageResponseSchema(
   dataSchema: Record<string, any>,
 ): any {

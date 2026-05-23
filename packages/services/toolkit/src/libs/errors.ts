@@ -10,7 +10,7 @@ export class ServiceError extends Error {
       status?: number;
       code?: string;
       context?: Record<string, unknown>;
-    } = {}
+    } = {},
   ) {
     super(message);
     this.name = new.target.name;
@@ -30,7 +30,7 @@ export class ValidationError extends ServiceError {
 export class AuthenticationError extends ServiceError {
   constructor(
     message = "Authentication required",
-    context?: Record<string, unknown>
+    context?: Record<string, unknown>,
   ) {
     super(message, { status: 401, code: "UNAUTHENTICATED", context });
   }
@@ -57,7 +57,7 @@ export class ConflictError extends ServiceError {
 export class TooManyRequestsError extends ServiceError {
   constructor(
     message = "Too many requests",
-    context?: Record<string, unknown>
+    context?: Record<string, unknown>,
   ) {
     super(message, { status: 429, code: "TOO_MANY_REQUESTS", context });
   }
@@ -67,7 +67,7 @@ export class TooManyRequestsError extends ServiceError {
 export class InternalServerError extends ServiceError {
   constructor(
     message = "Internal server error",
-    context?: Record<string, unknown>
+    context?: Record<string, unknown>,
   ) {
     super(message, { status: 500, code: "INTERNAL_ERROR", context });
   }
@@ -82,7 +82,7 @@ export class NotImplementedError extends ServiceError {
 export class ServiceUnavailableError extends ServiceError {
   constructor(
     message = "Service unavailable",
-    context?: Record<string, unknown>
+    context?: Record<string, unknown>,
   ) {
     super(message, { status: 503, code: "SERVICE_UNAVAILABLE", context });
   }
@@ -91,8 +91,14 @@ export class ServiceUnavailableError extends ServiceError {
 export class TimeoutError extends ServiceError {
   constructor(
     message = "Operation timed out",
-    context?: Record<string, unknown>
+    context?: Record<string, unknown>,
   ) {
     super(message, { status: 504, code: "TIMEOUT", context });
+  }
+}
+
+export class PaymentRequiredError extends ServiceError {
+  constructor(message = "Payment required", context?: Record<string, unknown>) {
+    super(message, { status: 402, code: "PAYMENT_REQUIRED", context });
   }
 }

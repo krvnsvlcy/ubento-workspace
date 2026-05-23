@@ -1,9 +1,9 @@
 import { TokenManager } from "./lib/token_manager.js";
 import { BillingService } from "./services/billing.js";
 import { IamService } from "./services/iam.js";
-import { VertexService } from "./services/vertex.js";
 import { IntelligenceService } from "./services/intelligence.js";
 import { ModuleService } from "./services/module.js";
+import { VertexService } from "./services/vertex.js";
 import { WorkspaceService } from "./services/workspace.js";
 
 export interface UbentoSDKOptions {

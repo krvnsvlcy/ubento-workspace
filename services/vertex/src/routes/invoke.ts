@@ -1,12 +1,5 @@
 import { ubentoAuth, ubentoFeatures } from "@ubento/services.primitives";
-import {
-  AuthorizationError,
-  chain,
-  enforce,
-  validate,
-  ValidationError,
-  TooManyRequestsError,
-} from "@ubento/services.toolkit";
+import { chain, enforce, validate } from "@ubento/services.toolkit";
 import { invokeHttpService, ServiceSpecV1 } from "@ubento/vertex.core";
 import crypto from "crypto";
 import { Router } from "express";
@@ -14,6 +7,27 @@ import z from "zod";
 import { getTeamConnectionWithAuth } from "../entities/connection.js";
 import { getServiceSpec } from "../entities/service_channel.js";
 import { ubento } from "../libs/bento.js";
+
+export interface VertexError {
+  code:
+    | "INVALID_REQUEST_ERROR"
+    | "USAGE_LIMIT_EXCEEDED"
+    | "UPSTREAM_ERROR"
+    | "INVALID_CREDENTIALS";
+  message?: string;
+  details?: unknown;
+}
+
+export interface VertexResult<T = unknown> {
+  data?: T;
+  error?: VertexError;
+}
+
+export function vertexResult<T>(result: VertexResult<T>): VertexResult<T> {
+  return result;
+}
+
+// --- Router ---
 
 const invokeRouter: Router = Router();
 
@@ -49,18 +63,24 @@ function createInvokeRoute(operationType: "query" | "action") {
       const spec: ServiceSpecV1 = await getServiceSpec(service_channel_id);
 
       const ref = crypto.randomUUID();
-      try {
-        await ubento.billing.reserveUsage({
-          organization_id: team_id,
-          feature_code: ubentoFeatures.vertex.requests.code,
-          amount: 1,
-          note: `Vertex ${operationType}: ${spec.name}`,
-          duration: 30_000, // 30 seconds
-          ref,
-        });
-      } catch (error) {
-        console.error("Failed to reserve vertex usage:", error);
-        throw new TooManyRequestsError(`Vertex usage exceeded`);
+      const reserveUsage = await ubento.billing.reserveUsage({
+        team_id: team_id,
+        feature_code: ubentoFeatures.vertex.requests.code,
+        amount: 1,
+        note: `Vertex ${operationType}: ${spec.name}`,
+        duration: 60_000, // 60 seconds
+        ref,
+      });
+
+      if (reserveUsage.error === "USAGE_LIMIT_EXCEEDED") {
+        return res.status(200).json(
+          vertexResult({
+            error: {
+              code: "USAGE_LIMIT_EXCEEDED",
+              message: `Vertex usage exceeded. Please check your plan and upgrade if needed.`,
+            },
+          }),
+        );
       }
 
       const operation =
@@ -68,10 +88,16 @@ function createInvokeRoute(operationType: "query" | "action") {
           ? spec.queries?.[operationName]
           : spec.actions?.[operationName];
 
-      if (!operation)
-        throw new ValidationError(
-          `Unsupported ${operationType}: ${operationName}`,
+      if (!operation) {
+        return res.status(200).json(
+          vertexResult({
+            error: {
+              code: "INVALID_REQUEST_ERROR",
+              message: `Unsupported ${operationType}: ${operationName}`,
+            },
+          }),
         );
+      }
 
       const connectionSpec = spec.connection;
 
@@ -79,8 +105,13 @@ function createInvokeRoute(operationType: "query" | "action") {
       if (connectionSpec) {
         connection = await getTeamConnectionWithAuth(team_id, connectionSpec);
         if (!connection) {
-          throw new AuthorizationError(
-            `No valid connection found for service ${spec.name}`,
+          return res.status(200).json(
+            vertexResult({
+              error: {
+                code: "INVALID_CREDENTIALS",
+                message: `No valid connection found for service ${spec.name}`,
+              },
+            }),
           );
         }
       }
@@ -105,20 +136,48 @@ function createInvokeRoute(operationType: "query" | "action") {
 
         switch (result.error.code) {
           case "INVALID_REQUEST_ERROR":
-            throw new ValidationError(result.error.message, {
-              code: result.error.code,
-              details: result.error.details,
-            });
+          case "UNSUPPORTED_HANDLER_TYPE":
+            return res.status(200).json(
+              vertexResult({
+                error: {
+                  code: "INVALID_REQUEST_ERROR",
+                  message: result.error.message,
+                  details: result.error.details,
+                },
+              }),
+            );
+          case "UPSTREAM_ERROR":
+            // 2. Use 502 for upstream failures and include details if available
+            return res.status(200).json(
+              vertexResult({
+                error: {
+                  code: "UPSTREAM_ERROR",
+                  message: result.error.message,
+                  details: result.error.details, // Don't swallow upstream debug info
+                },
+              }),
+            );
           default:
-            throw new Error(result.error.message);
+            // 3. Catch-all prevents the request from hanging
+            return res.status(200).json(
+              vertexResult({
+                error: {
+                  code: "UPSTREAM_ERROR",
+                  message: "An unknown internal error occurred.",
+                },
+              }),
+            );
         }
       }
-
       ubento.billing
         .commitUsageHold({ organization_id: team_id, ref })
         .catch(console.error);
 
-      res.status(200).json(result.data);
+      res.status(200).json(
+        vertexResult({
+          data: result.data,
+        }),
+      );
     },
   );
 }

@@ -78,6 +78,7 @@ router.get(
       const result = await listConnections({
         ...parseCursorQuery(req),
         team_id: parseStringQuery(req, "team_id"),
+        provider_id: parseStringQuery(req, "provider_id"),
       });
       res.json(result);
     },

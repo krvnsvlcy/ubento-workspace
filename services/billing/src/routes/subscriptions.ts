@@ -22,14 +22,14 @@ import {
   updateSubscription,
 } from "../routines/subscriptions.js";
 
-const router = Router();
+const router: Router = Router();
 
 // List invoices
 router.get("/invoices", async (req, res, next) => {
   try {
     const result = await listInvoices({
       ...parseCursorQuery(req),
-      organization_id: parseStringQuery(req, "organization_id"),
+      team_id: parseStringQuery(req, "team_id"),
       status: parseStringQuery(req, "status") as InvoiceStatus | undefined,
       created_after: req.query.created_after
         ? new Date(req.query.created_after as string)
@@ -60,7 +60,7 @@ router.get("/", async (req, res, next) => {
   try {
     const result = await listSubscriptions({
       ...parseCursorQuery(req),
-      organization_id: parseStringQuery(req, "organization_id"),
+      team_id: parseStringQuery(req, "team_id"),
       product_code: parseStringQuery(req, "product_code"),
       offer_code: parseStringQuery(req, "offer_code"),
       status: parseStringQuery(req, "status") as SubscriptionStatus | undefined,

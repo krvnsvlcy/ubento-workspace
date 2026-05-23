@@ -20,20 +20,20 @@ import {
   reserveUsage,
 } from "../routines/usage.js";
 
-const router = Router();
+const router: Router = Router();
 
 // List usage counters
 router.get("/counters", async (req, res, next) => {
   try {
-    const organization_id = parseStringQuery(req, "organization_id");
-    if (!organization_id) {
-      res.status(400).json({ message: "organization_id is required" });
+    const team_id = parseStringQuery(req, "team_id");
+    if (!team_id) {
+      res.status(400).json({ message: "team_id is required" });
       return;
     }
 
     const result = await listUsageCounters({
       ...parseCursorQuery(req),
-      organization_id,
+      team_id,
       code: parseStringQuery(req, "code"),
       group: parseStringQuery(req, "group"),
     });
@@ -45,14 +45,14 @@ router.get("/counters", async (req, res, next) => {
 
 // Get usage counter by ID
 router.get("/counters/by-code", async (req, res) => {
-  const organization_id = parseStringQuery(req, "organization_id");
+  const team_id = parseStringQuery(req, "team_id");
   const code = parseStringQuery(req, "code");
   const group = parseStringQuery(req, "group");
-  if (!organization_id || !code) {
-    res.status(400).json({ message: "organization_id and code are required" });
+  if (!team_id || !code) {
+    res.status(400).json({ message: "team_id and code are required" });
     return;
   }
-  const counter = await getUsageCounterByCode(organization_id, code, group);
+  const counter = await getUsageCounterByCode(team_id, code, group);
   if (!counter) {
     res.status(404).json({ message: "Usage counter not found" });
     return;
@@ -78,7 +78,7 @@ router.post(
   chain(
     validate({
       body: z.object({
-        organization_id: z.string(),
+        team_id: z.string(),
         code: z.string(),
         amount: z.number().int().min(1),
         group: z.string().optional(),
@@ -87,7 +87,7 @@ router.post(
     async (req, res, next) => {
       try {
         const counter = await incrementOrganizationUsage({
-          organization_id: req.body.organization_id,
+          team_id: req.body.team_id,
           feature_code: req.body.code,
           amount: req.body.amount,
         });
@@ -104,7 +104,7 @@ router.get("/events", async (req, res, next) => {
   try {
     const result = await listUsageEvents({
       ...parseCursorQuery(req),
-      organization_id: parseStringQuery(req, "organization_id"),
+      team_id: parseStringQuery(req, "team_id"),
       counter_code: parseStringQuery(req, "counter_code"),
       counter_group: parseStringQuery(req, "counter_group"),
       ref: parseStringQuery(req, "ref"),
@@ -138,7 +138,7 @@ router.post(
   chain(
     validate({
       body: z.object({
-        organization_id: z.string(),
+        team_id: z.string(),
         code: z.string(),
         group: z.string().optional(),
         amount: z.number().int().min(1),
@@ -151,7 +151,7 @@ router.post(
     async (req, res, next) => {
       try {
         const hold = await reserveUsage({
-          organization_id: req.body.organization_id,
+          team_id: req.body.team_id,
           feature_code: req.body.code,
           amount: req.body.amount,
           note: req.body.note,
@@ -174,14 +174,14 @@ router.post(
     validate({
       body: z.object({
         ref: z.string(),
-        organization_id: z.string(),
+        team_id: z.string(),
       }),
     }),
     async (req, res, next) => {
       try {
         const result = await commitUsageHold({
           ref: req.body.ref,
-          organization_id: req.body.organization_id,
+          team_id: req.body.team_id,
         });
         res.json(toSerializable(result));
       } catch (e) {
@@ -198,14 +198,14 @@ router.post(
     validate({
       body: z.object({
         ref: z.string(),
-        organization_id: z.string(),
+        team_id: z.string(),
       }),
     }),
     async (req, res, next) => {
       try {
         const hold = await releaseUsageHold({
           ref: req.body.ref,
-          organization_id: req.body.organization_id,
+          team_id: req.body.team_id,
         });
         res.json(toSerializable(hold));
       } catch (e) {

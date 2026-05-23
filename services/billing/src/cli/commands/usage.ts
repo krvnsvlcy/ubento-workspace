@@ -30,14 +30,14 @@ export function registerUsageCommands(program: Command) {
   counters
     .command("list")
     .description("List usage counters")
-    .argument("<organization_id>", "Organization ID")
+    .argument("<team_id>", "Organization ID")
     .option("-c, --code <code>", "Filter by code")
     .option("-g, --group <group>", "Filter by group")
     .option("-l, --limit <limit>", "Limit results", parseInt)
     .option("--cursor <cursor>", "Cursor for pagination")
-    .action(async (organization_id, options) => {
+    .action(async (team_id, options) => {
       const result = await listUsageCounters({
-        organization_id,
+        team_id,
         code: options.code,
         group: options.group,
         limit: options.limit,
@@ -62,7 +62,7 @@ export function registerUsageCommands(program: Command) {
   holds
     .command("reserve")
     .description("Reserve usage")
-    .argument("<organization_id>", "Organization ID")
+    .argument("<team_id>", "Organization ID")
     .argument("<code>", "Counter code")
     .argument("<amount>", "Amount", parseFloat)
     .argument("<ref>", "Reference ID")
@@ -70,10 +70,10 @@ export function registerUsageCommands(program: Command) {
     .argument("<duration>", "Duration in ms", parseFloat)
     .option("--data <data>", "Additional JSON data")
     .action(
-      async (organization_id, code, amount, ref, note, duration, options) => {
+      async (team_id, code, amount, ref, note, duration, options) => {
         const data = options.data ? JSON.parse(options.data) : undefined;
         const hold = await reserveUsage({
-          organization_id,
+          team_id,
           feature_code: code,
           amount,
           note,
@@ -111,7 +111,7 @@ export function registerUsageCommands(program: Command) {
     .command("list")
     .description("List usage events")
     .option(
-      "-t, --organization_id <organization_id>",
+      "-t, --team_id <team_id>",
       "Filter by organization ID",
     )
     .option("-c, --counter_code <counter_code>", "Filter by counter code")

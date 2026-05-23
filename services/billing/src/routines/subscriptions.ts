@@ -50,13 +50,13 @@ function lsSubscriptionStatusToSubscriptionStatus(
 }
 
 export async function getActiveSubscription(
-  organization_id: string,
+  team_id: string,
   product_code: string,
 ): Promise<Subscription | null> {
   const subscription = await prisma.subscription.findFirst({
     where: {
       product_code,
-      organization_id,
+      team_id,
       OR: [
         {
           status: {
@@ -105,7 +105,7 @@ export async function getSubscriptionByProvider(
 }
 
 export async function listSubscriptions(filters?: {
-  organization_id?: string;
+  team_id?: string;
   product_code?: string;
   offer_code?: string;
   status?: SubscriptionStatus;
@@ -117,8 +117,8 @@ export async function listSubscriptions(filters?: {
     cursor: filters?.cursor,
     orderBy: [{ created_at: "desc" }, { id: "desc" }],
     where: {
-      ...(filters?.organization_id && {
-        organization_id: filters.organization_id,
+      ...(filters?.team_id && {
+        team_id: filters.team_id,
       }),
       ...(filters?.offer_code && { offer_code: filters.offer_code }),
       ...(filters?.status && { status: filters.status }),
@@ -334,7 +334,7 @@ export async function getInvoiceByProvider(
 }
 
 export async function listInvoices(filters?: {
-  organization_id?: string;
+  team_id?: string;
   status?: InvoiceStatus;
   created_after?: Date;
   created_before?: Date;
@@ -346,8 +346,8 @@ export async function listInvoices(filters?: {
     cursor: filters?.cursor,
     orderBy: [{ created_at: "desc" }, { id: "desc" }],
     where: {
-      ...(filters?.organization_id && {
-        organization_id: filters.organization_id,
+      ...(filters?.team_id && {
+        team_id: filters.team_id,
       }),
       ...(filters?.status && { status: filters.status }),
       ...(filters?.created_after && {

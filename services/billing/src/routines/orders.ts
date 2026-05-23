@@ -27,7 +27,7 @@ export async function getOrderByProvider(
 }
 
 export async function listOrders(filters?: {
-  organization_id?: string;
+  team_id?: string;
   status?: OrderStatus;
   created_after?: Date;
   created_before?: Date;
@@ -39,8 +39,8 @@ export async function listOrders(filters?: {
     cursor: filters?.cursor,
     orderBy: [{ created_at: "desc" }, { id: "desc" }],
     where: {
-      ...(filters?.organization_id && {
-        organization_id: filters.organization_id,
+      ...(filters?.team_id && {
+        team_id: filters.team_id,
       }),
       ...(filters?.status && { status: filters.status }),
       ...(filters?.created_after && {

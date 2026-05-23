@@ -1,7 +1,8 @@
 import { useSession } from "@/contexts/session";
-import { useUbento } from "@/engine/app/engine";
+import { useUbento, useUbentoEngine } from "@/engine/app/engine";
 import { WorkspaceEngine } from "@/engine/workspace/engine";
 import { useQuery } from "@tanstack/react-query";
+import { ServiceSpecV1 } from "@ubento/vertex.core";
 
 export function useWorkspaceServices(workspaceEngine: WorkspaceEngine) {
   const workspaceSpec = workspaceEngine.useState((s) => s.workspace.spec) || {};
@@ -17,25 +18,42 @@ export function useWorkspaceServices(workspaceEngine: WorkspaceEngine) {
 
 export function useServiceWorkspaceState(
   workspaceEngine: WorkspaceEngine,
-  service: {
-    id: string;
-    provider?: string;
+  {
+    serviceId,
+    specData,
+  }: {
+    serviceId: string;
+    specData?: ServiceSpecV1;
   },
 ) {
+  const engine = useUbentoEngine();
   const { installedServices, installedServiceIds } =
     useWorkspaceServices(workspaceEngine);
-  const isInstalled = installedServiceIds.has(service.id);
+  const isInstalled = installedServiceIds.has(serviceId);
+  const {
+    data: provider,
+    isPending: isPendingProvider,
+    isError: isErrorProvider,
+  } = engine.ubento.vertex.useConnectionProviderByHandle(
+    specData?.connection?.provider || "",
+    {
+      enabled: !!specData?.connection?.provider,
+    },
+  );
 
   const session = useSession();
   const ubento = useUbento();
-  const provider = service.provider;
 
-  const { data: connections, isPending } = useQuery({
+  const {
+    data: connections,
+    isPending: isPendingConnections,
+    isError: isErrorConnections,
+  } = useQuery({
     queryKey: ["team-connections", session.teamId, provider],
     queryFn: async () => {
       const result = await ubento.sdk.vertex.listConnections({
         team_id: session.teamId || "",
-        provider,
+        provider_id: provider?.id || "",
       });
       return result?.data || [];
     },
@@ -46,6 +64,8 @@ export function useServiceWorkspaceState(
     isInstalled,
     installedServices,
     connections,
-    isPending,
+    provider,
+    isPending: isPendingProvider || isPendingConnections,
+    isError: isErrorProvider || isErrorConnections,
   };
 }

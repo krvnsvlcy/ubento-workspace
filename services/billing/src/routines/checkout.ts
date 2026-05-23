@@ -17,14 +17,14 @@ import { eventPublisher } from "../event.js";
 import prisma from "../lib/prisma.js";
 
 async function createLSCheckout({
-  organization_id,
+  team_id,
   offer_code,
   redirect_url,
   quantity,
   data,
   duration = 3600,
 }: {
-  organization_id: string;
+  team_id: string;
   offer_code: string;
   redirect_url: string;
   quantity: number;
@@ -61,7 +61,7 @@ async function createLSCheckout({
       variantQuantities: [
         { variantId: Number(offerLink.provider_id), quantity },
       ],
-      custom: { organization_id, offer_code },
+      custom: { team_id, offer_code },
     },
     expiresAt,
   });
@@ -76,7 +76,7 @@ async function createLSCheckout({
 }
 
 export async function createCheckout(input: {
-  organization_id: string;
+  team_id: string;
   product_code: string;
   offer_code: string;
   quantity: number;
@@ -86,7 +86,7 @@ export async function createCheckout(input: {
   data?: { email?: string; name?: string };
 }): Promise<Checkout> {
   const providerCheckoutData = await createLSCheckout({
-    organization_id: input.organization_id,
+    team_id: input.team_id,
     offer_code: input.offer_code,
     redirect_url: input.redirect_url,
     quantity: input.quantity,
@@ -100,7 +100,7 @@ export async function createCheckout(input: {
         code: ubentoEntities.billingCheckout.code,
         bareId: generateBareId(),
       }),
-      organization_id: input.organization_id,
+      team_id: input.team_id,
       product_code: input.product_code,
       offer_code: input.offer_code,
       quantity: input.quantity,
@@ -138,7 +138,7 @@ export async function getCheckoutByProvider(
 }
 
 export async function listCheckouts(filters?: {
-  organization_id?: string;
+  team_id?: string;
   product_code?: string;
   offer_code?: string;
   limit?: number;
@@ -149,8 +149,8 @@ export async function listCheckouts(filters?: {
     cursor: filters?.cursor,
     orderBy: [{ created_at: "desc" }, { id: "desc" }],
     where: {
-      ...(filters?.organization_id && {
-        organization_id: filters.organization_id,
+      ...(filters?.team_id && {
+        team_id: filters.team_id,
       }),
       ...(filters?.product_code && { product_code: filters.product_code }),
       ...(filters?.offer_code && { offer_code: filters.offer_code }),

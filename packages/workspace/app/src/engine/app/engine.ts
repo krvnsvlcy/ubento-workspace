@@ -2,15 +2,26 @@ import {
   createWorkspaceEngine,
   WorkspaceEngine,
 } from "@/engine/workspace/engine";
+import { AppModal } from "@/modals/app/app_modal";
 import { createUbentoService, UbentoService } from "@/services/ubento/ubento";
 import type { UbentoSDK, workspaceClient } from "@ubento/services.sdk";
 import { createZustandStateController, StateController } from "@ubento/state";
 import { createLogger, Logger } from "@ubento/telemetry";
 import { registerStore } from "@ubento/zustand-devtool";
-import { createContext, useContext } from "react";
+import React, { ComponentType, createContext, useContext } from "react";
+import { toast } from "sonner";
 import { createStore } from "zustand";
+import { makeLocationString } from "./app_modal";
 import { parseLocation, stringifyLocation, UbentoLocation } from "./location";
 import { UbentoSession } from "./session";
+
+export interface ModalInstance {
+  id: string;
+  component: React.ComponentType<any>;
+  props: any;
+  resolve: (value: any) => void;
+  tags: string[];
+}
 
 export type UbentoEngineState = {
   session: UbentoSession;
@@ -26,6 +37,7 @@ export type UbentoEngineState = {
 
   // modal
   appModalHistory: string[];
+  modalQueue: ModalInstance[];
 };
 
 export type UbentoEngine = StateController<UbentoEngineState> & {
@@ -41,10 +53,27 @@ export type UbentoEngine = StateController<UbentoEngineState> & {
   setActiveWorkspaceEngine: (engine: WorkspaceEngine) => void;
   clearActiveWorkspaceEngine: (engine: WorkspaceEngine) => void;
   setShowControls: (show: boolean) => void;
-  pushAppModalHistory: (path: string) => void;
-  popAppModalHistory: () => void;
-  replaceAppModalHistory: (path: string) => void;
-  setAppModalHistory: (history: string[]) => void;
+
+  pushAppModal: (path: string, params?: Record<string, string>) => void;
+  replaceAppModal: (path: string, params?: Record<string, string>) => void;
+  popAppModal: () => void;
+
+  notify: (options: {
+    title?: string;
+    message: string;
+    type?: "info" | "success" | "warning" | "error";
+    duration?: number;
+    action?: {
+      label: React.ReactNode;
+      onClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+      actionButtonStyle?: React.CSSProperties;
+    };
+  }) => void;
+  openModal: <T = any, R = any>(
+    component: React.ComponentType<T>,
+    props?: T,
+  ) => Promise<R>;
+  closeModal: (id: string, result?: any) => void;
 };
 
 export function createUbentoEngine({
@@ -75,6 +104,7 @@ export function createUbentoEngine({
     showControls: false,
     workspaceStatus: "inactive",
     appModalHistory: [],
+    modalQueue: [],
   }));
   registerStore("ubentoEngine", store);
   const stateController = createZustandStateController(store);
@@ -159,6 +189,63 @@ export function createUbentoEngine({
     prevWorkspace?.destroy();
   }
 
+  function openModal<T>(
+    component: ComponentType<T>,
+    props: T,
+    tags: string[] = [],
+  ) {
+    return new Promise((resolve) => {
+      const id = Math.random().toString(36).substring(7);
+      const instance: ModalInstance = {
+        id,
+        component,
+        props,
+        resolve,
+        tags,
+      };
+      stateController.setState((state) => ({
+        ...state,
+        modalQueue: [instance, ...state.modalQueue],
+      }));
+    });
+  }
+  function closeModal(id: string, result: unknown) {
+    const { modalQueue } = stateController.getState();
+    const instance = modalQueue.find((m) => m.id === id);
+    if (instance) {
+      instance.resolve(result);
+    }
+    stateController.setState((state) => ({
+      ...state,
+      modalQueue: state.modalQueue.filter((m) => m.id !== id),
+    }));
+  }
+
+  function pushAppModalHistory(path: string) {
+    stateController.setState((state) => ({
+      ...state,
+      appModalHistory: [...state.appModalHistory, path],
+    }));
+  }
+  function popAppModalHistory() {
+    stateController.setState((state) => ({
+      ...state,
+      appModalHistory: state.appModalHistory.slice(0, -1),
+    }));
+  }
+  function replaceAppModalHistory(path: string) {
+    stateController.setState((state) => ({
+      ...state,
+      appModalHistory: [...state.appModalHistory.slice(0, -1), path],
+    }));
+  }
+  function setAppModalHistory(history: string[]) {
+    stateController.setState((state) => ({
+      ...state,
+      appModalHistory: history,
+    }));
+  }
+
   const appEngine: UbentoEngine = {
     logger,
     ...stateController,
@@ -213,29 +300,47 @@ export function createUbentoEngine({
       }));
     },
 
-    pushAppModalHistory(path: string) {
-      stateController.setState((state) => ({
-        ...state,
-        appModalHistory: [...state.appModalHistory, path],
-      }));
+    openModal: openModal as UbentoEngine["openModal"],
+    closeModal: closeModal as UbentoEngine["closeModal"],
+
+    popAppModal: () => {
+      popAppModalHistory();
     },
-    popAppModalHistory() {
-      stateController.setState((state) => ({
-        ...state,
-        appModalHistory: state.appModalHistory.slice(0, -1),
-      }));
+    pushAppModal: (path: string, params: Record<string, string> = {}) => {
+      const location = makeLocationString(path, params);
+      const activeModal = stateController.getState().modalQueue[0];
+      if (activeModal?.tags?.includes("app-modal")) {
+        pushAppModalHistory(location);
+      } else {
+        setAppModalHistory([location]);
+        openModal(AppModal, { params }, ["app-modal"]);
+      }
     },
-    replaceAppModalHistory(path: string) {
-      stateController.setState((state) => ({
-        ...state,
-        appModalHistory: [...state.appModalHistory.slice(0, -1), path],
-      }));
+    replaceAppModal: (path: string, params: Record<string, string> = {}) => {
+      const location = makeLocationString(path, params);
+      const activeModal = stateController.getState().modalQueue[0];
+      if (activeModal?.tags?.includes("app-modal")) {
+        replaceAppModalHistory(location);
+      } else {
+        setAppModalHistory([location]);
+        openModal(AppModal, { params }, ["app-modal"]);
+      }
     },
-    setAppModalHistory(history: string[]) {
-      stateController.setState((state) => ({
-        ...state,
-        appModalHistory: history,
-      }));
+
+    notify(options) {
+      const {
+        title,
+        message,
+        type = "info",
+        duration = 5000,
+        action,
+      } = options;
+      const toastFn = toast[type];
+      toastFn(title || message, {
+        description: title ? message : undefined,
+        duration,
+        action,
+      });
     },
   };
 

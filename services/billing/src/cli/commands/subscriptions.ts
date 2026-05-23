@@ -31,10 +31,10 @@ export function registerSubscriptionsCommands(program: Command) {
   subs
     .command("get-active")
     .description("Get active subscription for product")
-    .argument("<organization_id>", "Organization ID")
+    .argument("<team_id>", "Organization ID")
     .argument("<product_code>", "Product code")
-    .action(async (organization_id, product_code) => {
-      const sub = await getActiveSubscription(organization_id, product_code);
+    .action(async (team_id, product_code) => {
+      const sub = await getActiveSubscription(team_id, product_code);
       console.log(JSON.stringify(sub, null, 2));
     });
 
@@ -42,7 +42,7 @@ export function registerSubscriptionsCommands(program: Command) {
     .command("list")
     .description("List subscriptions")
     .option(
-      "-t, --organization_id <organization_id>",
+      "-t, --team_id <team_id>",
       "Filter by organization ID",
     )
     .option("-p, --product_code <product_code>", "Filter by product code")
@@ -83,7 +83,7 @@ export function registerSubscriptionsCommands(program: Command) {
     .command("list")
     .description("List invoices")
     .option(
-      "-t, --organization_id <organization_id>",
+      "-t, --team_id <team_id>",
       "Filter by organization ID",
     )
     .option("-s, --status <status>", "Filter by status")

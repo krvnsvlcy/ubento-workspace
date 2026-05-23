@@ -11,7 +11,12 @@ export type OfferUiFeatureData = {
     | {
         type: "quota";
         feature_code: string;
-        unit: "storage-mb" | "ai-credit" | "build-run" | "seat" | "vertex-request";
+        unit:
+          | "storage-mb"
+          | "ai-credit"
+          | "build-run"
+          | "seat"
+          | "vertex-request";
       };
 };
 export type OfferMetadata = {
@@ -99,32 +104,14 @@ export const catalog: Catalog = [
         entitlements: [
           // Ai
           {
-            feature_code: ubentoFeatures.ai.credits.code,
-            amount: 0,
-            merge_strategy: "SUM",
-          },
-          // Build
-          {
-            feature_code: ubentoFeatures.build.runs.code,
-            amount: 5,
-            merge_strategy: "MAX",
-          },
-          // Drive
-          {
-            feature_code: ubentoFeatures.drive.storage.code,
-            amount: 100, // 100MB
-            merge_strategy: "MAX",
-          },
-          // Collaboration
-          {
-            feature_code: ubentoFeatures.collaboration.seats.code,
-            amount: 1,
+            feature_code: ubentoFeatures.ai.weeklyCredits.code,
+            amount: 25,
             merge_strategy: "SUM",
           },
           // Vertex
           {
-            feature_code: ubentoFeatures.vertex.requests.code,
-            amount: 1000,
+            feature_code: ubentoFeatures.vertex.weeklyRequests.code,
+            amount: 250,
             merge_strategy: "MAX",
           },
         ],
@@ -132,44 +119,26 @@ export const catalog: Catalog = [
           ui: {
             features: [
               {
-                icon: "repository",
-                name: "Repository",
+                icon: "layout", // Updated for Ubento
+                name: "Workspaces",
                 value: true,
               },
               {
-                icon: "registry",
-                name: "Registries",
+                icon: "plug", // Updated for Ubento
+                name: "Service Connections",
                 value: true,
               },
               {
-                icon: "pipeline",
-                name: "Pipelines",
+                icon: "sparkles", // Emphasizing AI for free users
+                name: "AI Assistant",
                 value: true,
-              },
-              {
-                icon: "drive",
-                name: "Storage",
-                value: {
-                  type: "quota",
-                  feature_code: ubentoFeatures.drive.storage.code,
-                  unit: "storage-mb",
-                },
-              },
-              {
-                icon: "build",
-                name: "Builds",
-                value: {
-                  type: "quota",
-                  feature_code: ubentoFeatures.build.runs.code,
-                  unit: "build-run",
-                },
               },
               {
                 icon: "vertex",
                 name: "Vertex Requests",
                 value: {
                   type: "quota",
-                  feature_code: ubentoFeatures.vertex.requests.code,
+                  feature_code: ubentoFeatures.vertex.weeklyRequests.code,
                   unit: "vertex-request",
                 },
               },
@@ -181,37 +150,19 @@ export const catalog: Catalog = [
         code: "ide.pro",
         name: "Pro",
         description:
-          "For professional developers building and shipping real applications.",
+          "For professional teams building and shipping internal tools and apps.",
         active: true,
         lsId: ids.offers.idePro,
         entitlements: [
           // Ai
           {
-            feature_code: ubentoFeatures.ai.credits.code,
-            amount: 250,
-            merge_strategy: "SUM",
-          },
-          // Build
-          {
-            feature_code: ubentoFeatures.build.runs.code,
-            amount: "inf",
-            merge_strategy: "MAX",
-          },
-          // Drive
-          {
-            feature_code: ubentoFeatures.drive.storage.code,
-            amount: 1_000, // 1GB
-            merge_strategy: "MAX",
-          },
-          // Collaboration
-          {
-            feature_code: ubentoFeatures.collaboration.seats.code,
-            amount: 1,
+            feature_code: ubentoFeatures.ai.weeklyCredits.code,
+            amount: 100,
             merge_strategy: "SUM",
           },
           // Vertex
           {
-            feature_code: ubentoFeatures.vertex.requests.code,
+            feature_code: ubentoFeatures.vertex.weeklyRequests.code,
             amount: "inf",
             merge_strategy: "MAX",
           },
@@ -220,18 +171,13 @@ export const catalog: Catalog = [
           ui: {
             features: [
               {
-                icon: "repository",
-                name: "Repository",
+                icon: "layout",
+                name: "Workspaces",
                 value: true,
               },
               {
-                icon: "registry",
-                name: "Registries",
-                value: true,
-              },
-              {
-                icon: "pipeline",
-                name: "Pipelines",
+                icon: "plug",
+                name: "Service Connections",
                 value: true,
               },
               {
@@ -239,26 +185,8 @@ export const catalog: Catalog = [
                 name: "AI Credits",
                 value: {
                   type: "quota",
-                  feature_code: ubentoFeatures.ai.credits.code,
+                  feature_code: ubentoFeatures.ai.weeklyCredits.code,
                   unit: "ai-credit",
-                },
-              },
-              {
-                icon: "drive",
-                name: "Storage",
-                value: {
-                  type: "quota",
-                  feature_code: ubentoFeatures.drive.storage.code,
-                  unit: "storage-mb",
-                },
-              },
-              {
-                icon: "build",
-                name: "Builds",
-                value: {
-                  type: "quota",
-                  feature_code: ubentoFeatures.build.runs.code,
-                  unit: "build-run",
                 },
               },
               {
@@ -266,7 +194,7 @@ export const catalog: Catalog = [
                 name: "Vertex Requests",
                 value: {
                   type: "quota",
-                  feature_code: ubentoFeatures.vertex.requests.code,
+                  feature_code: ubentoFeatures.vertex.weeklyRequests.code,
                   unit: "vertex-request",
                 },
               },
@@ -290,30 +218,8 @@ export const catalog: Catalog = [
         lsId: ids.offers.aiCreditPack,
         entitlements: [
           {
-            feature_code: ubentoFeatures.ai.credits.code,
-            amount: 250,
-            merge_strategy: "SUM",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    code: ubentoProducts.storageAddOn.code,
-    name: ubentoProducts.storageAddOn.name,
-    description: ubentoProducts.storageAddOn.description,
-    lsId: ids.products.storagePack,
-    offers: [
-      {
-        code: "storage-pack",
-        name: "Storage Pack",
-        description: "Storage Pack for Drive",
-        active: true,
-        lsId: ids.offers.storagePack,
-        entitlements: [
-          {
-            feature_code: ubentoFeatures.drive.storage.code,
-            amount: 1_000, // 1GB
+            feature_code: ubentoFeatures.ai.weeklyCredits.code,
+            amount: 100,
             merge_strategy: "SUM",
           },
         ],

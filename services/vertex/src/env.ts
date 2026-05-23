@@ -45,4 +45,8 @@ export const env = defineEnv({
     type: "string",
     required: true,
   },
+  UBENTO_SERVICE_BASE_URLS: {
+    type: "string",
+    default: "{}",
+  },
 });

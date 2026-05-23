@@ -111,7 +111,7 @@ export class VertexService {
       team_id?: string;
       limit?: number;
       cursor?: string;
-      provider?: string;
+      provider_id?: string;
     } = {},
   ) {
     const result = await this.vertexClient.get("/vertex/connections", {

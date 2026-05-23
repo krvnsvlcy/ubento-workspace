@@ -14,14 +14,14 @@ import {
   listCheckouts,
 } from "../routines/checkout.js";
 
-const router = Router();
+const router: Router = Router();
 
 // List checkouts
 router.get("/", async (req, res, next) => {
   try {
     const result = await listCheckouts({
       ...parseCursorQuery(req),
-      organization_id: parseStringQuery(req, "organization_id"),
+      team_id: parseStringQuery(req, "team_id"),
       product_code: parseStringQuery(req, "product_code"),
       offer_code: parseStringQuery(req, "offer_code"),
     });
@@ -37,7 +37,7 @@ router.post(
   chain(
     validate({
       body: z.object({
-        organization_id: z.string(),
+        team_id: z.string(),
         product_code: z.string(),
         offer_code: z.string(),
         quantity: z.number().int().min(1),
@@ -48,7 +48,7 @@ router.post(
     }),
     async (req, res) => {
       const checkout = await createCheckout({
-        organization_id: req.body.organization_id,
+        team_id: req.body.team_id,
         product_code: req.body.product_code,
         offer_code: req.body.offer_code,
         quantity: req.body.quantity,

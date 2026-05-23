@@ -37,9 +37,9 @@ export const spec: OpenAPIV3.Document = {
       },
     },
     parameters: {
-      organization_id: {
+      team_id: {
         in: "query",
-        name: "organization_id",
+        name: "team_id",
         required: true,
         schema: { type: "string" },
       },
@@ -425,7 +425,7 @@ export const spec: OpenAPIV3.Document = {
         tags: ["Subscriptions"],
         summary: "List subscriptions for an organization",
         parameters: [
-          { in: "query", name: "organization_id", schema: { type: "string" } },
+          { in: "query", name: "team_id", schema: { type: "string" } },
           { in: "query", name: "product_code", schema: { type: "string" } },
           { in: "query", name: "offer_code", schema: { type: "string" } },
           {
@@ -594,7 +594,7 @@ export const spec: OpenAPIV3.Document = {
         tags: ["Invoices"],
         summary: "List invoices",
         parameters: [
-          { in: "query", name: "organization_id", schema: { type: "string" } },
+          { in: "query", name: "team_id", schema: { type: "string" } },
           {
             in: "query",
             name: "status",
@@ -674,7 +674,7 @@ export const spec: OpenAPIV3.Document = {
         tags: ["Orders"],
         summary: "List orders for an organization",
         parameters: [
-          { in: "query", name: "organization_id", schema: { type: "string" } },
+          { in: "query", name: "team_id", schema: { type: "string" } },
           {
             in: "query",
             name: "status",
@@ -754,7 +754,7 @@ export const spec: OpenAPIV3.Document = {
         tags: ["Usage"],
         summary: "List usage counters for an organization",
         parameters: [
-          { $ref: "#/components/parameters/organization_id" },
+          { $ref: "#/components/parameters/team_id" },
           { in: "query", name: "code", schema: { type: "string" } },
           { in: "query", name: "group", schema: { type: "string" } },
           { $ref: "#/components/parameters/cursor" },
@@ -772,7 +772,7 @@ export const spec: OpenAPIV3.Document = {
             },
           },
           "400": {
-            description: "organization_id is required",
+            description: "team_id is required",
             content: {
               "application/json": {
                 schema: {
@@ -791,7 +791,7 @@ export const spec: OpenAPIV3.Document = {
         tags: ["Usage"],
         summary: "Get usage counter by code",
         parameters: [
-          { $ref: "#/components/parameters/organization_id" },
+          { $ref: "#/components/parameters/team_id" },
           { in: "query", name: "code", schema: { type: "string" } },
           { in: "query", name: "group", schema: { type: "string" } },
         ],
@@ -866,12 +866,12 @@ export const spec: OpenAPIV3.Document = {
               schema: {
                 type: "object",
                 properties: {
-                  organization_id: { type: "string" },
+                  team_id: { type: "string" },
                   code: { type: "string" },
                   amount: { type: "integer", minimum: 1 },
                   group: { type: "string" },
                 },
-                required: ["organization_id", "code", "amount"],
+                required: ["team_id", "code", "amount"],
               },
             },
           },
@@ -894,7 +894,7 @@ export const spec: OpenAPIV3.Document = {
         tags: ["Usage"],
         summary: "List usage events",
         parameters: [
-          { in: "query", name: "organization_id", schema: { type: "string" } },
+          { in: "query", name: "team_id", schema: { type: "string" } },
           { in: "query", name: "counter_code", schema: { type: "string" } },
           { in: "query", name: "counter_group", schema: { type: "string" } },
           { in: "query", name: "ref", schema: { type: "string" } },
@@ -937,7 +937,7 @@ export const spec: OpenAPIV3.Document = {
               schema: {
                 type: "object",
                 properties: {
-                  organization_id: { type: "string" },
+                  team_id: { type: "string" },
                   code: { type: "string" },
                   group: { type: "string" },
                   amount: { type: "integer", minimum: 1 },
@@ -947,7 +947,7 @@ export const spec: OpenAPIV3.Document = {
                   data: { type: "object" },
                 },
                 required: [
-                  "organization_id",
+                  "team_id",
                   "code",
                   "amount",
                   "note",
@@ -1019,9 +1019,9 @@ export const spec: OpenAPIV3.Document = {
                 type: "object",
                 properties: {
                   ref: { type: "string" },
-                  organization_id: { type: "string" },
+                  team_id: { type: "string" },
                 },
-                required: ["ref", "organization_id"],
+                required: ["ref", "team_id"],
               },
             },
           },
@@ -1051,9 +1051,9 @@ export const spec: OpenAPIV3.Document = {
                 type: "object",
                 properties: {
                   ref: { type: "string" },
-                  organization_id: { type: "string" },
+                  team_id: { type: "string" },
                 },
-                required: ["ref", "organization_id"],
+                required: ["ref", "team_id"],
               },
             },
           },
@@ -1077,7 +1077,7 @@ export const spec: OpenAPIV3.Document = {
       get: {
         tags: ["Entitlements"],
         summary: "Get entitlement grants for an organization",
-        parameters: [{ $ref: "#/components/parameters/organization_id" }],
+        parameters: [{ $ref: "#/components/parameters/team_id" }],
         responses: {
           "200": {
             description: "Entitlement grant table",
@@ -1092,7 +1092,7 @@ export const spec: OpenAPIV3.Document = {
         tags: ["Entitlements"],
         summary: "Check feature access for an organization",
         parameters: [
-          { $ref: "#/components/parameters/organization_id" },
+          { $ref: "#/components/parameters/team_id" },
           {
             in: "query",
             name: "features",
@@ -1122,7 +1122,7 @@ export const spec: OpenAPIV3.Document = {
         tags: ["Entitlements"],
         summary: "Get usage quota for features",
         parameters: [
-          { $ref: "#/components/parameters/organization_id" },
+          { $ref: "#/components/parameters/team_id" },
           {
             in: "query",
             name: "features",
@@ -1154,7 +1154,7 @@ export const spec: OpenAPIV3.Document = {
         tags: ["Checkout"],
         summary: "List checkouts",
         parameters: [
-          { in: "query", name: "organization_id", schema: { type: "string" } },
+          { in: "query", name: "team_id", schema: { type: "string" } },
           { in: "query", name: "product_code", schema: { type: "string" } },
           { in: "query", name: "offer_code", schema: { type: "string" } },
           { $ref: "#/components/parameters/cursor" },
@@ -1184,7 +1184,7 @@ export const spec: OpenAPIV3.Document = {
               schema: {
                 type: "object",
                 properties: {
-                  organization_id: { type: "string" },
+                  team_id: { type: "string" },
                   product_code: { type: "string" },
                   offer_code: { type: "string" },
                   quantity: { type: "integer", minimum: 1 },
@@ -1193,7 +1193,7 @@ export const spec: OpenAPIV3.Document = {
                   data: { type: "object" },
                 },
                 required: [
-                  "organization_id",
+                  "team_id",
                   "product_code",
                   "offer_code",
                   "quantity",

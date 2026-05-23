@@ -8,14 +8,14 @@ import {
 import { Router } from "express";
 import { getOrder, listOrders } from "../routines/orders.js";
 
-const router = Router();
+const router: Router = Router();
 
 // List orders for a organization
 router.get("/", async (req, res, next) => {
   try {
     const result = await listOrders({
       ...parseCursorQuery(req),
-      organization_id: parseStringQuery(req, "organization_id"),
+      team_id: parseStringQuery(req, "team_id"),
       status: parseStringQuery(req, "status") as OrderStatus | undefined,
       created_after: req.query.created_after
         ? new Date(req.query.created_after as string)

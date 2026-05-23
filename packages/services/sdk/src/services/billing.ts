@@ -11,7 +11,7 @@ import { extractResponseData } from "~/lib/client.js";
 import { TokenManager } from "~/lib/token_manager.js";
 
 export class BillingService {
-  private billingClient: ReturnType<typeof createBillingServiceClient>;
+  billingClient: ReturnType<typeof createBillingServiceClient>;
 
   constructor({
     baseUrl,
@@ -161,9 +161,12 @@ export class BillingService {
   }
 
   async getUsageCounter(id: string): Promise<UsageCounter> {
-    const result = await this.billingClient.get("/billing/usage/counters/{id}", {
-      params: { path: { id } },
-    });
+    const result = await this.billingClient.get(
+      "/billing/usage/counters/{id}",
+      {
+        params: { path: { id } },
+      },
+    );
     return extractResponseData(result, true);
   }
 
@@ -186,8 +189,13 @@ export class BillingService {
 
   // ===== Usage Holds =====
 
+  /**
+   * Reserves usage for a feature for a specific organization
+   * @param data - The usage data to reserve
+   * @returns The reserved usage hold or undefined if the request was rate limited
+   */
   async reserveUsage(data: {
-    organization_id: string;
+    team_id: string;
     feature_code: string;
     group?: string;
     amount: number;
@@ -195,10 +203,13 @@ export class BillingService {
     duration: number;
     ref: string;
     metadata?: Record<string, any>;
-  }): Promise<UsageHold> {
+  }): Promise<
+    | { data: UsageHold; error: undefined }
+    | { data: undefined; error: "USAGE_LIMIT_EXCEEDED" }
+  > {
     const result = await this.billingClient.post("/billing/usage/holds", {
       body: {
-        organization_id: data.organization_id,
+        team_id: data.team_id,
         code: data.feature_code,
         group: data.group,
         amount: data.amount,
@@ -206,21 +217,27 @@ export class BillingService {
         duration: data.duration,
         ref: data.ref,
         data: data.metadata as any,
-      },
+      } as any,
     });
-    return extractResponseData(result, true);
+    if (result.response.status === 402) {
+      return { data: undefined, error: "USAGE_LIMIT_EXCEEDED" };
+    }
+    return { data: extractResponseData(result, true), error: undefined };
   }
 
   async commitUsageHold(data: {
     ref: string;
     organization_id: string;
   }): Promise<Record<string, never>> {
-    const result = await this.billingClient.post("/billing/usage/holds/commit", {
-      body: {
-        ref: data.ref,
-        organization_id: data.organization_id,
+    const result = await this.billingClient.post(
+      "/billing/usage/holds/commit",
+      {
+        body: {
+          ref: data.ref,
+          organization_id: data.organization_id,
+        },
       },
-    });
+    );
     return extractResponseData(result, true);
   }
 
@@ -228,12 +245,15 @@ export class BillingService {
     ref: string;
     organization_id: string;
   }): Promise<UsageHold> {
-    const result = await this.billingClient.post("/billing/usage/holds/release", {
-      body: {
-        ref: data.ref,
-        organization_id: data.organization_id,
+    const result = await this.billingClient.post(
+      "/billing/usage/holds/release",
+      {
+        body: {
+          ref: data.ref,
+          organization_id: data.organization_id,
+        },
       },
-    });
+    );
     return extractResponseData(result, true);
   }
 

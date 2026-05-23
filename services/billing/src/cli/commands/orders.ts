@@ -17,7 +17,7 @@ export function registerOrdersCommands(program: Command) {
     .command("list")
     .description("List orders")
     .option(
-      "-t, --organization_id <organization_id>",
+      "-t, --team_id <team_id>",
       "Filter by organization ID",
     )
     .option("-s, --status <status>", "Filter by status")

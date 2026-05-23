@@ -211,8 +211,9 @@ export function createUbentoVertexService({
       return useMutation({
         mutationFn: async (data: {
           team_id: string;
+          name: string;
           provider_id: string;
-          auth?: Record<string, any>;
+          credentials?: Record<string, any>;
         }) => {
           return await ubentoSdk.vertex.createConnection(data);
         },

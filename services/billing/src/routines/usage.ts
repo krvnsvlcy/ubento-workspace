@@ -13,6 +13,7 @@ import {
   AuthorizationError,
   ConflictError,
   prismaListWithCursor,
+  ServiceError,
   TooManyRequestsError,
   ValidationError,
 } from "@ubento/services.toolkit";
@@ -50,14 +51,14 @@ function resolveFeatureActiveGroup(feature_code: string) {
 }
 
 export async function getUsageCounterByCode(
-  organization_id: string,
+  team_id: string,
   feature_code: string,
   group?: string,
 ): Promise<UsageCounter | null> {
   const counter = await prisma.usageCounter.findUnique({
     where: {
-      organization_id_feature_code_group: {
-        organization_id,
+      team_id_feature_code_group: {
+        team_id,
         feature_code,
         group: group ?? resolveFeatureActiveGroup(feature_code),
       },
@@ -67,7 +68,7 @@ export async function getUsageCounterByCode(
 }
 
 export async function listUsageCounters(filters: {
-  organization_id: string;
+  team_id: string;
   code?: string;
   group?: string;
   limit?: number;
@@ -78,7 +79,7 @@ export async function listUsageCounters(filters: {
     cursor: filters.cursor,
     orderBy: [{ created_at: "desc" }, { id: "desc" }],
     where: {
-      organization_id: filters.organization_id,
+      team_id: filters.team_id,
       ...(filters.code && { code: filters.code }),
       ...(filters.group && { group: filters.group }),
     },
@@ -108,14 +109,14 @@ export function resolveActiveGroup(
 }
 
 export async function incrementOrganizationUsage({
-  organization_id,
+  team_id,
   feature_code,
   amount,
   note = "Direct usage increment",
   ref,
   data,
 }: {
-  organization_id: string;
+  team_id: string;
   feature_code: string;
   amount: number;
   note?: string;
@@ -135,7 +136,7 @@ export async function incrementOrganizationUsage({
   }
 
   const group = resolveActiveGroup(feature.groupStrategy);
-  const entitlements = await resolveEntitlementGrantTable(organization_id);
+  const entitlements = await resolveEntitlementGrantTable(team_id);
   const quota = resolveFeatureQuota({
     entitlements,
     feature_code: feature_code,
@@ -148,8 +149,8 @@ export async function incrementOrganizationUsage({
   // 1. Ensure counter exists
   const counterStub = await prisma.usageCounter.upsert({
     where: {
-      organization_id_feature_code_group: {
-        organization_id,
+      team_id_feature_code_group: {
+        team_id,
         feature_code,
         group,
       },
@@ -159,7 +160,7 @@ export async function incrementOrganizationUsage({
         code: ubentoEntities.billingUsageCounter.code,
         bareId: generateBareId(),
       }),
-      organization_id,
+      team_id,
       feature_code,
       group,
       value: 0,
@@ -207,7 +208,7 @@ export async function incrementOrganizationUsage({
             code: ubentoEntities.billingUsageEvent.code,
             bareId: generateBareId(),
           }),
-          organization_id,
+          team_id,
           counter_id: current.id,
           value: amount,
           ref,
@@ -244,16 +245,16 @@ export async function getUsageHold(id: string): Promise<UsageHold | null> {
 }
 
 export async function getUsageHoldByRef(
-  organization_id: string,
+  team_id: string,
   ref: string,
 ): Promise<UsageHold | null> {
   return prisma.usageHold.findUnique({
-    where: { organization_id_ref: { organization_id, ref } },
+    where: { team_id_ref: { team_id, ref } },
   });
 }
 
 export async function reserveUsage({
-  organization_id,
+  team_id,
   feature_code,
   amount,
   note,
@@ -261,7 +262,7 @@ export async function reserveUsage({
   ref,
   data,
 }: {
-  organization_id: string;
+  team_id: string;
   feature_code: string;
   amount: number;
   note: string;
@@ -281,7 +282,7 @@ export async function reserveUsage({
     throw new Error(`Feature ${feature_code} is not a quota`);
 
   const group = resolveActiveGroup(feature.groupStrategy);
-  const entitlements = await resolveEntitlementGrantTable(organization_id);
+  const entitlements = await resolveEntitlementGrantTable(team_id);
   const quota = resolveFeatureQuota({
     entitlements,
     feature_code: feature_code,
@@ -295,8 +296,8 @@ export async function reserveUsage({
 
   const counterStub = await prisma.usageCounter.upsert({
     where: {
-      organization_id_feature_code_group: {
-        organization_id,
+      team_id_feature_code_group: {
+        team_id,
         feature_code,
         group,
       },
@@ -306,7 +307,7 @@ export async function reserveUsage({
         code: ubentoEntities.billingUsageCounter.code,
         bareId: generateBareId(),
       }),
-      organization_id,
+      team_id,
       feature_code,
       group,
       value: 0,
@@ -319,7 +320,7 @@ export async function reserveUsage({
     try {
       return await prisma.$transaction(async (tx) => {
         const existing = await tx.usageHold.findUnique({
-          where: { organization_id_ref: { organization_id, ref } },
+          where: { team_id_ref: { team_id, ref } },
           include: { counter: true },
         });
 
@@ -342,9 +343,10 @@ export async function reserveUsage({
 
         const effective = current.value + current.reserved;
         if (compareQuotaAmounts(effective + amount, quota) > 0) {
-          throw new TooManyRequestsError(
-            `Usage limit exceeded for ${feature_code}`,
-          );
+          throw new ServiceError(`Usage limit exceeded for ${feature_code}`, {
+            code: "USAGE_LIMIT_EXCEEDED",
+            status: 402,
+          });
         }
 
         const bumped = await tx.usageCounter.updateMany({
@@ -366,7 +368,7 @@ export async function reserveUsage({
               code: ubentoEntities.billingUsageHold.code,
               bareId: generateBareId(),
             }),
-            organization_id,
+            team_id,
             ref,
             counter_id: current.id,
             amount,
@@ -391,16 +393,16 @@ export async function reserveUsage({
 
 export async function commitUsageHold({
   ref,
-  organization_id,
+  team_id,
 }: {
   ref: string;
-  organization_id: string;
+  team_id: string;
 }): Promise<{ hold: UsageHold; counter: UsageCounter }> {
   const result = await prisma.$transaction(async (tx) => {
     const hold = await tx.usageHold.findUnique({
       where: {
-        organization_id_ref: {
-          organization_id,
+        team_id_ref: {
+          team_id,
           ref,
         },
       },
@@ -433,7 +435,7 @@ export async function commitUsageHold({
           code: ubentoEntities.billingUsageEvent.code,
           bareId: generateBareId(),
         }),
-        organization_id,
+        team_id,
         counter_id: counter.id,
         value: hold.amount,
         ref: hold.ref,
@@ -456,14 +458,14 @@ export async function commitUsageHold({
 
 export async function releaseUsageHold({
   ref,
-  organization_id,
+  team_id,
 }: {
   ref: string;
-  organization_id: string;
+  team_id: string;
 }): Promise<UsageHold> {
   const updated = await prisma.$transaction(async (tx) => {
     const hold = await tx.usageHold.findUnique({
-      where: { organization_id_ref: { organization_id, ref } },
+      where: { team_id_ref: { team_id, ref } },
     });
 
     if (!hold) throw new Error("Usage hold not found");
@@ -489,7 +491,7 @@ export async function releaseUsageHold({
 }
 
 export async function listUsageEvents(filters?: {
-  organization_id?: string;
+  team_id?: string;
   counter_code?: string;
   counter_group?: string;
   ref?: string;
@@ -503,8 +505,8 @@ export async function listUsageEvents(filters?: {
     cursor: filters?.cursor,
     orderBy: [{ created_at: "desc" }, { id: "desc" }],
     where: {
-      ...(filters?.organization_id && {
-        organization_id: filters.organization_id,
+      ...(filters?.team_id && {
+        team_id: filters.team_id,
       }),
       ...(filters?.counter_code && { counter_code: filters.counter_code }),
       ...(filters?.counter_group && { counter_group: filters.counter_group }),

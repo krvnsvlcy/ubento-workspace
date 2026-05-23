@@ -59,6 +59,8 @@ export async function listConnections({
     resolveCursor: (c) => ({ id: c.id }),
   });
 
+  console.log({ result, team_id, provider_id });
+
   return {
     ...result,
     data: result.data.map(safeConnection),

@@ -8,7 +8,7 @@ import {
 import { Router } from "express";
 import { getWebhookEvent, listWebhookEvents } from "../routines/webhooks.js";
 
-const router = Router();
+const router: Router = Router();
 
 // List webhook events
 router.get("/", async (req, res, next) => {

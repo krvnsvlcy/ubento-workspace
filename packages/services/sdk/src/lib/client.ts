@@ -32,9 +32,14 @@ export function createClientFactory<Paths extends {}>() {
   }): UbentoClient<Paths> {
     const baseUrl = _baseUrl ?? "https://api.ubento.pro";
     const fetcher = async (request: Request) => {
-      const accessToken = await tokenManager.getToken();
-      if (accessToken) {
-        request.headers.set("Authorization", `Bearer ${accessToken}`);
+      try {
+        const accessToken = await tokenManager.getToken();
+        if (accessToken) {
+          request.headers.set("Authorization", `Bearer ${accessToken}`);
+        }
+      } catch (err) {
+        let message = String(err);
+        throw new Error(`Failed to get access token: ${message}`);
       }
       Object.entries(headers).forEach(([key, value]) => {
         request.headers.set(key, value);

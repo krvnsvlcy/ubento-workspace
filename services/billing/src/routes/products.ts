@@ -10,7 +10,7 @@ import {
   listProducts,
 } from "../routines/catalog.js";
 
-const router = Router();
+const router: Router = Router();
 
 // List products
 router.get("/", async (req, res, next) => {

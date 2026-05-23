@@ -7,6 +7,7 @@ import { createStore as createZustandStore } from "zustand";
 import {
   BentoEngineHostRpcInterface,
   BentoEngineRuntimeRpcInterface,
+  ServiceOperationError,
 } from "../bridge/bridge";
 import { BentoBoardData, BentoUserData, BentoWorkspaceData } from "./types";
 
@@ -135,20 +136,28 @@ export function createBentoRuntime({
   const environment: Environment = createEnvironment({
     serviceApi: {
       runQuery: async (args) => {
-        return rpc.egress.runServiceOperation({
+        const result = await rpc.egress.runServiceOperation({
           service: args.service,
           type: "query",
           name: args.query,
           args: args.args,
         });
+        if (!result.ok) {
+          throw new ServiceOperationError(result.error);
+        }
+        return result.result;
       },
       runAction: async (args) => {
-        return rpc.egress.runServiceOperation({
+        const result = await rpc.egress.runServiceOperation({
           service: args.service,
           type: "action",
           name: args.action,
           args: args.args,
         });
+        if (!result.ok) {
+          throw new ServiceOperationError(result.error);
+        }
+        return result.result;
       },
     },
     sessionApi: {

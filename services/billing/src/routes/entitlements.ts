@@ -7,7 +7,7 @@ import {
   resolveFeatureQuota,
 } from "../routines/entitlements/resolve.js";
 
-const router = Router();
+const router: Router = Router();
 
 // Get entitlement grants for organization
 router.get(
@@ -15,13 +15,13 @@ router.get(
   chain(
     validate({
       query: z.object({
-        organization_id: z.string(),
+        team_id: z.string(),
       }),
     }),
     async (req, res, next) => {
       try {
         const grants = await resolveEntitlementGrantTable(
-          req.query.organization_id,
+          req.query.team_id,
         );
         res.json(toSerializable(grants));
       } catch (e) {
@@ -37,13 +37,13 @@ router.get(
   chain(
     validate({
       query: z.object({
-        organization_id: z.string(),
+        team_id: z.string(),
         features: z.string(),
       }),
     }),
     async (req, res, next) => {
       const entitlements = await resolveEntitlementGrantTable(
-        req.query.organization_id,
+        req.query.team_id,
       );
       const access = Object.fromEntries(
         req.query.features.split(",").map((feature_code) => [
@@ -65,13 +65,13 @@ router.get(
   chain(
     validate({
       query: z.object({
-        organization_id: z.string(),
+        team_id: z.string(),
         features: z.string(),
       }),
     }),
     async (req, res, next) => {
       const entitlements = await resolveEntitlementGrantTable(
-        req.query.organization_id,
+        req.query.team_id,
       );
       const quota = Object.fromEntries(
         req.query.features.split(",").map((feature_code) => [

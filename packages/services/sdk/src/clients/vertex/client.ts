@@ -9,3 +9,5 @@ export type EncryptedData = components["schemas"]["EncryptedData"];
 export type Service = components["schemas"]["Service"];
 export type ServiceChannel = components["schemas"]["ServiceChannel"];
 export type OAuthClient = components["schemas"]["OAuthClient"];
+export type VertexError = components["schemas"]["VertexError"];
+export type VertexResult = components["schemas"]["VertexResult"];

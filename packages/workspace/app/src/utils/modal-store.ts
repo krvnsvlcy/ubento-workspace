@@ -1,53 +1,7 @@
 import React, { createContext, useContext } from "react";
-import { create } from "zustand";
+import { useUbentoEngine, ModalInstance } from "@/engine/app/engine.js";
 
-export interface ModalInstance {
-  id: string;
-  component: React.ComponentType<any>;
-  props: any;
-  resolve: (value: any) => void;
-}
-
-interface ModalState {
-  queue: ModalInstance[];
-  open: <T = any, R = any>(
-    component: React.ComponentType<T>,
-    props?: T,
-  ) => Promise<R>;
-  close: (id: string, result?: any) => void;
-}
-
-export const useModalStore = create<ModalState>((set, get) => ({
-  queue: [],
-
-  open: (component, props?: any) => {
-    return new Promise((resolve) => {
-      const id = Math.random().toString(36).substring(7);
-      const instance: ModalInstance = {
-        id,
-        component,
-        props,
-        resolve,
-      };
-
-      set((state) => ({
-        queue: [instance, ...state.queue],
-      }));
-    });
-  },
-
-  close: (id, result) => {
-    const { queue } = get();
-    const instance = queue.find((m) => m.id === id);
-    if (instance) {
-      instance.resolve(result);
-    }
-
-    set((state) => ({
-      queue: state.queue.filter((m) => m.id !== id),
-    }));
-  },
-}));
+export type { ModalInstance };
 
 interface ModalContextType {
   id: string;
@@ -59,9 +13,10 @@ const ModalContext = createContext<ModalContextType | undefined>(undefined);
 export const ModalInstanceProvider = ModalContext.Provider;
 
 export function useModal() {
-  const open = useModalStore((s) => s.open);
-  const close = useModalStore((s) => s.close);
-  const activeModal = useModalStore((s) => s.queue[0]);
+  const engine = useUbentoEngine();
+  const open = engine.openModal;
+  const close = engine.closeModal;
+  const activeModal = engine.useState((s) => s.modalQueue[0]);
 
   return {
     open,

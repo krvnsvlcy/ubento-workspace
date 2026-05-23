@@ -828,12 +828,7 @@ export const spec = {
             description: "The result of the query",
             content: {
               "application/json": {
-                schema: {
-                  type: "object",
-                  properties: {
-                    data: { type: "object" },
-                  },
-                },
+                schema: { $ref: "#/components/schemas/VertexResult" },
               },
             },
           },
@@ -871,12 +866,7 @@ export const spec = {
             description: "The result of the action",
             content: {
               "application/json": {
-                schema: {
-                  type: "object",
-                  properties: {
-                    data: { type: "object" },
-                  },
-                },
+                schema: { $ref: "#/components/schemas/VertexResult" },
               },
             },
           },
@@ -905,6 +895,30 @@ export const spec = {
       },
       ServiceChannel: prismaSchemas.definitions.ServiceChannel,
       OAuthClient: prismaSchemas.definitions.OAuthClient,
+      VertexError: {
+        type: "object",
+        properties: {
+          code: {
+            type: "string",
+            enum: [
+              "INVALID_REQUEST_ERROR",
+              "USAGE_LIMIT_EXCEEDED",
+              "UPSTREAM_ERROR",
+              "INVALID_CREDENTIALS",
+            ],
+          },
+          message: { type: "string", nullable: true },
+          details: { type: "object", nullable: true },
+        },
+        required: ["code"],
+      },
+      VertexResult: {
+        type: "object",
+        properties: {
+          data: { type: "object", nullable: true },
+          error: { $ref: "#/components/schemas/VertexError", nullable: true },
+        },
+      },
     },
   },
 };

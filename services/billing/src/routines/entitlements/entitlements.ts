@@ -195,14 +195,14 @@ export async function resolveDefaultEntitlementGrantTable(): Promise<Entitlement
  * Main Resolver: Merges Defaults + User Subscriptions + Ad-hoc Entitlement Grants
  */
 export async function resolveEntitlementGrantTable(
-  organization_id: string,
+  team_id: string,
 ): Promise<EntitlementGrantTable> {
   const ubentoFeatureMap = getUbentoFeatureMap();
 
   // 1. Fetch Subscriptions
   const subscriptions = await prisma.subscription.findMany({
     where: {
-      organization_id,
+      team_id,
       status: {
         in: [
           SubscriptionStatus.ACTIVE,
@@ -282,7 +282,7 @@ export async function resolveEntitlementGrantTable(
   // 4. Merge Ad-hoc Entitlement Grants (JSON Data Based)
   const adhocGrants = await prisma.entitlementGrant.findMany({
     where: {
-      organization_id,
+      team_id,
       expires_at: { gt: new Date() },
     },
   });

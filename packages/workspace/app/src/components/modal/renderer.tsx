@@ -1,9 +1,11 @@
-import { ModalInstanceProvider, useModalStore } from "@/utils/modal-store";
+import { ModalInstanceProvider } from "@/utils/modal-store.js";
+import { useUbentoEngine } from "@/engine/app/engine.js";
 import { AnimatePresence, motion } from "motion/react";
 
 export function ModalRenderer() {
-  const activeModal = useModalStore((s) => s.queue[0]);
-  const close = useModalStore((s) => s.close);
+  const engine = useUbentoEngine();
+  const activeModal = engine.useState((s) => s.modalQueue[0]);
+  const close = engine.closeModal;
 
   return (
     <>

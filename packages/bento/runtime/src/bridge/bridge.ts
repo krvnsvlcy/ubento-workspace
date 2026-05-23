@@ -28,17 +28,12 @@ export type BentoEngineHostRpcInterface = {
   selectionUpdated: ({ selection }: { selection: string[] }) => Promise<void>;
 
   // services
-  runServiceOperation: ({
-    service,
-    type,
-    name,
-    args,
-  }: {
+  runServiceOperation: (args: {
     service: string;
     type: "query" | "action";
     name: string;
     args?: Record<string, unknown>;
-  }) => Promise<unknown>;
+  }) => Promise<ServiceOperationResult>; // Updated here
 };
 
 export type BentoEngineRuntimeRpcInterface = {
@@ -69,3 +64,35 @@ export type BentoEngineRuntimeRpcInterface = {
     names: string[];
   }) => Promise<Record<string, unknown>>;
 };
+
+export type ServiceOperationErrorData = {
+  code: string;
+  message: string;
+  isTransient: boolean;
+  isIdempotent: boolean;
+};
+
+export type ServiceOperationResult =
+  | {
+      ok: true;
+      error: undefined;
+      result: unknown;
+    }
+  | {
+      ok: false;
+      error: ServiceOperationErrorData;
+      result: undefined;
+    };
+
+export class ServiceOperationError extends Error {
+  public code: string;
+  public isTransient: boolean;
+  public isIdempotent: boolean;
+  constructor(data: ServiceOperationErrorData) {
+    super(data.message);
+    this.name = "ServiceOperationError";
+    this.code = data.code;
+    this.isTransient = data.isTransient;
+    this.isIdempotent = data.isIdempotent;
+  }
+}

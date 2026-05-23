@@ -41,6 +41,7 @@ function UnsafeObjectViewer({
     boolean: { color: "#f472b6" }, // Pink
     null: { color: "var(--color-neutral-content-muted)" }, // Gray
     undefined: { color: "var(--color-neutral-content-muted)" }, // Gray
+    error: { color: "#ef4444" }, // Red
     bracket: { color: "var(--color-neutral-content-subtle)" }, // Light gray
     comma: { color: "var(--color-neutral-content-subtle)" },
     toggle: {
@@ -114,6 +115,19 @@ function UnsafeObjectViewer({
         <div style={styles.line}>
           {name && <span style={styles.key}>{name}:</span>}
           <span style={styles.boolean}>{String(data)}</span>
+          {!isLast && <span style={styles.comma}>,</span>}
+        </div>
+      </div>
+    );
+  }
+
+  // Explicit case for Error objects
+  if (data instanceof Error) {
+    return (
+      <div style={styles.container}>
+        <div style={styles.line}>
+          {name && <span style={styles.key}>{name}:</span>}
+          <span style={styles.error}>{`[${data.name}: ${data.message}]`}</span>
           {!isLast && <span style={styles.comma}>,</span>}
         </div>
       </div>
