@@ -4,6 +4,7 @@ import {
   servicesVsToolkitsInstruction,
   directivesInstruction,
   boardInteractionAndVerificationInstruction,
+  conditionalRenderingInstruction,
 } from "./shared";
 
 const boardSpec = renderYaml(
@@ -207,6 +208,8 @@ ${directivesInstruction}
 ${servicesVsToolkitsInstruction}
 
 ${boardInteractionAndVerificationInstruction}
+
+${conditionalRenderingInstruction}
 
 ## Examples
 

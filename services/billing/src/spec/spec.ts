@@ -792,7 +792,7 @@ export const spec: OpenAPIV3.Document = {
         summary: "Get usage counter by code",
         parameters: [
           { $ref: "#/components/parameters/team_id" },
-          { in: "query", name: "code", schema: { type: "string" } },
+          { in: "query", name: "code", required: true, schema: { type: "string" } },
           { in: "query", name: "group", schema: { type: "string" } },
         ],
         responses: {
@@ -801,6 +801,17 @@ export const spec: OpenAPIV3.Document = {
             content: {
               "application/json": {
                 schema: { $ref: "#/components/schemas/UsageCounter" },
+              },
+            },
+          },
+          "400": {
+            description: "team_id and code are required",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: { message: { type: "string" } },
+                },
               },
             },
           },
@@ -941,6 +952,8 @@ export const spec: OpenAPIV3.Document = {
                   code: { type: "string" },
                   group: { type: "string" },
                   amount: { type: "integer", minimum: 1 },
+                  minAmount: { type: "integer", minimum: 1 },
+                  maxAmount: { type: "integer", minimum: 1 },
                   note: { type: "string" },
                   duration: { type: "integer", minimum: 60000 },
                   ref: { type: "string" },
@@ -1020,6 +1033,7 @@ export const spec: OpenAPIV3.Document = {
                 properties: {
                   ref: { type: "string" },
                   team_id: { type: "string" },
+                  amount: { type: "integer", minimum: 1 },
                 },
                 required: ["ref", "team_id"],
               },
@@ -1031,7 +1045,14 @@ export const spec: OpenAPIV3.Document = {
             description: "Hold committed",
             content: {
               "application/json": {
-                schema: { type: "object" },
+                schema: {
+                  type: "object",
+                  properties: {
+                    hold: { $ref: "#/components/schemas/UsageHold" },
+                    counter: { $ref: "#/components/schemas/UsageCounter" },
+                  },
+                  required: ["hold", "counter"],
+                },
               },
             },
           },

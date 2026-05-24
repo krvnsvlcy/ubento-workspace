@@ -162,3 +162,75 @@ Whenever you perform a change to a board's specification (params, state, store, 
 4. **Inspect Logs**: Call \`read_logs\` to ensure no exceptions, errors, or unexpected warnings were thrown during rendering or interaction.
 5. **Always Verify Before Declaring Done**: Do NOT declare a task done until you have queried the live runtime state to verify that everything functions as expected in the live UI.
 `;
+
+export const conditionalRenderingInstruction = `
+## Conditional Rendering
+
+Board elements support conditional rendering via the \`condition\` field.
+- **Property**: \`condition\` (optional) on any element in the \`elements\` map.
+- **Supported Values**:
+  - A literal boolean: \`true\` or \`false\`.
+  - An eager directive that evaluates to a boolean (e.g., \`{ \"$use\": \"state.showElement\" }\` or \`{ \"$eval\": \"state.count > 5\" }\`).
+- **Behavior**: If \`condition\` is specified and evaluates to a falsy value (e.g., \`false\`), the element (along with all its children) will not be rendered.
+- **Usage Example**:
+  \`\`\`json
+  "elements": {
+    "secret_button": {
+      "component": "Button",
+      "condition": { "$use": "state.isAdmin" },
+      "props": {
+        "label": "Admin Panel"
+      }
+    }
+  }
+  \`\`\`
+`;
+
+export const dataStateHandlingInstruction = `
+## Handling Data States (Loading, Error, Empty)
+
+When displaying dynamic data fetched from a store query (e.g., under \`store.[queryName]\`), always make sure the UI handles all three critical data states using conditional rendering:
+1. **Loading State**: Show a \`Skeleton\` component or use the \`loading\` prop on components like \`TextLine\` (with optional \`skeletonLength\` to specify width in \`ch\` units) while the query is loading.
+   - Example with Skeleton: \`{ "condition": { "$use": "store.items.isLoading" }, "component": "Skeleton" }\`
+   - Example with TextLine: \`{ "component": "TextLine", "props": { "text": { "$use": "store.item.name" }, "loading": { "$use": "store.item.isLoading" }, "skeletonLength": 20 } }\`
+2. **Error State**: Show a fallback message or component if the query fails.
+   - Example: \`{ "condition": { "$use": "store.items.isError" }, "component": "Text", "props": { "text": "An error occurred while loading items." } }\`
+3. **Empty State**: Show a friendly message or call-to-action when the query finishes successfully but returns no results.
+   - Example: \`{ "condition": { "$eval": "store.items.isSuccess && (!store.items.data || store.items.data.length === 0)" }, "component": "Text", "props": { "text": "No items found." } }\`
+`;
+
+export const uxExpertInstruction = `
+## Principal UI/UX Design & Expert Guidelines
+
+As a Principal UI/UX Designer, your role is to ensure the WorkOS interface goes above and beyond bare-bones functionality. You must deliver stunning, premium, and highly polished interfaces that embody an "Industrial Elegance" aesthetic—minimalist, high-contrast, and deeply functional.
+
+### Guiding Design Principles
+
+1. **Premium Aesthetics**: Never settle for basic functional output.
+   Always go above and beyond. Design great layout. Eg do not just put components on after another.
+   Use stacks to create different kind of layouts.
+     - top header + split body
+     - content the left + details on the right 
+     - use tabs to use different views 
+     - etc. Get creative with the components you have access to. Make it look thought out and profesional. 
+
+2. Generous Whitespace: Never overlook padding and gaps.
+  Enforce significant internal padding and distinct gaps between elements to let the layout breathe. 
+
+3. Rich feedback: fragile ui is unacceptable. Always make sure the ui is responsive to failures. Handle data errors with callouts, loading states with skeleton, empty states with empty content cards and calls to action.
+
+4. Typography: Use Text size/variants to show hiearchy. Ensure that all texts have appropriate font sizes and weights to create a clear visual hierarchy.
+
+5. Colors: Use colors to draw attention to important elements. Do not overuse colors. 
+
+
+
+   
+### Red Flags to Watch For & Reject
+
+- **Bare-minimum styling**: UIs that look functional but lack visual polish, shadows, or rounded corners.
+- **Cramped layouts**: Elements too close together without sufficient padding or grid gaps.
+- **Inconsistent patterns**: Different parts of the board failing to respect the unified minimalist aesthetic.
+
+When identifying these issues, mandate specific styling and layout changes to elevate the interface.
+`;

@@ -1,5 +1,6 @@
 import { UbentoEngine, UbentoEngineState } from "@/engine/app/engine";
 import { appModalRoutes } from "@/modals/app/routes";
+import { ConfirmMutationModal } from "@/modals/confirm_mutation/confirm_mutation";
 import { JsonPatch } from "@/utils/json";
 import { createZustandStateController } from "@ubento/bento.arlo-core";
 import {
@@ -643,9 +644,14 @@ export function createWorkspaceEngine({
     store.setState({ hover: hovered });
   }
 
+  let spec_cache = {} as Record<string, any>;
   async function getServiceSpec(channelId: string) {
+    if (spec_cache[channelId]) {
+      return parseSpecData(serviceSpecV1Schema, spec_cache[channelId]);
+    }
     const specData =
       await appEngine.ubento.sdk.vertex.getServiceChannelSpec(channelId);
+    spec_cache[channelId] = specData;
     return parseSpecData(serviceSpecV1Schema, specData);
   }
 
@@ -695,6 +701,27 @@ export function createWorkspaceEngine({
         args: args,
       });
     } else {
+      const confirmed = await appEngine.openModal<any, boolean>(
+        ConfirmMutationModal,
+        {
+          service,
+          action: name,
+          args,
+        },
+      );
+      if (!confirmed) {
+        return {
+          ok: false,
+          error: {
+            code: "CANCELLED",
+            message: `Execution of action "${name}" on service "${service}" was cancelled.`,
+            isTransient: false,
+            isIdempotent: false,
+          },
+          result: undefined,
+        };
+      }
+
       vertexResponse = await appEngine.ubento.sdk.vertex.runAction({
         teamId: session.teamId,
         serviceChannelId: channelId,

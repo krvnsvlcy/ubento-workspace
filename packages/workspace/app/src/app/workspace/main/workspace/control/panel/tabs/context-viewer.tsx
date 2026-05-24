@@ -1,5 +1,5 @@
+import { Check, ChevronDown, ChevronRight, Copy } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { ChevronDown, ChevronRight } from "lucide-react";
 import { WorkspaceEngine } from "../../../../../../../engine/workspace/engine";
 
 function TreeNode({
@@ -18,6 +18,7 @@ function TreeNode({
   controller: WorkspaceEngine;
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [copied, setCopied] = useState(false);
   const watchedContextNodes = controller.useState((s) => s.watchedContextNodes);
   const children = watchedContextNodes[path];
 
@@ -43,15 +44,39 @@ function TreeNode({
     }
   };
 
+  const handleCopy = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (displayValue === undefined) return;
+
+    let textToCopy = displayValue;
+    try {
+      const parsed = JSON.parse(displayValue);
+      if (typeof parsed === "string") {
+        textToCopy = parsed;
+      }
+    } catch {
+      // Use displayValue as-is
+    }
+
+    navigator.clipboard.writeText(textToCopy).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
   return (
     <div className="flex flex-col select-none">
       <div
-        className={`flex items-center gap-1.5 py-1 px-1.5 rounded hover:bg-neutral-surface-hover/20 cursor-pointer text-xs transition-colors`}
+        className={`flex items-center gap-1.5 py-1 px-1.5 rounded hover:bg-neutral-surface-hover/20 cursor-pointer text-xs transition-colors group`}
         onClick={toggleExpand}
       >
         {hasChildren ? (
           <div className="text-neutral-content-muted">
-            {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+            {isExpanded ? (
+              <ChevronDown size={14} />
+            ) : (
+              <ChevronRight size={14} />
+            )}
           </div>
         ) : (
           <div className="w-3.5" />
@@ -68,6 +93,21 @@ function TreeNode({
           <span className="font-mono text-neutral-content-strong/80 truncate max-w-[200px]">
             : {displayValue}
           </span>
+        )}
+
+        {displayValue !== undefined && (
+          <button
+            type="button"
+            className="ml-auto opacity-0 group-hover:opacity-100 transition-all p-1 rounded hover:bg-neutral-surface-active/20 text-neutral-content-muted hover:text-neutral-content-strong flex items-center justify-center"
+            onClick={handleCopy}
+            title="Copy value"
+          >
+            {copied ? (
+              <Check size={12} className="text-success" />
+            ) : (
+              <Copy size={12} />
+            )}
+          </button>
         )}
       </div>
 
@@ -130,37 +170,35 @@ export function ContextViewerTab({
 
   if (!boardId) {
     return (
-      <div className="p-4 text-xs text-neutral-content-muted">No active board</div>
+      <div className="p-4 text-xs text-neutral-content-muted">
+        No active board
+      </div>
     );
   }
 
   return (
     <div className="p-4 h-full overflow-auto flex flex-col gap-4">
-      <div className="flex justify-between items-center">
-        <p className="text-xs font-bold text-neutral-content-muted uppercase tracking-wider">
-          Board Context Explorer
-        </p>
-      </div>
-
-      <div className="grow bg-neutral-surface/20 p-3 rounded-lg border border-neutral-border/30 overflow-auto flex flex-col gap-1">
-        {rootChildren === undefined ? (
-          <div className="text-xs text-neutral-content-muted italic">Connecting to context...</div>
-        ) : rootChildren.length === 0 ? (
-          <div className="text-xs text-neutral-content-muted italic">No context available</div>
-        ) : (
-          rootChildren.map((child: any) => (
-            <TreeNode
-              key={child.key}
-              path={child.key}
-              label={child.key}
-              type={child.type}
-              hasChildren={child.hasChildren}
-              displayValue={child.value}
-              controller={controller}
-            />
-          ))
-        )}
-      </div>
+      {rootChildren === undefined ? (
+        <div className="text-xs text-neutral-content-muted italic">
+          Connecting to context...
+        </div>
+      ) : rootChildren.length === 0 ? (
+        <div className="text-xs text-neutral-content-muted italic">
+          No context available
+        </div>
+      ) : (
+        rootChildren.map((child: any) => (
+          <TreeNode
+            key={child.key}
+            path={child.key}
+            label={child.key}
+            type={child.type}
+            hasChildren={child.hasChildren}
+            displayValue={child.value}
+            controller={controller}
+          />
+        ))
+      )}
     </div>
   );
 }

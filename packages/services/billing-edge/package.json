@@ -1,0 +1,18 @@
+{
+  "name": "@ubento/services.billing-edge",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "build": "scripts build",
+    "watch": "scripts watch"
+  },
+  "dependencies": {
+    "@ubento/services.sdk": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

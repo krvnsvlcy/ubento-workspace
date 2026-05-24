@@ -4,6 +4,7 @@ import { getSession } from "@/lib/auth";
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { fontRegistryClassNames } from "./fonts";
+import { Analytics } from "@vercel/analytics/react";
 
 import "@ubento/bento.style/dist/uno.css";
 
@@ -42,6 +43,7 @@ export default async function RootLayout({
         >
           {children}
           <ModalRenderer />
+          <Analytics />
         </SessionProvider>
       </body>
     </html>

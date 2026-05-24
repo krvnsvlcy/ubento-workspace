@@ -212,8 +212,8 @@ export function resolveValue(
         const AsyncFunction = Object.getPrototypeOf(
           async function () {},
         ).constructor;
-        const runner = new AsyncFunction(...keys, node.$run);
-        return await runner(...values);
+        const runner = new AsyncFunction("$", ...keys, node.$run);
+        return await runner(finalContext, ...values);
       } catch (err) {
         console.error(`[Ubento] $run failed: ${node.$run}`, err);
         throw err;

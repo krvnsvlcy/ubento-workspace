@@ -183,8 +183,9 @@ model UsageHold {
   counter_id String
   ref        String
 
-  amount Int
-  note   String
+  amount           Int
+  committed_amount Int    @default(0)
+  note             String
 
   status     HoldStatus @default(HELD)
   expires_at DateTime

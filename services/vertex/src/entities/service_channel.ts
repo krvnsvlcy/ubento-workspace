@@ -71,7 +71,10 @@ export async function updateServiceChannel(
   return prisma.serviceChannel.update({ where: { id }, data });
 }
 
+const specCache = new Map<string, ServiceSpecV1>();
+
 export async function deleteServiceChannel(id: string) {
+  specCache.delete(id);
   return prisma.serviceChannel.update({
     where: { id },
     data: { deleted_at: new Date() },
@@ -81,6 +84,9 @@ export async function deleteServiceChannel(id: string) {
 export async function getServiceChannelSpec(
   id: string,
 ): Promise<ServiceSpec> {
+  const cached = specCache.get(id);
+  if (cached) return cached;
+
   const channel = await prisma.serviceChannel.findUnique({
     where: { id, deleted_at: { isSet: false } },
   });
@@ -95,7 +101,9 @@ export async function getServiceChannelSpec(
 
   try {
     const [content] = await serviceBucket.file(filePath).download();
-    return JSON.parse(content.toString("utf-8")) as ServiceSpec;
+    const spec = JSON.parse(content.toString("utf-8")) as ServiceSpec;
+    specCache.set(id, spec);
+    return spec;
   } catch (error: any) {
     if (error.code === 404) {
       throw new NotFoundError(`spec for service_channel ${id}`);
@@ -123,11 +131,15 @@ export async function uploadServiceChannelSpec(id: string, spec: ServiceSpec) {
   await file.save(JSON.stringify(spec, null, 2), {
     contentType: "application/json",
   });
+  specCache.set(id, spec);
 }
 
 export async function getServiceSpec(
   channel_id: string,
 ): Promise<ServiceSpecV1> {
+  const cached = specCache.get(channel_id);
+  if (cached) return cached;
+
   const channel = await prisma.serviceChannel.findUnique({
     where: { id: channel_id },
   });
@@ -139,5 +151,7 @@ export async function getServiceSpec(
   });
 
   const [content] = await serviceBucket.file(filePath).download();
-  return JSON.parse(content.toString("utf-8")) as ServiceSpecV1;
+  const spec = JSON.parse(content.toString("utf-8")) as ServiceSpecV1;
+  specCache.set(channel_id, spec);
+  return spec;
 }

@@ -1,8 +1,11 @@
 import {
+  boardInteractionAndVerificationInstruction,
+  conditionalRenderingInstruction,
+  dataStateHandlingInstruction,
   defaultBoardLayoutInstruction,
   directivesInstruction,
   servicesVsToolkitsInstruction,
-  boardInteractionAndVerificationInstruction,
+  uxExpertInstruction,
 } from "./shared";
 
 export const copilotInstructions = `
@@ -20,7 +23,7 @@ You maintain a holistic view of the user's ecosystem and guide them towards opti
 
 # What is Ubento? (Crucial Context)
 
-Ubento is a modern, web-based WorkOS designed to serve as the central operating system for a user's ecosystem.
+You are a modern, web-based WorkOS designed to serve as the central operating system for a user's ecosystem.
 It acts as an orchestration, productivity, and integration layer.
 
 ## 1. Core Architecture
@@ -66,4 +69,10 @@ ${servicesVsToolkitsInstruction}
 ${defaultBoardLayoutInstruction}
 
 ${boardInteractionAndVerificationInstruction}
-`;;
+
+${conditionalRenderingInstruction}
+
+${dataStateHandlingInstruction}
+
+${uxExpertInstruction}
+`;

@@ -17,6 +17,22 @@ export const env = defineEnv({
     type: "string",
     required: true,
   },
+  REDIS_HOST: {
+    type: "string",
+    required: true,
+  },
+  REDIS_PORT: {
+    type: "number",
+    required: true,
+  },
+  REDIS_USERNAME: {
+    type: "string",
+    required: true,
+  },
+  REDIS_PASSWORD: {
+    type: "string",
+    required: true,
+  },
   GCP_SERVICE_BUCKET_NAME: {
     type: "string",
     required: true,

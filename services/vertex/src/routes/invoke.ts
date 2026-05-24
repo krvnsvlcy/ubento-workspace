@@ -1,19 +1,19 @@
-import { ubentoAuth, ubentoFeatures } from "@ubento/services.primitives";
+import { ubentoAuth } from "@ubento/services.primitives";
 import { chain, enforce, validate } from "@ubento/services.toolkit";
 import { invokeHttpService, ServiceSpecV1 } from "@ubento/vertex.core";
-import crypto from "crypto";
 import { Router } from "express";
 import z from "zod";
 import { getTeamConnectionWithAuth } from "../entities/connection.js";
 import { getServiceSpec } from "../entities/service_channel.js";
-import { ubento } from "../libs/bento.js";
+import { vertexUsageProxy } from "../libs/bento.js";
 
 export interface VertexError {
   code:
     | "INVALID_REQUEST_ERROR"
     | "USAGE_LIMIT_EXCEEDED"
     | "UPSTREAM_ERROR"
-    | "INVALID_CREDENTIALS";
+    | "INVALID_CREDENTIALS"
+    | "INTERNAL_ERROR";
   message?: string;
   details?: unknown;
 }
@@ -63,26 +63,35 @@ function createInvokeRoute(operationType: "query" | "action") {
 
       const spec: ServiceSpecV1 = await getServiceSpec(service_channel_id);
       console.log("step 2");
-      const ref = crypto.randomUUID();
-      const reserveUsage = await ubento.billing.reserveUsage({
-        team_id: team_id,
-        feature_code: ubentoFeatures.vertex.weeklyRequests.code,
-        amount: 1,
-        note: `Vertex ${operationType}: ${spec.name}`,
-        duration: 60_000, // 60 seconds
-        ref,
-      });
-
-      if (reserveUsage.error === "USAGE_LIMIT_EXCEEDED") {
+      let reservationKey: string;
+      try {
+        reservationKey = await vertexUsageProxy.reserve(team_id, 1);
+      } catch (err: any) {
+        const errMsg = err?.message || "";
+        if (
+          errMsg.includes("USAGE_LIMIT_EXCEEDED") ||
+          errMsg.includes("Quota exceeded")
+        ) {
+          return res.status(200).json(
+            vertexResult({
+              error: {
+                code: "USAGE_LIMIT_EXCEEDED",
+                message: `Vertex usage exceeded. Please check your plan and upgrade if needed.`,
+              },
+            }),
+          );
+        }
+        console.error(err);
         return res.status(200).json(
           vertexResult({
             error: {
-              code: "USAGE_LIMIT_EXCEEDED",
-              message: `Vertex usage exceeded. Please check your plan and upgrade if needed.`,
+              code: "INTERNAL_ERROR",
+              message: `Failed to secure quota: ${err?.message || "unknown error"}`,
             },
           }),
         );
       }
+
       console.log("step 3");
       const operation =
         operationType === "query"
@@ -131,7 +140,7 @@ function createInvokeRoute(operationType: "query" | "action") {
       });
       console.log("step 6");
       if (result.error) {
-        ubento.billing.releaseUsageHold({ team_id, ref }).catch(console.error);
+        vertexUsageProxy.release(reservationKey).catch(console.error);
 
         switch (result.error.code) {
           case "INVALID_REQUEST_ERROR":
@@ -168,7 +177,7 @@ function createInvokeRoute(operationType: "query" | "action") {
             );
         }
       }
-      ubento.billing.commitUsageHold({ team_id, ref }).catch(console.error);
+      vertexUsageProxy.commit(reservationKey, 1).catch(console.error);
       console.log("step 7");
       res.status(200).json(
         vertexResult({

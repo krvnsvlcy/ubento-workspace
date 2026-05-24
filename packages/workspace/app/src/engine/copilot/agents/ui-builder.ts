@@ -1,9 +1,12 @@
 import { BoardSpec, boardSpecSchema } from "@ubento/bento.core";
 import { renderYaml } from "@ubento/workspace.agent";
 import {
+  boardInteractionAndVerificationInstruction,
+  conditionalRenderingInstruction,
+  dataStateHandlingInstruction,
   defaultBoardLayoutInstruction,
   directivesInstruction,
-  boardInteractionAndVerificationInstruction,
+  uxExpertInstruction,
 } from "./shared.js";
 
 const boardSpec = renderYaml(
@@ -248,6 +251,12 @@ ${directivesInstruction}
 ${defaultBoardLayoutInstruction}
 
 ${boardInteractionAndVerificationInstruction}
+
+${conditionalRenderingInstruction}
+
+${dataStateHandlingInstruction}
+
+${uxExpertInstruction}
 
 ## Examples
 

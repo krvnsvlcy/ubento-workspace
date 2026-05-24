@@ -282,6 +282,10 @@
         "amount": {
           "type": "integer"
         },
+        "committed_amount": {
+          "type": "integer",
+          "default": 0
+        },
         "note": {
           "type": "string"
         },

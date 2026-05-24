@@ -49,5 +49,5 @@
       "host": "http://localhost:6124",
     },
   ],
-  "only": ["vertex-service"],
+  "only": ["billing-service"],
 }

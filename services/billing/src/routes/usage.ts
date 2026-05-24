@@ -141,7 +141,9 @@ router.post(
         team_id: z.string(),
         code: z.string(),
         group: z.string().optional(),
-        amount: z.number().int().min(1),
+        amount: z.number().int().min(1).optional(),
+        minAmount: z.number().int().min(1).optional(),
+        maxAmount: z.number().int().min(1).optional(),
         note: z.string(),
         duration: z.number().int().min(60000), // minimum 1 minute
         ref: z.string(),
@@ -154,6 +156,8 @@ router.post(
           team_id: req.body.team_id,
           feature_code: req.body.code,
           amount: req.body.amount,
+          minAmount: req.body.minAmount,
+          maxAmount: req.body.maxAmount,
           note: req.body.note,
           duration: req.body.duration,
           ref: req.body.ref,
@@ -175,6 +179,7 @@ router.post(
       body: z.object({
         ref: z.string(),
         team_id: z.string(),
+        amount: z.number().int().min(1).optional(),
       }),
     }),
     async (req, res, next) => {
@@ -182,6 +187,7 @@ router.post(
         const result = await commitUsageHold({
           ref: req.body.ref,
           team_id: req.body.team_id,
+          amount: req.body.amount,
         });
         res.json(toSerializable(result));
       } catch (e) {

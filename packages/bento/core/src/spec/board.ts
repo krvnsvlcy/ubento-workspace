@@ -1,5 +1,9 @@
 import { z } from "zod";
-import { callDirectiveSchema, runDirectiveSchema } from "./directives.js";
+import {
+  callDirectiveSchema,
+  eagerDirectiveSchema,
+  runDirectiveSchema,
+} from "./directives.js";
 import { stateSpecSchema } from "./state.js";
 import { storeSpecSchema } from "./store.js";
 import { edgesSpec } from "./utils.js";
@@ -93,6 +97,12 @@ export const elementSpecSchema = z
       .string()
       .describe(
         "Name of the UI component to render taken from the available catalog. (e.g., 'Button', 'Table', 'TextInput').",
+      ),
+    condition: z
+      .union([z.boolean(), eagerDirectiveSchema])
+      .optional()
+      .describe(
+        "A conditional expression that determines whether the component should be rendered.",
       ),
     props: z
       .record(z.string(), z.any())

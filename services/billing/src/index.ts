@@ -2,7 +2,6 @@ import { lemonSqueezySetup } from "@lemonsqueezy/lemonsqueezy.js";
 import { createService } from "@ubento/services.toolkit";
 import { json } from "express";
 import { env } from "./env.js";
-import { logger } from "./logger.js";
 import checkoutRouter from "./routes/checkout.js";
 import entitlementsRouter from "./routes/entitlements.js";
 import { lemonsqueezyWebhookRouter } from "./routes/lemonsqueezy.js";
@@ -15,7 +14,6 @@ import webhooksRouter from "./routes/webhooks.js";
 import { spec } from "./spec/spec.js";
 
 const service = createService({
-  logger,
   name: "billing-service",
   port: env.PORT,
   auth: false,

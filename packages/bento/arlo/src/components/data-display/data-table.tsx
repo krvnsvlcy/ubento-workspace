@@ -543,6 +543,7 @@ export const DataTable = createComponent({
   ].join("\n"),
 
   render: ({ ref, props, emit }) => {
+    console.log("datatable props", props);
     return (
       <BaseDataTable
         ref={ref}

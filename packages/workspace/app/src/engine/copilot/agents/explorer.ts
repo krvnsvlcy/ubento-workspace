@@ -1,6 +1,7 @@
 import {
   servicesVsToolkitsInstruction,
   boardInteractionAndVerificationInstruction,
+  conditionalRenderingInstruction,
 } from "./shared";
 
 export const explorerInstructions = `
@@ -47,4 +48,6 @@ You should report your findings clearly to the supervisor or the user.
 ${servicesVsToolkitsInstruction}
 
 ${boardInteractionAndVerificationInstruction}
+
+${conditionalRenderingInstruction}
 `;

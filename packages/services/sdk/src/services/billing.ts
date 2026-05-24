@@ -194,16 +194,20 @@ export class BillingService {
    * @param data - The usage data to reserve
    * @returns The reserved usage hold or undefined if the request was rate limited
    */
-  async reserveUsage(data: {
-    team_id: string;
-    feature_code: string;
-    group?: string;
-    amount: number;
-    note: string;
-    duration: number;
-    ref: string;
-    metadata?: Record<string, any>;
-  }): Promise<
+  async reserveUsage(
+    data: {
+      team_id: string;
+      feature_code: string;
+      group?: string;
+      note: string;
+      duration: number;
+      ref: string;
+      metadata?: Record<string, any>;
+    } & (
+      | { amount: number; minAmount: undefined; maxAmount: undefined }
+      | { amount: undefined; minAmount: number; maxAmount: number }
+    ),
+  ): Promise<
     | { data: UsageHold; error: undefined }
     | { data: undefined; error: "USAGE_LIMIT_EXCEEDED" }
   > {
@@ -213,6 +217,8 @@ export class BillingService {
         code: data.feature_code,
         group: data.group,
         amount: data.amount,
+        minAmount: data.minAmount,
+        maxAmount: data.maxAmount,
         note: data.note,
         duration: data.duration,
         ref: data.ref,
@@ -228,7 +234,8 @@ export class BillingService {
   async commitUsageHold(data: {
     ref: string;
     team_id: string;
-  }): Promise<Record<string, never>> {
+    amount?: number;
+  }) {
     const result = await this.billingClient.post(
       "/billing/usage/holds/commit",
       {

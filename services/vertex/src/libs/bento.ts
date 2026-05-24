@@ -1,7 +1,10 @@
+import { createEdgeUsageProxy } from "@ubento/services.billing-edge";
+import { ubentoFeatures } from "@ubento/services.primitives";
 import {
   createClientCredentialsTokenManager,
   UbentoSDK,
 } from "@ubento/services.sdk";
+import Redis from "ioredis";
 import { env } from "../env.js";
 
 let serviceBaseUrls: Record<string, string> = {};
@@ -21,4 +24,23 @@ export const ubento = new UbentoSDK({
     audience: env.UBENTO_API_AUDIENCE,
   }),
   serviceBaseUrls,
+});
+
+export const redis = new Redis({
+  host: env.REDIS_HOST,
+  port: env.REDIS_PORT,
+  username: env.REDIS_USERNAME,
+  password: env.REDIS_PASSWORD,
+});
+
+// Create edge usage proxy for Vertex weekly requests billing
+export const vertexUsageProxy = createEdgeUsageProxy({
+  usageKey: `edge:${ubentoFeatures.vertex.weeklyRequests.code}`,
+  featureCode: ubentoFeatures.vertex.weeklyRequests.code,
+  redis,
+  ubentoSdk: ubento,
+  blockSize: {
+    min: 1,
+    max: 100,
+  },
 });

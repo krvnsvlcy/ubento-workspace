@@ -47,12 +47,17 @@ function UnsafeElementView({
   const element = useBoardElement(id);
   const Component = useEnvironmentComponent(element.component);
   const context = useBoardRenderingContext();
+  const resolvedCondition = useResolvedValue(element.condition, context);
   const resolvedProps = useResolvedValue(element.props || {}, context);
   const resolvedBindings = useResolvedBindings(element.bindings ?? {}, context);
   const resolvedEventHandler = useResolvedEventHandler(
     element.listeners ?? {},
     context,
   );
+
+  if (element.condition !== undefined && !resolvedCondition) {
+    return null;
+  }
 
   if (!Component) {
     return <FallbackElement ref={handleRef} />;

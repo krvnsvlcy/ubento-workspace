@@ -257,6 +257,8 @@ export async function reserveUsage({
   team_id,
   feature_code,
   amount,
+  minAmount,
+  maxAmount,
   note,
   duration,
   ref,
@@ -264,17 +266,38 @@ export async function reserveUsage({
 }: {
   team_id: string;
   feature_code: string;
-  amount: number;
+  amount?: number;
+  minAmount?: number;
+  maxAmount?: number;
   note: string;
   duration: number; // ms
   ref: string;
   data?: any;
 }): Promise<UsageHold> {
   if (!ref) throw new Error("ref is required");
-  if (!Number.isFinite(amount) || amount <= 0)
-    throw new Error(`Invalid amount: ${amount}`);
-  if (!Number.isFinite(duration) || duration <= 0)
+
+  // Resolve target reservation boundaries
+  const targetMin = minAmount ?? amount;
+  const targetMax = maxAmount ?? amount;
+
+  if (targetMin === undefined || targetMax === undefined) {
+    throw new Error(
+      "Must provide either 'amount', or both 'minAmount' and 'maxAmount'",
+    );
+  }
+  if (
+    !Number.isFinite(targetMin) ||
+    targetMin <= 0 ||
+    !Number.isFinite(targetMax) ||
+    targetMax < targetMin
+  ) {
+    throw new Error(
+      `Invalid reservation bounds. min: ${targetMin}, max: ${targetMax}`,
+    );
+  }
+  if (!Number.isFinite(duration) || duration <= 0) {
     throw new Error(`Invalid duration: ${duration}`);
+  }
 
   const feature = getFeature(feature_code);
   if (!feature) throw new Error(`Invalid feature code: ${feature_code}`);
@@ -292,15 +315,32 @@ export async function reserveUsage({
     throw new AuthorizationError(`Usage of ${feature_code} is not allowed`);
   }
 
+  // 1. Idempotency Check (Outside any transaction)
+  const existing = await prisma.usageHold.findUnique({
+    where: { team_id_ref: { team_id, ref } },
+    include: { counter: true },
+  });
+
+  if (existing) {
+    if (
+      existing.counter.feature_code !== feature_code ||
+      existing.counter.group !== group ||
+      existing.amount < targetMin ||
+      existing.amount > targetMax
+    ) {
+      throw new ConflictError(
+        `ref already used with conflicting parameters: ${ref}`,
+      );
+    }
+    return existing;
+  }
+
   const expires_at = new Date(Date.now() + duration);
 
+  // 2. Ensure the counter stub exists
   const counterStub = await prisma.usageCounter.upsert({
     where: {
-      team_id_feature_code_group: {
-        team_id,
-        feature_code,
-        group,
-      },
+      team_id_feature_code_group: { team_id, feature_code, group },
     },
     create: {
       id: makeEntityId({
@@ -316,53 +356,51 @@ export async function reserveUsage({
     update: {},
   });
 
-  const retryTransaction = async (attemptsLeft: number): Promise<UsageHold> => {
-    try {
-      return await prisma.$transaction(async (tx) => {
-        const existing = await tx.usageHold.findUnique({
-          where: { team_id_ref: { team_id, ref } },
-          include: { counter: true },
-        });
+  // 3. The Optimistic Concurrency Control (OCC) Loop
+  const maxRetries = 3;
 
-        if (existing) {
-          if (
-            existing.counter.feature_code !== feature_code ||
-            existing.counter.group !== group ||
-            existing.amount !== amount
-          ) {
-            throw new ConflictError(
-              `ref already used with different parameters: ${ref}`,
-            );
-          }
-          return existing;
-        }
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    const current = await prisma.usageCounter.findUniqueOrThrow({
+      where: { id: counterStub.id },
+    });
 
-        const current = await tx.usageCounter.findUniqueOrThrow({
-          where: { id: counterStub.id },
-        });
+    const effective = current.value + current.reserved;
+    let grantedAmount = targetMax;
 
-        const effective = current.value + current.reserved;
-        if (compareQuotaAmounts(effective + amount, quota) > 0) {
-          throw new ServiceError(`Usage limit exceeded for ${feature_code}`, {
-            code: "USAGE_LIMIT_EXCEEDED",
-            status: 402,
-          });
-        }
+    if (compareQuotaAmounts(effective + targetMax, quota) > 0) {
+      const numericQuota =
+        typeof quota === "number"
+          ? quota
+          : ((quota as any).value ?? (quota as any).amount ?? Infinity);
+      const available = Math.max(0, numericQuota - effective);
+      grantedAmount = available;
+    }
 
-        const bumped = await tx.usageCounter.updateMany({
-          where: {
-            id: current.id,
-            version: current.version,
-          },
-          data: {
-            reserved: { increment: amount },
-            version: { increment: 1 },
-          },
-        });
+    if (grantedAmount < targetMin) {
+      throw new ServiceError(
+        `Usage limit exceeded for ${feature_code}. Required min: ${targetMin}`,
+        { code: "USAGE_LIMIT_EXCEEDED", status: 402 },
+      );
+    }
 
-        if (bumped.count === 0) throw new Error("RETRY_TX");
+    // Attempt to secure the quota atomically
+    const bumped = await prisma.usageCounter.updateMany({
+      where: {
+        id: current.id,
+        version: current.version, // Ensure nobody else changed it
+      },
+      data: {
+        reserved: { increment: grantedAmount },
+        version: { increment: 1 },
+      },
+    });
 
-        return tx.usageHold.create({
+    // If bumped.count === 0, another request updated the counter first.
+    // The loop will automatically continue and retry the fetch -> calculate -> update.
+    if (bumped.count > 0) {
+      // 4. Quota secured. Now create the hold.
+      try {
+        return await prisma.usageHold.create({
           data: {
             id: makeEntityId({
               code: ubentoEntities.billingUsageHold.code,
@@ -371,7 +409,7 @@ export async function reserveUsage({
             team_id,
             ref,
             counter_id: current.id,
-            amount,
+            amount: grantedAmount,
             note,
             status: HoldStatus.HELD,
             expires_at,
@@ -379,24 +417,45 @@ export async function reserveUsage({
           },
           include: { counter: true },
         });
-      });
-    } catch (error: any) {
-      if (error.message === "RETRY_TX" && attemptsLeft > 0) {
-        return retryTransaction(attemptsLeft - 1);
-      }
-      throw error;
-    }
-  };
+      } catch (error: any) {
+        // 5. Compensating Action (Rollback)
+        // If two concurrent requests generate the same `ref`, one will successfully create the hold,
+        // and the other will throw a Unique Constraint violation (P2002 in Prisma).
+        if (error.code === "P2002") {
+          // Refund the counter immediately since we failed to create the hold
+          await prisma.usageCounter.update({
+            where: { id: current.id },
+            data: { reserved: { decrement: grantedAmount } },
+          });
 
-  return retryTransaction(3);
+          // Fetch and return the hold that beat us to the database
+          const raceConditionHold = await prisma.usageHold.findUnique({
+            where: { team_id_ref: { team_id, ref } },
+            include: { counter: true },
+          });
+
+          if (raceConditionHold) return raceConditionHold;
+        }
+
+        // Re-throw any other unexpected database error
+        throw error;
+      }
+    }
+  }
+
+  throw new Error(
+    "Failed to reserve usage after maximum OCC retries due to high concurrency.",
+  );
 }
 
 export async function commitUsageHold({
   ref,
   team_id,
+  amount,
 }: {
   ref: string;
   team_id: string;
+  amount?: number; // Optional: If omitted, defaults to the remaining hold balance
 }): Promise<{ hold: UsageHold; counter: UsageCounter }> {
   const result = await prisma.$transaction(async (tx) => {
     const hold = await tx.usageHold.findUnique({
@@ -411,38 +470,72 @@ export async function commitUsageHold({
     if (!hold) throw new Error("Usage hold not found");
     if (hold.status !== "HELD")
       throw new Error(`Hold is already ${hold.status.toLowerCase()}`);
-    if (hold.expires_at.getTime() <= Date.now())
-      throw new Error("Hold is expired");
+
+    const remainingHold = hold.amount - hold.committed_amount;
+
+    // If amount is not provided, consume the entire remaining balance
+    const commitAmount = amount !== undefined ? amount : remainingHold;
+
+    // Delta validation
+    if (!Number.isFinite(commitAmount) || commitAmount < 0) {
+      throw new Error(
+        `Invalid commit amount: ${commitAmount}. Delta cannot be negative.`,
+      );
+    }
+
+    if (commitAmount > remainingHold) {
+      throw new Error(
+        `Commit delta (${commitAmount}) exceeds remaining hold balance (${remainingHold}) for ref: ${ref}`,
+      );
+    }
+
+    // Auto-finalize if this flush consumes the exact last remaining tokens of the block
+    const isExhausted = commitAmount === remainingHold;
 
     const counter = await tx.usageCounter.update({
       where: { id: hold.counter_id },
       data: {
-        reserved: { decrement: hold.amount },
-        value: { increment: hold.amount },
+        reserved: { decrement: commitAmount }, // Shift EXACTLY the consumed delta out of reserved
+        value: { increment: commitAmount }, // And into billed value
         version: { increment: 1 },
       },
     });
 
     const updatedHold = await tx.usageHold.update({
       where: { id: hold.id },
-      data: { status: "COMMITTED", committed_at: new Date() },
+      data: {
+        committed_amount: { increment: commitAmount },
+        ...(isExhausted && {
+          status: "COMMITTED", // Close it out automatically
+          committed_at: new Date(),
+          released_at: new Date(),
+        }),
+      },
     });
 
     // === GENERATE EVENT ===
-    await tx.usageEvent.create({
-      data: {
-        id: makeEntityId({
-          code: ubentoEntities.billingUsageEvent.code,
-          bareId: generateBareId(),
-        }),
-        team_id,
-        counter_id: counter.id,
-        value: hold.amount,
-        ref: hold.ref,
-        note: hold.note || "Usage committed from hold",
-        data: hold.data,
-      },
-    });
+    // Prevent spamming the events table if a cron job flushes a 0-token delta
+    // on an idle connection, unless it's the exhausting commit.
+    if (commitAmount > 0 || isExhausted) {
+      await tx.usageEvent.create({
+        data: {
+          id: makeEntityId({
+            code: ubentoEntities.billingUsageEvent.code,
+            bareId: generateBareId(),
+          }),
+          team_id,
+          counter_id: counter.id,
+          value: commitAmount, // Log the specific delta that was flushed
+          ref: hold.ref,
+          note: hold.note || "Usage flush from edge cache",
+          data: {
+            ...((hold.data as object) || {}),
+            original_hold_amount: hold.amount,
+            is_exhausted: isExhausted,
+          },
+        },
+      });
+    }
 
     return { hold: updatedHold, counter };
   });

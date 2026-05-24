@@ -110,8 +110,10 @@ export class ServiceOperationError extends Error {
   public code: string;
   public isTransient: boolean;
   public isIdempotent: boolean;
+  public message: string;
   constructor(data: ServiceOperationErrorData) {
     super(data.message);
+    this.message = data.message;
     this.name = "ServiceOperationError";
     this.code = data.code;
     this.isTransient = data.isTransient;

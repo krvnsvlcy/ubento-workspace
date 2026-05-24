@@ -1,3 +1,4 @@
+import { Skeleton } from "@ubento/bento.arlo-core";
 import { createComponent, useBinding } from "@ubento/bento.core";
 import { PropsWithChildren } from "react";
 import { z } from "zod";
@@ -11,6 +12,8 @@ export const textLinePropsSchema = z.object({
   weight: z.enum(["regular", "medium", "semibold", "bold"]).optional(),
   align: z.enum(["left", "center", "right"]).optional(),
   className: z.string().optional(),
+  loading: z.boolean().optional(),
+  skeletonLength: z.number().optional(),
 });
 
 export type TextLineProps = z.infer<typeof textLinePropsSchema>;
@@ -18,16 +21,18 @@ export type TextLineProps = z.infer<typeof textLinePropsSchema>;
 export const TextLine = createComponent({
   props: textLinePropsSchema,
   summary:
-    "TextLine component for single-line text content like headings, labels, or badges.",
+    "TextLine component for single-line text content like headings, labels, or badges. Supports built-in skeleton loaders.",
   instructions: [
     "Use TextLine for title headings, captions, labels, and other short single-line text.",
     "Choose a variant to determine the visual styling (e.g. h1 for page headers).",
+    "Pass `loading={true}` to automatically render a skeleton loader instead of the text.",
+    "Specify `skeletonLength` to control the skeleton loader width in ch (character) units.",
   ].join("\n"),
   bindings: z.object({
     text: z.string(),
   }),
   render: ({ props, ref, children }) => {
-    const { text, variant, weight, align, className } = props;
+    const { text, variant, weight, align, className, loading, skeletonLength } = props;
 
     const alignClass = cx(
       align === "center" && "text-center",
@@ -66,7 +71,12 @@ export const TextLine = createComponent({
             className,
           )}
         >
-          <TextLineContent text={text} children={children} />
+          <TextLineContent
+            text={text}
+            children={children}
+            loading={loading}
+            skeletonLength={skeletonLength}
+          />
         </Tag>
       );
     }
@@ -89,7 +99,12 @@ export const TextLine = createComponent({
           className,
         )}
       >
-        <TextLineContent text={text} children={children} />
+        <TextLineContent
+          text={text}
+          children={children}
+          loading={loading}
+          skeletonLength={skeletonLength}
+        />
       </p>
     );
   },
@@ -98,9 +113,27 @@ export const TextLine = createComponent({
 function TextLineContent({
   text,
   children,
-}: PropsWithChildren<{ text?: string }>) {
+  loading,
+  skeletonLength,
+}: PropsWithChildren<{
+  text?: string;
+  loading?: boolean;
+  skeletonLength?: number;
+}>) {
   const [bindingText, setBindingText, hasBindingText] =
     useBinding<string>("text");
+
+  if (loading) {
+    return (
+      <Skeleton
+        style={{
+          height: "1em",
+          width:
+            skeletonLength !== undefined ? `${skeletonLength}ch` : undefined,
+        }}
+      />
+    );
+  }
 
   if (hasBindingText) {
     return (
