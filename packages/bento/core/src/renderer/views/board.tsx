@@ -1,7 +1,12 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { PropsWithChildren } from "react";
 import { BoardSpec, BoardStyle } from "../../spec/board.js";
-import { BoardApi, BoardRenderingContext } from "../context/context.js";
+import { ScrollArea } from "../components/scroll-area.js";
+import {
+  BoardApi,
+  BoardRenderingContext,
+  ContextCapture,
+} from "../context/context.js";
 import { BoardStateProvider } from "../context/state.js";
 import { StoreProvider } from "../context/store.js";
 import { useEnvironment } from "../renderer.js";
@@ -22,28 +27,18 @@ function paddingStyle(padding: BoardStyle["padding"]) {
 }
 
 function getBoardStyle(style: BoardStyle): React.CSSProperties {
-  const layout = style.layout || "column";
   const flow = style.flow || "fixed";
   return {
     position: "relative",
-    width:
-      layout === "row" ? (flow === "fixed" ? "100vw" : "fit-content") : "100vw",
-    height:
-      layout === "column"
-        ? flow === "fixed"
-          ? "100vh"
-          : "fit-content"
-        : "100%",
+    width: "100vw",
+    height: flow === "fixed" ? "100vh" : "fit-content",
     minHeight: "100vh",
     display: "flex",
-    alignItems: layout === "center" ? "center" : "stretch",
-    flexDirection: layout === "center" ? "column" : layout,
-    justifyContent: layout === "center" ? "center" : "start",
+    flexDirection: "column",
+    justifyContent: "start",
     gap: style.gap ? `${style.gap || 0}px` : undefined,
-    overflowX:
-      layout === "row" ? (flow === "fixed" ? "hidden" : "auto") : "hidden",
-    overflowY:
-      layout === "column" ? (flow === "fixed" ? "hidden" : "auto") : "hidden",
+    overflowX: "hidden",
+    overflowY: flow === "fixed" ? "hidden" : "auto",
     pointerEvents: "auto",
     padding: paddingStyle(style.padding),
   };
@@ -84,23 +79,23 @@ export function BoardView({
           >
             <BoardStateProvider initialState={spec.initialState || {}}>
               <StoreProvider store={spec.store || {}}>
-                <div
-                  style={getBoardStyle({
-                    ...(spec.style || {}),
-                    // direction: "column",
-                    // gap: 0,
-                    // padding: {
-                    //   top: 0,
-                    //   left: 0,
-                    //   right: 0,
-                    //   bottom: 0,
-                    // },
-                  })}
+                <ContextCapture />
+                <ScrollArea
+                  style={{
+                    height: "100vh",
+                    width: "100vw",
+                  }}
                 >
-                  {content}
-                  {children}
+                  <div
+                    style={getBoardStyle({
+                      ...(spec.style || {}),
+                    })}
+                  >
+                    {content}
+                    {children}
+                  </div>
                   <OverlayRenderer />
-                </div>
+                </ScrollArea>
               </StoreProvider>
             </BoardStateProvider>
           </BoardRenderingContext>

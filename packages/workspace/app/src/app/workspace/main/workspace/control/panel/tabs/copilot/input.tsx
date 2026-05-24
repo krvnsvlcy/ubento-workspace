@@ -1,6 +1,6 @@
 import { useCopilot } from "@/contexts/copilot";
-import { UserMessageAttachment } from "@ubento/workspace.agent";
 import { Button, useStoreState } from "@ubento/bento.arlo-core";
+import { UserMessageAttachment } from "@ubento/workspace.agent";
 import { ArrowRight, ChevronDown, Plus, Square, X } from "lucide-react";
 
 function AttachmentChip({
@@ -66,7 +66,7 @@ export function CopilotInput() {
   const allContextAttachments = Object.values(input.contextAttachments).flat();
 
   return (
-    <div className="p-2">
+    <div className="p-3">
       <div className="flex flex-col overflow-hidden rounded-2xl border border-neutral-border transition-all focus-within:border-neutral-border-active">
         {/* Attachments Section */}
         {(input.userAttachments.length > 0 ||

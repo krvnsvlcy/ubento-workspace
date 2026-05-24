@@ -28,6 +28,8 @@ export type UbentoEngineState = {
   location: UbentoLocation;
   leftPanelPinned: boolean;
   leftPanelWidth: number;
+  rightPanelPinned: boolean;
+  rightPanelWidth: number;
   dragActive: boolean;
   showControls: boolean;
 
@@ -100,6 +102,8 @@ export function createUbentoEngine({
     location: initialLocation,
     leftPanelPinned: true,
     leftPanelWidth: 240,
+    rightPanelPinned: false,
+    rightPanelWidth: 400,
     dragActive: false,
     showControls: false,
     workspaceStatus: "inactive",

@@ -19,9 +19,7 @@ export function WorkspaceTab() {
 
   if (isLoading && !workspace) {
     return (
-      <div className="p-4 text-xs text-neutral-content-muted">
-        Loading workspace...
-      </div>
+      <div className="p-4 text-xs text-neutral-content-muted">Workspace</div>
     );
   }
 

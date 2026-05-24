@@ -4,7 +4,7 @@ import { forwardRef, InputHTMLAttributes, ReactNode } from "react";
 export const inputContainerVariants = cva(
   // Shifted structural and background classes to the container.
   // Using focus-within to detect when the transparent input inside is focused.
-  "flex items-center w-full border bg-neutral-surface text-sm transition-all focus-within:outline-none overflow-hidden aria-disabled:cursor-not-allowed aria-disabled:opacity-50",
+  "flex items-center w-full border text-sm transition-all focus-within:outline-none overflow-hidden aria-disabled:cursor-not-allowed aria-disabled:opacity-50",
   {
     variants: {
       variant: {

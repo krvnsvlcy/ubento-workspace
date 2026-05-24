@@ -26,6 +26,13 @@ export const applyDirectiveSchema = z.object({
 });
 export type ApplyDirective = z.infer<typeof applyDirectiveSchema>;
 
+export const eagerDirectiveSchema = z.union([
+  useDirectiveSchema,
+  evalDirectiveSchema,
+  applyDirectiveSchema,
+]);
+export type EagerDirective = z.infer<typeof eagerDirectiveSchema>;
+
 // ==========================================
 // LAZY DIRECTIVES (Executed by event handlers)
 // ==========================================

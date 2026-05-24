@@ -1,5 +1,6 @@
-import { createContext, PropsWithChildren, useContext } from "react";
+import { createContext, PropsWithChildren, useContext, useEffect } from "react";
 import { SessionApi, WorkspaceApi } from "../../environment/environment.js";
+import { useEnvironment } from "../states/environment.js";
 
 export type BoardApi = {
   id: string;
@@ -80,4 +81,18 @@ export function BoardRenderingContextPatch({
   return (
     <BoardRenderingContext value={newContext}>{children}</BoardRenderingContext>
   );
+}
+
+export function ContextCapture() {
+  const context = useBoardRenderingContext();
+  const environment = useEnvironment();
+
+  useEffect(() => {
+    environment.contextManager.setContext(context);
+    return () => {
+      environment.contextManager.setContext(null);
+    };
+  }, [context, environment]);
+
+  return <></>;
 }

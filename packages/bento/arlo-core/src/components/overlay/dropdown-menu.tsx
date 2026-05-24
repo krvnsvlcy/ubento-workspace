@@ -160,7 +160,6 @@ const DropdownMenuItem = React.forwardRef<
       "hover:bg-neutral-surface-hover",
       className,
     )}
-    tremor-id="tremor-raw"
     {...props}
   >
     {children}

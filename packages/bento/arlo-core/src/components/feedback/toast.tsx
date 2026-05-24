@@ -100,10 +100,7 @@ const Toast = React.forwardRef<
         break;
       default:
         Icon = (
-          <Info
-            className="size-5 shrink-0 text-info"
-            aria-hidden="true"
-          />
+          <Info className="size-5 shrink-0 text-info" aria-hidden="true" />
         );
         break;
     }
@@ -125,7 +122,6 @@ const Toast = React.forwardRef<
           "data-[state=closed]:animate-hide",
           className,
         )}
-        tremor-id="tremor-raw"
         {...props}
       >
         <div
@@ -133,9 +129,7 @@ const Toast = React.forwardRef<
             // base
             "flex flex-1 items-start gap-3 p-4",
             // border
-            !disableDismiss || action
-              ? "border-r border-neutral-border"
-              : "",
+            !disableDismiss || action ? "border-r border-neutral-border" : "",
           )}
         >
           {Icon}

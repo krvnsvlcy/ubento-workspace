@@ -24,6 +24,7 @@ export const QueryStoreEntryProvider = memo(function QueryStoreEntryProvider({
   const environment = useEnvironment();
   const context = useBoardRenderingContext();
   const params = useResolvedValue(entry.params, context);
+  const required = useResolvedValue(entry.required, context) || [];
   const result = useQuery({
     queryKey: [entry.service, name, params],
     queryFn: () =>
@@ -32,6 +33,7 @@ export const QueryStoreEntryProvider = memo(function QueryStoreEntryProvider({
         query: entry.query,
         args: params,
       }),
+    enabled: required.every(Boolean),
   });
 
   return (

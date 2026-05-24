@@ -24,7 +24,10 @@ import { tv, type VariantProps } from "tailwind-variants";
 import { cx, focusInput, focusRing, hasErrorInput } from "@/lib/utils.js";
 
 import { Button } from "@/components/core/button.js";
-import { Calendar as CalendarPrimitive, type Matcher } from "@/components/forms/calendar.js";
+import {
+  Calendar as CalendarPrimitive,
+  type Matcher,
+} from "@/components/forms/calendar.js";
 
 //#region TimeInput
 // ============================================================================
@@ -592,11 +595,7 @@ const SingleDatePicker = ({
   }, [value, defaultValue]);
 
   return (
-    <PopoverPrimitives.Root
-      tremor-id="tremor-raw"
-      open={open}
-      onOpenChange={onOpenChange}
-    >
+    <PopoverPrimitives.Root open={open} onOpenChange={onOpenChange}>
       <Trigger
         placeholder={placeholder}
         disabled={disabled}
@@ -894,11 +893,7 @@ const RangeDatePicker = ({
   };
 
   return (
-    <PopoverPrimitives.Root
-      tremor-id="tremor-raw"
-      open={open}
-      onOpenChange={onOpenChange}
-    >
+    <PopoverPrimitives.Root open={open} onOpenChange={onOpenChange}>
       <Trigger
         placeholder={placeholder}
         disabled={disabled}

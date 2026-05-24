@@ -43,6 +43,7 @@ import { createUbentoCopilot } from "../copilot/copilot";
 import { createCopilotAgentEnvironment } from "../copilot/environment/environment";
 import { generateInitialBoardSpec } from "./init";
 import { createCatalogToolkit } from "./toolkits/catalog";
+import { createRuntimeToolkit } from "./toolkits/runtime";
 import { createServicesToolkit } from "./toolkits/services";
 import { createWorkspaceToolkit } from "./toolkits/workspace";
 
@@ -184,6 +185,9 @@ export type WorkspaceState = {
   // drag and drop
   dropRects: DropRect[];
   leftPanelOpen: boolean;
+
+  // watched context nodes
+  watchedContextNodes: Record<string, any>;
 };
 
 let i = 0;
@@ -223,6 +227,7 @@ export function createWorkspaceEngine({
       slug: workspace.slug,
       spec: parseSpecData(workspaceSpecSchema, workspace.data),
     },
+    watchedContextNodes: {},
   }));
 
   const controller = createZustandStateController(store);
@@ -859,6 +864,35 @@ export function createWorkspaceEngine({
     createBoard,
     resolveBoardContextSchema,
   });
+  const runtimeToolkit = createRuntimeToolkit({
+    focusBoard: async ({ location }) => {
+      goTo({ location });
+    },
+    readNode: async (selector) => {
+      if (!rpc) throw new Error("Runtime connection not established");
+      return await rpc.egress.readNode({ selector });
+    },
+    clickNode: async (selector) => {
+      if (!rpc) throw new Error("Runtime connection not established");
+      await rpc.egress.clickNode({ selector });
+    },
+    setValue: async ({ selector, value }) => {
+      if (!rpc) throw new Error("Runtime connection not established");
+      await rpc.egress.setValue({ selector, value });
+    },
+    getValue: async (selector) => {
+      if (!rpc) throw new Error("Runtime connection not established");
+      return await rpc.egress.getValue({ selector });
+    },
+    readLogs: async ({ from, count }) => {
+      if (!rpc) throw new Error("Runtime connection not established");
+      return await rpc.egress.readLogs({ from, count });
+    },
+    readContext: async (path) => {
+      if (!rpc) throw new Error("Runtime connection not established");
+      return await rpc.egress.readContext({ path });
+    },
+  });
   const catalogToolkit = createCatalogToolkit({
     listComponents,
     describeComponents,
@@ -906,6 +940,15 @@ export function createWorkspaceEngine({
       servicesToolkit.tools.describeActions,
       servicesToolkit.tools.describeQueries,
       servicesToolkit.tools.describeSchemas,
+      // runtime tools
+      runtimeToolkit.tools.focusBoard,
+      runtimeToolkit.tools.readNode,
+      runtimeToolkit.tools.clickNode,
+      runtimeToolkit.tools.setValue,
+      runtimeToolkit.tools.getValue,
+      runtimeToolkit.tools.readLogs,
+      runtimeToolkit.tools.readContext,
+      runtimeToolkit.tools.wait,
     ],
   });
   environment.addAgent({
@@ -919,6 +962,14 @@ export function createWorkspaceEngine({
       workspaceToolkit.tools.createBoardTool.name,
       workspaceToolkit.tools.updateBoardTool.name,
       workspaceToolkit.tools.deleteBoardTool.name,
+      runtimeToolkit.tools.focusBoard.name,
+      runtimeToolkit.tools.wait.name,
+      runtimeToolkit.tools.clickNode.name,
+      runtimeToolkit.tools.setValue.name,
+      runtimeToolkit.tools.getValue.name,
+      runtimeToolkit.tools.readLogs.name,
+      runtimeToolkit.tools.readContext.name,
+      runtimeToolkit.tools.readNode.name,
     ],
     agents: ["explorer", "context-builder", "ui-builder"],
     enableMessage: true,
@@ -939,6 +990,14 @@ export function createWorkspaceEngine({
       servicesToolkit.tools.describeActions.name,
       servicesToolkit.tools.describeQueries.name,
       servicesToolkit.tools.describeSchemas.name,
+      runtimeToolkit.tools.focusBoard.name,
+      runtimeToolkit.tools.wait.name,
+      runtimeToolkit.tools.clickNode.name,
+      runtimeToolkit.tools.setValue.name,
+      runtimeToolkit.tools.getValue.name,
+      runtimeToolkit.tools.readLogs.name,
+      runtimeToolkit.tools.readContext.name,
+      runtimeToolkit.tools.readNode.name,
     ],
   });
   environment.addAgent({
@@ -957,6 +1016,14 @@ export function createWorkspaceEngine({
       servicesToolkit.tools.describeActions.name,
       servicesToolkit.tools.describeQueries.name,
       servicesToolkit.tools.describeSchemas.name,
+      runtimeToolkit.tools.focusBoard.name,
+      runtimeToolkit.tools.wait.name,
+      runtimeToolkit.tools.clickNode.name,
+      runtimeToolkit.tools.setValue.name,
+      runtimeToolkit.tools.getValue.name,
+      runtimeToolkit.tools.readLogs.name,
+      runtimeToolkit.tools.readContext.name,
+      runtimeToolkit.tools.readNode.name,
     ],
   });
   environment.addAgent({
@@ -973,6 +1040,11 @@ export function createWorkspaceEngine({
       workspaceToolkit.tools.updateBoardUiTool.name,
       workspaceToolkit.tools.checkBoardUiTool.name,
       workspaceToolkit.tools.getResolvedBoardContextTool.name,
+      runtimeToolkit.tools.readNode.name,
+      runtimeToolkit.tools.clickNode.name,
+      runtimeToolkit.tools.setValue.name,
+      runtimeToolkit.tools.getValue.name,
+      runtimeToolkit.tools.wait.name,
     ],
   });
 
@@ -1021,6 +1093,21 @@ export function createWorkspaceEngine({
     unhover: async (elementId: string) => {
       await rpc?.egress.unhover({ elementId });
     },
+    watchContextNode: async (path: string) => {
+      if (!rpc) return "";
+      return await rpc.egress.watchContextNode({ path });
+    },
+    unwatchContextNode: async (key: string, path?: string) => {
+      if (!rpc) return;
+      await rpc.egress.unwatchContextNode({ key });
+      if (path) {
+        store.setState((state) => {
+          const next = { ...state.watchedContextNodes };
+          delete next[path];
+          return { watchedContextNodes: next };
+        });
+      }
+    },
 
     init: async (target: Window) => {
       rpc = createDuplexRpc<
@@ -1038,6 +1125,14 @@ export function createWorkspaceEngine({
           boardUpdated,
           selectionUpdated,
           hoverUpdated,
+          contextNodeUpdated: async ({ path, data }) => {
+            store.setState((state) => ({
+              watchedContextNodes: {
+                ...state.watchedContextNodes,
+                [path]: data,
+              },
+            }));
+          },
           runServiceOperation,
           createBoard: async (args) => {
             const title = args?.title || "";

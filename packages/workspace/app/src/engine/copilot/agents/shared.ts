@@ -146,3 +146,19 @@ Returns an async function that runs an arbitrary block of side-effect code.
     }
     \`\`\`
 `;
+
+export const boardInteractionAndVerificationInstruction = `
+## Active Runtime Interaction and Verification
+
+Ubento provides a suite of runtime tools (\`focus_board\`, \`read_node\`, \`click_node\`, \`set_value\`, \`get_value\`, \`read_logs\`, \`read_context\`, \`wait\`) to inspect and interact with the live board state during execution.
+All DOM interaction tools (\`read_node\`, \`click_node\`, \`set_value\`, \`get_value\`) accept a standard CSS \`selector\` (string) instead of a simple element ID. This allows you to target any HTML element inside the active board.
+- **Selecting Known Bento Elements**: To select an element with a known Bento element ID, you **MUST** use the selector format \`[bento-id="ID"]\` (e.g. \`[bento-id="name_input"]\`).
+- **Selecting Nested/Generic HTML**: You can also use standard CSS selectors (e.g. \`button\`, \`input[type="text"]\`, \`.my-custom-class\`) to find elements inside or outside components.
+
+Whenever you perform a change to a board's specification (params, state, store, layout, or listeners) or perform actions on the board:
+1. **Focus/Navigate**: Ensure the correct board is focused using \`focus_board\`.
+2. **Interact & Wait**: Use \`click_node\` or \`set_value\` with the appropriate selector to simulate interaction. If the action triggers async side effects, state updates, or page loads, you **MUST** call \`wait\` to pause execution for a short duration (e.g. 500ms or 1000ms) to allow the runtime to process the update.
+3. **Verify State & UI**: Use \`read_node\`, \`get_value\`, or \`read_context\` to verify the HTML layout, input values, and live context variables are updated correctly.
+4. **Inspect Logs**: Call \`read_logs\` to ensure no exceptions, errors, or unexpected warnings were thrown during rendering or interaction.
+5. **Always Verify Before Declaring Done**: Do NOT declare a task done until you have queried the live runtime state to verify that everything functions as expected in the live UI.
+`;

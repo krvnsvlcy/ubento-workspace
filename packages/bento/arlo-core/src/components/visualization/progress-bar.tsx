@@ -72,7 +72,6 @@ const ProgressBar = React.forwardRef<HTMLDivElement, ProgressBarProps>(
         aria-label="Progress bar"
         aria-valuenow={value}
         aria-valuemax={max}
-        tremor-id="tremor-raw"
         {...props}
       >
         <div

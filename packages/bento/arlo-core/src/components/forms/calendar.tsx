@@ -293,8 +293,7 @@ const Calendar = ({
                     {
                       "bg-blue-500 dark:bg-blue-500": !selected,
                       "bg-accent-contrast!": selected,
-                      "bg-neutral-content-muted!":
-                        selected && range_middle,
+                      "bg-neutral-content-muted!": selected && range_middle,
                       "bg-neutral-content-muted text-neutral-content-muted":
                         disabled,
                     },
@@ -305,7 +304,6 @@ const Calendar = ({
           );
         },
       }}
-      tremor-id="tremor-raw"
       {...(props as SingleProps & RangeProps)}
     />
   );

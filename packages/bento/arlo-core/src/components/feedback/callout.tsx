@@ -9,34 +9,13 @@ const calloutVariants = tv({
   base: "flex flex-col overflow-hidden rounded-md p-4 text-sm",
   variants: {
     variant: {
-      accent: [
-        "text-accent-content",
-        "bg-accent-surface",
-      ],
-      success: [
-        "text-success-content",
-        "bg-success-surface",
-      ],
-      destructive: [
-        "text-destructive-content",
-        "bg-destructive-surface",
-      ],
-      warning: [
-        "text-warning-content",
-        "bg-warning-surface",
-      ],
-      neutral: [
-        "text-neutral-content",
-        "bg-neutral-surface",
-      ],
-      info: [
-        "text-info-content",
-        "bg-info-surface",
-      ],
-      inverse: [
-        "text-inverse-content",
-        "bg-inverse-surface",
-      ],
+      accent: ["text-accent-content", "bg-accent-surface"],
+      success: ["text-success-content", "bg-success-surface"],
+      destructive: ["text-destructive-content", "bg-destructive-surface"],
+      warning: ["text-warning-content", "bg-warning-surface"],
+      neutral: ["text-neutral-content", "bg-neutral-surface"],
+      info: ["text-info-content", "bg-info-surface"],
+      inverse: ["text-inverse-content", "bg-inverse-surface"],
     },
   },
   defaultVariants: {
@@ -61,7 +40,6 @@ const Callout = React.forwardRef<HTMLDivElement, CalloutProps>(
       <div
         ref={forwardedRef}
         className={cx(calloutVariants({ variant }), className)}
-        tremor-id="tremor-raw"
         {...props}
       >
         <div className={cx("flex items-start")}>

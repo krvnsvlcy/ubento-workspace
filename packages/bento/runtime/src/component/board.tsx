@@ -102,7 +102,7 @@ export function BentoBoardView({
   };
 
   return (
-    <div className="h-full overflow-y-auto bg-background">
+    <div className="h-full overflow-hidden bg-background">
       <BoardView
         queryClient={queryClient}
         spec={board.spec.data}

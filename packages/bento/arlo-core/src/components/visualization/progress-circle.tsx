@@ -83,7 +83,6 @@ const ProgressCircle = React.forwardRef<HTMLDivElement, ProgressCircleProps>(
         aria-valuemax={max}
         data-max={max}
         data-value={safeValue ?? null}
-        tremor-id="tremor-raw"
       >
         <svg
           width={radius * 2}

@@ -271,7 +271,7 @@ function BaseDataTable<TData, TValue>({
             onChange={(event) =>
               table.getColumn(searchColumn)?.setFilterValue(event.target.value)
             }
-            className="w-full sm:max-w-xs"
+            className="w-full sm:max-w-md"
             size="md"
             prefix={<Search className="size-4" />}
           />

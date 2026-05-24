@@ -28,7 +28,7 @@ export function WorkspaceEngineProvider({
   const workspaceStatus = appEngine.useState((state) => state.workspaceStatus);
 
   if (workspaceStatus === "inactive" || workspaceStatus === "initializing") {
-    return <PendingView message="Loading workspace..." />;
+    return <PendingView message="Workspace" />;
   } else if (workspaceStatus === "error" || !workspaceEngine) {
     return (
       <ErrorView

@@ -24,7 +24,10 @@ import { tv, type VariantProps } from "tailwind-variants";
 import { cx, focusInput, focusRing, hasErrorInput } from "@/lib/utils.js";
 
 import { Button } from "@/components/core/button.js";
-import { Calendar as CalendarPrimitive, type Matcher } from "@/components/forms/calendar.js";
+import {
+  Calendar as CalendarPrimitive,
+  type Matcher,
+} from "@/components/forms/calendar.js";
 
 //#region TimeInput
 // ============================================================================
@@ -191,9 +194,7 @@ const Trigger = React.forwardRef<HTMLButtonElement, TriggerProps>(
             {children ? (
               children
             ) : placeholder ? (
-              <span className="text-neutral-content-muted">
-                {placeholder}
-              </span>
+              <span className="text-neutral-content-muted">{placeholder}</span>
             ) : null}
           </span>
         </button>
@@ -596,11 +597,7 @@ export const SingleDatePicker = React.forwardRef<HTMLDivElement, SingleProps>(
 
     return (
       <div ref={ref}>
-        <PopoverPrimitives.Root
-          tremor-id="tremor-raw"
-          open={open}
-          onOpenChange={onOpenChange}
-        >
+        <PopoverPrimitives.Root open={open} onOpenChange={onOpenChange}>
           <Trigger
             placeholder={placeholder}
             disabled={disabled}
@@ -912,11 +909,7 @@ export const RangeDatePicker = React.forwardRef<HTMLDivElement, RangeProps>(
 
     return (
       <div ref={ref}>
-        <PopoverPrimitives.Root
-          tremor-id="tremor-raw"
-          open={open}
-          onOpenChange={onOpenChange}
-        >
+        <PopoverPrimitives.Root open={open} onOpenChange={onOpenChange}>
           <Trigger
             placeholder={placeholder}
             disabled={disabled}

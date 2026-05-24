@@ -31,7 +31,6 @@ const Checkbox = React.forwardRef<
         focusRing,
         className,
       )}
-      tremor-id="tremor-raw"
     >
       <CheckboxPrimitives.Indicator
         asChild

@@ -25,7 +25,12 @@ export function WorkspaceControl() {
   const appEngine = useUbentoEngine();
   const workspaceEngine = useWorkspaceEngine();
   const showControls = appEngine.useState((s) => s.showControls);
+  const rightPanelPinned = appEngine.useState((s) => s.rightPanelPinned);
   const setShowControls = (show: boolean) => appEngine.setShowControls(show);
+
+  if (rightPanelPinned && showControls) {
+    return null;
+  }
 
   return (
     <div className="absolute bottom-8 right-8 z-50">

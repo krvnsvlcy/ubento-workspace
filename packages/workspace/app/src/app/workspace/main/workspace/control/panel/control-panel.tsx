@@ -1,12 +1,15 @@
 import { useCopilot } from "@/contexts/copilot";
+import { useUbentoEngine } from "@/engine/app/engine.js";
 import { Button } from "@ubento/bento.arlo-core";
 import {
   Box,
+  Braces,
   Database,
   Edit2,
   History,
-  LayoutDashboard,
+  Layout,
   Plus,
+  Sidebar,
   X,
 } from "lucide-react";
 import { useState } from "react";
@@ -14,8 +17,9 @@ import { WorkspaceEngine } from "../../../../../../engine/workspace/engine";
 import { BoardTab } from "./tabs/board";
 import { CopilotTab } from "./tabs/copilot/copilot";
 import { HistoryTab } from "./tabs/copilot/history";
-import { SelectionTab } from "./tabs/selection";
 import { ResolvedContextTab } from "./tabs/resolved-context";
+import { SelectionTab } from "./tabs/selection";
+import { ContextViewerTab } from "./tabs/context-viewer";
 
 export function ControlPanel({
   controller,
@@ -25,6 +29,8 @@ export function ControlPanel({
   onClose: () => void;
 }) {
   const copilot = useCopilot();
+  const appEngine = useUbentoEngine();
+  const rightPanelPinned = appEngine.useState((s) => s.rightPanelPinned);
   const [activeTab, setActiveTab] = useState<string>("ai");
   const mode = controller.useState((s) => s.mode);
 
@@ -50,17 +56,10 @@ export function ControlPanel({
       },
     },
     {
-      icon: <LayoutDashboard size={16} />,
+      icon: <Layout size={16} />,
       label: "Board",
       onClick: () => {
         setActiveTab("board");
-      },
-    },
-    {
-      icon: <Box size={16} />,
-      label: "Selection",
-      onClick: () => {
-        setActiveTab("selection");
       },
     },
     {
@@ -70,7 +69,24 @@ export function ControlPanel({
         setActiveTab("resolved-context");
       },
     },
+    {
+      icon: <Braces size={16} />,
+      label: "Context Viewer",
+      onClick: () => {
+        setActiveTab("context-viewer");
+      },
+    },
   ];
+
+  if (mode === "edit") {
+    actions.push({
+      icon: <Box size={16} />,
+      label: "Selection",
+      onClick: () => {
+        setActiveTab("selection");
+      },
+    });
+  }
 
   switch (activeTab) {
     case "ai":
@@ -88,6 +104,9 @@ export function ControlPanel({
     case "resolved-context":
       content = <ResolvedContextTab controller={controller} />;
       break;
+    case "context-viewer":
+      content = <ContextViewerTab controller={controller} />;
+      break;
   }
 
   return (
@@ -97,7 +116,7 @@ export function ControlPanel({
         e.stopPropagation();
       }}
     >
-      <div className="flex justify-between items-center p-2">
+      <div className="flex justify-between items-center p-3">
         <div className="flex gap-2">
           {actions.map((a) => (
             <Button
@@ -114,7 +133,7 @@ export function ControlPanel({
         </div>
         <div className="flex gap-2">
           <Button
-            variant="ghost"
+            variant={mode === "edit" ? "primary" : "ghost"}
             size="icon"
             shape="circle"
             onClick={() => {
@@ -122,18 +141,31 @@ export function ControlPanel({
             }}
             title={`Switch to ${mode === "live" ? "edit" : "live"} mode`}
           >
-            {mode === "live" ? (
-              <Edit2 size={16} />
-            ) : (
-              <LayoutDashboard size={16} />
-            )}
+            {mode === "live" ? <Edit2 size={16} /> : <Edit2 size={16} />}
+          </Button>
+          <Button
+            variant={rightPanelPinned ? "ghost" : "ghost"}
+            size="icon"
+            shape="circle"
+            onClick={() => {
+              appEngine.setState((s) => ({
+                ...s,
+                rightPanelPinned: !s.rightPanelPinned,
+              }));
+            }}
+            title={
+              rightPanelPinned
+                ? "Float control panel"
+                : "Pin control panel to right side"
+            }
+          >
+            <Sidebar size={16} />
           </Button>
           <Button variant="ghost" size="icon" shape="circle" onClick={onClose}>
             <X size={16} />
           </Button>
         </div>
       </div>
-      <hr />
       <div className="grow overflow-hidden">{content}</div>
     </div>
   );

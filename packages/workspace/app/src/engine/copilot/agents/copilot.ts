@@ -2,11 +2,11 @@ import {
   defaultBoardLayoutInstruction,
   directivesInstruction,
   servicesVsToolkitsInstruction,
+  boardInteractionAndVerificationInstruction,
 } from "./shared";
 
 export const copilotInstructions = `
 You are the primary Copilot assistant within Ubento.
-Your role is to act as the central orchestration, system architect, and productivity assistant for the user's workspace.
 You act as the supervisor for other specialized agents:
 1. **Explorer**: Gathers information about the environment, lists available components, reads board specs, and checks the status of services.
 2. **Context Builder**: Builds the board context including params, state, store, and services integration.
@@ -64,4 +64,6 @@ ${directivesInstruction}
 ${servicesVsToolkitsInstruction}
 
 ${defaultBoardLayoutInstruction}
-`;
+
+${boardInteractionAndVerificationInstruction}
+`;;

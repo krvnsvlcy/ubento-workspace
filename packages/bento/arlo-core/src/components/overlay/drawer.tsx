@@ -11,7 +11,7 @@ import { Button } from "@/components/core/button.js";
 const Drawer = (
   props: React.ComponentPropsWithoutRef<typeof DrawerPrimitives.Root>,
 ) => {
-  return <DrawerPrimitives.Root tremor-id="tremor-raw" {...props} />;
+  return <DrawerPrimitives.Root {...props} />;
 };
 Drawer.displayName = "Drawer";
 

@@ -89,6 +89,7 @@ export function ElementView({
     if (!dom) {
       environment.domManager.remove(id);
     } else {
+      dom.setAttribute("bento-id", id);
       environment.domManager.add(id, { dom, parents });
     }
     return () => environment.domManager.remove(id);

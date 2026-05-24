@@ -6,6 +6,7 @@ import {
 import { createDomManager, DomManager } from "./dom.js";
 import { createInteractionManager, InteractionManager } from "./interaction.js";
 import { createOverlayManager, OverlayManager } from "./overlay.js";
+import { createContextManager, ContextManager } from "./context.js";
 
 export type SessionApi = {
   user: { id: string; name: string; email: string; picture: string };
@@ -44,6 +45,7 @@ export type Environment = {
   domManager: DomManager;
   interactionManager: InteractionManager;
   overlayManager: OverlayManager;
+  contextManager: ContextManager;
 };
 
 export function createEnvironment({
@@ -73,6 +75,7 @@ export function createEnvironment({
     domManager: createDomManager(),
     interactionManager: createInteractionManager(),
     overlayManager: createOverlayManager(),
+    contextManager: createContextManager(),
   };
 }
 
@@ -80,3 +83,4 @@ export * from "./component.js";
 export * from "./dom.js";
 export * from "./interaction.js";
 export * from "./overlay.js";
+export * from "./context.js";

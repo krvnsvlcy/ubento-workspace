@@ -46,7 +46,7 @@
 
 /* OverlayScrollbars Custom Styling */
 .os-scrollbar {
-  --os-size: 6px;
+  --os-size: 8px;
   --os-track-bg: transparent;
   --os-track-bg-hover: transparent;
   --os-track-bg-active: transparent;
@@ -56,4 +56,3 @@
   --os-thumb-border-radius: 3px;
   --os-track-border-radius: 3px;
 }
-

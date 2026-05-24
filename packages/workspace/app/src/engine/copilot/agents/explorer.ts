@@ -1,4 +1,7 @@
-import { servicesVsToolkitsInstruction } from "./shared";
+import {
+  servicesVsToolkitsInstruction,
+  boardInteractionAndVerificationInstruction,
+} from "./shared";
 
 export const explorerInstructions = `
 You are the Explorer agent within Ubento.
@@ -42,4 +45,6 @@ You can explore the services installed in the workspace using the service tools.
 You should report your findings clearly to the supervisor or the user.
 
 ${servicesVsToolkitsInstruction}
+
+${boardInteractionAndVerificationInstruction}
 `;

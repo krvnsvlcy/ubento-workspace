@@ -1,6 +1,10 @@
 import { BoardSpec, boardSpecSchema } from "@ubento/bento.core";
 import { renderYaml } from "@ubento/workspace.agent";
-import { defaultBoardLayoutInstruction, directivesInstruction } from "./shared.js";
+import {
+  defaultBoardLayoutInstruction,
+  directivesInstruction,
+  boardInteractionAndVerificationInstruction,
+} from "./shared.js";
 
 const boardSpec = renderYaml(
   boardSpecSchema
@@ -242,6 +246,8 @@ Example: Bind a state entry to a Text input field
 ${directivesInstruction}
 
 ${defaultBoardLayoutInstruction}
+
+${boardInteractionAndVerificationInstruction}
 
 ## Examples
 

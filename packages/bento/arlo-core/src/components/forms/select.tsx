@@ -63,7 +63,6 @@ const SelectTrigger = React.forwardRef<
         hasError ? hasErrorInput : "",
         className,
       )}
-      tremor-id="tremor-raw"
       {...props}
     >
       <span className="truncate">{children}</span>

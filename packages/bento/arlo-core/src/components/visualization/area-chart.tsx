@@ -75,8 +75,7 @@ const LegendItem = ({
           "truncate text-xs whitespace-nowrap",
           // text color
           "text-neutral-content",
-          hasOnValueChange &&
-            "group-hover:text-neutral-content",
+          hasOnValueChange && "group-hover:text-neutral-content",
           activeLegend && activeLegend !== name ? "opacity-40" : "opacity-100",
         )}
       >
@@ -364,7 +363,10 @@ const ChartLegend = (
 
 //#region Tooltip
 
-type AreaChartTooltipProps = Pick<ChartTooltipProps, "active" | "payload" | "label">;
+type AreaChartTooltipProps = Pick<
+  ChartTooltipProps,
+  "active" | "payload" | "label"
+>;
 
 type PayloadItem = {
   category: string;
@@ -643,12 +645,7 @@ const AreaChart = React.forwardRef<HTMLDivElement, AreaChartProps>(
     }
 
     return (
-      <div
-        ref={ref}
-        className={cx("h-80 w-full", className)}
-        tremor-id="tremor-raw"
-        {...other}
-      >
+      <div ref={ref} className={cx("h-80 w-full", className)} {...other}>
         <ResponsiveContainer>
           <RechartsAreaChart
             data={data}

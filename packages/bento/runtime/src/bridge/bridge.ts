@@ -27,6 +27,13 @@ export type BentoEngineHostRpcInterface = {
   boardUpdated: ({ data }: { data: BentoBoardData }) => Promise<void>;
   selectionUpdated: ({ selection }: { selection: string[] }) => Promise<void>;
   hoverUpdated: ({ hovered }: { hovered?: string }) => Promise<void>;
+  contextNodeUpdated: ({
+    path,
+    data,
+  }: {
+    path: string;
+    data: any;
+  }) => Promise<void>;
 
   // services
   runServiceOperation: (args: {
@@ -43,6 +50,9 @@ export type BentoEngineRuntimeRpcInterface = {
   select: ({ selection }: { selection: string[] }) => Promise<void>;
   hover: ({ elementId }: { elementId: string }) => Promise<void>;
   unhover: ({ elementId }: { elementId: string }) => Promise<void>;
+
+  watchContextNode: ({ path }: { path: string }) => Promise<string>;
+  unwatchContextNode: ({ key }: { key: string }) => Promise<void>;
 
   readBoard: ({
     boardId,
@@ -67,6 +77,14 @@ export type BentoEngineRuntimeRpcInterface = {
   }: {
     names: string[];
   }) => Promise<Record<string, unknown>>;
+
+  // inspection and interaction
+  readNode: (args: { selector: string }) => Promise<string>;
+  clickNode: (args: { selector: string }) => Promise<void>;
+  setValue: (args: { selector: string; value: string }) => Promise<void>;
+  getValue: (args: { selector: string }) => Promise<string>;
+  readLogs: (args: { from?: number; count?: number }) => Promise<string>;
+  readContext: (args: { path: string }) => Promise<unknown>;
 };
 
 export type ServiceOperationErrorData = {

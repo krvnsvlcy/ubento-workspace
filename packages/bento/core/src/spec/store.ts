@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { eagerDirectiveSchema } from "./directives";
 
 const queryStoreEntrySchema = z
   .object({
@@ -22,6 +23,12 @@ const queryStoreEntrySchema = z
       .optional()
       .describe(
         "A map of arguments, variables, or filters passed into the query. These can be static values or expressions mapping to board parameters/state.",
+      ),
+    required: z
+      .array(eagerDirectiveSchema)
+      .optional()
+      .describe(
+        "A list of values that determine whether the query is enabled. The query is enabled if all values are truthy.",
       ),
   })
   .describe(

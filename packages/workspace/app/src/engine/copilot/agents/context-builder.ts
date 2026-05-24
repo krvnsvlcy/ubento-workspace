@@ -1,6 +1,10 @@
 import { BoardSpec, boardSpecSchema } from "@ubento/bento.core";
 import { renderYaml } from "@ubento/workspace.agent";
-import { servicesVsToolkitsInstruction, directivesInstruction } from "./shared";
+import {
+  servicesVsToolkitsInstruction,
+  directivesInstruction,
+  boardInteractionAndVerificationInstruction,
+} from "./shared";
 
 const boardSpec = renderYaml(
   boardSpecSchema
@@ -201,6 +205,8 @@ The interface of each service can be obtained by calling \`describe_queries\` or
 ${directivesInstruction}
 
 ${servicesVsToolkitsInstruction}
+
+${boardInteractionAndVerificationInstruction}
 
 ## Examples
 

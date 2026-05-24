@@ -57,7 +57,6 @@ function BarListInner<T>(
       ref={forwardedRef}
       className={cx("flex justify-between space-x-6", className)}
       aria-sort={sortOrder}
-      tremor-id="tremor-raw"
       {...props}
     >
       <div className="relative w-full space-y-1.5">
@@ -151,7 +150,7 @@ function BarListInner<T>(
                 // base
                 "truncate whitespace-nowrap text-sm leading-none",
                 // text color
-              "text-neutral-content",
+                "text-neutral-content",
               )}
             >
               {valueFormatter(item.value)}

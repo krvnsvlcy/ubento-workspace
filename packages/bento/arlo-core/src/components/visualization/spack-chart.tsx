@@ -188,12 +188,7 @@ const SparkLineChart = React.forwardRef<HTMLDivElement, SparkLineChartProps>(
     const yAxisDomain = getYAxisDomain(autoMinValue, minValue, maxValue);
 
     return (
-      <div
-        ref={forwardedRef}
-        className={cx("h-12 w-28", className)}
-        tremor-id="tremor-raw"
-        {...other}
-      >
+      <div ref={forwardedRef} className={cx("h-12 w-28", className)} {...other}>
         <ResponsiveContainer>
           <RechartsLineChart
             data={data}
@@ -273,12 +268,7 @@ const SparkBarChart = React.forwardRef<HTMLDivElement, BarChartProps>(
     const stacked = type === "stacked" || type === "percent";
 
     return (
-      <div
-        ref={forwardedRef}
-        className={cx("h-12 w-28", className)}
-        tremor-id="tremor-raw"
-        {...other}
-      >
+      <div ref={forwardedRef} className={cx("h-12 w-28", className)} {...other}>
         <ResponsiveContainer>
           <RechartsBarChart
             data={data}

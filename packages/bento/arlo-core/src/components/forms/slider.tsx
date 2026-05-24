@@ -31,7 +31,6 @@ const Slider = React.forwardRef<
         "data-disabled:pointer-events-none",
         className,
       )}
-      tremor-id="tremor-raw"
       {...props}
     >
       <SliderPrimitive.Track
