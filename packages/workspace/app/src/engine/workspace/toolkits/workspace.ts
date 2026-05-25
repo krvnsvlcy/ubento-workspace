@@ -7,6 +7,21 @@ import {
 } from "@ubento/workspace.agent";
 import z from "zod";
 import { extractBoardContext } from "../engine";
+import {
+  boardResource,
+  BoardResourceType,
+  boardListResource,
+  BoardListResourceType,
+  boardSpecResource,
+  BoardSpecResourceType,
+  boardContextResource,
+  BoardContextResourceType,
+  resolvedBoardContextResource,
+  ResolvedBoardContextResourceType,
+  boardUiResource,
+  BoardUiResourceType,
+  extractBoardUi,
+} from "../resources";
 
 export const createWorkspaceToolkit = ({
   goTo,
@@ -76,17 +91,23 @@ export const createWorkspaceToolkit = ({
     name: "get_board",
     description: "Get detailed information about a specific board.",
     args: getBoardArgs,
-    run: async ({ args }) => {
+    run: async ({ args, thread }) => {
       const board = await getBoard({ boardId: args.boardId });
+
+      thread.context.addResource<BoardResourceType>({
+        key: `board:${board.id}`,
+        type: boardResource.type,
+        label: `Board ${board.id}`,
+        data: {
+          id: board.id,
+        },
+      });
 
       return {
         content: [
           {
             type: "text",
-            text: renderYaml({
-              id: board.id,
-              title: board.title,
-            }),
+            text: "Board resource has been added to the context.",
           },
         ],
       };
@@ -97,14 +118,15 @@ export const createWorkspaceToolkit = ({
     name: "list_boards",
     description: "List all boards available in the current workspace.",
     args: z.object({}),
-    run: async () => {
-      const result = await listBoards();
-      const summary = result.boards.map((b) => ({
-        id: b.id,
-        title: b.title,
-      }));
+    run: async ({ thread }) => {
+      thread.context.addResource<BoardListResourceType>({
+        key: "board_list",
+        type: boardListResource.type,
+        label: "Workspace Board List",
+        data: {},
+      });
       return {
-        content: [{ type: "text", text: renderYaml(summary) }],
+        content: [{ type: "text", text: "Board list resource has been added to the context." }],
       };
     },
   };
@@ -116,11 +138,15 @@ export const createWorkspaceToolkit = ({
     name: "read_board_spec",
     description: "Read the specification of a specific board.",
     args: readBoardSpecArgs,
-    run: async ({ args }) => {
-      const spec = await readBoardSpec({ boardId: args.boardId });
+    run: async ({ args, thread }) => {
+      thread.context.addResource<BoardSpecResourceType>({
+        key: `board_spec:${args.boardId}`,
+        type: boardSpecResource.type,
+        label: `Board Spec ${args.boardId}`,
+        data: { boardId: args.boardId },
+      });
       return {
-        content: [{ type: "text", text: renderYaml(spec) }],
-        structuredContent: spec,
+        content: [{ type: "text", text: "Board spec resource has been added to the context." }],
       };
     },
   };
@@ -287,12 +313,15 @@ export const createWorkspaceToolkit = ({
     description:
       "Read the context-related parts of a board specification (params, state, store).",
     args: readBoardContextArgs,
-    run: async ({ args }) => {
-      const spec = await readBoardSpec({ boardId: args.boardId });
-      const context = extractBoardContext(spec);
+    run: async ({ args, thread }) => {
+      thread.context.addResource<BoardContextResourceType>({
+        key: `board_context:${args.boardId}`,
+        type: boardContextResource.type,
+        label: `Board Context ${args.boardId}`,
+        data: { boardId: args.boardId },
+      });
       return {
-        content: [{ type: "text", text: renderYaml(context) }],
-        structuredContent: context,
+        content: [{ type: "text", text: "Board context resource has been added to the context." }],
       };
     },
   };
@@ -367,38 +396,17 @@ export const createWorkspaceToolkit = ({
     name: "get_resolved_board_context",
     description: "Get the resolved schema for the board context.",
     args: getResolvedBoardContextArgs,
-    run: async ({ args }) => {
-      const result = await resolveBoardContextSchema({ boardId: args.boardId });
+    run: async ({ args, thread }) => {
+      thread.context.addResource<ResolvedBoardContextResourceType>({
+        key: `resolved_board_context:${args.boardId}`,
+        type: resolvedBoardContextResource.type,
+        label: `Resolved Board Context ${args.boardId}`,
+        data: { boardId: args.boardId },
+      });
       return {
-        content: [{ type: "text", text: renderYaml(result) }],
-        structuredContent: result,
+        content: [{ type: "text", text: "Resolved board context resource has been added to the context." }],
       };
     },
-  };
-
-  const extractBoardUi = (spec: ParsedSpec<BoardSpec>) => {
-    const uiFields = new Set(["elements", "children", "style"]);
-    let uiData = {};
-    if (spec.data && typeof spec.data === "object") {
-      uiData = {
-        elements: (spec.data as any)?.elements,
-        children: (spec.data as any)?.children,
-        style: (spec.data as any)?.style,
-      };
-    }
-
-    let uiIssues: SpecIssue[] = [];
-    if (spec.issues) {
-      uiIssues = spec.issues.filter((issue: SpecIssue) =>
-        uiFields.has(issue.location[0]),
-      );
-    }
-
-    return {
-      isValid: uiIssues.length === 0,
-      data: uiData,
-      issues: uiIssues,
-    };
   };
 
   const readBoardUiArgs = z.object({
@@ -411,12 +419,15 @@ export const createWorkspaceToolkit = ({
     description:
       "Read the UI-related parts of a board specification (elements, children, style).",
     args: readBoardUiArgs,
-    run: async ({ args }) => {
-      const spec = await readBoardSpec({ boardId: args.boardId });
-      const ui = extractBoardUi(spec);
+    run: async ({ args, thread }) => {
+      thread.context.addResource<BoardUiResourceType>({
+        key: `board_ui:${args.boardId}`,
+        type: boardUiResource.type,
+        label: `Board UI ${args.boardId}`,
+        data: { boardId: args.boardId },
+      });
       return {
-        content: [{ type: "text", text: renderYaml(ui.data) }],
-        structuredContent: ui.data,
+        content: [{ type: "text", text: "Board UI resource has been added to the context." }],
       };
     },
   };

@@ -40,7 +40,12 @@ export const agentContextResourceSchema = z.object({
   label: z.string(),
   data: z.any(),
 });
-export type AgentContextResource = z.infer<typeof agentContextResourceSchema>;
+export type AgentContextResource<T extends string = string, D = unknown> = {
+  key: string;
+  type: T;
+  label: string;
+  data: D;
+};
 
 // ==========================================
 // Context

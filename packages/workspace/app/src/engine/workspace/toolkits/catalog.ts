@@ -1,9 +1,14 @@
 import {
   AgentTool,
   createLocalToolkit,
-  renderYaml,
 } from "@ubento/workspace.agent";
 import z from "zod";
+import {
+  componentsListResource,
+  ComponentsListResourceType,
+  componentDetailResource,
+  ComponentDetailResourceType,
+} from "../resources";
 
 export const createCatalogToolkit = ({
   listComponents,
@@ -16,10 +21,17 @@ export const createCatalogToolkit = ({
     name: "list_components",
     description: "List all components available in the catalog.",
     args: z.object({}),
-    run: async () => {
-      const components = await listComponents();
+    run: async ({ thread }) => {
+      thread.context.addResource<ComponentsListResourceType>({
+        key: "component_list",
+        type: componentsListResource.type,
+        label: "Component Catalog List",
+        data: {},
+      });
       return {
-        content: [{ type: "text", text: renderYaml(components) }],
+        content: [
+          { type: "text", text: "Components list resource has been added to the context." },
+        ],
       };
     },
   };
@@ -35,10 +47,21 @@ export const createCatalogToolkit = ({
     description:
       "Get detailed information about specific components in the catalog.",
     args: describeComponentsArgs,
-    run: async ({ args }) => {
-      const description = await describeComponents(args.names);
+    run: async ({ args, thread }) => {
+      await Promise.all(
+        args.names.map((name) =>
+          thread.context.addResource<ComponentDetailResourceType>({
+            key: `component_detail:${name}`,
+            type: componentDetailResource.type,
+            label: `Component Detail: ${name}`,
+            data: { name },
+          })
+        )
+      );
       return {
-        content: [{ type: "text", text: renderYaml(description) }],
+        content: [
+          { type: "text", text: "Component details resource has been added to the context." },
+        ],
       };
     },
   };

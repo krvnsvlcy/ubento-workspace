@@ -5,7 +5,7 @@ export type ResourceType<
   TEnvironment extends AgentEnvironment = AgentEnvironment,
 > = {
   type: string;
-  resolveData?: (input: {
+  resolveData: (input: {
     data: Data;
     key: string;
     environment: TEnvironment;

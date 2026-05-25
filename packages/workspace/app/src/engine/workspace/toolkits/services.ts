@@ -1,29 +1,21 @@
 import { ServiceData } from "@ubento/bento.core";
-import { ServiceSpecV1, serviceSpecV1Schema } from "@ubento/vertex.core";
 import {
   AgentTool,
   createLocalToolkit,
-  renderYaml,
 } from "@ubento/workspace.agent";
 import z from "zod";
-
-export type SummarizedServiceSpec = {
-  type: string;
-  description?: string;
-  schemas: string[];
-  queries: string[];
-  actions: string[];
-};
-
-function summarizeServiceSpec(spec: ServiceSpecV1): SummarizedServiceSpec {
-  return {
-    type: spec.type,
-    description: spec.description,
-    schemas: spec.schemas ? Object.keys(spec.schemas) : [],
-    queries: spec.queries ? Object.keys(spec.queries) : [],
-    actions: spec.actions ? Object.keys(spec.actions) : [],
-  };
-}
+import {
+  servicesListResource,
+  ServicesListResourceType,
+  serviceDetailsResource,
+  ServiceDetailsResourceType,
+  serviceActionResource,
+  ServiceActionResourceType,
+  serviceQueryResource,
+  ServiceQueryResourceType,
+  serviceSchemaResource,
+  ServiceSchemaResourceType,
+} from "../resources";
 
 export const createServicesToolkit = ({
   getServices,
@@ -36,11 +28,17 @@ export const createServicesToolkit = ({
     name: "list_services",
     description: "List all installed services in the workspace.",
     args: z.object({}),
-    run: async () => {
-      const services = await getServices();
-      const serviceNames = services ? Object.keys(services) : [];
+    run: async ({ thread }) => {
+      thread.context.addResource<ServicesListResourceType>({
+        key: "services_list",
+        type: servicesListResource.type,
+        label: "Installed Services List",
+        data: {},
+      });
       return {
-        content: [{ type: "text", text: renderYaml(serviceNames) }],
+        content: [
+          { type: "text", text: "Services list resource has been added to the context." },
+        ],
       };
     },
   };
@@ -53,7 +51,7 @@ export const createServicesToolkit = ({
     name: "describe_service",
     description: "Get summary information about a specific installed service.",
     args: describeServiceArgs,
-    run: async ({ args }) => {
+    run: async ({ args, thread }) => {
       const services = await getServices();
       const service = services ? services[args.name] : undefined;
 
@@ -65,21 +63,20 @@ export const createServicesToolkit = ({
         };
       }
 
-      const serviceSpec = await getServiceSpec(service.channelId);
-      const parsed = serviceSpecV1Schema.safeParse(serviceSpec);
-      if (!parsed.success) {
-        return {
-          content: [
-            { type: "text", text: `Invalid service spec for ${args.name}.` },
-          ],
-        };
-      }
-
-      const summarized = summarizeServiceSpec(parsed.data);
+      thread.context.addResource<ServiceDetailsResourceType>({
+        key: `service_details:${args.name}`,
+        type: serviceDetailsResource.type,
+        label: `Service Details: ${args.name}`,
+        data: { name: args.name },
+      });
 
       return {
-        content: [{ type: "text", text: renderYaml(summarized) }],
-        structuredContent: summarized,
+        content: [
+          {
+            type: "text",
+            text: `Service details for "${args.name}" have been added to the context.`,
+          },
+        ],
       };
     },
   };
@@ -96,7 +93,7 @@ export const createServicesToolkit = ({
     description:
       "Get detailed information about specific actions of a service.",
     args: describeActionsArgs,
-    run: async ({ args }) => {
+    run: async ({ args, thread }) => {
       const services = await getServices();
       const service = services ? services[args.service] : undefined;
 
@@ -108,27 +105,24 @@ export const createServicesToolkit = ({
         };
       }
 
-      const serviceSpec = await getServiceSpec(service.channelId);
-      const parsed = serviceSpecV1Schema.safeParse(serviceSpec);
-      if (!parsed.success) {
-        return {
-          content: [
-            { type: "text", text: `Invalid service spec for ${args.service}.` },
-          ],
-        };
-      }
-
-      const actions = parsed.data.actions || {};
-      const result: Record<string, any> = {};
-      for (const name of args.actions) {
-        if (actions[name]) {
-          result[name] = actions[name];
-        }
-      }
+      await Promise.all(
+        args.actions.map((action) =>
+          thread.context.addResource<ServiceActionResourceType>({
+            key: `service_action:${args.service}:${action}`,
+            type: serviceActionResource.type,
+            label: `Service Action (${args.service}): ${action}`,
+            data: { service: args.service, action },
+          })
+        )
+      );
 
       return {
-        content: [{ type: "text", text: renderYaml(result) }],
-        structuredContent: result,
+        content: [
+          {
+            type: "text",
+            text: `Actions for service "${args.service}" have been added to the context.`,
+          },
+        ],
       };
     },
   };
@@ -145,7 +139,7 @@ export const createServicesToolkit = ({
     description:
       "Get detailed information about specific queries of a service.",
     args: describeQueriesArgs,
-    run: async ({ args }) => {
+    run: async ({ args, thread }) => {
       const services = await getServices();
       const service = services ? services[args.service] : undefined;
 
@@ -157,27 +151,24 @@ export const createServicesToolkit = ({
         };
       }
 
-      const serviceSpec = await getServiceSpec(service.channelId);
-      const parsed = serviceSpecV1Schema.safeParse(serviceSpec);
-      if (!parsed.success) {
-        return {
-          content: [
-            { type: "text", text: `Invalid service spec for ${args.service}.` },
-          ],
-        };
-      }
-
-      const queries = parsed.data.queries || {};
-      const result: Record<string, any> = {};
-      for (const name of args.queries) {
-        if (queries[name]) {
-          result[name] = queries[name];
-        }
-      }
+      await Promise.all(
+        args.queries.map((query) =>
+          thread.context.addResource<ServiceQueryResourceType>({
+            key: `service_query:${args.service}:${query}`,
+            type: serviceQueryResource.type,
+            label: `Service Query (${args.service}): ${query}`,
+            data: { service: args.service, query },
+          })
+        )
+      );
 
       return {
-        content: [{ type: "text", text: renderYaml(result) }],
-        structuredContent: result,
+        content: [
+          {
+            type: "text",
+            text: `Queries for service "${args.service}" have been added to the context.`,
+          },
+        ],
       };
     },
   };
@@ -194,7 +185,7 @@ export const createServicesToolkit = ({
     description:
       "Get detailed information about specific schemas of a service.",
     args: describeSchemasArgs,
-    run: async ({ args }) => {
+    run: async ({ args, thread }) => {
       const services = await getServices();
       const service = services ? services[args.service] : undefined;
 
@@ -206,27 +197,24 @@ export const createServicesToolkit = ({
         };
       }
 
-      const serviceSpec = await getServiceSpec(service.channelId);
-      const parsed = serviceSpecV1Schema.safeParse(serviceSpec);
-      if (!parsed.success) {
-        return {
-          content: [
-            { type: "text", text: `Invalid service spec for ${args.service}.` },
-          ],
-        };
-      }
-
-      const schemas = parsed.data.schemas || {};
-      const result: Record<string, any> = {};
-      for (const name of args.schemas) {
-        if (schemas[name]) {
-          result[name] = schemas[name];
-        }
-      }
+      await Promise.all(
+        args.schemas.map((schema) =>
+          thread.context.addResource<ServiceSchemaResourceType>({
+            key: `service_schema:${args.service}:${schema}`,
+            type: serviceSchemaResource.type,
+            label: `Service Schema (${args.service}): ${schema}`,
+            data: { service: args.service, schema },
+          })
+        )
+      );
 
       return {
-        content: [{ type: "text", text: renderYaml(result) }],
-        structuredContent: result,
+        content: [
+          {
+            type: "text",
+            text: `Schemas for service "${args.service}" have been added to the context.`,
+          },
+        ],
       };
     },
   };

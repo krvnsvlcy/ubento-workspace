@@ -36,17 +36,9 @@ import debounce from "lodash.debounce";
 import z from "zod";
 import { createStore as createZustandStore } from "zustand/vanilla";
 import { UbentoSession } from "../app/session";
-import { contextBuilderInstructions } from "../copilot/agents/context-builder";
-import { copilotInstructions } from "../copilot/agents/copilot";
-import { explorerInstructions } from "../copilot/agents/explorer";
-import { uiBuilderInstructions } from "../copilot/agents/ui-builder";
 import { createUbentoCopilot } from "../copilot/copilot";
-import { createCopilotAgentEnvironment } from "../copilot/environment/environment";
+import { createWorkspaceCopilotAgentEnvironment } from "./environment";
 import { generateInitialBoardSpec } from "./init";
-import { createCatalogToolkit } from "./toolkits/catalog";
-import { createRuntimeToolkit } from "./toolkits/runtime";
-import { createServicesToolkit } from "./toolkits/services";
-import { createWorkspaceToolkit } from "./toolkits/workspace";
 
 function parseSpecData<S extends z.ZodTypeAny>(
   schema: S,
@@ -851,208 +843,63 @@ export function createWorkspaceEngine({
     },
   );
 
-  const workspaceToolkit = createWorkspaceToolkit({
-    goTo,
-    getBoard,
-    listBoards,
-    readBoardSpec,
-    updateBoardSpec,
-    updateBoard,
-    deleteBoard,
-    createBoard,
-    resolveBoardContextSchema,
-  });
-  const runtimeToolkit = createRuntimeToolkit({
-    focusBoard: async ({ location }) => {
-      goTo({ location });
+  const environment = createWorkspaceCopilotAgentEnvironment(
+    {
+      listComponents,
+      describeComponents,
+      focusBoard: async ({ location }) => {
+        goTo({ location });
+      },
+      readNode: async (selector) => {
+        if (!rpc) throw new Error("Runtime connection not established");
+        return await rpc.egress.readNode({ selector });
+      },
+      clickNode: async (selector) => {
+        if (!rpc) throw new Error("Runtime connection not established");
+        await rpc.egress.clickNode({ selector });
+      },
+      setValue: async ({ selector, value }) => {
+        if (!rpc) throw new Error("Runtime connection not established");
+        await rpc.egress.setValue({ selector, value });
+      },
+      getValue: async (selector) => {
+        if (!rpc) throw new Error("Runtime connection not established");
+        return await rpc.egress.getValue({ selector });
+      },
+      readLogs: async ({ from, count }) => {
+        if (!rpc) throw new Error("Runtime connection not established");
+        return await rpc.egress.readLogs({ from, count });
+      },
+      readContext: async (path) => {
+        if (!rpc) throw new Error("Runtime connection not established");
+        return await rpc.egress.readContext({ path });
+      },
+      getServices: async () => {
+        const spec = readWorkspaceSpec();
+        return spec?.services;
+      },
+      getServiceSpec: async (serviceChannelId) => {
+        return appEngine.ubento.sdk.vertex.getServiceChannelSpec(
+          serviceChannelId,
+        );
+      },
+      goTo,
+      getBoard,
+      listBoards,
+      updateBoard,
+      deleteBoard,
+      createBoard,
+      readBoardSpec,
+      updateBoardSpec,
+      resolveBoardContextSchema,
     },
-    readNode: async (selector) => {
-      if (!rpc) throw new Error("Runtime connection not established");
-      return await rpc.egress.readNode({ selector });
+    {
+      session,
+      ubento: appEngine.ubento,
+      logger,
+      workspaceId: store.getState().workspace.id,
     },
-    clickNode: async (selector) => {
-      if (!rpc) throw new Error("Runtime connection not established");
-      await rpc.egress.clickNode({ selector });
-    },
-    setValue: async ({ selector, value }) => {
-      if (!rpc) throw new Error("Runtime connection not established");
-      await rpc.egress.setValue({ selector, value });
-    },
-    getValue: async (selector) => {
-      if (!rpc) throw new Error("Runtime connection not established");
-      return await rpc.egress.getValue({ selector });
-    },
-    readLogs: async ({ from, count }) => {
-      if (!rpc) throw new Error("Runtime connection not established");
-      return await rpc.egress.readLogs({ from, count });
-    },
-    readContext: async (path) => {
-      if (!rpc) throw new Error("Runtime connection not established");
-      return await rpc.egress.readContext({ path });
-    },
-  });
-  const catalogToolkit = createCatalogToolkit({
-    listComponents,
-    describeComponents,
-  });
-  const servicesToolkit = createServicesToolkit({
-    getServices: async () => {
-      const spec = readWorkspaceSpec();
-      return spec?.services;
-    },
-    getServiceSpec: async (serviceChannelId) => {
-      return appEngine.ubento.sdk.vertex.getServiceChannelSpec(
-        serviceChannelId,
-      );
-    },
-  });
-  const environment = createCopilotAgentEnvironment({
-    session,
-    ubento: appEngine.ubento,
-    logger: logger.child({ module: "copilot" }),
-    tools: [
-      workspaceToolkit.tools.goToTool,
-      workspaceToolkit.tools.getBoardTool,
-      workspaceToolkit.tools.updateBoardSpecTool,
-      workspaceToolkit.tools.updateBoardTool,
-      workspaceToolkit.tools.deleteBoardTool,
-      workspaceToolkit.tools.createBoardTool,
-      // context
-      workspaceToolkit.tools.updateBoardContextTool,
-      workspaceToolkit.tools.checkBoardContextTool,
-      workspaceToolkit.tools.readBoardContextTool,
-      // ui
-      workspaceToolkit.tools.readBoardUiTool,
-      workspaceToolkit.tools.updateBoardUiTool,
-      workspaceToolkit.tools.checkBoardUiTool,
-      // spec
-      workspaceToolkit.tools.listBoardsTool,
-      workspaceToolkit.tools.readBoardSpecTool,
-      workspaceToolkit.tools.checkBoardTool,
-      //context
-      workspaceToolkit.tools.getResolvedBoardContextTool,
-      catalogToolkit.tools.listComponents,
-      catalogToolkit.tools.describeComponents,
-      servicesToolkit.tools.listServices,
-      servicesToolkit.tools.describeService,
-      servicesToolkit.tools.describeActions,
-      servicesToolkit.tools.describeQueries,
-      servicesToolkit.tools.describeSchemas,
-      // runtime tools
-      runtimeToolkit.tools.focusBoard,
-      runtimeToolkit.tools.readNode,
-      runtimeToolkit.tools.clickNode,
-      runtimeToolkit.tools.setValue,
-      runtimeToolkit.tools.getValue,
-      runtimeToolkit.tools.readLogs,
-      runtimeToolkit.tools.readContext,
-      runtimeToolkit.tools.wait,
-    ],
-  });
-  environment.addAgent({
-    name: "copilot",
-    description: "The primary WorkOS orchestration assistant (Supervisor)",
-    instructions: copilotInstructions,
-    tools: [
-      workspaceToolkit.tools.goToTool.name,
-      workspaceToolkit.tools.createBoardTool.name,
-      workspaceToolkit.tools.updateBoardTool.name,
-      workspaceToolkit.tools.deleteBoardTool.name,
-      workspaceToolkit.tools.getBoardTool.name,
-      workspaceToolkit.tools.listBoardsTool.name,
-      workspaceToolkit.tools.readBoardSpecTool.name,
-      catalogToolkit.tools.listComponents.name,
-      catalogToolkit.tools.describeComponents.name,
-      servicesToolkit.tools.listServices.name,
-      servicesToolkit.tools.describeService.name,
-      servicesToolkit.tools.describeActions.name,
-      servicesToolkit.tools.describeQueries.name,
-      servicesToolkit.tools.describeSchemas.name,
-      runtimeToolkit.tools.focusBoard.name,
-      runtimeToolkit.tools.wait.name,
-      runtimeToolkit.tools.clickNode.name,
-      runtimeToolkit.tools.setValue.name,
-      runtimeToolkit.tools.getValue.name,
-      runtimeToolkit.tools.readLogs.name,
-      runtimeToolkit.tools.readContext.name,
-      runtimeToolkit.tools.readNode.name,
-    ],
-    agents: ["context-builder", "ui-builder"],
-    enableMessage: true,
-  });
-  environment.addAgent({
-    name: "explorer",
-    description:
-      "Agent to gather information and discover components in the workspace",
-    instructions: explorerInstructions,
-    tools: [
-      workspaceToolkit.tools.getBoardTool.name,
-      workspaceToolkit.tools.listBoardsTool.name,
-      workspaceToolkit.tools.readBoardSpecTool.name,
-      catalogToolkit.tools.listComponents.name,
-      catalogToolkit.tools.describeComponents.name,
-      servicesToolkit.tools.listServices.name,
-      servicesToolkit.tools.describeService.name,
-      servicesToolkit.tools.describeActions.name,
-      servicesToolkit.tools.describeQueries.name,
-      servicesToolkit.tools.describeSchemas.name,
-      runtimeToolkit.tools.focusBoard.name,
-      runtimeToolkit.tools.wait.name,
-      runtimeToolkit.tools.clickNode.name,
-      runtimeToolkit.tools.setValue.name,
-      runtimeToolkit.tools.getValue.name,
-      runtimeToolkit.tools.readLogs.name,
-      runtimeToolkit.tools.readContext.name,
-      runtimeToolkit.tools.readNode.name,
-    ],
-  });
-  environment.addAgent({
-    name: "context-builder",
-    description:
-      "Agent to build the board context including params, state, store, and services integration",
-    instructions: contextBuilderInstructions,
-    tools: [
-      workspaceToolkit.tools.getBoardTool.name,
-      workspaceToolkit.tools.listBoardsTool.name,
-      workspaceToolkit.tools.readBoardContextTool.name,
-      workspaceToolkit.tools.updateBoardContextTool.name,
-      workspaceToolkit.tools.checkBoardContextTool.name,
-      servicesToolkit.tools.listServices.name,
-      servicesToolkit.tools.describeService.name,
-      servicesToolkit.tools.describeActions.name,
-      servicesToolkit.tools.describeQueries.name,
-      servicesToolkit.tools.describeSchemas.name,
-      runtimeToolkit.tools.focusBoard.name,
-      runtimeToolkit.tools.wait.name,
-      runtimeToolkit.tools.clickNode.name,
-      runtimeToolkit.tools.setValue.name,
-      runtimeToolkit.tools.getValue.name,
-      runtimeToolkit.tools.readLogs.name,
-      runtimeToolkit.tools.readContext.name,
-      runtimeToolkit.tools.readNode.name,
-    ],
-  });
-  environment.addAgent({
-    name: "ui-builder",
-    description:
-      "Agent to build the board UI including elements and context integration",
-    instructions: uiBuilderInstructions,
-    tools: [
-      workspaceToolkit.tools.getBoardTool.name,
-      workspaceToolkit.tools.listBoardsTool.name,
-      catalogToolkit.tools.listComponents.name,
-      catalogToolkit.tools.describeComponents.name,
-      workspaceToolkit.tools.readBoardUiTool.name,
-      workspaceToolkit.tools.updateBoardUiTool.name,
-      workspaceToolkit.tools.checkBoardUiTool.name,
-      workspaceToolkit.tools.getResolvedBoardContextTool.name,
-      runtimeToolkit.tools.readNode.name,
-      runtimeToolkit.tools.clickNode.name,
-      runtimeToolkit.tools.setValue.name,
-      runtimeToolkit.tools.getValue.name,
-      runtimeToolkit.tools.wait.name,
-    ],
-  });
+  );
 
   const copilot = createUbentoCopilot({
     environment,

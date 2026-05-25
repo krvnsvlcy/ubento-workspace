@@ -9,6 +9,7 @@ import {
   UserMessageData,
 } from "../message/types.js";
 import { LanguageModel } from "../utils/models.js";
+import { ResourceType } from "./resource.js";
 import { AgentContextStats } from "./stats.js";
 import {
   AgentContextData,
@@ -82,7 +83,12 @@ export function createAgentContext({
       await save?.(getData());
     },
 
-    async addResource(resource: AgentContextResource) {
+    async addResource<T extends ResourceType<any, any>>(
+      resource: AgentContextResource<
+        T["type"],
+        Parameters<T["resolveData"]>[0]["data"]
+      >,
+    ) {
       resources.set(resource.key, resource);
       await save?.(getData());
     },
