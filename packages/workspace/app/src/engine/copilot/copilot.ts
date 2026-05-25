@@ -6,6 +6,10 @@ import {
   BentoLocationAttachment,
   ubentoLocationAttachmentType,
 } from "./attachments/location.js";
+import {
+  BentoWorkspaceAttachment,
+  ubentoWorkspaceAttachmentType,
+} from "./attachments/workspace.js";
 import { CopilotAgentEnvironment } from "./environment/environment.js";
 import { modelIds } from "./models/models.js";
 
@@ -61,9 +65,9 @@ export function createUbentoCopilot({
   }
 
   const attachmentTypes = Object.fromEntries(
-    [ubentoLocationAttachmentType].map((t) => [t.type, t]),
+    [ubentoLocationAttachmentType, ubentoWorkspaceAttachmentType].map((t) => [t.type, t]),
   );
-  type UbentoCopilotAttachments = BentoLocationAttachment;
+  type UbentoCopilotAttachments = BentoLocationAttachment | BentoWorkspaceAttachment;
 
   return {
     logger,

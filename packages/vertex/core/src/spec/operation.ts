@@ -8,6 +8,7 @@ export function operationSpecSchema<THandlerSpec extends z.ZodType>({
 }) {
   return z.object({
     name: z.string(),
+    description: z.string().optional(),
     schema: schemaSchema,
     args: z.record(
       z.string(),

@@ -82,7 +82,7 @@ export function DetailsBody({
           {!specData && !isLoadingSpec && !specError && (
             <div className="flex flex-col items-center justify-center py-12 bg-neutral-surface/10 rounded-2xl border border-neutral-border/20">
               <Terminal size={32} className="text-neutral-content-muted mb-4" />
-              <Text tone="muted" className="text-[13px]">
+              <Text shade="muted" className="text-[13px]">
                 No specification details available for this channel.
               </Text>
             </div>

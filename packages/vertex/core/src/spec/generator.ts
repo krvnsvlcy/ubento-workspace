@@ -225,6 +225,7 @@ export function generateServiceSpecFromOpenApi({
     return {
       // Use the injected template name, or fall back to the new generator
       name: tplOp.name || generateOperationName(method, path, op),
+      description: op.description,
       schema: resSchema,
       args,
       handler: {

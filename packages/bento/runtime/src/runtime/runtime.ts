@@ -70,8 +70,10 @@ function getContextNodeData(value: any) {
     return [];
   }
   return Object.entries(value).map(([key, val]) => {
-    const type = val === null ? "null" : Array.isArray(val) ? "array" : typeof val;
-    const hasChildren = val !== null && (typeof val === "object" || Array.isArray(val));
+    const type =
+      val === null ? "null" : Array.isArray(val) ? "array" : typeof val;
+    const hasChildren =
+      val !== null && (typeof val === "object" || Array.isArray(val));
     let displayValue: string | undefined = undefined;
     if (!hasChildren) {
       displayValue = val === undefined ? "undefined" : JSON.stringify(val);
@@ -242,7 +244,9 @@ export function createBentoRuntime({
       if (element instanceof HTMLElement) {
         element.click();
       }
-      element.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
+      element.dispatchEvent(
+        new MouseEvent("click", { bubbles: true, cancelable: true }),
+      );
     },
     setValue: async ({ selector, value }) => {
       const element = document.querySelector(selector);
@@ -259,7 +263,7 @@ export function createBentoRuntime({
       if (inputEl) {
         const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
           Object.getPrototypeOf(inputEl),
-          "value"
+          "value",
         )?.set;
         if (nativeInputValueSetter) {
           nativeInputValueSetter.call(inputEl, value);
@@ -299,8 +303,10 @@ export function createBentoRuntime({
         .map(
           (log) =>
             `[${new Date(log.timestamp).toISOString()}] [${log.type}] ${log.args
-              .map((arg) => (typeof arg === "object" ? JSON.stringify(arg) : String(arg)))
-              .join(" ")}`
+              .map((arg) =>
+                typeof arg === "object" ? JSON.stringify(arg) : String(arg),
+              )
+              .join(" ")}`,
         )
         .join("\n");
     },
@@ -313,24 +319,34 @@ export function createBentoRuntime({
   const environment: Environment = createEnvironment({
     serviceApi: {
       runQuery: async (args) => {
-        const result = await rpc.egress.runServiceOperation({
-          service: args.service,
-          type: "query",
-          name: args.query,
-          args: args.args,
-        });
+        const result = await rpc.egress.runServiceOperation(
+          {
+            service: args.service,
+            type: "query",
+            name: args.query,
+            args: args.args,
+          },
+          {
+            timeout: 1000 * 60 * 5, // 5 minutes
+          },
+        );
         if (!result.ok) {
           throw new ServiceOperationError(result.error);
         }
         return result.result;
       },
       runAction: async (args) => {
-        const result = await rpc.egress.runServiceOperation({
-          service: args.service,
-          type: "action",
-          name: args.action,
-          args: args.args,
-        });
+        const result = await rpc.egress.runServiceOperation(
+          {
+            service: args.service,
+            type: "action",
+            name: args.action,
+            args: args.args,
+          },
+          {
+            timeout: 1000 * 60 * 5, // 5 minutes
+          },
+        );
         if (!result.ok) {
           throw new ServiceOperationError(result.error);
         }

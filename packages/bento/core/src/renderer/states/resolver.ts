@@ -1,5 +1,6 @@
-import { useCallback } from "react";
+import { createElement, useCallback } from "react";
 import { BoardRenderingContextType } from "../context/context";
+import { ElementView } from "../renderer";
 
 /**
  * Safely retrieves a nested value from an object.
@@ -166,6 +167,11 @@ export function resolveValue(
     }
   }
 
+  // --- EAGER: $element (Element Reference) ---
+  if ("$element" in node && typeof node.$element === "string") {
+    return createElement(ElementView, { id: node.$element });
+  }
+
   // --- LAZY: $call (RPC / Dispatcher) ---
   if (
     "$call" in node &&
@@ -255,8 +261,12 @@ export function useResolvedBindings(
                   statePath = statePath.slice(8);
                 } else if (statePath.startsWith("$.")) {
                   statePath = statePath.slice(2);
+                } else if (statePath.startsWith("state.")) {
+                  statePath = statePath.slice(6);
                 }
-                return setByPath(currentState, statePath, v);
+                const res = setByPath(currentState, statePath, v);
+                console.log("SETTING", { currentState, statePath, v, res });
+                return res;
               });
             },
           ] as [any, (s: any) => void],

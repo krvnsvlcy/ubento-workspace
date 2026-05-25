@@ -13,9 +13,11 @@ export const taskToolSchema = z.object({
   preamble: z
     .string()
     .describe("Why you are starting this task — your reasoning"),
-  message: z
+  prompt: z
     .string()
-    .describe("The detailed instructions/message for the agent"),
+    .describe(
+      "The detailed prompt for the agent. Provide all necessary context to complete the task. Define explicitely what you expect as output.",
+    ),
 });
 
 export type TaskToolOutput = {
@@ -68,7 +70,7 @@ export const taskTool: AgentTool<typeof taskToolSchema> & {
     });
 
     await execution.run({
-      message: { text: args.message, modelId },
+      message: { text: args.prompt, modelId },
     });
 
     unsubscribe();

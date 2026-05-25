@@ -94,7 +94,7 @@ function BaseDataTable<TData, TValue>({
   onRowSelectionChange,
   onRowClick,
   ref,
-  padding = 0,
+  padding = 24,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(

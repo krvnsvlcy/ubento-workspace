@@ -1,5 +1,5 @@
+import { Button, Card, Heading, Text } from "@ubento/bento.arlo-core";
 import { OperationSpec } from "@ubento/vertex.core";
-import { Card, Heading, Text, Button } from "@ubento/bento.arlo-core";
 import {
   Boxes,
   ChevronDown,
@@ -88,9 +88,12 @@ export function OperationCard({
     <div className="flex items-center justify-between group">
       <div className="overflow-hidden space-y-1">
         <div className="text-neutral-content truncate">{name}</div>
-        <div className="text-neutral-content-subtle text-xs">
-          {operation.name}
-        </div>
+        {operation.description && (
+          <div
+            className="text-neutral-content-subtle text-xs"
+            dangerouslySetInnerHTML={{ __html: operation.description }}
+          />
+        )}
       </div>
       <Button
         variant="ghost"

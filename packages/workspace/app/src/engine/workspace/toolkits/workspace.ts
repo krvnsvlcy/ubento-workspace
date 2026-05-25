@@ -34,7 +34,9 @@ export const createWorkspaceToolkit = ({
     update: { title?: string };
   }) => Promise<void>;
   deleteBoard: (args: { boardId: string }) => Promise<void>;
-  createBoard: (args: { title: string }) => Promise<ParsedSpec<BoardSpec> & { boardId: string; id: string }>;
+  createBoard: (args: {
+    title: string;
+  }) => Promise<ParsedSpec<BoardSpec> & { boardId: string; id: string }>;
   // board specs
   readBoardSpec: (args: { boardId: string }) => Promise<any>;
   updateBoardSpec: (args: {
@@ -72,11 +74,11 @@ export const createWorkspaceToolkit = ({
   });
   const getBoardTool: AgentTool<typeof getBoardArgs> = {
     name: "get_board",
-    description:
-      "Get detailed information about a specific board, including its spec and configuration.",
+    description: "Get detailed information about a specific board.",
     args: getBoardArgs,
     run: async ({ args }) => {
       const board = await getBoard({ boardId: args.boardId });
+
       return {
         content: [
           {
@@ -84,7 +86,6 @@ export const createWorkspaceToolkit = ({
             text: renderYaml({
               id: board.id,
               title: board.title,
-              spec: board.spec,
             }),
           },
         ],

@@ -1,12 +1,13 @@
-import { createComponent, useBinding } from "@ubento/bento.core";
-import { z } from "zod";
 import {
   Tabs as CoreTabs,
   TabsList,
   TabsTrigger,
 } from "@ubento/bento.arlo-core";
-import * as React from "react";
+import { createComponent, useBinding } from "@ubento/bento.core";
+import { useRef } from "react";
+import { z } from "zod";
 
+let i = 1;
 export const Tabs = createComponent({
   props: z.object({
     items: z
@@ -34,14 +35,19 @@ export const Tabs = createComponent({
   ].join("\n"),
 
   render: ({ ref, props }) => {
+    const key = useRef<number>(++i);
     const [value, setValue] = useBinding<string>("value");
 
     const coreVariant = props.variant === "pill" ? "solid" : "line";
 
     return (
       <CoreTabs
+        ref={ref}
         value={value}
-        onValueChange={setValue}
+        onValueChange={(v) => {
+          console.log("onValueChange", { key: key.current, value, next: v });
+          setValue(v);
+        }}
       >
         <TabsList variant={coreVariant}>
           {props.items.map((item) => (

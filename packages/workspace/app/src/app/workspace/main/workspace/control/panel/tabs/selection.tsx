@@ -6,7 +6,20 @@ import {
   DimensionControl,
   SwitchControl,
 } from "@ubento/bento.arlo-core";
-import { Link2, Trash2, Settings, Box, Database, Plus } from "lucide-react";
+import {
+  Link2,
+  Trash2,
+  Settings,
+  Box,
+  Database,
+  Plus,
+  Check,
+  Copy,
+  Edit2,
+  Save,
+  X,
+  FileCode,
+} from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { WorkspaceEngine } from "../../../../../../../engine/workspace/engine";
 import { Section } from "../shared";
@@ -23,6 +36,24 @@ export function SelectionTab({ controller }: { controller: WorkspaceEngine }) {
   const [activeElementId, setActiveElementId] = useState<string>("");
   const [catalog, setCatalog] = useState<Record<string, any> | null>(null);
   const [newChildId, setNewChildId] = useState("");
+
+  const activeElement = elements[activeElementId];
+
+  const [copied, setCopied] = useState(false);
+  const [isEditingJson, setIsEditingJson] = useState(false);
+  const [jsonText, setJsonText] = useState("");
+  const [jsonError, setJsonError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setIsEditingJson(false);
+    setJsonError(null);
+  }, [activeElementId]);
+
+  useEffect(() => {
+    if (activeElement && !isEditingJson) {
+      setJsonText(JSON.stringify(activeElement, null, 2));
+    }
+  }, [activeElement, isEditingJson]);
 
   useEffect(() => {
     controller
@@ -48,8 +79,6 @@ export function SelectionTab({ controller }: { controller: WorkspaceEngine }) {
       <div className="p-4 text-neutral-content-muted">No element selected</div>
     );
   }
-
-  const activeElement = elements[activeElementId];
 
   if (!activeElement) {
     return (
@@ -77,6 +106,24 @@ export function SelectionTab({ controller }: { controller: WorkspaceEngine }) {
       boardId: currentBoardId,
       spec: updatedSpec,
     });
+  };
+
+  const handleCopy = () => {
+    const content = JSON.stringify(activeElement, null, 2);
+    navigator.clipboard.writeText(content);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleSaveJson = async () => {
+    try {
+      const parsed = JSON.parse(jsonText);
+      setJsonError(null);
+      await updateElement(activeElementId, parsed);
+      setIsEditingJson(false);
+    } catch (e: any) {
+      setJsonError(e.message || "Invalid JSON");
+    }
   };
 
   const handleComponentChange = (newComp: string) => {
@@ -620,6 +667,81 @@ export function SelectionTab({ controller }: { controller: WorkspaceEngine }) {
 
         <Section title="Structure" icon={Database}>
           {renderChildrenSection()}
+        </Section>
+
+        <Section title="Raw JSON Specification" icon={FileCode}>
+          <div className="px-4 py-2 flex flex-col gap-3">
+            <div className="flex justify-between items-center">
+              <span className="text-[10px] text-neutral-content-muted">
+                Directly edit element JSON
+              </span>
+              <div className="flex gap-2">
+                {!isEditingJson ? (
+                  <>
+                    <button
+                      onClick={handleCopy}
+                      className="flex items-center gap-1 px-2 py-1 text-[10px] bg-white/5 hover:bg-white/10 text-foreground-200 rounded transition-colors"
+                      title="Copy element spec"
+                    >
+                      {copied ? (
+                        <Check size={10} className="text-green-400" />
+                      ) : (
+                        <Copy size={10} />
+                      )}
+                      <span>{copied ? "Copied!" : "Copy"}</span>
+                    </button>
+                    <button
+                      onClick={() => setIsEditingJson(true)}
+                      className="flex items-center gap-1 px-2 py-1 text-[10px] bg-white/5 hover:bg-white/10 text-foreground-200 rounded transition-colors"
+                    >
+                      <Edit2 size={10} />
+                      <span>Edit JSON</span>
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      onClick={handleSaveJson}
+                      className="flex items-center gap-1 px-2 py-1 text-[10px] bg-primary-500/10 hover:bg-primary-500/20 text-primary-400 rounded transition-colors"
+                    >
+                      <Save size={10} />
+                      <span>Save</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        setIsEditingJson(false);
+                        setJsonError(null);
+                      }}
+                      className="flex items-center gap-1 px-2 py-1 text-[10px] bg-white/5 hover:bg-white/10 text-foreground-200 rounded transition-colors"
+                    >
+                      <X size={10} />
+                      <span>Cancel</span>
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+
+            {jsonError && (
+              <div className="text-xs text-red-400 bg-red-400/10 p-2 rounded">
+                {jsonError}
+              </div>
+            )}
+
+            <div className="relative">
+              {isEditingJson ? (
+                <textarea
+                  value={jsonText}
+                  onChange={(e) => setJsonText(e.target.value)}
+                  className="w-full h-[300px] text-[10px] font-mono leading-relaxed text-foreground-300 bg-black/20 p-2.5 rounded focus:outline-none focus:ring-1 focus:ring-primary-500/50 resize-none scrollbar-hide"
+                />
+              ) : (
+                <pre className="max-h-[300px] overflow-auto text-[10px] font-mono leading-relaxed text-foreground-300 bg-black/20 p-2.5 rounded scrollbar-hide">
+                  {JSON.stringify(activeElement, null, 2)}
+                </pre>
+              )}
+            </div>
+          </div>
         </Section>
       </div>
     </div>

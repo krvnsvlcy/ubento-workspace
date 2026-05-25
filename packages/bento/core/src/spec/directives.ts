@@ -26,10 +26,18 @@ export const applyDirectiveSchema = z.object({
 });
 export type ApplyDirective = z.infer<typeof applyDirectiveSchema>;
 
+// Fetches a DOM element reference by its ID
+export const elementDirectiveSchema = z.object({
+  $element: z.string(),
+});
+export type ElementDirective = z.infer<typeof elementDirectiveSchema>;
+
+// Updated union to include the new element directive
 export const eagerDirectiveSchema = z.union([
   useDirectiveSchema,
   evalDirectiveSchema,
   applyDirectiveSchema,
+  elementDirectiveSchema,
 ]);
 export type EagerDirective = z.infer<typeof eagerDirectiveSchema>;
 

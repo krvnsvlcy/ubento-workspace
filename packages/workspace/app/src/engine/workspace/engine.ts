@@ -245,35 +245,6 @@ export function createWorkspaceEngine({
         }
       : undefined;
   }
-  const unsubscribeEngine = appEngine.subscribe(
-    (curr: UbentoEngineState, prev: UbentoEngineState) => {
-      // sync host location to runtime
-      if (
-        curr.location.board !== prev.location.board ||
-        !dequal(curr.location.params, prev.location.params)
-      ) {
-        const location = getBentoLocation(curr);
-        console.log("location changed", { location, rpc, id });
-        rpc?.egress.setLocation({ location });
-
-        // set copilot context attachments
-
-        if (location) {
-          copilot.setContextAttachments("bento-location", [
-            {
-              type: "bento-location",
-              data: {
-                ...location,
-                boardTitle: store.getState().boards[location.boardId].title,
-              },
-            },
-          ]);
-        } else {
-          copilot.setContextAttachments("bento-location", []);
-        }
-      }
-    },
-  );
 
   // Standalone functions here
 
@@ -984,11 +955,19 @@ export function createWorkspaceEngine({
     instructions: copilotInstructions,
     tools: [
       workspaceToolkit.tools.goToTool.name,
-      workspaceToolkit.tools.getBoardTool.name,
-      workspaceToolkit.tools.listBoardsTool.name,
       workspaceToolkit.tools.createBoardTool.name,
       workspaceToolkit.tools.updateBoardTool.name,
       workspaceToolkit.tools.deleteBoardTool.name,
+      workspaceToolkit.tools.getBoardTool.name,
+      workspaceToolkit.tools.listBoardsTool.name,
+      workspaceToolkit.tools.readBoardSpecTool.name,
+      catalogToolkit.tools.listComponents.name,
+      catalogToolkit.tools.describeComponents.name,
+      servicesToolkit.tools.listServices.name,
+      servicesToolkit.tools.describeService.name,
+      servicesToolkit.tools.describeActions.name,
+      servicesToolkit.tools.describeQueries.name,
+      servicesToolkit.tools.describeSchemas.name,
       runtimeToolkit.tools.focusBoard.name,
       runtimeToolkit.tools.wait.name,
       runtimeToolkit.tools.clickNode.name,
@@ -998,7 +977,7 @@ export function createWorkspaceEngine({
       runtimeToolkit.tools.readContext.name,
       runtimeToolkit.tools.readNode.name,
     ],
-    agents: ["explorer", "context-builder", "ui-builder"],
+    agents: ["context-builder", "ui-builder"],
     enableMessage: true,
   });
   environment.addAgent({
@@ -1079,6 +1058,65 @@ export function createWorkspaceEngine({
     environment,
     mainAgentName: "copilot",
   });
+
+  function handleWorkspaceChange() {
+    const ws = store.getState().workspace;
+    const services = ws.spec.isValid
+      ? Object.keys(ws.spec.data.services ?? {})
+      : [];
+
+    copilot.setContextAttachments("workspace", [
+      {
+        type: "bento-workspace",
+        data: {
+          id: ws.id,
+          title: ws.title,
+          slug: ws.slug,
+          services,
+        },
+      },
+    ]);
+  }
+
+  const unsubscribeWorkspaceCopilot = store.subscribe((curr, prev) => {
+    if (!dequal(curr.workspace, prev.workspace)) {
+      handleWorkspaceChange();
+    }
+  });
+  handleWorkspaceChange();
+
+  function handleLocationChange() {
+    const location = getBentoLocation(appEngine.getState());
+    console.log("location changed", { location, rpc, id });
+    rpc?.egress.setLocation({ location });
+
+    // set copilot context attachments
+
+    if (location) {
+      copilot.setContextAttachments("bento-location", [
+        {
+          type: "bento-location",
+          data: {
+            ...location,
+            boardTitle: store.getState().boards[location.boardId]?.title,
+          },
+        },
+      ]);
+    } else {
+      copilot.setContextAttachments("bento-location", []);
+    }
+  }
+  const unsubscribeEngine = appEngine.subscribe(
+    (curr: UbentoEngineState, prev: UbentoEngineState) => {
+      if (
+        curr.location.board !== prev.location.board ||
+        !dequal(curr.location.params, prev.location.params)
+      ) {
+        handleLocationChange();
+      }
+    },
+  );
+  handleLocationChange();
 
   return {
     id,
@@ -1187,6 +1225,7 @@ export function createWorkspaceEngine({
       unregisterStore("workspaceEngine");
       unsubscribeBoards();
       unsubscribeWorkspace();
+      unsubscribeWorkspaceCopilot();
     },
   };
 }

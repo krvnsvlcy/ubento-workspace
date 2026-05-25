@@ -34,6 +34,7 @@ export type UbentoEngineState = {
   showControls: boolean;
 
   // workspace
+  workspaceLoadError?: Error;
   workspaceStatus: "inactive" | "initializing" | "ready" | "error";
   workspace?: WorkspaceEngine;
 
@@ -179,11 +180,16 @@ export function createUbentoEngine({
           .getWorkspaceBySlug(slug)
           .then(handleWorkspaceData)
           .catch((e) => {
-            logger.error("failed to get workspace", e);
+            console.error("failed to get workspace", e);
+            logger.error("failed to get workspace", {
+              event: "getWorkspaceBySlug",
+              error: String(e),
+            });
             stateController.setState((state) => {
               return {
                 ...state,
                 workspaceStatus: "error",
+                workspaceLoadError: e,
                 workspace: undefined,
               };
             });

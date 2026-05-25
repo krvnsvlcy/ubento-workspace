@@ -35,6 +35,11 @@ export function useBinding<T = any>(
   return [pair[0], pair[1], true];
 }
 
+export const ElementParentsContext = createContext<string[]>([]);
+export function useElementParents() {
+  return useContext(ElementParentsContext) || [];
+}
+
 function UnsafeElementView({
   id,
   parents = [],
@@ -64,30 +69,27 @@ function UnsafeElementView({
   }
 
   const children = element.children?.map((child) => (
-    <ElementView id={child} key={child} parents={[...parents, id]} />
+    <ElementView id={child} key={child} />
   ));
 
   return (
     <BindingContext.Provider value={resolvedBindings}>
-      <Component.render
-        props={resolvedProps}
-        ref={handleRef}
-        emit={resolvedEventHandler}
-      >
-        {children}
-      </Component.render>
+      <ElementParentsContext.Provider value={[...parents, id]}>
+        <Component.render
+          props={resolvedProps}
+          ref={handleRef}
+          emit={resolvedEventHandler}
+        >
+          {children}
+        </Component.render>
+      </ElementParentsContext.Provider>
     </BindingContext.Provider>
   );
 }
 
-export function ElementView({
-  id,
-  parents = [],
-}: {
-  id: string;
-  parents?: string[];
-}) {
+export function ElementView({ id }: { id: string }) {
   const environment = useEnvironment();
+  const parents = useElementParents();
 
   const ErrorComponent = useEnvironmentErrorComponent();
   function handleRef(dom: HTMLElement | null) {

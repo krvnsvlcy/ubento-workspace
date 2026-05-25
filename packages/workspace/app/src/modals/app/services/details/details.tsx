@@ -82,10 +82,8 @@ export function ServiceDetails() {
     <RailLayout>
       <RailLayoutSide>
         <Content>
-          <ContentHeader>
-            <GoBack />
-          </ContentHeader>
           <ContentBody className="space-y-4">
+            <GoBack />
             {/* Service Icon */}
             <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-neutral-border/50 text-neutral-content backdrop-blur-sm overflow-hidden bg-background">
               <Switch>
@@ -103,7 +101,7 @@ export function ServiceDetails() {
             </div>
 
             {/* Description */}
-            <Text tone="subtle">
+            <Text shade="subtle">
               {specData?.description || serviceData.description}
             </Text>
           </ContentBody>

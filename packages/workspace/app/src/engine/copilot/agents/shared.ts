@@ -15,7 +15,7 @@ export const defaultBoardLayoutInstruction = `
 `;
 
 export const directivesInstruction = `
-## Shared Directives ($use, $eval, $apply, $call, $run)
+## Shared Directives ($use, $eval, $apply, $element, $call, $run)
 
 Ubento uses directives to inject dynamic behavior into board specifications. These directives are represented as objects with a single key beginning with a dollar sign (\`$\`). They are categorized into **Eager Directives** (evaluated during render) and **Lazy Directives** (executed by event handlers).
 
@@ -87,6 +87,17 @@ Eagerly executes a context function to transform or derive data.
           }
         }
       }
+    }
+    \`\`\`
+
+#### 4. The \`$element\` Directive (Element Reference)
+Renders element with the given ID.
+- **Syntax**: \`{ "$element": "elementId" }\`
+- **Usage**:
+  - Dynamically embed or pass an element to another component's prop:
+    \`\`\`json
+    "props": {
+      "content": { "$element": "chart_details_card" }
     }
     \`\`\`
 
