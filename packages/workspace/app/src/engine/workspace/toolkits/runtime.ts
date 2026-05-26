@@ -5,25 +5,9 @@ import {
 } from "@ubento/workspace.agent";
 import z from "zod";
 
-export const createRuntimeToolkit = ({
-  focusBoard,
-  readNode,
-  clickNode,
-  setValue,
-  getValue,
-  readLogs,
-}: {
-  focusBoard: (args: {
-    location: { boardId: string; params: Record<string, string> };
-  }) => Promise<void>;
-  readNode: (selector: string) => Promise<string>;
-  // events
-  clickNode: (selector: string) => Promise<void>;
-  setValue: (args: { selector: string; value: string }) => Promise<void>;
-  getValue: (selector: string) => Promise<string>;
-  // logs
-  readLogs: (args: { from?: number; count?: number }) => Promise<string>;
-}) => {
+import { WorkspaceToolApi } from "../environment";
+
+export const createRuntimeToolkit = (api: WorkspaceToolApi) => {
   const focusBoardArgs = z.object({
     boardId: z.string().describe("The ID of the board to focus"),
     params: z
@@ -38,7 +22,7 @@ export const createRuntimeToolkit = ({
       "Focus/navigate to a specific board to inspect its active runtime.",
     args: focusBoardArgs,
     run: async ({ args }) => {
-      await focusBoard({
+      await api.focusBoard({
         location: { boardId: args.boardId, params: args.params || {} },
       });
       return {
@@ -59,7 +43,7 @@ export const createRuntimeToolkit = ({
       "Read the HTML content/structure of a rendered element on the active board by its CSS Selector.",
     args: readNodeArgs,
     run: async ({ args }) => {
-      const html = await readNode(args.selector);
+      const html = await api.readNode(args.selector);
       return {
         content: [{ type: "text", text: html }],
       };
@@ -75,7 +59,7 @@ export const createRuntimeToolkit = ({
     description: "Simulate a click event on an active element by its CSS Selector.",
     args: clickNodeArgs,
     run: async ({ args }) => {
-      await clickNode(args.selector);
+      await api.clickNode(args.selector);
       return {
         content: [
           { type: "text", text: `Clicked node matching selector "${args.selector}".` },
@@ -94,7 +78,7 @@ export const createRuntimeToolkit = ({
     description: "Set the value of an input or selection field in the active runtime.",
     args: setValueArgs,
     run: async ({ args }) => {
-      await setValue({ selector: args.selector, value: args.value });
+      await api.setValue({ selector: args.selector, value: args.value });
       return {
         content: [
           { type: "text", text: `Set value of node matching selector "${args.selector}" to "${args.value}".` },
@@ -112,7 +96,7 @@ export const createRuntimeToolkit = ({
     description: "Get the current value or text of an element in the active runtime.",
     args: getValueArgs,
     run: async ({ args }) => {
-      const value = await getValue(args.selector);
+      const value = await api.getValue(args.selector);
       return {
         content: [{ type: "text", text: value }],
       };
@@ -129,7 +113,7 @@ export const createRuntimeToolkit = ({
     description: "Read console logs from the active runtime.",
     args: readLogsArgs,
     run: async ({ args }) => {
-      const logs = await readLogs({ from: args.from, count: args.count });
+      const logs = await api.readLogs({ from: args.from, count: args.count });
       return {
         content: [{ type: "text", text: logs || "No logs available." }],
       };

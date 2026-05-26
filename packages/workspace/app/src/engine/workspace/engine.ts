@@ -3,24 +3,20 @@ import { appModalRoutes } from "@/modals/app/routes";
 import { ConfirmMutationModal } from "@/modals/confirm_mutation/confirm_mutation";
 import { createZustandStateController } from "@ubento/bento.arlo-core";
 import {
-  FunctionSchema,
-  ObjectNodeSchema,
-  ServiceData,
-  WorkspaceSpec,
-  workspaceSpecSchema,
-} from "@ubento/bento.core";
-import {
   BentoEngineHostRpcInterface,
   BentoEngineRuntimeRpcInterface,
   BentoLocation,
   BentoWorkspaceData,
   ParsedSpec,
+  ServiceData,
   ServiceOperationErrorData,
   ServiceOperationResult,
+  WorkspaceSpec,
+  workspaceSpecSchema,
 } from "@ubento/bento.runtime";
 import { createDuplexRpc, createWindowPort, DuplexRpc } from "@ubento/rpc";
 import { vertexClient, workspaceClient } from "@ubento/services.sdk";
-import { OperationSpec, serviceSpecV1Schema } from "@ubento/vertex.core";
+import { serviceSpecV1Schema } from "@ubento/vertex.core";
 import { registerStore, unregisterStore } from "@ubento/zustand-devtool";
 import { dequal } from "dequal/lite";
 import debounce from "lodash.debounce";
@@ -50,44 +46,6 @@ function parseSpecData<S extends z.ZodTypeAny>(
       data: spec.data,
     };
   }
-}
-
-export function resolveOperationSchema<THandlerSpec extends z.ZodType>(
-  spec: OperationSpec<THandlerSpec>,
-): FunctionSchema {
-  const parameters: ObjectNodeSchema = {
-    type: "object",
-    properties: {},
-    required: [],
-  };
-
-  // 1. Map args to parameter properties
-  if (spec.args) {
-    for (const [argName, argDef] of Object.entries(spec.args)) {
-      // Cast the inferred schema to your standard schema AST type
-      parameters.properties![argName] = argDef.schema as any;
-
-      // By default, treat arguments as required unless explicitly marked false
-      if (argDef.required !== false) {
-        parameters.required!.push(argName);
-      }
-    }
-  }
-
-  // Clean up empty required arrays to keep the AST clean
-  if (parameters.required && parameters.required.length === 0) {
-    delete parameters.required;
-  }
-
-  // 2. Construct and return the FunctionSchema
-  return {
-    type: "function",
-    parameters:
-      Object.keys(parameters.properties || {}).length > 0
-        ? parameters
-        : { type: "object", properties: {} },
-    returns: spec.schema as any,
-  };
 }
 
 export type WorkspaceState = {
@@ -262,7 +220,7 @@ export function createWorkspaceEngine({
     if (update.title !== undefined) {
       boards[boardId] = {
         ...board,
-        name: update.title,
+        title: update.title,
       };
     }
 
@@ -331,9 +289,6 @@ export function createWorkspaceEngine({
     spec?: any;
     index?: string | null;
   }): Promise<any> {
-    const state = store.getState();
-    const workspaceId = state.workspace.id;
-
     const newModule = await appEngine.ubento.sdk.module.createModule({
       name: title,
       team_id: session.teamId,
@@ -349,7 +304,7 @@ export function createWorkspaceEngine({
 
     boards[boardId] = {
       id: boardId,
-      name: title,
+      title,
       module: {
         id: newModule.id,
         versionId: newModule.latest_version_id || "",

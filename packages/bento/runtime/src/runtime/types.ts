@@ -1,4 +1,4 @@
-import { WorkspaceSpec } from "@ubento/bento.core";
+import { WorkspaceSpec } from "../spec";
 
 export type SpecIssue = {
   location: string[];

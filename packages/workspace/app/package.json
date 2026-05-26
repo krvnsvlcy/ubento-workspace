@@ -13,7 +13,6 @@
     "@monaco-editor/react": "^4.7.0",
     "@tanstack/react-query": "^5.89.7",
     "@ubento/bento.arlo-core": "workspace:*",
-    "@ubento/bento.core": "workspace:*",
     "@ubento/bento.runtime": "workspace:*",
     "@ubento/data-transfer": "workspace:*",
     "@ubento/fabric": "workspace:*",

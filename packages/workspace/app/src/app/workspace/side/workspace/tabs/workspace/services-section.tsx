@@ -4,7 +4,7 @@ import { useWorkspaceEngine } from "@/contexts/workspace";
 import { useUbentoEngine } from "@/engine/app/engine";
 import { useAppModal } from "@/modals/app/hook";
 import { appModalRoutes } from "@/modals/app/routes";
-import { ServiceData } from "@ubento/bento.core";
+import { ServiceData } from "@ubento/bento.runtime";
 import { Globe } from "lucide-react";
 import React from "react";
 

@@ -2,7 +2,7 @@ import { Button, Heading, Input, Text } from "@ubento/bento.arlo-core";
 import { ChevronRight, Layout, Plus, Search } from "lucide-react";
 import { useState } from "react";
 import { BentoRuntime } from "../runtime/runtime";
-import { WorkspaceBoardSpec } from "@ubento/bento.core";
+import { WorkspaceBoardSpec } from "../spec";
 
 type BoardMap = Record<string, WorkspaceBoardSpec>;
 
@@ -49,7 +49,7 @@ export function BentoHomeView({ runtime }: { runtime: BentoRuntime }) {
 
   const lowerSearch = search.toLowerCase();
   const matchesSearch = (b: WorkspaceBoardSpec) =>
-    !lowerSearch || b.name.toLowerCase().includes(lowerSearch);
+    !lowerSearch || b.title.toLowerCase().includes(lowerSearch);
 
   return (
     <div className="h-full w-full flex flex-col items-center overflow-auto bg-background p-8 md:p-12 lg:p-16">
@@ -166,7 +166,7 @@ function BoardTreeNode({
 
         {/* Name */}
         <Text weight="medium" className="truncate flex-1">
-          {board.name || "Untitled"}
+          {board.title || "Untitled"}
         </Text>
 
         {/* Child count badge */}

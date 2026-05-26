@@ -1,22 +1,15 @@
-import {
-  AgentTool,
-  createLocalToolkit,
-} from "@ubento/workspace.agent";
+import { AgentTool, createLocalToolkit } from "@ubento/workspace.agent";
 import z from "zod";
 import {
-  componentsListResource,
-  ComponentsListResourceType,
   componentDetailResource,
   ComponentDetailResourceType,
+  componentsListResource,
+  ComponentsListResourceType,
 } from "../resources";
 
-export const createCatalogToolkit = ({
-  listComponents,
-  describeComponents,
-}: {
-  listComponents: () => Promise<unknown>;
-  describeComponents: (names: string[]) => Promise<Record<string, unknown>>;
-}) => {
+import { WorkspaceToolApi } from "../environment";
+
+export const createCatalogToolkit = (api: WorkspaceToolApi) => {
   const listComponentsTool: AgentTool = {
     name: "list_components",
     description: "List all components available in the catalog.",
@@ -30,7 +23,10 @@ export const createCatalogToolkit = ({
       });
       return {
         content: [
-          { type: "text", text: "Components list resource has been added to the context." },
+          {
+            type: "text",
+            text: "Components list resource has been added to the context.",
+          },
         ],
       };
     },
@@ -41,7 +37,6 @@ export const createCatalogToolkit = ({
       .array(z.string())
       .describe("The names of the components to describe"),
   });
-
   const describeComponentsTool: AgentTool<typeof describeComponentsArgs> = {
     name: "describe_components",
     description:
@@ -55,12 +50,15 @@ export const createCatalogToolkit = ({
             type: componentDetailResource.type,
             label: `Component Detail: ${name}`,
             data: { name },
-          })
-        )
+          }),
+        ),
       );
       return {
         content: [
-          { type: "text", text: "Component details resource has been added to the context." },
+          {
+            type: "text",
+            text: "Component details resource has been added to the context.",
+          },
         ],
       };
     },

@@ -1,11 +1,8 @@
+import * as LucideReact from "lucide-react";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as ReactDOMClient from "react-dom/client";
 import * as ReactJsxRuntime from "react/jsx-runtime";
-import * as BentoArlo from "@ubento/bento.arlo";
-import * as BentoArloCore from "@ubento/bento.arlo-core";
-import * as LucideReact from "lucide-react";
-import * as BentoCore from "@ubento/bento.core";
 
 /**
  * Creates a proxy module that re-exports everything from a window object
@@ -53,10 +50,7 @@ function createReactProxyModules(): Record<string, string> {
     "ReactDOMClient",
     true,
   );
-  const bentoArloScript = createModuleProxy(BentoArlo, "BentoArlo", true);
-  const bentoArloCoreScript = createModuleProxy(BentoArloCore, "BentoArloCore", true);
   const lucideReactScript = createModuleProxy(LucideReact, "LucideReact", true);
-  const bentoCoreScript = createModuleProxy(BentoCore, "BentoCore", true);
 
   const reactModuleUrl = URL.createObjectURL(
     new Blob([reactScript], { type: "application/javascript" }),
@@ -70,17 +64,8 @@ function createReactProxyModules(): Record<string, string> {
   const reactDOMClientScriptUrl = URL.createObjectURL(
     new Blob([reactDOMClientScript], { type: "application/javascript" }),
   );
-  const bentoArloScriptUrl = URL.createObjectURL(
-    new Blob([bentoArloScript], { type: "application/javascript" }),
-  );
-  const bentoArloCoreScriptUrl = URL.createObjectURL(
-    new Blob([bentoArloCoreScript], { type: "application/javascript" }),
-  );
   const lucideReactScriptUrl = URL.createObjectURL(
     new Blob([lucideReactScript], { type: "application/javascript" }),
-  );
-  const bentoCoreScriptUrl = URL.createObjectURL(
-    new Blob([bentoCoreScript], { type: "application/javascript" }),
   );
 
   return {
@@ -88,10 +73,7 @@ function createReactProxyModules(): Record<string, string> {
     "react-dom": reactDOMModuleUrl,
     "react/jsx-runtime": reactJsxRuntimeScriptUrl,
     "react-dom/client": reactDOMClientScriptUrl,
-    "@ubento/bento.arlo": bentoArloScriptUrl,
-    "@ubento/bento.arlo-core": bentoArloCoreScriptUrl,
     "lucide-react": lucideReactScriptUrl,
-    "@ubento/bento.core": bentoCoreScriptUrl,
   };
 }
 

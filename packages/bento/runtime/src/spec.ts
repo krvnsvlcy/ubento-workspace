@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { stateSpecSchema } from "./state.js";
 
 export const operationPermissionSchema = z.enum([
   "allow",
@@ -28,14 +27,13 @@ export type ModuleRef = z.infer<typeof moduleRef>;
 
 export const workspaceBoardSpecSchema = z.object({
   id: z.string(),
-  name: z.string(),
+  title: z.string(),
   module: moduleRef,
   children: z.array(z.string()).optional(),
 });
 export type WorkspaceBoardSpec = z.infer<typeof workspaceBoardSpecSchema>;
 
 export const workspaceSpecSchema = z.object({
-  state: stateSpecSchema.optional(),
   services: z.record(z.string(), serviceDataSchema).optional(),
   boards: z.record(z.string(), workspaceBoardSpecSchema).optional(),
   roots: z.array(z.string()).optional(),

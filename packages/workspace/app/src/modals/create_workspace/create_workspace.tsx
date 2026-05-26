@@ -9,7 +9,7 @@ import {
   Heading,
   Input,
 } from "@ubento/bento.arlo-core";
-import { WorkspaceSpec } from "@ubento/bento.core";
+import { WorkspaceSpec } from "@ubento/bento.runtime";
 import React from "react";
 
 interface CreateWorkspaceModalProps {

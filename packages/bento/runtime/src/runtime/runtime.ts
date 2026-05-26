@@ -1,11 +1,9 @@
-import { Component, createEnvironment, Environment } from "@ubento/bento.core";
 import type { DuplexRpc } from "@ubento/rpc";
 import { createZustandStateController } from "@ubento/state";
 import { createStore as createZustandStore } from "zustand";
 import {
   BentoEngineHostRpcInterface,
   BentoEngineRuntimeRpcInterface,
-  ServiceOperationError,
 } from "../bridge/bridge";
 import { BentoUserData, BentoWorkspaceData } from "./types";
 
@@ -63,15 +61,9 @@ function getValueAtPath(obj: any, path: string) {
 export function createBentoRuntime({
   initialState,
   rpc,
-  components,
-  fallbackComponent,
-  errorComponent,
 }: {
   initialState: BentoRuntimeState;
   rpc: DuplexRpc<BentoEngineRuntimeRpcInterface, BentoEngineHostRpcInterface>;
-  components?: Record<string, Component>;
-  fallbackComponent?: Component;
-  errorComponent?: Component;
 }) {
   const store = createZustandStore<BentoRuntimeState>(() => {
     return {
@@ -170,80 +162,10 @@ export function createBentoRuntime({
         )
         .join("\n");
     },
-    readContext: async ({ path }) => {
-      const context = environment.contextManager.getState().context;
-      return getValueAtPath(context, path);
-    },
-  });
-
-  const environment: Environment = createEnvironment({
-    serviceApi: {
-      runQuery: async (args) => {
-        const result = await rpc.egress.runServiceOperation(
-          {
-            service: args.service,
-            type: "query",
-            name: args.query,
-            args: args.args,
-          },
-          {
-            timeout: 1000 * 60 * 5, // 5 minutes
-          },
-        );
-        if (!result.ok) {
-          throw new ServiceOperationError(result.error);
-        }
-        return result.result;
-      },
-      runAction: async (args) => {
-        const result = await rpc.egress.runServiceOperation(
-          {
-            service: args.service,
-            type: "action",
-            name: args.action,
-            args: args.args,
-          },
-          {
-            timeout: 1000 * 60 * 5, // 5 minutes
-          },
-        );
-        if (!result.ok) {
-          throw new ServiceOperationError(result.error);
-        }
-        return result.result;
-      },
-    },
-    sessionApi: {
-      user: {
-        id: "",
-        name: "",
-        email: "",
-        picture: "",
-      },
-      team: {
-        id: "",
-        name: "",
-        picture: "",
-      },
-    },
-    workspaceApi: {
-      goTo: function (args: {
-        boardId: string;
-        params?: Record<string, string>;
-      }): void {
-        rpc.egress.goTo({
-          location: { boardId: args.boardId, params: args.params || {} },
-        });
-      },
-    },
-    components,
-    fallbackComponent,
-    errorComponent,
   });
 
   return {
     ...controller,
-    environment,
     rpc,
     goHome: () => {
       rpc.egress.goTo({ location: undefined });

@@ -1,29 +1,22 @@
-import { ServiceData } from "@ubento/bento.core";
-import {
-  AgentTool,
-  createLocalToolkit,
-} from "@ubento/workspace.agent";
+import { ServiceData } from "@ubento/bento.runtime";
+import { AgentTool, createLocalToolkit } from "@ubento/workspace.agent";
 import z from "zod";
 import {
-  servicesListResource,
-  ServicesListResourceType,
-  serviceDetailsResource,
-  ServiceDetailsResourceType,
   serviceActionResource,
   ServiceActionResourceType,
+  serviceDetailsResource,
+  ServiceDetailsResourceType,
   serviceQueryResource,
   ServiceQueryResourceType,
   serviceSchemaResource,
   ServiceSchemaResourceType,
+  servicesListResource,
+  ServicesListResourceType,
 } from "../resources";
 
-export const createServicesToolkit = ({
-  getServices,
-  getServiceSpec,
-}: {
-  getServices: () => Promise<Record<string, ServiceData> | undefined>;
-  getServiceSpec: (serviceChannelId: string) => Promise<any>;
-}) => {
+import { WorkspaceToolApi } from "../environment";
+
+export const createServicesToolkit = (api: WorkspaceToolApi) => {
   const listServicesTool: AgentTool = {
     name: "list_services",
     description: "List all installed services in the workspace.",
@@ -37,7 +30,10 @@ export const createServicesToolkit = ({
       });
       return {
         content: [
-          { type: "text", text: "Services list resource has been added to the context." },
+          {
+            type: "text",
+            text: "Services list resource has been added to the context.",
+          },
         ],
       };
     },
@@ -52,7 +48,7 @@ export const createServicesToolkit = ({
     description: "Get summary information about a specific installed service.",
     args: describeServiceArgs,
     run: async ({ args, thread }) => {
-      const services = await getServices();
+      const services = await api.getServices();
       const service = services ? services[args.name] : undefined;
 
       if (!service) {
@@ -94,7 +90,7 @@ export const createServicesToolkit = ({
       "Get detailed information about specific actions of a service.",
     args: describeActionsArgs,
     run: async ({ args, thread }) => {
-      const services = await getServices();
+      const services = await api.getServices();
       const service = services ? services[args.service] : undefined;
 
       if (!service) {
@@ -112,8 +108,8 @@ export const createServicesToolkit = ({
             type: serviceActionResource.type,
             label: `Service Action (${args.service}): ${action}`,
             data: { service: args.service, action },
-          })
-        )
+          }),
+        ),
       );
 
       return {
@@ -140,7 +136,7 @@ export const createServicesToolkit = ({
       "Get detailed information about specific queries of a service.",
     args: describeQueriesArgs,
     run: async ({ args, thread }) => {
-      const services = await getServices();
+      const services = await api.getServices();
       const service = services ? services[args.service] : undefined;
 
       if (!service) {
@@ -158,8 +154,8 @@ export const createServicesToolkit = ({
             type: serviceQueryResource.type,
             label: `Service Query (${args.service}): ${query}`,
             data: { service: args.service, query },
-          })
-        )
+          }),
+        ),
       );
 
       return {
@@ -186,7 +182,7 @@ export const createServicesToolkit = ({
       "Get detailed information about specific schemas of a service.",
     args: describeSchemasArgs,
     run: async ({ args, thread }) => {
-      const services = await getServices();
+      const services = await api.getServices();
       const service = services ? services[args.service] : undefined;
 
       if (!service) {
@@ -204,8 +200,8 @@ export const createServicesToolkit = ({
             type: serviceSchemaResource.type,
             label: `Service Schema (${args.service}): ${schema}`,
             data: { service: args.service, schema },
-          })
-        )
+          }),
+        ),
       );
 
       return {

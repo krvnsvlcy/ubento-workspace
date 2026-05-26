@@ -198,7 +198,9 @@ export function WorkspaceContent() {
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
             <span className="text-xs font-semibold text-neutral-content">
-              {boardMeta?.name ? `Editing: ${boardMeta.name}` : "Board Canvas"}
+              {boardMeta?.title
+                ? `Editing: ${boardMeta.title}`
+                : "Board Canvas"}
             </span>
           </div>
           <div className="flex items-center gap-3">

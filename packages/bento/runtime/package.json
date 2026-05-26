@@ -22,7 +22,6 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@json-render/core": "^0.18.0",
     "@json-render/react": "^0.18.0",
-    "@ubento/bento.core": "workspace:*",
     "@ubento/fabric": "workspace:*",
     "@ubento/rpc": "workspace:*",
     "@ubento/services.primitives": "workspace:*",

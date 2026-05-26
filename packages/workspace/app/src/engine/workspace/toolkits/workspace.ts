@@ -1,30 +1,9 @@
-import { BoardSpec } from "@ubento/bento.core";
-import { ParsedSpec } from "@ubento/bento.runtime";
-import {
-  AgentTool,
-  createLocalToolkit,
-  renderYaml,
-} from "@ubento/workspace.agent";
+import { WorkspaceBoardSpec } from "@ubento/bento.runtime";
+import { AgentTool, createLocalToolkit } from "@ubento/workspace.agent";
 import z from "zod";
+import { WorkspaceToolApi } from "../environment";
 
-export const createWorkspaceToolkit = ({
-  goTo,
-  updateBoard,
-  deleteBoard,
-  createBoard,
-}: {
-  goTo: (args: {
-    location: { boardId: string; params: Record<string, string> };
-  }) => void;
-  updateBoard: (args: {
-    boardId: string;
-    update: { title?: string };
-  }) => Promise<void>;
-  deleteBoard: (args: { boardId: string }) => Promise<void>;
-  createBoard: (args: {
-    title: string;
-  }) => Promise<ParsedSpec<BoardSpec> & { boardId: string; id: string }>;
-}) => {
+export const createWorkspaceToolkit = (api: WorkspaceToolApi) => {
   const goToArgs = z.object({
     boardId: z.string().describe("The ID of the board to navigate to"),
     params: z
@@ -38,7 +17,7 @@ export const createWorkspaceToolkit = ({
       "Navigate to a specific board in the workspace. Use this to open a board by its ID.",
     args: goToArgs,
     run: async ({ args }) => {
-      goTo({
+      api.goTo({
         location: { boardId: args.boardId, params: args.params || {} },
       });
       return {
@@ -63,7 +42,7 @@ export const createWorkspaceToolkit = ({
     description: "Update the metadata of a specific board (e.g., title).",
     args: updateBoardMetadataArgs,
     run: async ({ args }) => {
-      await updateBoard({
+      await api.updateBoard({
         boardId: args.boardId,
         update: args.metadata,
       });
@@ -88,7 +67,7 @@ export const createWorkspaceToolkit = ({
     args: deleteBoardArgs,
     run: async ({ args }) => {
       for (const boardId of args.boardIds) {
-        await deleteBoard({ boardId });
+        await api.deleteBoard({ boardId });
       }
       return {
         content: [
@@ -110,17 +89,14 @@ export const createWorkspaceToolkit = ({
     description: "Create a new board in the workspace.",
     args: createBoardArgs,
     run: async ({ args }) => {
-      const result = await createBoard({
+      const result = await api.createBoard({
         title: args.title,
       });
       return {
         content: [
           {
             type: "text",
-            text: renderYaml({
-              isValid: result.isValid,
-              issues: result.issues || [],
-            }),
+            text: `Board "${result.title}" created successfully with ID "${result.id}".`,
           },
         ],
         structuredContent: result,

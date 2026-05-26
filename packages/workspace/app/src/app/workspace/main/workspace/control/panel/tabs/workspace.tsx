@@ -1,4 +1,4 @@
-import { ServiceData } from "@ubento/bento.core";
+import { ServiceData } from "@ubento/bento.runtime";
 import { Globe, Plus, Puzzle, Settings2, Trash2 } from "lucide-react";
 import { WorkspaceEngine } from "../../../../../../../engine/workspace/engine";
 import { PropertyRow, Section, Select, TextInput } from "../shared";

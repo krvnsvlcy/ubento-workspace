@@ -1,5 +1,5 @@
 import { UbentoService } from "@/services/ubento/ubento.js";
-import { WorkspaceSpec } from "@ubento/bento.core";
+import { WorkspaceSpec } from "@ubento/bento.runtime";
 import { AgentTool, createLocalToolkit } from "@ubento/workspace.agent";
 import z from "zod";
 
@@ -47,7 +47,6 @@ export const createModuleToolkit = ({
       .string()
       .describe("The ID of the board whose module code to read"),
   });
-
   const readBoardModuleTool: AgentTool<typeof readBoardModuleArgs> = {
     name: "read_board_module",
     description:

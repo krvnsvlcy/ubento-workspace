@@ -1,6 +1,10 @@
 import { UbentoService } from "@/services/ubento/ubento.js";
-import { BoardSpec, ServiceData, WorkspaceSpec } from "@ubento/bento.core";
-import { ParsedSpec } from "@ubento/bento.runtime";
+import {
+  ParsedSpec,
+  ServiceData,
+  WorkspaceBoardSpec,
+  WorkspaceSpec,
+} from "@ubento/bento.runtime";
 import { Logger } from "@ubento/telemetry";
 import { UbentoSession } from "../app/session";
 import { copilotInstructions } from "../copilot/agents/copilot";
@@ -46,9 +50,7 @@ export type WorkspaceToolApi = {
     update: { title?: string };
   }) => Promise<void>;
   deleteBoard: (args: { boardId: string }) => Promise<void>;
-  createBoard: (args: {
-    title: string;
-  }) => Promise<ParsedSpec<BoardSpec> & { boardId: string; id: string }>;
+  createBoard: (args: { title: string }) => Promise<WorkspaceBoardSpec>;
 };
 
 export type WorkspaceCopilotAgentEnvironment = CopilotAgentEnvironment & {
@@ -66,31 +68,13 @@ export function createWorkspaceCopilotAgentEnvironment(
     updateWorkspaceSpec: (spec: WorkspaceSpec) => Promise<void>;
   },
 ): WorkspaceCopilotAgentEnvironment {
-  const workspaceToolkit = createWorkspaceToolkit({
-    goTo: api.goTo,
-    updateBoard: api.updateBoard,
-    deleteBoard: api.deleteBoard,
-    createBoard: api.createBoard,
-  });
+  const workspaceToolkit = createWorkspaceToolkit(api);
 
-  const runtimeToolkit = createRuntimeToolkit({
-    focusBoard: api.focusBoard,
-    readNode: api.readNode,
-    clickNode: api.clickNode,
-    setValue: api.setValue,
-    getValue: api.getValue,
-    readLogs: api.readLogs,
-  });
+  const runtimeToolkit = createRuntimeToolkit(api);
 
-  const catalogToolkit = createCatalogToolkit({
-    listComponents: api.listComponents,
-    describeComponents: api.describeComponents,
-  });
+  const catalogToolkit = createCatalogToolkit(api);
 
-  const servicesToolkit = createServicesToolkit({
-    getServices: api.getServices,
-    getServiceSpec: api.getServiceSpec,
-  });
+  const servicesToolkit = createServicesToolkit(api);
 
   const moduleToolkit = createModuleToolkit({
     ubento: options.ubento,

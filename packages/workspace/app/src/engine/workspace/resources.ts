@@ -1,33 +1,6 @@
-import { BoardSpec } from "@ubento/bento.core";
-import { ParsedSpec, SpecIssue } from "@ubento/bento.runtime";
 import { ServiceSpecV1, serviceSpecV1Schema } from "@ubento/vertex.core";
 import { ResourceType } from "@ubento/workspace.agent";
 import { WorkspaceCopilotAgentEnvironment } from "./environment";
-
-export const extractBoardUi = (spec: ParsedSpec<BoardSpec>) => {
-  const uiFields = new Set(["elements", "children", "style"]);
-  let uiData = {};
-  if (spec.data && typeof spec.data === "object") {
-    uiData = {
-      elements: (spec.data as any)?.elements,
-      children: (spec.data as any)?.children,
-      style: (spec.data as any)?.style,
-    };
-  }
-
-  let uiIssues: SpecIssue[] = [];
-  if (spec.issues) {
-    uiIssues = spec.issues.filter((issue: SpecIssue) =>
-      uiFields.has(issue.location[0]),
-    );
-  }
-
-  return {
-    isValid: uiIssues.length === 0,
-    data: uiData,
-    issues: uiIssues,
-  };
-};
 
 export type SummarizedServiceSpec = {
   type: string;
@@ -46,8 +19,6 @@ function summarizeServiceSpec(spec: ServiceSpecV1): SummarizedServiceSpec {
     actions: spec.actions ? Object.keys(spec.actions) : [],
   };
 }
-
-
 
 // ==========================================
 // Catalog Resources
