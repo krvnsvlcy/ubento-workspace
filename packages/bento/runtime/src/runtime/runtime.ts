@@ -159,10 +159,30 @@ export function createBentoRuntime({
     },
   });
 
+  function runServiceOperation({
+    service,
+    operation,
+    args,
+    type,
+  }: {
+    service: string;
+    operation: string;
+    type: "query" | "action";
+    args?: Record<string, unknown>;
+  }) {
+    return rpc.egress.runServiceOperation({
+      service,
+      type,
+      name: operation,
+      args,
+    });
+  }
+
   return {
     ...controller,
     moduleManager,
     rpc,
+    runServiceOperation,
     goHome: () => {
       rpc.egress.goTo({ location: undefined });
     },

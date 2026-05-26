@@ -209,7 +209,7 @@ export function createWorkspaceEngine({
     update,
   }: {
     boardId: string;
-    update: { title?: string; parentId?: string | null; index?: string | null };
+    update: { title?: string; parentId?: string | null };
   }) {
     const wsSpec = readWorkspaceSpec();
     if (!wsSpec || !wsSpec.boards) return;

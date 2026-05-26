@@ -14,6 +14,7 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
+import { WorkspaceBoardSpec } from "@ubento/bento.runtime";
 import clsx from "clsx";
 import React, { useState } from "react";
 
@@ -105,7 +106,7 @@ function SeparatorDropZone({ id, activeDragId }: SeparatorProps) {
 }
 
 interface BoardNodeProps {
-  board: any;
+  board: WorkspaceBoardSpec;
   allBoards: Record<string, any>;
   activeBoardId: string | undefined;
   depth: number;
@@ -195,8 +196,8 @@ function BoardNode({
               title: "Rename",
               handler: (e: React.MouseEvent) => {
                 e.stopPropagation();
-                const newName = prompt("Enter new name:", board.name);
-                if (newName) onRename(board.id, newName);
+                const newTitle = prompt("Enter new title:", board.title);
+                if (newTitle) onRename(board.id, newTitle);
               },
             },
             {
@@ -204,12 +205,12 @@ function BoardNode({
               title: "Delete",
               handler: (e: React.MouseEvent) => {
                 e.stopPropagation();
-                onDelete(board.id, board.name);
+                onDelete(board.id, board.title);
               },
             },
           ]}
         >
-          <span className="truncate">{board.name}</span>
+          <span className="truncate">{board.title}</span>
         </TreeEntry>
       </div>
 
@@ -220,7 +221,7 @@ function BoardNode({
               id={`sibling-separator:${board.id}:null:${childBoards[0].id}`}
               activeDragId={activeDragId}
             />
-            {childBoards.map((child: any, index: number) => (
+            {childBoards.map((child, index) => (
               <React.Fragment key={child.id}>
                 <BoardNode
                   board={child}
@@ -288,15 +289,15 @@ export function BoardsSection() {
     engine.goToLocation({ board: boardId });
   };
 
-  const handleRename = async (boardId: string, newName: string) => {
+  const handleRename = async (boardId: string, newTitle: string) => {
     try {
       await workspaceEngine?.updateBoard({
         boardId,
-        update: { title: newName },
+        update: { title: newTitle },
       });
       engine.notify({
         title: "Board Renamed",
-        message: `Successfully renamed to ${newName}`,
+        message: `Successfully renamed to ${newTitle}`,
         type: "success",
       });
     } catch (err) {
@@ -308,13 +309,13 @@ export function BoardsSection() {
     }
   };
 
-  const handleDelete = async (boardId: string, boardName: string) => {
-    if (!confirm(`Are you sure you want to delete "${boardName}"?`)) return;
+  const handleDelete = async (boardId: string, boardTitle: string) => {
+    if (!confirm(`Are you sure you want to delete "${boardTitle}"?`)) return;
     try {
       await workspaceEngine?.deleteBoard({ boardId });
       engine.notify({
         title: "Board Deleted",
-        message: `Successfully deleted "${boardName}"`,
+        message: `Successfully deleted "${boardTitle}"`,
         type: "success",
       });
       if (location.board === boardId) {
@@ -476,7 +477,7 @@ export function BoardsSection() {
               id={`sibling-separator:root:null:${rootBoards[0].id}`}
               activeDragId={activeDragId}
             />
-            {rootBoards.map((board: any, index: number) => (
+            {rootBoards.map((board, index: number) => (
               <React.Fragment key={board.id}>
                 <BoardNode
                   board={board}

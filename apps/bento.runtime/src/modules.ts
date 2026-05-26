@@ -1,3 +1,4 @@
+import { useAction, useQuery } from "@ubento/bento.runtime";
 import * as LucideReact from "lucide-react";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
@@ -35,9 +36,10 @@ function createModuleProxy(
 }
 
 /**
- * Creates proxy modules for React and ReactDOM with their blob URLs
+ * Creates proxy modules for React, ReactDOM, and Ubento runtime with their blob URLs
  */
-function createReactProxyModules(): Record<string, string> {
+function createProxyModules(): Record<string, string> {
+  // 1. Generate Proxy Strings
   const reactScript = createModuleProxy(React, "React", true);
   const reactJsxRuntimeScript = createModuleProxy(
     ReactJsxRuntime,
@@ -52,6 +54,14 @@ function createReactProxyModules(): Record<string, string> {
   );
   const lucideReactScript = createModuleProxy(LucideReact, "LucideReact", true);
 
+  // Bundle the runtime hooks into an object for the proxy
+  const bentoRuntimeScript = createModuleProxy(
+    { useAction, useQuery },
+    "BentoRuntime",
+    false,
+  );
+
+  // 2. Convert to Blob URLs
   const reactModuleUrl = URL.createObjectURL(
     new Blob([reactScript], { type: "application/javascript" }),
   );
@@ -68,12 +78,18 @@ function createReactProxyModules(): Record<string, string> {
     new Blob([lucideReactScript], { type: "application/javascript" }),
   );
 
+  const bentoRuntimeScriptUrl = URL.createObjectURL(
+    new Blob([bentoRuntimeScript], { type: "application/javascript" }),
+  );
+
+  // 3. Return the mapping for the importmap with the clean "ubento" specifier
   return {
     react: reactModuleUrl,
     "react-dom": reactDOMModuleUrl,
     "react/jsx-runtime": reactJsxRuntimeScriptUrl,
     "react-dom/client": reactDOMClientScriptUrl,
     "lucide-react": lucideReactScriptUrl,
+    ubento: bentoRuntimeScriptUrl, // Updated here
   };
 }
 
@@ -110,8 +126,6 @@ function updateImportMap(overrides: Record<string, string>) {
   }
 }
 
-// Create proxy modules for React and ReactDOM
-export const proxyModules = createReactProxyModules();
-
-// Inject/update import map so dynamic imports and module loaders can see the synthetic modules
+// Create proxy modules and inject the import map
+export const proxyModules = createProxyModules();
 updateImportMap(proxyModules);

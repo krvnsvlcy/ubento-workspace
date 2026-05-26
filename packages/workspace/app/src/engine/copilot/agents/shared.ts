@@ -1,9 +1,40 @@
 export const servicesVsToolkitsInstruction = `
-## Critical: Services vs Toolkits
+## Critical: Services, Actions, and Queries
 
 - **Services ARE NOT Toolkits**: Services are ONLY accessible within the Ubento workspace runtime (the React boards). They are supposed to be used in the board ESM module code only.
-- **DO NOT** try to call services as tools (e.g., calling \`service:action\` in the agent environment). This is NOT supported and will fail.
-- Services must be invoked inside the React board component's code via the \`serviceApi\` from the workspace environment context.
+- **DO NOT** try to call services as tools (e.g., calling \\\`service:action\\\` in the agent environment). This is NOT supported and will fail.
+- Services must be invoked inside the React board component's code using the \\\`useQuery\\\` and \\\`useAction\\\` hooks imported from \\\`"ubento"\\\`.
+
+### 1. Fetching Data with \\\`useQuery\\\`
+Use \\\`useQuery\\\` for read-only queries. It automatically executes the query and handles loading/error states (backed by TanStack Query).
+\\\`\\\`\\\`tsx
+import { useQuery } from "ubento";
+
+// Inside the component:
+const { data, isLoading, error } = useQuery({
+  service: "todo-service",
+  query: "getTodos",
+  params: { status: "pending" }, // optional parameters
+});
+\\\`\\\`\\\`
+
+### 2. Mutating Data with \\\`useAction\\\`
+Use \\\`useAction\\\` for actions that mutate state or perform operations (like creating, updating, or deleting). It returns a TanStack Mutation.
+\\\`\\\`\\\`tsx
+import { useAction } from "ubento";
+
+// Inside the component:
+const { mutate, isPending } = useAction({
+  service: "todo-service",
+  action: "createTodo",
+  params: { listId: "123" }, // optional initial parameters
+});
+
+// To invoke the action, call mutate with optional dynamic arguments:
+const handleSubmit = (text: string) => {
+  mutate({ text });
+};
+\\\`\\\`\\\`
 `;
 
 export const componentModuleInstruction = `

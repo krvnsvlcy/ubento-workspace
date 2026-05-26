@@ -1,4 +1,6 @@
+import { QueryClientProvider } from "@tanstack/react-query";
 import { BentoRuntimeProvider } from "../context/runtime";
+import { queryClient } from "../query";
 import { BentoRuntime } from "../runtime/runtime";
 import { BentoBoardView } from "./board";
 import { BentoHomeView } from "./home";
@@ -19,6 +21,8 @@ export function BentoRuntimeView({ runtime }: { runtime: BentoRuntime }) {
   }
 
   return (
-    <BentoRuntimeProvider runtime={runtime}>{content}</BentoRuntimeProvider>
+    <BentoRuntimeProvider runtime={runtime}>
+      <QueryClientProvider client={queryClient}>{content}</QueryClientProvider>
+    </BentoRuntimeProvider>
   );
 }
