@@ -17,15 +17,18 @@
     "@ubento/services.database": "workspace:*",
     "@ubento/services.primitives": "workspace:*",
     "@ubento/services.toolkit": "workspace:*",
+    "cors": "^2.8.6",
     "dotenv": "^16.3.1",
     "esbuild": "^0.25.12",
     "express": "^5.2.1",
+    "jose": "^6.2.3",
     "mime-types": "^3.0.2",
     "nanoid": "^5.1.9",
     "openapi-types": "^12.1.3",
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "tsx": "^4.15.2",
     "typescript": "^5.0.4"

@@ -4,21 +4,33 @@ import "@ubento/bento.style/css/themes.css";
 import "@ubento/bento.style/dist/uno.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { ModuleManager } from "../../../packages/bento/runtime/build/module/manager.js";
 import "./modules.js";
 import { rpc } from "./rpc.js";
+import { runServiceWorker } from "./sw.js";
 
 rpc.run();
+
+const moduleManager = new ModuleManager(
+  (id, versionId) => import(`/__ubento_modules/${id}@${versionId}.js`),
+);
 
 let connected = false;
 while (!connected) {
   try {
     console.log("[bento.runtime] connecting...");
-    const { initialState } = await rpc.egress.connect({}, { timeout: 1000 });
-    console.log("[bento.runtime] connected", initialState);
+    const { initialState, registryModuleUrlTemplate } =
+      await rpc.egress.connect({}, { timeout: 1000 });
     connected = true;
+    console.log("[bento.runtime] connected");
+    await runServiceWorker({
+      rpc,
+      registryModuleUrlTemplate,
+    });
     const runtime = createBentoRuntime({
       rpc,
       initialState,
+      moduleManager,
     });
     createRoot(document.getElementById("root")!).render(
       <StrictMode>

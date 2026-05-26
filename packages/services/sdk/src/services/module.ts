@@ -174,4 +174,13 @@ export class ModuleService {
     const data = extractResponseData(result, true) as { content: string };
     return data.content;
   }
+
+  // ===== Registry =====
+
+  async getRegistryToken(teamIds: string[]) {
+    const result = await this.moduleClient.post("/modules/registry/token", {
+      body: { teamIds },
+    });
+    return extractResponseData(result, true) as { token: string };
+  }
 }

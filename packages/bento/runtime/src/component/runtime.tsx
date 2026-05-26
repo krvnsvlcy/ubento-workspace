@@ -1,3 +1,4 @@
+import { BentoRuntimeProvider } from "../context/runtime";
 import { BentoRuntime } from "../runtime/runtime";
 import { BentoBoardView } from "./board";
 import { BentoHomeView } from "./home";
@@ -5,8 +6,9 @@ import { BentoHomeView } from "./home";
 export function BentoRuntimeView({ runtime }: { runtime: BentoRuntime }) {
   const location = runtime.useState((s) => s.location);
 
+  let content = <BentoHomeView runtime={runtime} />;
   if (location) {
-    return (
+    content = (
       <BentoBoardView
         key={location.boardId}
         runtime={runtime}
@@ -14,7 +16,9 @@ export function BentoRuntimeView({ runtime }: { runtime: BentoRuntime }) {
         params={location.params}
       />
     );
-  } else {
-    return <BentoHomeView runtime={runtime} />;
   }
+
+  return (
+    <BentoRuntimeProvider runtime={runtime}>{content}</BentoRuntimeProvider>
+  );
 }

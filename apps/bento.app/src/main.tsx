@@ -77,6 +77,8 @@ const engine = createUbentoEngine({
     import.meta.env.VITE_RUNTIME_URL || "http://localhost:4020",
   componentRuntimeUrl:
     import.meta.env.VITE_COMPONENT_RUNTIME_URL || "http://localhost:4030",
+  registryModuleUrlTemplate:
+    "http://localhost:28888/modules/registry/files/{module_id}/{version_id}/{filename}",
 });
 
 function BentoShell() {

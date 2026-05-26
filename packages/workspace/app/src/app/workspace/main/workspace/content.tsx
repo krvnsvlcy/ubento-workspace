@@ -165,12 +165,12 @@ export function WorkspaceContent() {
         },
       );
 
-      const wsSpec = spec?.isValid ? (spec.data as any) : {};
+      const wsSpec = spec?.isValid ? spec.data : {};
       const boards = { ...(wsSpec.boards || {}) };
       if (boards[activeBoardId]) {
         boards[activeBoardId] = {
           ...boards[activeBoardId],
-          versionId: newModule.latest_version_id,
+          module: { id: moduleId, versionId: newModule.latest_version_id },
         };
         workspaceEngine.updateWorkspaceSpec({
           spec: {

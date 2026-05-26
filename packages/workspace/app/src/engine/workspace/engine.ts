@@ -168,6 +168,7 @@ export function createWorkspaceEngine({
         },
         theme: { css: themeCss },
       },
+      registryModuleUrlTemplate: appEngine.registryModuleUrlTemplate,
     };
   }
 
@@ -518,8 +519,20 @@ export function createWorkspaceEngine({
     });
   }, 1000);
   const unsubscribeWorkspace = store.subscribe(async (state, prevState) => {
+    console.log("Workspace changed:", {
+      state: state.workspace,
+      prevState: prevState.workspace,
+      eq: dequal(state.workspace, prevState.workspace),
+    });
     if (dequal(state.workspace, prevState.workspace)) return;
     persistWorkspace(state.workspace);
+    if (rpc) {
+      Promise.resolve(
+        rpc.egress.workspaceUpdated({ data: state.workspace }),
+      ).catch((err: any) => {
+        logger.error("Failed to notify runtime of workspace update", err);
+      });
+    }
   });
   function readWorkspaceSpec() {
     const state = store.getState();
@@ -543,6 +556,8 @@ export function createWorkspaceEngine({
         ...(currentSpec || {}),
         ...spec,
       });
+
+      console.log({ nextSpec });
 
       return {
         workspace: {
@@ -761,6 +776,13 @@ export function createWorkspaceEngine({
                 "index.tsx",
               );
             return { sourceCode };
+          },
+          getModuleRegistryAccessToken: async () => {
+            const { token } =
+              await appEngine.ubento.sdk.module.getRegistryToken([
+                session.teamId,
+              ]);
+            return token;
           },
         },
       });

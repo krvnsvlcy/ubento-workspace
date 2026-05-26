@@ -375,6 +375,86 @@ export const spec: OpenAPIV3.Document = {
         },
       },
     },
+    "/modules/registry/token": {
+      post: {
+        summary: "Generate Registry Token",
+        description:
+          "Generates a JWT token for a set of teams for module registry access.",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  teamIds: {
+                    type: "array",
+                    items: { type: "string" },
+                  },
+                },
+                required: ["teamIds"],
+              },
+            },
+          },
+        },
+        responses: {
+          "200": {
+            description: "Signed JWT token",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    token: { type: "string" },
+                  },
+                  required: ["token"],
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    "/modules/registry/files/{module_id}/{version_id}/{filename}": {
+      get: {
+        summary: "Read Registry File",
+        description:
+          "Reads a module file using the registry JWT token.",
+        parameters: [
+          {
+            name: "module_id",
+            in: "path",
+            required: true,
+            schema: { type: "string" },
+          },
+          {
+            name: "version_id",
+            in: "path",
+            required: true,
+            schema: { type: "string" },
+          },
+          {
+            name: "filename",
+            in: "path",
+            required: true,
+            schema: { type: "string" },
+          },
+        ],
+        responses: {
+          "200": {
+            description: "Raw file content",
+            content: {
+              "application/javascript": {
+                schema: { type: "string" },
+              },
+              "text/plain": {
+                schema: { type: "string" },
+              },
+            },
+          },
+        },
+      },
+    },
   },
   components: {
     securitySchemes: {

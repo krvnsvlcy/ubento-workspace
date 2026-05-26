@@ -5,6 +5,7 @@ import {
   BentoEngineHostRpcInterface,
   BentoEngineRuntimeRpcInterface,
 } from "../bridge/bridge";
+import { ModuleManager } from "../module/manager";
 import { BentoUserData, BentoWorkspaceData } from "./types";
 
 export type BentoLocation = {
@@ -47,22 +48,13 @@ if (typeof window !== "undefined" && !(console as any).__instrumented) {
   };
 }
 
-function getValueAtPath(obj: any, path: string) {
-  if (!path) return obj;
-  const parts = path.split(".");
-  let current = obj;
-  for (const part of parts) {
-    if (current == null) return undefined;
-    current = current[part];
-  }
-  return current;
-}
-
 export function createBentoRuntime({
   initialState,
+  moduleManager,
   rpc,
 }: {
   initialState: BentoRuntimeState;
+  moduleManager: ModuleManager;
   rpc: DuplexRpc<BentoEngineRuntimeRpcInterface, BentoEngineHostRpcInterface>;
 }) {
   const store = createZustandStore<BentoRuntimeState>(() => {
@@ -80,6 +72,9 @@ export function createBentoRuntime({
     },
     setInteractionMode: async ({ mode }) => {
       controller.setState({ mode });
+    },
+    workspaceUpdated: async ({ data }) => {
+      controller.setState({ workspace: data });
     },
     readNode: async ({ selector }) => {
       const element = document.querySelector(selector);
@@ -166,6 +161,7 @@ export function createBentoRuntime({
 
   return {
     ...controller,
+    moduleManager,
     rpc,
     goHome: () => {
       rpc.egress.goTo({ location: undefined });

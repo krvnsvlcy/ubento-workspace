@@ -2,7 +2,10 @@ import { BentoLocation, BentoRuntimeState } from "../runtime/runtime";
 import { BentoWorkspaceData } from "../runtime/types";
 
 export type BentoEngineHostRpcInterface = {
-  connect: () => { initialState: BentoRuntimeState };
+  connect: () => {
+    initialState: BentoRuntimeState;
+    registryModuleUrlTemplate: string;
+  };
   ready: () => Promise<void>;
 
   // data
@@ -19,6 +22,7 @@ export type BentoEngineHostRpcInterface = {
     moduleId: string;
     versionId: string;
   }) => Promise<{ sourceCode: string }>;
+  getModuleRegistryAccessToken: () => Promise<string>;
 
   // services
   runServiceOperation: (args: {
@@ -32,6 +36,9 @@ export type BentoEngineHostRpcInterface = {
 export type BentoEngineRuntimeRpcInterface = {
   setLocation: ({ location }: { location?: BentoLocation }) => Promise<void>;
   setInteractionMode: ({ mode }: { mode: "edit" | "live" }) => Promise<void>;
+
+  // sync
+  workspaceUpdated: ({ data }: { data: BentoWorkspaceData }) => Promise<void>;
 
   // inspection and interaction
   readNode: (args: { selector: string }) => Promise<string>;

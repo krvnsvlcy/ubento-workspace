@@ -27,17 +27,19 @@ export const createModuleToolkit = ({
     if (!spec) return;
     const board = spec.boards?.[boardId];
     if (!board) return;
-    spec.boards = {
-      ...spec.boards,
-      [boardId]: {
-        ...board,
-        module: {
-          ...board.module,
-          versionId,
+    await updateWorkspaceSpec({
+      ...spec,
+      boards: {
+        ...spec.boards,
+        [boardId]: {
+          ...board,
+          module: {
+            ...board.module,
+            versionId,
+          },
         },
       },
-    };
-    await updateWorkspaceSpec(spec);
+    });
   }
 
   // ── read_board_module ──────────────────────────────────────────────────────
