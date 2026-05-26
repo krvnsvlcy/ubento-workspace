@@ -1,9 +1,8 @@
 import { BoardSpec } from "@ubento/bento.core";
 import { ParsedSpec, SpecIssue } from "@ubento/bento.runtime";
-import { ResourceType } from "@ubento/workspace.agent";
 import { ServiceSpecV1, serviceSpecV1Schema } from "@ubento/vertex.core";
+import { ResourceType } from "@ubento/workspace.agent";
 import { WorkspaceCopilotAgentEnvironment } from "./environment";
-import { extractBoardContext } from "./engine";
 
 export const extractBoardUi = (spec: ParsedSpec<BoardSpec>) => {
   const uiFields = new Set(["elements", "children", "style"]);
@@ -48,83 +47,7 @@ function summarizeServiceSpec(spec: ServiceSpecV1): SummarizedServiceSpec {
   };
 }
 
-export type BoardResourceType = ResourceType<
-  { id: string },
-  WorkspaceCopilotAgentEnvironment
->;
 
-export const boardResource: BoardResourceType = {
-  type: "board",
-  resolveData: async ({ data, environment }) => {
-    const board = await environment.toolApi.getBoard({ boardId: data.id });
-    return board;
-  },
-};
-
-export type BoardListResourceType = ResourceType<
-  any,
-  WorkspaceCopilotAgentEnvironment
->;
-
-export const boardListResource: BoardListResourceType = {
-  type: "board_list",
-  resolveData: async ({ environment }) => {
-    const result = await environment.toolApi.listBoards();
-    return result;
-  },
-};
-
-export type BoardSpecResourceType = ResourceType<
-  { boardId: string },
-  WorkspaceCopilotAgentEnvironment
->;
-
-export const boardSpecResource: BoardSpecResourceType = {
-  type: "board_spec",
-  resolveData: async ({ data, environment }) => {
-    const spec = await environment.toolApi.readBoardSpec({ boardId: data.boardId });
-    return spec;
-  },
-};
-
-export type BoardContextResourceType = ResourceType<
-  { boardId: string },
-  WorkspaceCopilotAgentEnvironment
->;
-
-export const boardContextResource: BoardContextResourceType = {
-  type: "board_context",
-  resolveData: async ({ data, environment }) => {
-    const spec = await environment.toolApi.readBoardSpec({ boardId: data.boardId });
-    return extractBoardContext(spec);
-  },
-};
-
-export type ResolvedBoardContextResourceType = ResourceType<
-  { boardId: string },
-  WorkspaceCopilotAgentEnvironment
->;
-
-export const resolvedBoardContextResource: ResolvedBoardContextResourceType = {
-  type: "resolved_board_context",
-  resolveData: async ({ data, environment }) => {
-    const result = await environment.toolApi.resolveBoardContextSchema({ boardId: data.boardId });
-    return result;
-  },
-};
-
-export type BoardUiResourceType = ResourceType<
-  { boardId: string },
-  WorkspaceCopilotAgentEnvironment
->;
-
-export const boardUiResource: BoardUiResourceType = {
-  type: "board_ui",
-  resolveData: async ({ data, environment }) => {
-    const spec = await environment.toolApi.readBoardSpec({ boardId: data.boardId });
-    return extractBoardUi(spec);
-  },
-};
 
 // ==========================================
 // Catalog Resources
@@ -187,7 +110,9 @@ export const serviceDetailsResource: ServiceDetailsResourceType = {
     if (!service) {
       throw new Error(`Service "${data.name}" not found.`);
     }
-    const serviceSpec = await environment.toolApi.getServiceSpec(service.channelId);
+    const serviceSpec = await environment.toolApi.getServiceSpec(
+      service.channelId,
+    );
     const parsed = serviceSpecV1Schema.safeParse(serviceSpec);
     if (!parsed.success) {
       throw new Error(`Invalid service spec for ${data.name}.`);
@@ -209,7 +134,9 @@ export const serviceActionResource: ServiceActionResourceType = {
     if (!service) {
       throw new Error(`Service "${data.service}" not found.`);
     }
-    const serviceSpec = await environment.toolApi.getServiceSpec(service.channelId);
+    const serviceSpec = await environment.toolApi.getServiceSpec(
+      service.channelId,
+    );
     const parsed = serviceSpecV1Schema.safeParse(serviceSpec);
     if (!parsed.success) {
       throw new Error(`Invalid service spec for ${data.service}.`);
@@ -217,7 +144,9 @@ export const serviceActionResource: ServiceActionResourceType = {
     const actions = parsed.data.actions || {};
     const action = actions[data.action];
     if (!action) {
-      throw new Error(`Action "${data.action}" not found in service "${data.service}".`);
+      throw new Error(
+        `Action "${data.action}" not found in service "${data.service}".`,
+      );
     }
     return { [data.action]: action };
   },
@@ -236,7 +165,9 @@ export const serviceQueryResource: ServiceQueryResourceType = {
     if (!service) {
       throw new Error(`Service "${data.service}" not found.`);
     }
-    const serviceSpec = await environment.toolApi.getServiceSpec(service.channelId);
+    const serviceSpec = await environment.toolApi.getServiceSpec(
+      service.channelId,
+    );
     const parsed = serviceSpecV1Schema.safeParse(serviceSpec);
     if (!parsed.success) {
       throw new Error(`Invalid service spec for ${data.service}.`);
@@ -244,7 +175,9 @@ export const serviceQueryResource: ServiceQueryResourceType = {
     const queries = parsed.data.queries || {};
     const query = queries[data.query];
     if (!query) {
-      throw new Error(`Query "${data.query}" not found in service "${data.service}".`);
+      throw new Error(
+        `Query "${data.query}" not found in service "${data.service}".`,
+      );
     }
     return { [data.query]: query };
   },
@@ -263,7 +196,9 @@ export const serviceSchemaResource: ServiceSchemaResourceType = {
     if (!service) {
       throw new Error(`Service "${data.service}" not found.`);
     }
-    const serviceSpec = await environment.toolApi.getServiceSpec(service.channelId);
+    const serviceSpec = await environment.toolApi.getServiceSpec(
+      service.channelId,
+    );
     const parsed = serviceSpecV1Schema.safeParse(serviceSpec);
     if (!parsed.success) {
       throw new Error(`Invalid service spec for ${data.service}.`);
@@ -271,7 +206,9 @@ export const serviceSchemaResource: ServiceSchemaResourceType = {
     const schemas = parsed.data.schemas || {};
     const schema = schemas[data.schema];
     if (!schema) {
-      throw new Error(`Schema "${data.schema}" not found in service "${data.service}".`);
+      throw new Error(
+        `Schema "${data.schema}" not found in service "${data.service}".`,
+      );
     }
     return { [data.schema]: schema };
   },

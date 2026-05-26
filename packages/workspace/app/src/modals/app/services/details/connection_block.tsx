@@ -55,7 +55,7 @@ export function ConnectionBlock({
           )}
           {!supportsToken && !supportsOAuth2 && (
             <div>
-              <Text tone="subtle" className="text-[11px]">
+              <Text shade="subtle" className="text-[11px]">
                 No connection method available
               </Text>
             </div>

@@ -1,4 +1,4 @@
-import { BoardSpec, WorkspaceSpec } from "@ubento/bento.core";
+import { WorkspaceSpec } from "@ubento/bento.core";
 
 export type SpecIssue = {
   location: string[];
@@ -15,12 +15,6 @@ export type ParsedSpec<T> =
       data: unknown;
       issues: SpecIssue[];
     };
-
-export type BentoBoardData = {
-  id: string;
-  title: string;
-  spec: ParsedSpec<BoardSpec>;
-};
 
 export type BentoWorkspaceData = {
   id: string;

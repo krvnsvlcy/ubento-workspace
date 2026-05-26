@@ -21,7 +21,7 @@ export const BillingTab = () => {
       <ContentHeader className="space-y-4">
         <div className="space-y-1">
           <Heading>Billing</Heading>
-          <Text tone="subtle">Manage your billing plan and invoices.</Text>
+          <Text shade="subtle">Manage your billing plan and invoices.</Text>
         </div>
         <TabSwitch
           options={billingTabs}

@@ -39,7 +39,7 @@ export function WorkspaceTab() {
           <span>Home</span>
         </TreeEntry>
       </div>
-      {workspace && <BoardsSection workspace={workspace} />}
+      <BoardsSection />
       {activeWorkspaceEngine && <ServicesSection />}
     </div>
   );

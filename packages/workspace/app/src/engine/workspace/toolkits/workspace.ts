@@ -1,49 +1,21 @@
 import { BoardSpec } from "@ubento/bento.core";
-import { ParsedSpec, SpecIssue } from "@ubento/bento.runtime";
+import { ParsedSpec } from "@ubento/bento.runtime";
 import {
   AgentTool,
   createLocalToolkit,
   renderYaml,
 } from "@ubento/workspace.agent";
 import z from "zod";
-import { extractBoardContext } from "../engine";
-import {
-  boardResource,
-  BoardResourceType,
-  boardListResource,
-  BoardListResourceType,
-  boardSpecResource,
-  BoardSpecResourceType,
-  boardContextResource,
-  BoardContextResourceType,
-  resolvedBoardContextResource,
-  ResolvedBoardContextResourceType,
-  boardUiResource,
-  BoardUiResourceType,
-  extractBoardUi,
-} from "../resources";
 
 export const createWorkspaceToolkit = ({
   goTo,
-  // boards
-  getBoard,
-  listBoards,
   updateBoard,
   deleteBoard,
   createBoard,
-  // board specs
-  readBoardSpec,
-  updateBoardSpec,
-  resolveBoardContextSchema,
 }: {
   goTo: (args: {
     location: { boardId: string; params: Record<string, string> };
   }) => void;
-  // boards
-  getBoard: (args: {
-    boardId: string;
-  }) => Promise<{ id: string; title: string; spec: any }>;
-  listBoards: () => Promise<{ boards: Array<{ id: string; title: string }> }>;
   updateBoard: (args: {
     boardId: string;
     update: { title?: string };
@@ -52,13 +24,6 @@ export const createWorkspaceToolkit = ({
   createBoard: (args: {
     title: string;
   }) => Promise<ParsedSpec<BoardSpec> & { boardId: string; id: string }>;
-  // board specs
-  readBoardSpec: (args: { boardId: string }) => Promise<any>;
-  updateBoardSpec: (args: {
-    boardId: string;
-    patch: any[];
-  }) => Promise<ParsedSpec<BoardSpec>>;
-  resolveBoardContextSchema: (args: { boardId: string }) => Promise<any>;
 }) => {
   const goToArgs = z.object({
     boardId: z.string().describe("The ID of the board to navigate to"),
@@ -80,121 +45,6 @@ export const createWorkspaceToolkit = ({
         content: [
           { type: "text", text: `Navigated to board "${args.boardId}".` },
         ],
-      };
-    },
-  };
-
-  const getBoardArgs = z.object({
-    boardId: z.string().describe("The ID of the board to retrieve"),
-  });
-  const getBoardTool: AgentTool<typeof getBoardArgs> = {
-    name: "get_board",
-    description: "Get detailed information about a specific board.",
-    args: getBoardArgs,
-    run: async ({ args, thread }) => {
-      const board = await getBoard({ boardId: args.boardId });
-
-      thread.context.addResource<BoardResourceType>({
-        key: `board:${board.id}`,
-        type: boardResource.type,
-        label: `Board ${board.id}`,
-        data: {
-          id: board.id,
-        },
-      });
-
-      return {
-        content: [
-          {
-            type: "text",
-            text: "Board resource has been added to the context.",
-          },
-        ],
-      };
-    },
-  };
-
-  const listBoardsTool: AgentTool = {
-    name: "list_boards",
-    description: "List all boards available in the current workspace.",
-    args: z.object({}),
-    run: async ({ thread }) => {
-      thread.context.addResource<BoardListResourceType>({
-        key: "board_list",
-        type: boardListResource.type,
-        label: "Workspace Board List",
-        data: {},
-      });
-      return {
-        content: [{ type: "text", text: "Board list resource has been added to the context." }],
-      };
-    },
-  };
-
-  const readBoardSpecArgs = z.object({
-    boardId: z.string().describe("The ID of the board to read the spec from"),
-  });
-  const readBoardSpecTool: AgentTool<typeof readBoardSpecArgs> = {
-    name: "read_board_spec",
-    description: "Read the specification of a specific board.",
-    args: readBoardSpecArgs,
-    run: async ({ args, thread }) => {
-      thread.context.addResource<BoardSpecResourceType>({
-        key: `board_spec:${args.boardId}`,
-        type: boardSpecResource.type,
-        label: `Board Spec ${args.boardId}`,
-        data: { boardId: args.boardId },
-      });
-      return {
-        content: [{ type: "text", text: "Board spec resource has been added to the context." }],
-      };
-    },
-  };
-
-  const updateBoardSpecArgs = z.object({
-    boardId: z.string().describe("The ID of the board to update"),
-    patch: z
-      .array(z.any())
-      .describe("JSON Patch operations to apply to the board spec"),
-  });
-  const updateBoardSpecTool: AgentTool<typeof updateBoardSpecArgs> = {
-    name: "update_board_spec",
-    description: [
-      "Update the specification of a specific board using JSON Patch.",
-      "",
-      "Example patch to add an element and update children:",
-      "```json",
-      "[",
-      "  {",
-      '    "op": "add",',
-      '    "path": "/elements/my_element",',
-      '    "value": { "component": "Card" }',
-      "  },",
-      "  {",
-      '    "op": "add",',
-      '    "path": "/children/-",',
-      '    "value": "my_element"',
-      "  }",
-      "]",
-      "```",
-    ].join("\n"),
-    args: updateBoardSpecArgs,
-    run: async ({ args }) => {
-      const result = await updateBoardSpec({
-        boardId: args.boardId,
-        patch: args.patch as any,
-      });
-      return {
-        content: [
-          {
-            type: "text",
-            text: renderYaml({
-              isValid: result.isValid,
-              issues: result.issues || [],
-            }),
-          },
-        ],
-        structuredContent: result,
       };
     },
   };
@@ -278,239 +128,14 @@ export const createWorkspaceToolkit = ({
     },
   };
 
-  const checkBoardArgs = z.object({
-    boardId: z.string().describe("The ID of the board to check"),
-  });
-
-  const checkBoardTool: AgentTool<typeof checkBoardArgs> = {
-    name: "check_board",
-    description: "Check the status and errors of a specific board.",
-    args: checkBoardArgs,
-    run: async ({ args }) => {
-      const result = await readBoardSpec({ boardId: args.boardId });
-      return {
-        content: [
-          {
-            type: "text",
-            text: renderYaml({
-              isValid: result.isValid,
-              issues: result.issues || [],
-            }),
-          },
-        ],
-        structuredContent: result,
-      };
-    },
-  };
-
-  const readBoardContextArgs = z.object({
-    boardId: z
-      .string()
-      .describe("The ID of the board to read the context from"),
-  });
-  const readBoardContextTool: AgentTool<typeof readBoardContextArgs> = {
-    name: "read_board_context",
-    description:
-      "Read the context-related parts of a board specification (params, state, store).",
-    args: readBoardContextArgs,
-    run: async ({ args, thread }) => {
-      thread.context.addResource<BoardContextResourceType>({
-        key: `board_context:${args.boardId}`,
-        type: boardContextResource.type,
-        label: `Board Context ${args.boardId}`,
-        data: { boardId: args.boardId },
-      });
-      return {
-        content: [{ type: "text", text: "Board context resource has been added to the context." }],
-      };
-    },
-  };
-
-  const updateBoardContextArgs = z.object({
-    boardId: z.string().describe("The ID of the board to update"),
-    patch: z
-      .array(z.any())
-      .describe("JSON Patch operations to apply to the board context"),
-  });
-  const updateBoardContextTool: AgentTool<typeof updateBoardContextArgs> = {
-    name: "update_board_context",
-    description:
-      "Update the context-related parts of a board specification (params, state, store) using JSON Patch.",
-    args: updateBoardContextArgs,
-    run: async ({ args }) => {
-      const spec = await updateBoardSpec({
-        boardId: args.boardId,
-        patch: args.patch as any,
-      });
-      const context = extractBoardContext(spec);
-      return {
-        content: [
-          {
-            type: "text",
-            text: renderYaml({
-              isValid: context.isValid,
-              issues: context.issues,
-            }),
-          },
-        ],
-        structuredContent: context,
-      };
-    },
-  };
-
-  const checkBoardContextArgs = z.object({
-    boardId: z.string().describe("The ID of the board to check"),
-  });
-  const checkBoardContextTool: AgentTool<typeof checkBoardContextArgs> = {
-    name: "check_board_context",
-    description:
-      "Check the status and errors of a specific board's context configuration.",
-    args: checkBoardContextArgs,
-    run: async ({ args }) => {
-      const result = await readBoardSpec({ boardId: args.boardId });
-      const context = extractBoardContext(result);
-
-      return {
-        content: [
-          {
-            type: "text",
-            text: renderYaml({
-              isValid: context.isValid,
-              issues: context.issues,
-            }),
-          },
-        ],
-        structuredContent: context,
-      };
-    },
-  };
-
-  const getResolvedBoardContextArgs = z.object({
-    boardId: z
-      .string()
-      .describe("The ID of the board to get the resolved context for"),
-  });
-  const getResolvedBoardContextTool: AgentTool<
-    typeof getResolvedBoardContextArgs
-  > = {
-    name: "get_resolved_board_context",
-    description: "Get the resolved schema for the board context.",
-    args: getResolvedBoardContextArgs,
-    run: async ({ args, thread }) => {
-      thread.context.addResource<ResolvedBoardContextResourceType>({
-        key: `resolved_board_context:${args.boardId}`,
-        type: resolvedBoardContextResource.type,
-        label: `Resolved Board Context ${args.boardId}`,
-        data: { boardId: args.boardId },
-      });
-      return {
-        content: [{ type: "text", text: "Resolved board context resource has been added to the context." }],
-      };
-    },
-  };
-
-  const readBoardUiArgs = z.object({
-    boardId: z
-      .string()
-      .describe("The ID of the board to read the UI specification from"),
-  });
-  const readBoardUiTool: AgentTool<typeof readBoardUiArgs> = {
-    name: "read_board_ui",
-    description:
-      "Read the UI-related parts of a board specification (elements, children, style).",
-    args: readBoardUiArgs,
-    run: async ({ args, thread }) => {
-      thread.context.addResource<BoardUiResourceType>({
-        key: `board_ui:${args.boardId}`,
-        type: boardUiResource.type,
-        label: `Board UI ${args.boardId}`,
-        data: { boardId: args.boardId },
-      });
-      return {
-        content: [{ type: "text", text: "Board UI resource has been added to the context." }],
-      };
-    },
-  };
-
-  const updateBoardUiArgs = z.object({
-    boardId: z.string().describe("The ID of the board to update"),
-    patch: z
-      .array(z.any())
-      .describe("JSON Patch operations to apply to the board UI"),
-  });
-  const updateBoardUiTool: AgentTool<typeof updateBoardUiArgs> = {
-    name: "update_board_ui",
-    description:
-      "Update the UI-related parts of a board specification (elements, children, style) using JSON Patch.",
-    args: updateBoardUiArgs,
-    run: async ({ args }) => {
-      const spec = await updateBoardSpec({
-        boardId: args.boardId,
-        patch: args.patch as any,
-      });
-      const ui = extractBoardUi(spec);
-      return {
-        content: [
-          {
-            type: "text",
-            text: renderYaml({
-              isValid: ui.isValid,
-              issues: ui.issues,
-            }),
-          },
-        ],
-        structuredContent: ui,
-      };
-    },
-  };
-
-  const checkBoardUiArgs = z.object({
-    boardId: z.string().describe("The ID of the board to check"),
-  });
-  const checkBoardUiTool: AgentTool<typeof checkBoardUiArgs> = {
-    name: "check_board_ui",
-    description:
-      "Check the status and errors of a specific board's UI configuration.",
-    args: checkBoardUiArgs,
-    run: async ({ args }) => {
-      const result = await readBoardSpec({ boardId: args.boardId });
-      const ui = extractBoardUi(result);
-
-      return {
-        content: [
-          {
-            type: "text",
-            text: renderYaml({
-              isValid: ui.isValid,
-              issues: ui.issues,
-            }),
-          },
-        ],
-        structuredContent: ui,
-      };
-    },
-  };
-
   return createLocalToolkit({
     name: "workspace",
     description: "Tools for navigating and inspecting the current workspace",
     tools: {
       goToTool,
-      getBoardTool,
-      listBoardsTool,
-      readBoardSpecTool,
-      updateBoardSpecTool,
       updateBoardTool,
       deleteBoardTool,
       createBoardTool,
-      checkBoardTool,
-      readBoardContextTool,
-      updateBoardContextTool,
-      checkBoardContextTool,
-      getResolvedBoardContextTool,
-      readBoardUiTool,
-      updateBoardUiTool,
-      checkBoardUiTool,
     },
   });
 };

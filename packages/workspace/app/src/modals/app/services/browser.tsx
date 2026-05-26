@@ -151,7 +151,7 @@ export const ServiceBrowser: FC = () => {
           <ContentHeader>
             <GoBack />
             <Heading>Select Service</Heading>
-            <Text tone="subtle">Add services to your workspace.</Text>
+            <Text shade="subtle">Add services to your workspace.</Text>
           </ContentHeader>
           <ContentBody>
             <div className="flex flex-col gap-2">

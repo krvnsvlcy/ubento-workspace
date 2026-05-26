@@ -38,7 +38,7 @@ export function TeamModal() {
           <ContentHeader>
             <div className="space-y-1">
               <Heading>Settings</Heading>
-              <Text tone="subtle">Team settings</Text>
+              <Text shade="subtle">Team settings</Text>
             </div>
           </ContentHeader>
           <ContentBody>

@@ -8,10 +8,9 @@ import { WorkspaceFooter } from "./footer";
 import { WorkspaceHeader } from "./header";
 import { homeTab } from "./tabs/home/home";
 import { workspaceTab } from "./tabs/workspace/workspace";
-import { boardTab } from "./tabs/board/board";
 import { WorkspaceTabDefinition } from "./types";
 
-const tabs: WorkspaceTabDefinition[] = [homeTab, workspaceTab, boardTab];
+const tabs: WorkspaceTabDefinition[] = [homeTab, workspaceTab];
 
 function TabButton({
   tab,

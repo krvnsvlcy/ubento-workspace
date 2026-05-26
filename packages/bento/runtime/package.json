@@ -33,6 +33,7 @@
     "json-diff-ts": "^4.10.4",
     "lucide-react": "^0.468.0",
     "motion": "^12.38.0",
+    "sucrase": "^3.35.0",
     "wouter": "^3.6.0",
     "zod": "^4.3.6",
     "zustand": "^5.0.12"

@@ -1,25 +1,11 @@
 import { useCopilot } from "@/contexts/copilot";
 import { useUbentoEngine } from "@/engine/app/engine.js";
 import { Button } from "@ubento/bento.arlo-core";
-import {
-  Box,
-  Braces,
-  Database,
-  Edit2,
-  History,
-  Layout,
-  Plus,
-  Sidebar,
-  X,
-} from "lucide-react";
+import { Edit2, History, Plus, Sidebar, X } from "lucide-react";
 import { useState } from "react";
 import { WorkspaceEngine } from "../../../../../../engine/workspace/engine";
-import { BoardTab } from "./tabs/board";
 import { CopilotTab } from "./tabs/copilot/copilot";
 import { HistoryTab } from "./tabs/copilot/history";
-import { ResolvedContextTab } from "./tabs/resolved-context";
-import { SelectionTab } from "./tabs/selection";
-import { ContextViewerTab } from "./tabs/context-viewer";
 
 export function ControlPanel({
   controller,
@@ -55,38 +41,7 @@ export function ControlPanel({
         setActiveTab("ai-history");
       },
     },
-    {
-      icon: <Layout size={16} />,
-      label: "Board",
-      onClick: () => {
-        setActiveTab("board");
-      },
-    },
-    {
-      icon: <Database size={16} />,
-      label: "Resolved Context",
-      onClick: () => {
-        setActiveTab("resolved-context");
-      },
-    },
-    {
-      icon: <Braces size={16} />,
-      label: "Context Viewer",
-      onClick: () => {
-        setActiveTab("context-viewer");
-      },
-    },
   ];
-
-  if (mode === "edit") {
-    actions.push({
-      icon: <Box size={16} />,
-      label: "Selection",
-      onClick: () => {
-        setActiveTab("selection");
-      },
-    });
-  }
 
   switch (activeTab) {
     case "ai":
@@ -94,18 +49,6 @@ export function ControlPanel({
       break;
     case "ai-history":
       content = <HistoryTab onBack={() => setActiveTab("ai")} />;
-      break;
-    case "board":
-      content = <BoardTab />;
-      break;
-    case "selection":
-      content = <SelectionTab controller={controller} />;
-      break;
-    case "resolved-context":
-      content = <ResolvedContextTab controller={controller} />;
-      break;
-    case "context-viewer":
-      content = <ContextViewerTab controller={controller} />;
       break;
   }
 

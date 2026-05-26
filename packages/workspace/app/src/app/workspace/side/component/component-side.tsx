@@ -42,7 +42,7 @@ export function ComponentSide() {
   const activeTabId = location.componentTab || tabs[0].id;
 
   const enabledTabs = useMemo(() => {
-    return tabs.filter((tab) => tab.enabled(location));
+    return tabs.filter((tab) => tab.enabled?.({ location }) ?? true);
   }, [location]);
 
   useEffect(() => {

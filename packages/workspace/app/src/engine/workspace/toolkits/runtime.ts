@@ -12,7 +12,6 @@ export const createRuntimeToolkit = ({
   setValue,
   getValue,
   readLogs,
-  readContext,
 }: {
   focusBoard: (args: {
     location: { boardId: string; params: Record<string, string> };
@@ -24,8 +23,6 @@ export const createRuntimeToolkit = ({
   getValue: (selector: string) => Promise<string>;
   // logs
   readLogs: (args: { from?: number; count?: number }) => Promise<string>;
-  // state
-  readContext: (path: string) => Promise<unknown>;
 }) => {
   const focusBoardArgs = z.object({
     boardId: z.string().describe("The ID of the board to focus"),
@@ -139,22 +136,6 @@ export const createRuntimeToolkit = ({
     },
   };
 
-  const readContextArgs = z.object({
-    path: z.string().describe("The JSON path of the context or state to read"),
-  });
-
-  const readContextTool: AgentTool<typeof readContextArgs> = {
-    name: "read_context",
-    description: "Read active runtime context or state value at a given JSON path.",
-    args: readContextArgs,
-    run: async ({ args }) => {
-      const value = await readContext(args.path);
-      return {
-        content: [{ type: "text", text: renderYaml(value) }],
-      };
-    },
-  };
-
   const waitArgs = z.object({
     duration: z.number().describe("The duration to wait in milliseconds"),
     reason: z.string().describe("The reason for pausing execution (e.g. 'Waiting for UI to update')"),
@@ -184,7 +165,6 @@ export const createRuntimeToolkit = ({
       setValue: setValueTool,
       getValue: getValueTool,
       readLogs: readLogsTool,
-      readContext: readContextTool,
       wait: waitTool,
     },
   });

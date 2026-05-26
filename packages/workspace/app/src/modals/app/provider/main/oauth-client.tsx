@@ -100,7 +100,7 @@ export function OAuthClientView() {
       <ContentHeader>
         <div className="space-y-2">
           <Heading>OAuth Client</Heading>
-          <Text tone="subtle">
+          <Text shade="subtle">
             Configure a custom OAuth client for {providerData.name} integration.
           </Text>
         </div>

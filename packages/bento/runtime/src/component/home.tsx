@@ -1,22 +1,28 @@
-import { Button, Card, Heading, Input, Text } from "@ubento/bento.arlo-core";
-import { useStoreEntities } from "@ubento/fabric";
-import { ArrowRight, Layout, Plus, Search } from "lucide-react";
+import { Button, Heading, Input, Text } from "@ubento/bento.arlo-core";
+import { ChevronRight, Layout, Plus, Search } from "lucide-react";
+import { useState } from "react";
 import { BentoRuntime } from "../runtime/runtime";
+import { WorkspaceBoardSpec } from "@ubento/bento.core";
+
+type BoardMap = Record<string, WorkspaceBoardSpec>;
+
+// ─── component ──────────────────────────────────────────────────────────────
 
 export function BentoHomeView({ runtime }: { runtime: BentoRuntime }) {
-  const { data: boards, status } = useStoreEntities(runtime.boardStore);
-  const workspace = runtime.useState((runtime) => runtime.workspace);
+  const workspace = runtime.useState((s) => s.workspace);
+  const spec = runtime.useState((s) => s.workspace.spec);
+  const [search, setSearch] = useState("");
 
-  const boardsList = boards || [];
+  const boards: BoardMap =
+    (spec.isValid && (spec.data?.boards as BoardMap)) || {};
+  const roots: string[] = (spec.isValid && spec.data?.roots) || [];
+  const isEmpty = roots.length === 0;
 
   // Empty state
-  if (status !== "pending" && boardsList.length === 0) {
+  if (isEmpty) {
     return (
-      <div
-        key="empty-state"
-        className="h-screen w-screen flex flex-col items-center justify-center bg-background p-8 selection:bg-neutral-800 selection:text-white"
-      >
-        <div className="flex flex-col items-center text-center max-w-md duration-500 gap-6">
+      <div className="h-screen w-screen flex flex-col items-center justify-center bg-background p-8">
+        <div className="flex flex-col items-center text-center max-w-md gap-6">
           <Heading level="display">{workspace.title}</Heading>
           <Text shade="subtle">
             Start by creating your first board to organize your tasks and
@@ -25,8 +31,13 @@ export function BentoHomeView({ runtime }: { runtime: BentoRuntime }) {
           <Button
             variant="primary"
             onClick={async () => {
-              const board = await runtime.createBoard();
-              runtime.goToBoard(board.id);
+              await runtime.createBoard();
+              // Navigate to the most-recently added root board
+              const spec = runtime.getState().workspace.spec;
+              if (spec.isValid && spec.data?.roots?.length) {
+                const roots = spec.data.roots;
+                runtime.goToBoard(roots[roots.length - 1]);
+              }
             }}
           >
             Create your first board
@@ -36,84 +47,151 @@ export function BentoHomeView({ runtime }: { runtime: BentoRuntime }) {
     );
   }
 
-  // Populated dashboard
+  const lowerSearch = search.toLowerCase();
+  const matchesSearch = (b: WorkspaceBoardSpec) =>
+    !lowerSearch || b.name.toLowerCase().includes(lowerSearch);
+
   return (
-    <div className="h-full w-full flex flex-col items-center overflow-auto bg-background p-8 md:p-12 lg:p-16 selection:bg-neutral-800 selection:text-white">
-      <div className="w-full max-w-5xl space-y-12 duration-500 mt-8">
+    <div className="h-full w-full flex flex-col items-center overflow-auto bg-background p-8 md:p-12 lg:p-16">
+      <div className="w-full max-w-2xl space-y-10 mt-8">
         {/* Header */}
         <div className="space-y-1">
-          <div className="flex items-center justify-between">
-            <Heading level="display">{workspace.title}</Heading>
-          </div>
+          <Heading level="display">{workspace.title}</Heading>
         </div>
 
-        {/* Search bar */}
+        {/* Search + create */}
         <div className="flex w-full gap-2">
           <div className="grow">
             <Input
-              placeholder="Search boards..."
+              value={search}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setSearch(e.target.value)
+              }
+              placeholder="Search boards…"
               prefix={<Search size={16} />}
             />
           </div>
-          <Button variant="primary" size="lg">
+          <Button
+            variant="primary"
+            size="lg"
+            onClick={async () => {
+              await runtime.createBoard();
+              const spec = runtime.getState().workspace.spec;
+              if (spec.isValid && spec.data?.roots?.length) {
+                const roots = spec.data.roots;
+                runtime.goToBoard(roots[roots.length - 1]);
+              }
+            }}
+          >
             <Plus size={14} />
-            Create Board
+            New Board
           </Button>
         </div>
 
-        {/* Boards grid */}
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {status === "pending"
-              ? Array.from({ length: 6 }).map((_, i) => (
-                  <div
-                    key={i}
-                    className="h-32 rounded-xl border border-neutral-border bg-neutral-surface/50 animate-pulse"
-                  />
-                ))
-              : boardsList.map((board) => (
-                  <BoardCard
-                    key={board.id}
-                    board={board}
-                    onClick={() => runtime.goToBoard(board.id)}
-                  />
-                ))}
-          </div>
+        {/* Tree */}
+        <div className="space-y-1">
+          {roots.map((rootId) => (
+            <BoardTreeNode
+              key={rootId}
+              boardId={rootId}
+              boards={boards}
+              depth={0}
+              runtime={runtime}
+              matchesSearch={matchesSearch}
+            />
+          ))}
         </div>
       </div>
     </div>
   );
 }
 
-function BoardCard({
-  board,
-  onClick,
+// ─── tree node ───────────────────────────────────────────────────────────────
+
+function BoardTreeNode({
+  boardId,
+  boards,
+  depth,
+  runtime,
+  matchesSearch,
 }: {
-  board: { id: string; title: string };
-  onClick: () => void;
+  boardId: string;
+  boards: BoardMap;
+  depth: number;
+  runtime: BentoRuntime;
+  matchesSearch: (b: WorkspaceBoardSpec) => boolean;
 }) {
+  const board = boards[boardId];
+  const [expanded, setExpanded] = useState(true);
+
+  if (!board) return null;
+
+  const children = board.children ?? [];
+  const hasChildren = children.length > 0;
+
+  // If searching, only show nodes that match or have matching descendants
+  const selfMatches = matchesSearch(board);
+  const anyChildMatches = (id: string): boolean => {
+    const b = boards[id];
+    if (!b) return false;
+    if (matchesSearch(b)) return true;
+    return (b.children ?? []).some(anyChildMatches);
+  };
+  if (!selfMatches && !children.some(anyChildMatches)) return null;
+
   return (
-    <Card
-      onClick={onClick}
-      variant="surface-interactive"
-      className="space-y-3 cursor-pointer group p-4 hover:border-accent/50 hover:bg-neutral-surface transition-all duration-200"
-    >
-      <div className="flex items-start justify-between">
-        <div className="w-10 h-10 rounded-xl border border-neutral-border bg-background flex items-center justify-center text-neutral-content group-hover:bg-neutral-content group-hover:text-background transition-colors shrink-0">
-          <Layout size={16} />
+    <div style={{ paddingLeft: depth * 16 }}>
+      {/* Row */}
+      <div
+        className="group flex items-center gap-2 rounded-lg px-3 py-2 cursor-pointer hover:bg-neutral-surface transition-colors duration-150"
+        onClick={() => runtime.goToBoard(board.id)}
+      >
+        {/* Expand toggle */}
+        <button
+          className={`shrink-0 text-neutral-content-muted transition-transform duration-200 ${
+            hasChildren ? "opacity-100" : "opacity-0 pointer-events-none"
+          } ${expanded ? "rotate-90" : ""}`}
+          onClick={(e) => {
+            e.stopPropagation();
+            setExpanded((v) => !v);
+          }}
+        >
+          <ChevronRight size={14} />
+        </button>
+
+        {/* Icon */}
+        <div className="w-7 h-7 rounded-lg border border-neutral-border bg-background flex items-center justify-center text-neutral-content-muted group-hover:text-accent group-hover:border-accent/40 transition-colors shrink-0">
+          <Layout size={13} />
         </div>
-        <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-          <div className="w-8 h-8 rounded-full border border-neutral-border flex items-center justify-center text-neutral-content-muted">
-            <ArrowRight size={14} />
-          </div>
-        </div>
-      </div>
-      <div>
-        <Text weight="semibold">{(board.title && board.title.trim()) || "Untitled"}</Text>
-        <Text shade="subtle" size="sm">
-          Click to open board
+
+        {/* Name */}
+        <Text weight="medium" className="truncate flex-1">
+          {board.name || "Untitled"}
         </Text>
+
+        {/* Child count badge */}
+        {hasChildren && (
+          <span className="text-[10px] font-medium text-neutral-content-subtle bg-neutral-surface border border-neutral-border rounded-full px-1.5 py-0.5 leading-none">
+            {children.length}
+          </span>
+        )}
       </div>
-    </Card>
+
+      {/* Children */}
+      {expanded && hasChildren && (
+        <div className="border-l border-neutral-border/50 ml-[22px] mt-0.5 mb-1">
+          {children.map((childId: string) => (
+            <BoardTreeNode
+              key={childId}
+              boardId={childId}
+              boards={boards}
+              depth={1}
+              runtime={runtime}
+              matchesSearch={matchesSearch}
+            />
+          ))}
+        </div>
+      )}
+    </div>
   );
 }

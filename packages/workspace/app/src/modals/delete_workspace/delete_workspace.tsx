@@ -39,7 +39,7 @@ export function DeleteWorkspaceModal({
 
       {/* Content */}
       <div className="px-8 pb-8 flex flex-col space-y-6">
-        <Text tone="subtle">
+        <Text shade="subtle">
           Deleting <span className="font-semibold">{workspaceName}</span> will
           permanently remove all its data, boards, and members.
         </Text>

@@ -19,6 +19,7 @@
     "@ubento/bento.core": "workspace:*",
     "@ubento/rpc": "workspace:*",
     "wouter": "^3.6.0",
+    "lucide-react": "^0.468.0",
     "zustand": "^5.0.12",
     "@ubento/bento.arlo": "workspace:*"
   },

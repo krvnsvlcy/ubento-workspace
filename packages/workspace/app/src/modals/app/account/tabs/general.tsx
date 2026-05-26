@@ -11,7 +11,7 @@ export const GeneralTab: FC = () => {
       <ContentHeader>
         <div className="space-y-1">
           <Heading>Profile Info</Heading>
-          <Text tone="subtle">Your personal profile details.</Text>
+          <Text shade="subtle">Your personal profile details.</Text>
         </div>
       </ContentHeader>
       <ContentBody

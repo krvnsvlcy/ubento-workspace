@@ -1,39 +1,24 @@
 import { BentoLocation, BentoRuntimeState } from "../runtime/runtime";
-import { BentoBoardData } from "../runtime/types";
+import { BentoWorkspaceData } from "../runtime/types";
 
 export type BentoEngineHostRpcInterface = {
   connect: () => { initialState: BentoRuntimeState };
   ready: () => Promise<void>;
 
   // data
-  getBoard: ({ boardId }: { boardId: string }) => Promise<BentoBoardData>;
-  listBoards: ({
-    cursor,
-    limit,
-    parentId,
-  }: {
-    cursor?: string;
-    limit?: number;
-    parentId?: string;
-  }) => Promise<{ boards: BentoBoardData[]; nextCursor?: string }>;
   goTo: ({ location }: { location?: BentoLocation }) => Promise<void>;
   createBoard: (args?: {
     title?: string;
     parentId?: string;
-    spec?: any;
-  }) => Promise<BentoBoardData>;
+  }) => Promise<BentoWorkspaceData>;
 
-  // sync
-  boardUpdated: ({ data }: { data: BentoBoardData }) => Promise<void>;
-  selectionUpdated: ({ selection }: { selection: string[] }) => Promise<void>;
-  hoverUpdated: ({ hovered }: { hovered?: string }) => Promise<void>;
-  contextNodeUpdated: ({
-    path,
-    data,
+  readModuleSource: ({
+    moduleId,
+    versionId,
   }: {
-    path: string;
-    data: any;
-  }) => Promise<void>;
+    moduleId: string;
+    versionId: string;
+  }) => Promise<{ sourceCode: string }>;
 
   // services
   runServiceOperation: (args: {
@@ -47,36 +32,6 @@ export type BentoEngineHostRpcInterface = {
 export type BentoEngineRuntimeRpcInterface = {
   setLocation: ({ location }: { location?: BentoLocation }) => Promise<void>;
   setInteractionMode: ({ mode }: { mode: "edit" | "live" }) => Promise<void>;
-  select: ({ selection }: { selection: string[] }) => Promise<void>;
-  hover: ({ elementId }: { elementId: string }) => Promise<void>;
-  unhover: ({ elementId }: { elementId: string }) => Promise<void>;
-
-  watchContextNode: ({ path }: { path: string }) => Promise<string>;
-  unwatchContextNode: ({ key }: { key: string }) => Promise<void>;
-
-  readBoard: ({
-    boardId,
-  }: {
-    boardId: string;
-  }) => Promise<BentoBoardData | undefined>;
-  writeBoard: ({
-    boardId,
-    data,
-  }: {
-    boardId: string;
-    data: BentoBoardData;
-  }) => Promise<void>;
-
-  setTheme: ({ css }: { css: string }) => Promise<void>;
-
-  // catalog
-  getCatalog: ({}) => Promise<unknown>;
-  listComponents: ({}) => Promise<Record<string, unknown>>;
-  describeComponents: ({
-    names,
-  }: {
-    names: string[];
-  }) => Promise<Record<string, unknown>>;
 
   // inspection and interaction
   readNode: (args: { selector: string }) => Promise<string>;

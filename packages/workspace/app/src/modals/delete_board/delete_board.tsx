@@ -39,7 +39,7 @@ export function DeleteBoardModal({
 
       {/* Content */}
       <div className="px-8 pb-8 flex flex-col space-y-6">
-        <Text tone="subtle">
+        <Text shade="subtle">
           Are you sure you want to permanently delete the board{" "}
           <span className="font-semibold">{boardName || "Untitled"}</span>? This
           action cannot be undone.

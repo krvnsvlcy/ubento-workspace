@@ -23,7 +23,7 @@ export const TeamConnectionsTab: FC = () => {
       <ContentHeader className="space-y-4">
         <div className="space-y-1">
           <Heading>Connections</Heading>
-          <Text tone="subtle">Manage external service connections.</Text>
+          <Text shade="subtle">Manage external service connections.</Text>
         </div>
         <TabSwitch
           options={connectionTabs}

@@ -73,7 +73,7 @@ export const GeneralTab: FC = () => {
       <ContentHeader>
         <div className="space-y-1">
           <Heading>General</Heading>
-          <Text tone="subtle">Manage general details of your team.</Text>
+          <Text shade="subtle">Manage general details of your team.</Text>
         </div>
       </ContentHeader>
       <ContentBody
@@ -129,7 +129,7 @@ export const GeneralTab: FC = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <Text weight="semibold">Delete Team</Text>
-                    <Text tone="muted" size="sm">
+                    <Text shade="muted" size="sm">
                       Permanently remove this team and all associated data.
                     </Text>
                   </div>

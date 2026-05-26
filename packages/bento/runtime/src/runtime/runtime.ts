@@ -1,15 +1,13 @@
 import { Component, createEnvironment, Environment } from "@ubento/bento.core";
-import { createStore } from "@ubento/fabric";
 import type { DuplexRpc } from "@ubento/rpc";
 import { createZustandStateController } from "@ubento/state";
-import { dequal } from "dequal";
 import { createStore as createZustandStore } from "zustand";
 import {
   BentoEngineHostRpcInterface,
   BentoEngineRuntimeRpcInterface,
   ServiceOperationError,
 } from "../bridge/bridge";
-import { BentoBoardData, BentoUserData, BentoWorkspaceData } from "./types";
+import { BentoUserData, BentoWorkspaceData } from "./types";
 
 export type BentoLocation = {
   boardId: string;
@@ -62,31 +60,6 @@ function getValueAtPath(obj: any, path: string) {
   return current;
 }
 
-function getContextNodeData(value: any) {
-  if (value === null || value === undefined) {
-    return [];
-  }
-  if (typeof value !== "object") {
-    return [];
-  }
-  return Object.entries(value).map(([key, val]) => {
-    const type =
-      val === null ? "null" : Array.isArray(val) ? "array" : typeof val;
-    const hasChildren =
-      val !== null && (typeof val === "object" || Array.isArray(val));
-    let displayValue: string | undefined = undefined;
-    if (!hasChildren) {
-      displayValue = val === undefined ? "undefined" : JSON.stringify(val);
-    }
-    return {
-      key,
-      type,
-      hasChildren,
-      value: displayValue,
-    };
-  });
-}
-
 export function createBentoRuntime({
   initialState,
   rpc,
@@ -107,40 +80,6 @@ export function createBentoRuntime({
   });
 
   const controller = createZustandStateController(store);
-  const subscriptions = new Map<string, { path: string; lastData: string }>();
-
-  const boardStore = createStore<BentoBoardData, { parentId?: string }, string>(
-    {
-      namespace: "board",
-      getKey: (board) => board.id,
-      fetchOne: async (key) => {
-        return rpc.egress.getBoard({
-          boardId: key,
-        });
-      },
-      fetchMany: async ({ params, page }) => {
-        const res = await rpc.egress.listBoards({
-          cursor: page,
-          parentId: params?.parentId,
-          limit: 100,
-        });
-        return {
-          data: res.boards,
-          nextPage: res.nextCursor,
-        };
-      },
-    },
-  );
-
-  boardStore.store.subscribe((state, prev) => {
-    for (const boardId in state.data) {
-      const board = state.data[boardId];
-      const prevBoard = prev.data[boardId];
-      if (!dequal(board, prevBoard)) {
-        rpc.egress.boardUpdated({ data: board });
-      }
-    }
-  });
 
   // Setup RPC Handlers
   rpc.setHandlers({
@@ -149,85 +88,6 @@ export function createBentoRuntime({
     },
     setInteractionMode: async ({ mode }) => {
       controller.setState({ mode });
-    },
-    select: async ({ selection }) => {
-      environment.interactionManager.select(selection);
-    },
-    hover: async ({ elementId }) => {
-      environment.interactionManager.hover(elementId);
-    },
-    unhover: async ({ elementId }) => {
-      if (environment.interactionManager.getState().hovered === elementId) {
-        environment.interactionManager.hover(undefined);
-      }
-    },
-    watchContextNode: async ({ path }) => {
-      const key = Math.random().toString(36).substring(7);
-      const context = environment.contextManager.getState().context;
-      const value = getValueAtPath(context, path);
-      const representation = getContextNodeData(value);
-
-      subscriptions.set(key, {
-        path,
-        lastData: JSON.stringify(representation),
-      });
-
-      setTimeout(() => {
-        const currentContext = environment.contextManager.getState().context;
-        const currentVal = getValueAtPath(currentContext, path);
-        const currentRep = getContextNodeData(currentVal);
-        rpc.egress.contextNodeUpdated({ path, data: currentRep });
-      }, 0);
-
-      return key;
-    },
-    unwatchContextNode: async ({ key }) => {
-      subscriptions.delete(key);
-    },
-    readBoard: async ({ boardId }) => {
-      return boardStore.getCached(boardId);
-    },
-    writeBoard: async ({ data }) => {
-      boardStore.push(data);
-    },
-    listComponents: async (_: {}) => {
-      return Object.fromEntries(
-        Object.entries(components || {}).map(([key, value]) => [
-          key,
-          value.summary,
-        ]),
-      );
-    },
-    describeComponents: async ({ names }) => {
-      const result: Record<string, unknown> = {};
-      for (const name of names) {
-        const comp = components?.[name];
-        if (comp) {
-          result[name] = {
-            name,
-            props: comp.props.toJSONSchema(),
-            events: comp.events?.toJSONSchema(),
-            bindings: comp.bindings?.toJSONSchema(),
-            summary: comp.summary,
-            instruction: comp.instructions,
-          };
-        }
-      }
-      return result;
-    },
-    getCatalog: async (args) => {
-      return Object.fromEntries(
-        Object.entries(components || {}).map(([key, comp]) => [
-          key,
-          {
-            props: comp.props.toJSONSchema(),
-            events: comp.events?.toJSONSchema(),
-            bindings: comp.bindings?.toJSONSchema(),
-            summary: comp.summary,
-            instruction: comp.instructions,
-          },
-        ]),
-      );
     },
     readNode: async ({ selector }) => {
       const element = document.querySelector(selector);
@@ -381,29 +241,10 @@ export function createBentoRuntime({
     errorComponent,
   });
 
-  environment.interactionManager.subscribe((state) => {
-    rpc.egress.selectionUpdated({ selection: state.selection });
-    rpc.egress.hoverUpdated({ hovered: state.hovered });
-  });
-
-  environment.contextManager.subscribe((state) => {
-    const context = state.context;
-    for (const [key, sub] of subscriptions.entries()) {
-      const value = getValueAtPath(context, sub.path);
-      const representation = getContextNodeData(value);
-      const serialized = JSON.stringify(representation);
-      if (serialized !== sub.lastData) {
-        sub.lastData = serialized;
-        rpc.egress.contextNodeUpdated({ path: sub.path, data: representation });
-      }
-    }
-  });
-
   return {
     ...controller,
     environment,
     rpc,
-    boardStore,
     goHome: () => {
       rpc.egress.goTo({ location: undefined });
     },
@@ -415,9 +256,8 @@ export function createBentoRuntime({
       parentId?: string;
       spec?: any;
     }) => {
-      const board = await rpc.egress.createBoard(args);
-      boardStore.push(board);
-      return board;
+      const workspaceData = await rpc.egress.createBoard(args);
+      store.setState({ workspace: workspaceData });
     },
   };
 }

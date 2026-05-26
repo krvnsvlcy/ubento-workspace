@@ -266,6 +266,9 @@ importers:
       '@ubento/rpc':
         specifier: workspace:*
         version: link:../../packages/utils/rpc
+      lucide-react:
+        specifier: ^0.468.0
+        version: 0.468.0(react@19.2.5)
       wouter:
         specifier: ^3.6.0
         version: 3.9.0(react@19.2.5)
@@ -933,6 +936,9 @@ importers:
       motion:
         specifier: ^12.38.0
         version: 12.38.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      sucrase:
+        specifier: ^3.35.0
+        version: 3.35.1
       wouter:
         specifier: ^3.6.0
         version: 3.9.0(react@19.2.5)

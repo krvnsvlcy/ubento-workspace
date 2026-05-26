@@ -2,7 +2,7 @@ import { SideSection } from "@/components/side/section";
 import { TreeEntry } from "@/components/tree/tree-entry";
 import { TreeIndent } from "@/components/tree/tree-indent";
 import { useWorkspaceEngine } from "@/contexts/workspace";
-import { useUbento, useUbentoEngine } from "@/engine/app/engine";
+import { useUbentoEngine } from "@/engine/app/engine";
 import {
   DndContext,
   DragEndEvent,
@@ -14,31 +14,51 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
-import { workspaceClient } from "@ubento/services.sdk";
 import clsx from "clsx";
-import { generateKeyBetween } from "fractional-indexing";
 import React, { useState } from "react";
 
-// Helper to calculate the new lexicographical fractional index safely
-function calculateNewIndex(
-  beforeIndex: string | null | undefined,
-  afterIndex: string | null | undefined,
-): string {
-  try {
-    return generateKeyBetween(beforeIndex || null, afterIndex || null);
-  } catch (err) {
-    console.error(
-      "Failed to generate keys between:",
-      beforeIndex,
-      afterIndex,
-      err,
-    );
-    if (!beforeIndex && !afterIndex) return "a0";
-    if (!beforeIndex) {
-      return (afterIndex || "a0") + "a";
+function removeIdFromTree(
+  boards: Record<string, any>,
+  children: string[],
+  idToRemove: string,
+): { boards: Record<string, any>; children: string[] } {
+  const nextBoards = { ...boards };
+  let nextChildren = children.filter((id) => id !== idToRemove);
+
+  for (const id in nextBoards) {
+    const board = nextBoards[id];
+    if (board.children) {
+      nextBoards[id] = {
+        ...board,
+        children: board.children.filter((cid: string) => cid !== idToRemove),
+      };
     }
-    return (beforeIndex || "a0") + "z";
   }
+
+  return { boards: nextBoards, children: nextChildren };
+}
+
+function insertIdIntoArray(
+  arr: string[],
+  idToInsert: string,
+  beforeId: string | null,
+  afterId: string | null,
+): string[] {
+  let index = arr.length;
+  if (beforeId !== "null" && beforeId !== null) {
+    const idx = arr.indexOf(beforeId);
+    if (idx !== -1) {
+      index = idx + 1;
+    }
+  } else if (afterId !== "null" && afterId !== null) {
+    const idx = arr.indexOf(afterId);
+    if (idx !== -1) {
+      index = idx;
+    }
+  }
+  const next = [...arr];
+  next.splice(index, 0, idToInsert);
+  return next;
 }
 
 interface SeparatorProps {
@@ -51,7 +71,6 @@ function SeparatorDropZone({ id, activeDragId }: SeparatorProps) {
     id,
   });
 
-  // Only show active separators when dragging is in progress
   if (!activeDragId) {
     return <div className="h-[2px] w-full" />;
   }
@@ -60,7 +79,6 @@ function SeparatorDropZone({ id, activeDragId }: SeparatorProps) {
   const beforeId = parts[2];
   const afterId = parts[3];
 
-  // Do not show drop zones adjacent to the dragged item itself
   if (activeDragId === beforeId || activeDragId === afterId) {
     return <div className="h-[2px] w-full" />;
   }
@@ -87,8 +105,8 @@ function SeparatorDropZone({ id, activeDragId }: SeparatorProps) {
 }
 
 interface BoardNodeProps {
-  board: workspaceClient.Board;
-  workspaceId: string;
+  board: any;
+  allBoards: Record<string, any>;
   activeBoardId: string | undefined;
   depth: number;
   onSelect: (boardId: string) => void;
@@ -102,7 +120,7 @@ interface BoardNodeProps {
 
 function BoardNode({
   board,
-  workspaceId,
+  allBoards,
   activeBoardId,
   depth,
   onSelect,
@@ -113,18 +131,13 @@ function BoardNode({
   expandedIds,
   toggleExpanded,
 }: BoardNodeProps) {
-  const ubento = useUbento();
   const isExpanded = expandedIds.has(board.id);
+  const childBoards = (board.children || [])
+    .map((cid: string) => allBoards[cid])
+    .filter(Boolean);
 
-  // Fetch children of this board
-  const { data: childBoards } = ubento.workspace.useBoards(
-    { workspace_id: workspaceId, parent_id: board.id },
-    { enabled: !!workspaceId },
-  );
+  const hasChildren = childBoards.length > 0;
 
-  const hasChildren = childBoards && childBoards.length > 0;
-
-  // Draggable properties
   const {
     attributes,
     listeners,
@@ -135,20 +148,14 @@ function BoardNode({
     id: board.id,
   });
 
-  // Droppable properties for nesting
   const { setNodeRef: setNestRef, isOver: isOverNest } = useDroppable({
     id: `nest-target:${board.id}`,
-    disabled: activeDragId === board.id, // cannot drop on itself
+    disabled: activeDragId === board.id,
   });
 
   const style = {
     transform: CSS.Translate.toString(transform),
     opacity: isDragging ? 0.3 : 1,
-  };
-
-  const handleToggle = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    toggleExpanded(board.id);
   };
 
   return (
@@ -206,18 +213,18 @@ function BoardNode({
         </TreeEntry>
       </div>
 
-      {isExpanded && (
+      {isExpanded && hasChildren && (
         <TreeIndent>
           <div className="flex flex-col">
             <SeparatorDropZone
               id={`sibling-separator:${board.id}:null:${childBoards[0].id}`}
               activeDragId={activeDragId}
             />
-            {childBoards.map((child, index) => (
+            {childBoards.map((child: any, index: number) => (
               <React.Fragment key={child.id}>
                 <BoardNode
                   board={child}
-                  workspaceId={workspaceId}
+                  allBoards={allBoards}
                   activeBoardId={activeBoardId}
                   depth={depth + 1}
                   onSelect={onSelect}
@@ -243,25 +250,20 @@ function BoardNode({
   );
 }
 
-export function BoardsSection({
-  workspace,
-}: {
-  workspace: workspaceClient.Workspace;
-}) {
+export function BoardsSection() {
   const engine = useUbentoEngine();
-  const ubento = useUbento();
   const location = engine.useState((s) => s.location);
   const workspaceEngine = useWorkspaceEngine();
   const [activeDragId, setActiveDragId] = useState<string | null>(null);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 
-  // Fetch root boards (where parent_id is null)
-  const { data: rootBoards } = ubento.workspace.useBoards(
-    { workspace_id: workspace.id, parent_id: null },
-    { enabled: !!workspace.id },
-  );
+  const specData = workspaceEngine.useState((s) => s.workspace.spec);
+  const allBoards = specData.isValid ? specData.data.boards || {} : {};
+  const rootChildrenIds = specData.isValid ? specData.data.roots || [] : [];
+  const rootBoards = rootChildrenIds
+    .map((id: string) => allBoards[id])
+    .filter(Boolean);
 
-  // Setup sensors with distance activation constraint to allow buttons clicks
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -331,22 +333,12 @@ export function BoardsSection({
     const title = prompt("Enter child board name:");
     if (!title) return;
     try {
-      // Find the last board under the parent to calculate index
-      const siblings = Object.values(
-        ubento.workspace.boardStore.store.getState().data,
-      ).filter((b) => b.parent_id === parentId);
-      siblings.sort((a, b) => (a.index || "").localeCompare(b.index || ""));
-      const lastChild = siblings[siblings.length - 1];
-      const index = calculateNewIndex(lastChild?.index, null);
-
       const board = await workspaceEngine?.createBoard({
         title,
         parentId,
-        index,
       });
 
       if (board) {
-        // Auto expand parent
         setExpandedIds((prev) => new Set([...prev, parentId]));
         engine.goToLocation({ board: board.id });
       }
@@ -363,18 +355,9 @@ export function BoardsSection({
     const title = prompt("Enter board name:");
     if (!title) return;
     try {
-      // Find last root board to calculate index
-      const siblings = Object.values(
-        ubento.workspace.boardStore.store.getState().data,
-      ).filter((b) => b.parent_id === null);
-      siblings.sort((a, b) => (a.index || "").localeCompare(b.index || ""));
-      const lastRoot = siblings[siblings.length - 1];
-      const index = calculateNewIndex(lastRoot?.index, null);
-
       const board = await workspaceEngine?.createBoard({
         title,
         parentId: null,
-        index,
       });
 
       if (board) {
@@ -402,14 +385,15 @@ export function BoardsSection({
     const activeId = active.id as string;
     const overId = over.id as string;
 
-    const allBoards = Object.values(
-      ubento.workspace.boardStore.store.getState().data,
-    );
-    const draggedBoard = allBoards.find((b) => b.id === activeId);
-    if (!draggedBoard) return;
+    const wsSpec = workspaceEngine?.store.getState().workspace.spec.data as any;
+    if (!wsSpec) return;
 
-    let targetParentId: string | null = null;
-    let newIndex = "";
+    let boards = { ...(wsSpec.boards || {}) };
+    let children = [...(wsSpec.roots || [])];
+
+    const removedResult = removeIdFromTree(boards, children, activeId);
+    boards = removedResult.boards;
+    children = removedResult.children;
 
     if (overId.startsWith("sibling-separator:")) {
       const parts = overId.split(":");
@@ -417,48 +401,42 @@ export function BoardsSection({
       const beforeId = parts[2];
       const afterId = parts[3];
 
-      targetParentId = parentIdStr === "root" ? null : parentIdStr;
-
-      const siblings = allBoards.filter(
-        (b) => b.parent_id === targetParentId && b.id !== activeId,
-      );
-      siblings.sort((a, b) => (a.index || "").localeCompare(b.index || ""));
-
-      const beforeBoard =
-        beforeId !== "null" ? siblings.find((b) => b.id === beforeId) : null;
-      const afterBoard =
-        afterId !== "null" ? siblings.find((b) => b.id === afterId) : null;
-
-      newIndex = calculateNewIndex(beforeBoard?.index, afterBoard?.index);
+      if (parentIdStr === "root") {
+        children = insertIdIntoArray(children, activeId, beforeId, afterId);
+      } else {
+        const parentBoard = boards[parentIdStr];
+        if (parentBoard) {
+          boards[parentIdStr] = {
+            ...parentBoard,
+            children: insertIdIntoArray(
+              parentBoard.children || [],
+              activeId,
+              beforeId,
+              afterId,
+            ),
+          };
+        }
+      }
     } else if (overId.startsWith("nest-target:")) {
-      targetParentId = overId.replace("nest-target:", "");
+      const targetParentId = overId.replace("nest-target:", "");
       if (targetParentId === activeId) return;
 
-      const siblings = allBoards.filter((b) => b.parent_id === targetParentId);
-      siblings.sort((a, b) => (a.index || "").localeCompare(b.index || ""));
-      const lastChild = siblings[siblings.length - 1];
-
-      newIndex = calculateNewIndex(lastChild?.index, null);
+      const parentBoard = boards[targetParentId];
+      if (parentBoard) {
+        boards[targetParentId] = {
+          ...parentBoard,
+          children: [...(parentBoard.children || []), activeId],
+        };
+      }
     } else {
       return;
     }
 
-    // Optimistic Update
-    const originalParentId = draggedBoard.parent_id;
-    const originalIndex = draggedBoard.index;
-
-    ubento.workspace.boardStore.push({
-      ...draggedBoard,
-      parent_id: targetParentId,
-      index: newIndex,
-    });
-
     try {
-      await workspaceEngine?.updateBoard({
-        boardId: activeId,
-        update: {
-          parentId: targetParentId,
-          index: newIndex,
+      workspaceEngine?.updateWorkspaceSpec({
+        spec: {
+          boards,
+          roots: children,
         },
       });
       engine.notify({
@@ -467,12 +445,6 @@ export function BoardsSection({
         type: "success",
       });
     } catch (err) {
-      // Rollback
-      ubento.workspace.boardStore.push({
-        ...draggedBoard,
-        parent_id: originalParentId,
-        index: originalIndex,
-      });
       engine.notify({
         title: "Reorder Failed",
         message: "Failed to persist order",
@@ -504,11 +476,11 @@ export function BoardsSection({
               id={`sibling-separator:root:null:${rootBoards[0].id}`}
               activeDragId={activeDragId}
             />
-            {rootBoards.map((board, index) => (
+            {rootBoards.map((board: any, index: number) => (
               <React.Fragment key={board.id}>
                 <BoardNode
                   board={board}
-                  workspaceId={workspace.id}
+                  allBoards={allBoards}
                   activeBoardId={location.board}
                   depth={0}
                   onSelect={handleSelect}

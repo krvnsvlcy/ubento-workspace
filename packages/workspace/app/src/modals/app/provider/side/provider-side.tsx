@@ -51,7 +51,7 @@ export function ProviderSidebar({
 
         <div className="space-y-2">
           <Heading>{data?.name}</Heading>
-          <Text tone="subtle">{data?.description}</Text>
+          <Text shade="subtle">{data?.description}</Text>
         </div>
         <div className="flex gap-2 flex-wrap">
           {supportedAuth.map((auth) => (

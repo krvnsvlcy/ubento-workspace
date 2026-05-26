@@ -18,5 +18,5 @@ export const componentDetailsTab: TabDefinition = {
   name: "Details",
   icon: "info",
   component: ComponentDetailsTab,
-  enabled: (location) => !!location.component,
+  enabled: ({ location }) => !!location.component,
 };

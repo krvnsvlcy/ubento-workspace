@@ -54,7 +54,7 @@ export const ProvidersBrowser: FC = () => {
           <ContentHeader>
             <GoBack />
             <Heading>Select Connection Provider</Heading>
-            <Text tone="subtle">
+            <Text shade="subtle">
               Choose a connection provider to add to your team.
             </Text>
           </ContentHeader>

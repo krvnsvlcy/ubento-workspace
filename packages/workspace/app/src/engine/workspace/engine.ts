@@ -1,12 +1,8 @@
 import { UbentoEngine, UbentoEngineState } from "@/engine/app/engine";
 import { appModalRoutes } from "@/modals/app/routes";
 import { ConfirmMutationModal } from "@/modals/confirm_mutation/confirm_mutation";
-import { JsonPatch } from "@/utils/json";
 import { createZustandStateController } from "@ubento/bento.arlo-core";
 import {
-  resolveBoardContextSchema as __resolveBoardContextSchema,
-  BoardSpec,
-  boardSpecSchema,
   FunctionSchema,
   ObjectNodeSchema,
   ServiceData,
@@ -14,31 +10,25 @@ import {
   workspaceSpecSchema,
 } from "@ubento/bento.core";
 import {
-  BentoBoardData,
   BentoEngineHostRpcInterface,
   BentoEngineRuntimeRpcInterface,
   BentoLocation,
   BentoWorkspaceData,
-  boardDataSchema,
-  DropRect,
   ParsedSpec,
   ServiceOperationErrorData,
   ServiceOperationResult,
-  SpecIssue,
 } from "@ubento/bento.runtime";
 import { createDuplexRpc, createWindowPort, DuplexRpc } from "@ubento/rpc";
 import { vertexClient, workspaceClient } from "@ubento/services.sdk";
 import { OperationSpec, serviceSpecV1Schema } from "@ubento/vertex.core";
 import { registerStore, unregisterStore } from "@ubento/zustand-devtool";
 import { dequal } from "dequal/lite";
-import { applyPatch } from "fast-json-patch";
 import debounce from "lodash.debounce";
 import z from "zod";
 import { createStore as createZustandStore } from "zustand/vanilla";
 import { UbentoSession } from "../app/session";
 import { createUbentoCopilot } from "../copilot/copilot";
 import { createWorkspaceCopilotAgentEnvironment } from "./environment";
-import { generateInitialBoardSpec } from "./init";
 
 function parseSpecData<S extends z.ZodTypeAny>(
   schema: S,
@@ -60,32 +50,6 @@ function parseSpecData<S extends z.ZodTypeAny>(
       data: spec.data,
     };
   }
-}
-
-export function extractBoardContext(spec: ParsedSpec<BoardSpec>) {
-  const contextFields = new Set(["params", "state", "initialState", "store"]);
-  let contextData = {};
-  if (spec.data && typeof spec.data === "object") {
-    contextData = {
-      params: (spec.data as any)?.params,
-      state: (spec.data as any)?.state,
-      initialState: (spec.data as any)?.initialState,
-      store: (spec.data as any)?.store,
-    };
-  }
-
-  let contextIssues: SpecIssue[] = [];
-  if (spec.issues) {
-    contextIssues = spec.issues.filter((issue: SpecIssue) =>
-      contextFields.has(issue.location[0]),
-    );
-  }
-
-  return {
-    isValid: contextIssues.length === 0,
-    data: contextData,
-    issues: contextIssues,
-  };
 }
 
 export function resolveOperationSchema<THandlerSpec extends z.ZodType>(
@@ -126,40 +90,6 @@ export function resolveOperationSchema<THandlerSpec extends z.ZodType>(
   };
 }
 
-/**
- * Pre-flights JSON patches to ensure all intermediate parent paths exist.
- * Mutates the provided document directly.
- */
-function ensureDeepPaths(document: any, patch: any) {
-  // Ensure we are iterating over an array of operations
-  const ops = Array.isArray(patch) ? patch : [patch];
-
-  for (const op of ops) {
-    // We only need to auto-populate for 'add' and 'replace' operations
-    if (op.op === "add" || op.op === "replace") {
-      // Split the path (e.g., "/settings/ui/theme" -> ["settings", "ui", "theme"])
-      const parts = op.path.split("/").filter(Boolean);
-      let current = document;
-
-      // Iterate up to the second-to-last element (the parent of the target key)
-      for (let i = 0; i < parts.length - 1; i++) {
-        const part = parts[i];
-
-        // If the current level is missing, initialize it
-        if (current[part] === undefined || current[part] === null) {
-          // Smart heuristic: if the *next* key is a number, assume an array.
-          // Otherwise, assume an object.
-          const nextPart = parts[i + 1];
-          current[part] = !isNaN(Number(nextPart)) ? [] : {};
-        }
-
-        // Move deeper into the tree
-        current = current[part];
-      }
-    }
-  }
-}
-
 export type WorkspaceState = {
   // status
   status: "pending" | "connected" | "ready" | "error";
@@ -170,13 +100,11 @@ export type WorkspaceState = {
   workspace: BentoWorkspaceData;
 
   // synced from runtime
-  boards: Record<string, BentoBoardData>;
+  boards: Record<string, any>;
   selectionScope?: string;
   selection: string[];
   hover?: string;
 
-  // drag and drop
-  dropRects: DropRect[];
   leftPanelOpen: boolean;
 
   // watched context nodes
@@ -202,6 +130,31 @@ export function createWorkspaceEngine({
   const workspaceService = appEngine.ubento.workspace;
   const logger = appEngine.logger.child({ module: "workspace_engine" });
 
+  function deriveBoardsFromSpec(spec: any) {
+    const result: Record<string, any> = {};
+    if (spec.isValid && spec.data?.boards) {
+      for (const [id, board] of Object.entries(spec.data.boards)) {
+        const b = board as any;
+        result[id] = {
+          id: b.id,
+          title: b.name,
+          spec: {
+            isValid: true,
+            data: {
+              children: b.children || [],
+              elements: {},
+            },
+          },
+        };
+      }
+    }
+    return result;
+  }
+
+  const parsedWorkspaceSpec = parseSpecData(
+    workspaceSpecSchema,
+    workspace.data,
+  );
   const store = createZustandStore<WorkspaceState>()(() => ({
     status: "pending",
     mode: "live",
@@ -209,16 +162,15 @@ export function createWorkspaceEngine({
       boardId: appEngine.getState().location.board || "",
       params: appEngine.getState().location.params || {},
     },
-    boards: {},
+    boards: deriveBoardsFromSpec(parsedWorkspaceSpec),
     selection: [],
     hover: undefined,
-    dropRects: [],
     leftPanelOpen: true,
     workspace: {
       id: workspace.id,
       title: workspace.name,
       slug: workspace.slug,
-      spec: parseSpecData(workspaceSpecSchema, workspace.data),
+      spec: parsedWorkspaceSpec,
     },
     watchedContextNodes: {},
   }));
@@ -272,55 +224,16 @@ export function createWorkspaceEngine({
     });
   }
 
-  async function getBoard({ boardId }: { boardId: string }) {
-    const data = await workspaceService.getBoard(boardId);
-    return {
-      id: data.id,
-      title: data.name,
-      spec: parseSpecData(boardDataSchema, data.data),
-    };
-  }
-
-  async function listBoards() {
-    const res = await workspaceService.listBoards({
-      workspaceId: workspace.id,
-    });
-    const boards = res.data
-      .map((b) => {
-        return {
-          id: b.id,
-          title: b.name,
-          spec: parseSpecData(boardDataSchema, b.data),
-        };
-      })
-      .filter((b) => !!b);
-    return {
-      boards,
-      nextCursor: res.nextPage?.cursor,
-    };
-  }
-
   async function listComponents() {
-    return rpc?.egress.listComponents({}) || [];
+    return [];
   }
 
   async function describeComponents(names: string[]) {
-    return rpc?.egress.describeComponents({ names }) || {};
+    return {};
   }
 
   async function getCatalog() {
-    return (await rpc?.egress.getCatalog({})) as
-      | Record<
-          string,
-          {
-            props: any;
-            events?: any;
-            bindings?: any;
-            summary?: string;
-            instruction?: string;
-          }
-        >
-      | undefined;
+    return {};
   }
 
   async function updateWorkspace(data: Partial<WorkspaceState>) {
@@ -331,280 +244,145 @@ export function createWorkspaceEngine({
     store.setState({ workspace: updated });
   }
 
-  async function readBoard({ boardId }: { boardId: string }) {
-    let boardData = await rpc?.egress.readBoard({ boardId });
-    if (!boardData) {
-      boardData = await getBoard({ boardId });
-    }
-    return boardData;
-  }
-  async function writeBoard(data: BentoBoardData) {
-    await rpc?.egress.writeBoard({ boardId: data.id, data });
-  }
-
-  async function resolveBoardContextSchema({ boardId }: { boardId: string }) {
-    const board = await readBoardSpec({ boardId });
-    const context = extractBoardContext(board);
-    return __resolveBoardContextSchema({
-      spec: context.data,
-      getServiceOperationSchema: async ({ type, name, service }) => {
-        const serviceSpec = await getServiceSpecForService(service);
-        if (!serviceSpec || !serviceSpec.isValid) return { type: "function" };
-        const specData = serviceSpec.data;
-        if (type === "query") {
-          const operationSchema = specData.queries?.[name];
-          if (!operationSchema) return { type: "function" };
-          return resolveOperationSchema(operationSchema);
-        } else if (type === "action") {
-          const operationSchema = specData.actions?.[name];
-          if (!operationSchema) return { type: "function" };
-          return resolveOperationSchema(operationSchema);
-        }
-        return { type: "function" };
-      },
-    });
-  }
-
-  // update spec
-
-  async function readBoardSpec({ boardId }: { boardId: string }) {
-    const data = await readBoard({ boardId });
-    return data.spec;
-  }
-
-  async function checkBoard({ boardId }: { boardId: string }) {
-    const data = await readBoard({ boardId });
-    const spec = data.spec;
-    if (spec.isValid) {
-      return await deepValidateBoard(spec.data);
-    }
-    return spec;
-  }
-  async function updateBoardSpec({
-    boardId,
-    patch,
-  }: {
-    boardId: string;
-    patch: JsonPatch; // Assuming this is an array of patch operations
-  }) {
-    const data = await readBoard({ boardId });
-
-    // 1. Deep clone the data to avoid mutating the original read cache
-    // (structuredClone is native in Node 17+ and modern browsers)
-    const draftSpec =
-      typeof structuredClone === "function"
-        ? structuredClone(data.spec.data)
-        : JSON.parse(JSON.stringify(data.spec.data));
-
-    // 2. Pre-fill any missing intermediate paths
-    ensureDeepPaths(draftSpec, patch);
-
-    // 3. Safely apply the patch now that the tree structure is guaranteed
-    const updatedSpec = applyPatch(draftSpec, patch).newDocument;
-
-    // 4. Proceed with your existing parsing and validation logic
-    const parsed = parseSpecData(boardSpecSchema, {
-      ...(updatedSpec as any),
-      id: boardId,
-      title: data.title,
-    });
-
-    const validated = parsed.isValid
-      ? await deepValidateBoard(parsed.data)
-      : parsed;
-
-    await writeBoard({
-      ...data,
-      spec: validated,
-    });
-
-    return validated;
-  }
-  async function writeBoardSpec({
-    boardId,
-    spec,
-  }: {
-    boardId: string;
-    spec: any;
-  }) {
-    const data = await readBoard({ boardId });
-    let parsed = parseSpecData(boardSpecSchema, {
-      ...(spec as any),
-      id: boardId,
-      title: data.title,
-    });
-    const validated = parsed.isValid
-      ? await deepValidateBoard(parsed.data)
-      : parsed;
-
-    await writeBoard({
-      ...data,
-      spec: validated,
-    });
-  }
-
-  async function deepValidateBoard(
-    parsed: BoardSpec,
-  ): Promise<ParsedSpec<BoardSpec>> {
-    // Replace with your actual RPC call
-    const components = (await rpc?.egress.getCatalog({})) as
-      | Record<string, { props: any; events?: any; bindings?: any }>
-      | undefined;
-
-    if (!components) {
-      return { isValid: true, data: parsed, issues: [] };
-    }
-
-    const issues: SpecIssue[] = [];
-
-    for (const [elementId, element] of Object.entries(parsed.elements || {})) {
-      const comp = components[element.component];
-      if (!comp) {
-        issues.push({
-          location: ["elements", elementId],
-          message: `Component ${element.component} used by element ${elementId} not found`,
-        });
-        continue;
-      }
-
-      const schema = z.fromJSONSchema(comp.props);
-      const rawProps = element.props || {};
-      const validated = schema.safeParse(rawProps);
-
-      if (!validated.success) {
-        for (const issue of validated.error.issues) {
-          // 1. Traverse the raw props object using Zod's error path
-          let valueAtPath: any = rawProps;
-          for (const key of issue.path) {
-            if (valueAtPath && typeof valueAtPath === "object") {
-              valueAtPath = valueAtPath[key];
-            } else {
-              valueAtPath = undefined;
-              break;
-            }
-          }
-
-          // 2. Check if the rejected value perfectly matches the Ubento directive shape
-          const isUseDirective =
-            valueAtPath &&
-            typeof valueAtPath === "object" &&
-            "$use" in valueAtPath &&
-            typeof valueAtPath.$use === "string" &&
-            Object.keys(valueAtPath).length === 1; // Strict check to prevent bloated objects
-
-          const isEvalDirective =
-            valueAtPath &&
-            typeof valueAtPath === "object" &&
-            "$eval" in valueAtPath &&
-            typeof valueAtPath.$eval === "string" &&
-            Object.keys(valueAtPath).length === 1;
-
-          const isRunDirective =
-            valueAtPath &&
-            typeof valueAtPath === "object" &&
-            "$run" in valueAtPath &&
-            typeof valueAtPath.$run === "string" &&
-            Object.keys(valueAtPath).length === 1;
-
-          const isDirective =
-            isUseDirective || isEvalDirective || isRunDirective;
-
-          // 3. Only register the error if it is NOT a directive
-          if (!isDirective) {
-            issues.push({
-              location: ["elements", elementId, ...issue.path.map(String)],
-              message: issue.message,
-            });
-          }
-        }
-      }
-    }
-
-    if (issues.length > 0) {
-      return { isValid: false, issues: issues, data: parsed };
-    }
-    return { isValid: true, data: parsed };
-  }
   // Update metadata
   async function updateBoard({
     boardId,
     update,
   }: {
     boardId: string;
-    update: Partial<Pick<BentoBoardData, "title">> &
-      Partial<{ parentId: string | null; index: string | null }>;
+    update: { title?: string; parentId?: string | null; index?: string | null };
   }) {
-    await workspaceService.updateBoard(boardId, {
-      name: update.title,
-      parentId: update.parentId,
-      index: update.index,
+    const wsSpec = readWorkspaceSpec();
+    if (!wsSpec || !wsSpec.boards) return;
+
+    const boards = { ...wsSpec.boards };
+    const board = boards[boardId];
+    if (!board) return;
+
+    if (update.title !== undefined) {
+      boards[boardId] = {
+        ...board,
+        name: update.title,
+      };
+    }
+
+    updateWorkspaceSpec({
+      spec: {
+        boards,
+      },
     });
   }
 
   // delete board
   async function deleteBoard({ boardId }: { boardId: string }) {
-    await workspaceService.deleteBoard(boardId);
+    const wsSpec = readWorkspaceSpec();
+    if (!wsSpec) return;
+
+    const boards = { ...(wsSpec.boards || {}) };
+    const board = boards[boardId];
+    if (!board) return;
+
+    const collectChildIds = (id: string, ids: Set<string>) => {
+      ids.add(id);
+      const b = boards[id];
+      if (b?.children) {
+        for (const childId of b.children) {
+          collectChildIds(childId, ids);
+        }
+      }
+    };
+
+    const idsToDelete = new Set<string>();
+    collectChildIds(boardId, idsToDelete);
+
+    for (const id of idsToDelete) {
+      delete boards[id];
+    }
+
+    for (const id in boards) {
+      const b = boards[id];
+      if (b.children && b.children.includes(boardId)) {
+        boards[id] = {
+          ...b,
+          children: b.children.filter((cid) => cid !== boardId),
+        };
+      }
+    }
+
+    const workspaceRoots = (wsSpec.roots || []).filter(
+      (cid: string) => cid !== boardId,
+    );
+
+    updateWorkspaceSpec({
+      spec: {
+        boards,
+        roots: workspaceRoots,
+      },
+    });
   }
 
   // create board
   async function createBoard({
     title,
     parentId,
-    spec,
-    index,
   }: {
     title: string;
     parentId?: string | null;
     spec?: any;
     index?: string | null;
-  }): Promise<ParsedSpec<BoardSpec> & { boardId: string; id: string }> {
+  }): Promise<any> {
     const state = store.getState();
     const workspaceId = state.workspace.id;
 
-    const parsed = parseSpecData(boardSpecSchema, {
-      ...(spec || generateInitialBoardSpec()),
-      title: title,
-    });
-    const validated = parsed.isValid
-      ? await deepValidateBoard(parsed.data)
-      : parsed;
-
-    const board = await workspaceService.createBoard({
+    const newModule = await appEngine.ubento.sdk.module.createModule({
       name: title,
-      parentId,
-      workspace_id: workspaceId,
-      data: validated.data as any,
-      index,
+      team_id: session.teamId,
+      source: `export default function Board() {\n  return (\n    <div className="p-8 bg-neutral-surface/10 rounded-2xl border border-neutral-border">\n      <h1 className="text-2xl font-bold mb-4">${title}</h1>\n      <p className="text-neutral-content-muted">Start editing this board module in code.</p>\n    </div>\n  );\n}`,
+      scope: "private",
+      type: "board",
+    });
+
+    const boardId = Math.random().toString(36).substring(7);
+
+    const wsSpec = readWorkspaceSpec() || {};
+    const boards = { ...(wsSpec.boards || {}) };
+
+    boards[boardId] = {
+      id: boardId,
+      name: title,
+      module: {
+        id: newModule.id,
+        versionId: newModule.latest_version_id || "",
+      },
+      children: [],
+    };
+
+    let workspaceRoots = [...(wsSpec.roots || [])];
+    if (parentId) {
+      const parentBoard = boards[parentId];
+      if (parentBoard) {
+        boards[parentId] = {
+          ...parentBoard,
+          children: [...(parentBoard.children || []), boardId],
+        };
+      }
+    } else {
+      workspaceRoots.push(boardId);
+    }
+
+    updateWorkspaceSpec({
+      spec: {
+        boards,
+        roots: workspaceRoots,
+      },
     });
 
     return {
-      ...validated,
-      boardId: board.id,
-      id: board.id,
+      isValid: true,
+      data: {},
+      boardId,
+      id: boardId,
     };
-  }
-
-  const persistBoard = debounce(async (data: BentoBoardData) => {
-    await workspaceService.updateBoard(data.id, {
-      name: data.title,
-      data: data.spec.data as any,
-    });
-  }, 1000);
-  function boardUpdated({ data }: { data: BentoBoardData }) {
-    store.setState((state) => {
-      const boards = state.boards;
-      boards[data.id] = data;
-      return { boards };
-    });
-    persistBoard(data);
-  }
-
-  function selectionUpdated({ selection }: { selection: string[] }) {
-    store.setState({ selection });
-  }
-
-  function hoverUpdated({ hovered }: { hovered?: string }) {
-    store.setState({ hover: hovered });
   }
 
   let spec_cache = {} as Record<string, any>;
@@ -796,18 +574,27 @@ export function createWorkspaceEngine({
     }
     return undefined;
   }
-  function updateWorkspaceSpec({ spec }: { spec: Partial<WorkspaceSpec> }) {
+  function updateWorkspaceSpec({
+    spec,
+    overwrite,
+  }: {
+    spec: Partial<WorkspaceSpec>;
+    overwrite?: boolean;
+  }) {
     store.setState((state) => {
       const workspaceData = state.workspace;
-      const currentSpec = workspaceData.spec.data;
+      const currentSpec = overwrite ? {} : workspaceData.spec.data;
+      const nextSpec = parseSpecData(workspaceSpecSchema, {
+        ...(currentSpec || {}),
+        ...spec,
+      });
+
       return {
         workspace: {
           ...workspaceData,
-          spec: parseSpecData(workspaceSpecSchema, {
-            ...(currentSpec || {}),
-            ...spec,
-          }),
+          spec: nextSpec,
         },
+        boards: deriveBoardsFromSpec(nextSpec),
       };
     });
   }
@@ -826,22 +613,8 @@ export function createWorkspaceEngine({
     });
   }
 
-  // watch boards
-  const unsubscribeBoards = workspaceService.boardStore.store.subscribe(
-    async (state, prevState) => {
-      for (const boardId in state.data) {
-        const board = state.data[boardId];
-        const prevBoard = prevState.data[boardId];
-        if (board.name !== prevBoard?.name) {
-          const data = await readBoard({ boardId });
-          rpc?.egress.writeBoard({
-            boardId,
-            data: { ...data, title: board.name },
-          });
-        }
-      }
-    },
-  );
+  // watch boards: Deprecated under ESM
+  const unsubscribeBoards = () => {};
 
   const environment = createWorkspaceCopilotAgentEnvironment(
     {
@@ -870,10 +643,6 @@ export function createWorkspaceEngine({
         if (!rpc) throw new Error("Runtime connection not established");
         return await rpc.egress.readLogs({ from, count });
       },
-      readContext: async (path) => {
-        if (!rpc) throw new Error("Runtime connection not established");
-        return await rpc.egress.readContext({ path });
-      },
       getServices: async () => {
         const spec = readWorkspaceSpec();
         return spec?.services;
@@ -884,20 +653,19 @@ export function createWorkspaceEngine({
         );
       },
       goTo,
-      getBoard,
-      listBoards,
       updateBoard,
       deleteBoard,
       createBoard,
-      readBoardSpec,
-      updateBoardSpec,
-      resolveBoardContextSchema,
     },
     {
       session,
       ubento: appEngine.ubento,
       logger,
       workspaceId: store.getState().workspace.id,
+      getWorkspaceSpec: () => store.getState().workspace.spec,
+      updateWorkspaceSpec: async (spec) => {
+        updateWorkspaceSpec({ spec, overwrite: true });
+      },
     },
   );
 
@@ -976,19 +744,12 @@ export function createWorkspaceEngine({
     connect,
     ready,
     goTo,
-    getBoard,
-    listBoards,
     updateWorkspace,
     installService,
-    readBoardSpec,
-    checkBoard,
-    updateBoardSpec,
-    writeBoardSpec,
     updateBoard,
     deleteBoard,
     createBoard,
     updateWorkspaceSpec,
-    resolveBoardContextSchema,
     listComponents,
     describeComponents,
     getCatalog,
@@ -997,28 +758,19 @@ export function createWorkspaceEngine({
       store.setState({ mode });
     },
     select: async (selection: string[]) => {
-      await rpc?.egress.select({ selection });
+      // stubbed
     },
     hover: async (elementId: string) => {
-      await rpc?.egress.hover({ elementId });
+      // stubbed
     },
     unhover: async (elementId: string) => {
-      await rpc?.egress.unhover({ elementId });
+      // stubbed
     },
     watchContextNode: async (path: string) => {
-      if (!rpc) return "";
-      return await rpc.egress.watchContextNode({ path });
+      return "";
     },
     unwatchContextNode: async (key: string, path?: string) => {
-      if (!rpc) return;
-      await rpc.egress.unwatchContextNode({ key });
-      if (path) {
-        store.setState((state) => {
-          const next = { ...state.watchedContextNodes };
-          delete next[path];
-          return { watchedContextNodes: next };
-        });
-      }
+      // stubbed
     },
 
     init: async (target: Window) => {
@@ -1032,29 +784,28 @@ export function createWorkspaceEngine({
           connect,
           ready,
           goTo,
-          getBoard,
-          listBoards,
-          boardUpdated,
-          selectionUpdated,
-          hoverUpdated,
-          contextNodeUpdated: async ({ path, data }) => {
-            store.setState((state) => ({
-              watchedContextNodes: {
-                ...state.watchedContextNodes,
-                [path]: data,
-              },
-            }));
-          },
           runServiceOperation,
           createBoard: async (args) => {
             const title = args?.title || "";
-            const result = await createBoard({
+            await createBoard({
               title,
               parentId: (args as any)?.parentId,
-              spec: args?.spec,
-              index: (args as any)?.index,
             });
-            return await getBoard({ boardId: result.id });
+            return store.getState().workspace;
+          },
+          readModuleSource: async ({ moduleId, versionId }) => {
+            let vId = versionId;
+            if (!vId) {
+              const mod = await appEngine.ubento.sdk.module.getModule(moduleId);
+              vId = mod.latest_version_id || "";
+            }
+            const sourceCode =
+              await appEngine.ubento.sdk.module.readModuleVersionFile(
+                moduleId,
+                vId,
+                "index.tsx",
+              );
+            return { sourceCode };
           },
         },
       });

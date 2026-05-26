@@ -24,7 +24,7 @@ export function AccountModal() {
           <ContentHeader>
             <div className="space-y-1">
               <Heading>Account Settings</Heading>
-              <Text tone="subtle">Manage personal settings</Text>
+              <Text shade="subtle">Manage personal settings</Text>
             </div>
           </ContentHeader>
           <ContentBody>

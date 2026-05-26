@@ -23,7 +23,7 @@ export function AboutSection({ description }: { description?: string }) {
         <FileCode size={18} className="text-accent" />
         About this service
       </Heading>
-      <Text tone="muted" className="leading-relaxed text-[13px]">
+      <Text shade="muted" className="leading-relaxed text-[13px]">
         {description || "No description available."}
       </Text>
     </section>

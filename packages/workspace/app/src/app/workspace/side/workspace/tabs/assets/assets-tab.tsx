@@ -103,5 +103,5 @@ export const assetsTab: TabDefinition = {
   name: "Assets",
   icon: "assets",
   component: AssetsTab,
-  enabled: (location) => !!location.workspace,
+  enabled: ({ location }) => !!location.workspace,
 };

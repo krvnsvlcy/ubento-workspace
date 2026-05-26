@@ -1,8 +1,4 @@
 import { UbentoService } from "@/services/ubento/ubento";
-import {
-  ComponentEngineRuntimeHostRpcInterface,
-  ComponentEngineRuntimeRpcInterface,
-} from "@ubento/bento.runtime";
 import { createDuplexRpc, createWindowPort, DuplexRpc } from "@ubento/rpc";
 import { createZustandStateController } from "@ubento/bento.arlo-core";
 import { createStore as createZustandStore } from "zustand/vanilla";
@@ -54,10 +50,7 @@ export function createComponentEngine({
 
   const controller = createZustandStateController(store);
 
-  let rpc: DuplexRpc<
-    ComponentEngineRuntimeHostRpcInterface,
-    ComponentEngineRuntimeRpcInterface
-  > | null = null;
+  let rpc: DuplexRpc<any, any> | null = null;
 
   // Initial Data Fetching
   const initPromise = (async () => {
@@ -87,10 +80,7 @@ export function createComponentEngine({
     ...controller,
 
     init: (target: Window) => {
-      rpc = createDuplexRpc<
-        ComponentEngineRuntimeHostRpcInterface,
-        ComponentEngineRuntimeRpcInterface
-      >({
+      rpc = createDuplexRpc<any, any>({
         port: createWindowPort(window, target),
         channel: "component",
         handlers: {
@@ -106,13 +96,8 @@ export function createComponentEngine({
               code: source || dummyComponentCode,
             });
           },
-          log: async ({
-            type,
-            args,
-          }: {
-            type: LogEntry["type"];
-            args: any[];
-          }) => {
+          log: async (req: any) => {
+            const { type, args } = req as { type: LogEntry["type"]; args: any[] };
             const entry: LogEntry = {
               id: Math.random().toString(36).substring(7),
               type,

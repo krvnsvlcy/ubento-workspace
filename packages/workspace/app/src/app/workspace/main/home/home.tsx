@@ -26,7 +26,7 @@ function Greeting({ name }: { name?: string }) {
   }, []);
 
   return (
-    <Text tone="subtle">
+    <Text shade="subtle">
       {greeting}, {name}
     </Text>
   );
@@ -78,11 +78,11 @@ export function Home() {
         className="h-full w-full flex flex-col items-center justify-center bg-background p-8 selection:bg-neutral-800 selection:text-white"
       >
         <div className="flex flex-col items-center text-center max-w-md animate-in fade-in duration-500 gap-6">
-          <Text tone="muted" size="sm">
+          <Text shade="muted" size="sm">
             Hi, {session?.name}
           </Text>
           <Heading level="display">Welcome to Ubento!</Heading>
-          <Text tone="subtle">
+          <Text shade="subtle">
             It's a blank slate right now. Create your first workspace to start
             organizing your tools, tasks, and data in one unified environment.
           </Text>
@@ -184,7 +184,7 @@ export function WorkspaceCard({
 
       <div>
         <Text weight="semibold">{workspace.name}</Text>
-        <Text tone="subtle" size="sm">
+        <Text shade="subtle" size="sm">
           Workspace summary goes here.
         </Text>
       </div>

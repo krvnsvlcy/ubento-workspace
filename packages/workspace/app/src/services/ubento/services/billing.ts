@@ -103,7 +103,7 @@ export function createUbentoBillingService({
       return [...entities].filter((s) => {
         if (
           params?.organization_id &&
-          s.organization_id !== params.organization_id
+          s.team_id !== params.organization_id
         )
           return false;
         if (params?.product_code && s.product_code !== params.product_code)
@@ -143,7 +143,7 @@ export function createUbentoBillingService({
       return [...entities].filter((inv) => {
         if (
           params?.organization_id &&
-          inv.organization_id !== params.organization_id
+          inv.team_id !== params.organization_id
         )
           return false;
         if (params?.status && inv.status !== params.status) return false;
@@ -180,7 +180,7 @@ export function createUbentoBillingService({
       return [...entities].filter((uc) => {
         if (
           params?.organization_id &&
-          uc.organization_id !== params.organization_id
+          uc.team_id !== params.organization_id
         )
           return false;
         if (params?.feature_code && uc.feature_code !== params.feature_code)

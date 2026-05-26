@@ -156,7 +156,7 @@ const ConnectionCard: FC<ConnectionCardProps> = ({
       >
         <div className="flex flex-col gap-1">
           <Text weight="semibold">Delete Connection?</Text>
-          <Text tone="muted" size="sm">
+          <Text shade="muted" size="sm">
             Are you sure you want to delete "
             {connection.name || "this connection"}"?
           </Text>
@@ -190,7 +190,7 @@ const ConnectionCard: FC<ConnectionCardProps> = ({
         </div>
         <div>
           <Text weight="semibold">{connection.name}</Text>
-          <Text tone="muted" size="sm">
+          <Text shade="muted" size="sm">
             {connection.id}
           </Text>
         </div>
