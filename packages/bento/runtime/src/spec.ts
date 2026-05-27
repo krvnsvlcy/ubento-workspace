@@ -34,8 +34,11 @@ export const workspaceBoardSpecSchema = z.object({
 export type WorkspaceBoardSpec = z.infer<typeof workspaceBoardSpecSchema>;
 
 export const workspaceSpecSchema = z.object({
-  services: z.record(z.string(), serviceDataSchema).optional(),
-  boards: z.record(z.string(), workspaceBoardSpecSchema).optional(),
-  roots: z.array(z.string()).optional(),
+  version: z.literal(1).default(1),
+  services: z.record(z.string(), serviceDataSchema).default({}),
+  components: z.record(z.string(), moduleRef).default({}),
+  libraries: z.record(z.string(), moduleRef).default({}),
+  boards: z.record(z.string(), workspaceBoardSpecSchema).default({}),
+  roots: z.array(z.string()).default([]),
 });
 export type WorkspaceSpec = z.infer<typeof workspaceSpecSchema>;

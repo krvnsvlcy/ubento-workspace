@@ -1,3 +1,4 @@
+import { ScrollArea } from "@ubento/bento.arlo-core";
 import { AlertCircle } from "lucide-react";
 import { BentoRuntime } from "../runtime/runtime";
 import { Component } from "./component";
@@ -45,8 +46,10 @@ export function BentoBoardView({
   // Render the remote module using our unified component,
   // passing down the URL params straight into the remote component's props.
   return (
-    <div className="h-full overflow-hidden bg-background">
-      <Component module={board.module} componentProps={params} />
+    <div className="h-screen w-screen overflow-hidden bg-background">
+      <ScrollArea>
+        <Component module={board.module} componentProps={params} />
+      </ScrollArea>
     </div>
   );
 }

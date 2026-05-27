@@ -16,7 +16,7 @@ export function SideSection({
 }) {
   const [open, setOpen] = useState(true);
   return (
-    <div className="flex flex-col px-2 gap-0.5">
+    <div className="flex flex-col gap-0.5">
       <TreeEntry
         onClick={() => setOpen((s) => !s)}
         className="text-[11px] uppercase tracking-wider"

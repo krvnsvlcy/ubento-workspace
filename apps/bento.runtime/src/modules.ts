@@ -1,9 +1,25 @@
-import { useAction, useQuery } from "@ubento/bento.runtime";
+/**
+ * @fileoverview
+ * Exposes core Bento runtime hooks and React bindings to board modules.
+ * This includes data-fetching/mutation hooks (useQuery, useAction) as well as
+ * board navigation and routing hooks (useParams, useLocation, useNavigation).
+ */
+import {
+  useAction,
+  useLocation,
+  useNavigation,
+  useParams,
+  useQuery,
+  type ModuleRef,
+} from "@ubento/bento.runtime";
 import * as LucideReact from "lucide-react";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as ReactDOMClient from "react-dom/client";
 import * as ReactJsxRuntime from "react/jsx-runtime";
+
+// The path that your Service Worker is actively listening for
+const MODULE_BASE_PATH = "/__ubento_modules/";
 
 /**
  * Creates a proxy module that re-exports everything from a window object
@@ -54,42 +70,39 @@ function createProxyModules(): Record<string, string> {
   );
   const lucideReactScript = createModuleProxy(LucideReact, "LucideReact", true);
 
-  // Bundle the runtime hooks into an object for the proxy
+  // Bundle the runtime hooks into an object for the proxy.
+  // The BentoRuntime proxy exposes:
+  // - useAction: Mutate service data and trigger service actions.
+  // - useQuery: Query/fetch service endpoint data (cached via TanStack Query).
+  // - useParams: Hook returning route parameters for the active board.
+  // - useLocation: Hook returning the current active BentoLocation (boardId and params).
+  // - useNavigation: Hook providing goToBoard(boardId, params) and goHome() routing controls.
   const bentoRuntimeScript = createModuleProxy(
-    { useAction, useQuery },
+    { useAction, useQuery, useParams, useLocation, useNavigation },
     "BentoRuntime",
     false,
   );
 
-  // 2. Convert to Blob URLs
-  const reactModuleUrl = URL.createObjectURL(
-    new Blob([reactScript], { type: "application/javascript" }),
-  );
-  const reactDOMModuleUrl = URL.createObjectURL(
-    new Blob([reactDOMScript], { type: "application/javascript" }),
-  );
-  const reactJsxRuntimeScriptUrl = URL.createObjectURL(
-    new Blob([reactJsxRuntimeScript], { type: "application/javascript" }),
-  );
-  const reactDOMClientScriptUrl = URL.createObjectURL(
-    new Blob([reactDOMClientScript], { type: "application/javascript" }),
-  );
-  const lucideReactScriptUrl = URL.createObjectURL(
-    new Blob([lucideReactScript], { type: "application/javascript" }),
-  );
-
-  const bentoRuntimeScriptUrl = URL.createObjectURL(
-    new Blob([bentoRuntimeScript], { type: "application/javascript" }),
-  );
-
-  // 3. Return the mapping for the importmap with the clean "ubento" specifier
+  // 2. Convert to Blob URLs and map to specifiers
   return {
-    react: reactModuleUrl,
-    "react-dom": reactDOMModuleUrl,
-    "react/jsx-runtime": reactJsxRuntimeScriptUrl,
-    "react-dom/client": reactDOMClientScriptUrl,
-    "lucide-react": lucideReactScriptUrl,
-    ubento: bentoRuntimeScriptUrl, // Updated here
+    react: URL.createObjectURL(
+      new Blob([reactScript], { type: "application/javascript" }),
+    ),
+    "react-dom": URL.createObjectURL(
+      new Blob([reactDOMScript], { type: "application/javascript" }),
+    ),
+    "react/jsx-runtime": URL.createObjectURL(
+      new Blob([reactJsxRuntimeScript], { type: "application/javascript" }),
+    ),
+    "react-dom/client": URL.createObjectURL(
+      new Blob([reactDOMClientScript], { type: "application/javascript" }),
+    ),
+    "lucide-react": URL.createObjectURL(
+      new Blob([lucideReactScript], { type: "application/javascript" }),
+    ),
+    ubento: URL.createObjectURL(
+      new Blob([bentoRuntimeScript], { type: "application/javascript" }),
+    ),
   };
 }
 
@@ -119,6 +132,7 @@ function updateImportMap(overrides: Record<string, string>) {
   const newMap = document.createElement("script");
   newMap.type = "importmap";
   newMap.textContent = JSON.stringify(current, null, 2);
+
   if (existing) {
     existing.replaceWith(newMap);
   } else {
@@ -126,6 +140,42 @@ function updateImportMap(overrides: Record<string, string>) {
   }
 }
 
-// Create proxy modules and inject the import map
-export const proxyModules = createProxyModules();
-updateImportMap(proxyModules);
+/**
+ * Main initialization function to be called by the Ubento Runtime
+ * when the workspace spec is loaded.
+ */
+export function injectWorkspaceImportMap(
+  components: Record<string, ModuleRef> = {},
+  libraries: Record<string, ModuleRef> = {},
+) {
+  // 1. Generate our core host-provided dependencies via Blobs
+  const baseProxies = createProxyModules();
+
+  // 2. Generate Service Worker routes with strict namespaces
+  const remoteMappings: Record<string, string> = {};
+
+  // Map components to the @/component/ namespace
+  Object.entries(components).forEach(([name, ref]) => {
+    const alias = `@/component/${name}`;
+    remoteMappings[alias] = `${MODULE_BASE_PATH}${ref.id}@${ref.versionId}.js`;
+  });
+
+  // Map libraries to the @/libs/ namespace
+  Object.entries(libraries).forEach(([name, ref]) => {
+    const alias = `@/libs/${name}`;
+    remoteMappings[alias] = `${MODULE_BASE_PATH}${ref.id}@${ref.versionId}.js`;
+  });
+
+  console.log("overrides:", {
+    baseProxies,
+    remoteMappings,
+    components,
+    libraries,
+  });
+
+  // 3. Combine and inject into the DOM
+  updateImportMap({
+    ...baseProxies,
+    ...remoteMappings,
+  });
+}

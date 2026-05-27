@@ -5,7 +5,7 @@ import "@ubento/bento.style/dist/uno.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { ModuleManager } from "../../../packages/bento/runtime/build/module/manager.js";
-import "./modules.js";
+import { injectWorkspaceImportMap } from "./modules.js";
 import { rpc } from "./rpc.js";
 import { runServiceWorker } from "./sw.js";
 
@@ -23,6 +23,12 @@ while (!connected) {
       await rpc.egress.connect({}, { timeout: 1000 });
     connected = true;
     console.log("[bento.runtime] connected");
+
+    const spec = initialState.workspace.spec.isValid
+      ? initialState.workspace.spec.data
+      : undefined;
+
+    injectWorkspaceImportMap(spec?.components, spec?.libraries);
     await runServiceWorker({
       rpc,
       registryModuleUrlTemplate,

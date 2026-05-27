@@ -25,20 +25,18 @@ export function WorkspaceTab() {
 
   return (
     <div className="flex flex-col gap-4 pb-8">
-      <div className="px-2">
-        <TreeEntry
-          icon="home"
-          onClick={() => {
-            engine.goToLocation({
-              board: undefined,
-              params: {},
-            });
-          }}
-          active={!location.board}
-        >
-          <span>Home</span>
-        </TreeEntry>
-      </div>
+      <TreeEntry
+        icon="home"
+        onClick={() => {
+          engine.goToLocation({
+            board: undefined,
+            params: {},
+          });
+        }}
+        active={!location.board}
+      >
+        <span>Home</span>
+      </TreeEntry>
       <BoardsSection />
       {activeWorkspaceEngine && <ServicesSection />}
     </div>

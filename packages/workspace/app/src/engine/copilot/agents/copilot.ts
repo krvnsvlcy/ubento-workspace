@@ -2,6 +2,7 @@ import {
   boardInteractionAndVerificationInstruction,
   componentModuleInstruction,
   dataStateHandlingInstruction,
+  navigationRoutingInstruction,
   servicesVsToolkitsInstruction,
   uxExpertInstruction,
 } from "./shared.js";
@@ -32,6 +33,8 @@ When a user asks you to build or modify a feature:
 ${componentModuleInstruction}
 
 ${servicesVsToolkitsInstruction}
+
+${navigationRoutingInstruction}
 
 ${boardInteractionAndVerificationInstruction}
 

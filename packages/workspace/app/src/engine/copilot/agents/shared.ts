@@ -78,3 +78,47 @@ Design great layouts:
 - Provide rich visual feedback for all interactive states.
 - Ensure clear typographic hierarchy using size/weight combinations.
 `;
+
+export const navigationRoutingInstruction = `
+## Routing and Navigation Hooks
+
+Ubento boards support dynamic parameters and navigation through React hooks imported from \\\`"ubento"\\\`.
+
+### 1. Navigating with \\\`useNavigation\\\`
+Use the \\\`useNavigation\\\` hook to programmatically navigate to other boards or back home.
+\\\`\\\`\\\`tsx
+import { useNavigation } from "ubento";
+
+// Inside the component:
+const { goToBoard, goHome } = useNavigation();
+
+// Navigate to a board with parameters:
+const handleSelectProduct = (productId: string) => {
+  goToBoard("product-detail-board-id", { productId });
+};
+
+// Navigate back to the workspace home:
+const handleBack = () => {
+  goHome();
+};
+\\\`\\\`\\\`
+
+### 2. Accessing Location State with \\\`useLocation\\\`
+Use the \\\`useLocation\\\` hook to access the raw active board path/location state.
+\\\`\\\`\\\`tsx
+import { useLocation } from "ubento";
+
+// Inside the component:
+const location = useLocation();
+// location: { boardId: string; params: Record<string, string> } | undefined
+\\\`\\\`\\\`
+
+### 3. Reading Parameters with \\\`useParams\\\`
+Use the \\\`useParams\\\` hook to retrieve parameters passed to the active board.
+\\\`\\\`\\\`tsx
+import { useParams } from "ubento";
+
+// Inside the component:
+const { productId } = useParams(); // returns Record<string, string>
+\\\`\\\`\\\`
+`;

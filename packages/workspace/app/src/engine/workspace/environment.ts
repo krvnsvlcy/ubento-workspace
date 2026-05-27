@@ -112,6 +112,7 @@ export function createWorkspaceCopilotAgentEnvironment(
       // modules
       moduleToolkit.tools.readBoardModule,
       moduleToolkit.tools.writeBoardModule,
+      moduleToolkit.tools.editBoardModule,
     ],
   });
 
@@ -148,6 +149,7 @@ export function createWorkspaceCopilotAgentEnvironment(
       runtimeToolkit.tools.readNode.name,
       moduleToolkit.tools.readBoardModule.name,
       moduleToolkit.tools.writeBoardModule.name,
+      moduleToolkit.tools.editBoardModule.name,
     ],
     enableMessage: true,
   });

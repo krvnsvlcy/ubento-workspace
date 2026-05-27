@@ -25,7 +25,7 @@ export function WorkspaceHeader() {
   }
 
   return (
-    <div className="px-3 flex gap-1">
+    <div className="flex gap-1">
       <div className="p-1 grow rounded-lg flex gap-2 text-sm text-neutral-content min-w-0 items-center">
         <div className="w-6 h-6 rounded-md bg-neutral-content/10 flex items-center justify-center shrink-0">
           {workspace ? <Box size={14} /> : <Building2 size={14} />}
@@ -36,9 +36,15 @@ export function WorkspaceHeader() {
           </span>
         </div>
       </div>
-      <Button 
-        size="icon" 
-        onClick={() => engine.goToLocation({ workspace: undefined, board: undefined, component: undefined })} 
+      <Button
+        size="icon"
+        onClick={() =>
+          engine.goToLocation({
+            workspace: undefined,
+            board: undefined,
+            component: undefined,
+          })
+        }
         variant="ghost"
       >
         <Home size={14} />

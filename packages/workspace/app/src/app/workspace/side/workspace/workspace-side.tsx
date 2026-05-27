@@ -69,10 +69,10 @@ export function WorkspaceSide() {
   const ActiveComponent = activeTab?.component;
 
   return (
-    <div className="h-full w-full flex flex-col py-3 gap-3">
+    <div className="h-full w-full flex flex-col p-3 gap-3">
       <WorkspaceHeader />
       {enabledTabs.length > 1 && (
-        <div className="flex px-3 gap-1">
+        <div className="flex gap-1">
           {enabledTabs.map((tab) => (
             <TabButton
               key={tab.id}
