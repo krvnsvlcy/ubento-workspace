@@ -165,7 +165,7 @@ export function createAgentContext({
               if (p.type === "text") parts.push(p.text);
             }
           } else {
-            parts.push(formatAgentMessage(entry.data as AgentMessageData));
+            parts.push(formatAgentMessage(entry.data as AgentMessageData, { compressOutputs: true }));
           }
         }
         parts.push("\n");

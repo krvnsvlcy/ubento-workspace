@@ -124,6 +124,17 @@ export function createUbentoCopilot({
             id: threadId,
             agent: mainAgentName,
           });
+
+          const activeExecution = thread.getState().activeExecution;
+          if (activeExecution) {
+            logger.info("Active execution found. Injecting steering input.", {
+              event: "copilot_inject_steering",
+              threadId: thread.id,
+              contentLength: content.length,
+            });
+            activeExecution.injectSteering(content);
+            return;
+          }
         } else {
           thread = await environment.createThread({
             agent: mainAgentName,

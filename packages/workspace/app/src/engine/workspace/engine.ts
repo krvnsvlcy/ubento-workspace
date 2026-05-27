@@ -300,8 +300,8 @@ export function createWorkspaceEngine({
 
     const boardId = Math.random().toString(36).substring(7);
 
-    const wsSpec = readWorkspaceSpec() || {};
-    const boards = { ...(wsSpec.boards || {}) };
+    const wsSpec = readWorkspaceSpec();
+    const boards = { ...(wsSpec?.boards || {}) };
 
     boards[boardId] = {
       id: boardId,
@@ -313,7 +313,7 @@ export function createWorkspaceEngine({
       children: [],
     };
 
-    let workspaceRoots = [...(wsSpec.roots || [])];
+    let workspaceRoots = [...(wsSpec?.roots || [])];
     if (parentId) {
       const parentBoard = boards[parentId];
       if (parentBoard) {

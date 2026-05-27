@@ -405,4 +405,129 @@ describe("Agent", () => {
       },
     });
   });
+
+  test("should trigger recovery turn warning when maxIterations is reached", async () => {
+    const agent: Agent = {
+      name: "quick-agent",
+      description: "A simple agent",
+      instructions: "You are a helpful assistant",
+    };
+
+    const environment = quickEnvironment({
+      generations: [
+        {
+          actions: [
+            {
+              tool: "message",
+              args: {
+                content: "Iteration 1",
+                after: "continue",
+              },
+            },
+          ],
+        },
+        {
+          actions: [
+            {
+              tool: "message",
+              args: {
+                content: "Iteration 2 (recovery response)",
+                after: "finish",
+              },
+            },
+          ],
+        },
+      ],
+    });
+
+    const thread = createAgentThread({
+      id: crypto.randomUUID(),
+      agent,
+      environment,
+      saveContext: async () => {},
+      createMessage: async () => crypto.randomUUID(),
+      updateMessage: async () => {},
+    });
+
+    const execution = thread.createExecution();
+    await execution.run({
+      message: { text: "Start", modelId: "m1" },
+      maxIterations: 2,
+    });
+
+    const context = thread.context.getData();
+    // Should have User message 1, Warning User Message, Agent message 1, Agent message 2 (recovery)
+    expect(context.history).toHaveLength(4);
+    expect(context.history?.[1]).toMatchObject({
+      type: "message",
+      data: {
+        role: "user",
+        text: expect.stringContaining("SYSTEM WARNING: You have reached the execution turn limit"),
+      },
+    });
+  });
+
+  test("should support user steering mid-execution", async () => {
+    const agent: Agent = {
+      name: "quick-agent",
+      description: "A simple agent",
+      instructions: "You are a helpful assistant",
+    };
+
+    const environment = quickEnvironment({
+      generations: [
+        {
+          actions: [
+            {
+              tool: "message",
+              args: {
+                content: "Wait for it",
+                after: "await_response",
+              },
+            },
+          ],
+        },
+        {
+          actions: [
+            {
+              tool: "message",
+              args: {
+                content: "Done",
+                after: "finish",
+              },
+            },
+          ],
+        },
+      ],
+    });
+
+    const thread = createAgentThread({
+      id: crypto.randomUUID(),
+      agent,
+      environment,
+      saveContext: async () => {},
+      createMessage: async () => crypto.randomUUID(),
+      updateMessage: async () => {},
+    });
+
+    const execution = thread.createExecution();
+    
+    // Call run but since it is async, we can inject steering. But run is awaited, so we do it in a promise
+    const runPromise = execution.run({
+      message: { text: "Start", modelId: "m1" },
+      maxIterations: 5,
+    });
+
+    // Inject steering immediately
+    execution.injectSteering("Wait, do X instead");
+
+    await runPromise;
+
+    const context = thread.context.getData();
+    // Should contain the steering user message
+    const steeringMsg = context.history?.find(
+      (h) => h.type === "message" && h.data.role === "user" && h.data.text.includes("USER STEERING: Wait, do X instead")
+    );
+    expect(steeringMsg).toBeDefined();
+  });
 });

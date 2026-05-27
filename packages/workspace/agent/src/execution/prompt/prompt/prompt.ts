@@ -73,6 +73,7 @@ async function buildHistorySection(
       } else {
         const agentText = formatAgentMessage(
           (entry as any).data as unknown as AgentMessageData,
+          { compressOutputs: true },
         );
         parts.push({ type: "text", text: agentText });
       }
@@ -131,7 +132,7 @@ async function buildCurrentProgressSection(
     } else {
       const agentText = formatAgentMessage(
         (entry as any).data as unknown as AgentMessageData,
-        { isLast: isLastEntry },
+        { isLast: isLastEntry, compressOutputs: !isLastEntry },
       );
       parts.push({ type: "text", text: agentText });
     }

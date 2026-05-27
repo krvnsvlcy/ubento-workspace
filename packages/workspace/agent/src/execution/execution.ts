@@ -51,6 +51,9 @@ export function createAgentExecution({
   const environment = thread.environment;
   const abortController = _abortController || new AbortController();
 
+  const steeringQueue: string[] = [];
+  let isFinalRecoveryTurn = false;
+
   const store = createStore<AgentExecutionState>(() => ({
     status: "idle",
   }));
@@ -333,6 +336,13 @@ export function createAgentExecution({
     store,
     subscribe: store.subscribe,
     getState: store.getState,
+    injectSteering: (text: string) => {
+      steeringQueue.push(text);
+      environment.logger?.debug("Steering input injected into execution queue", {
+        event: "steering_injected",
+        text,
+      });
+    },
     run: async ({
       message,
       maxIterations = 100,
@@ -375,6 +385,32 @@ export function createAgentExecution({
                 iterations: i,
               },
             );
+          }
+
+          if (steeringQueue.length > 0) {
+            const steeringText = steeringQueue.join("\n");
+            steeringQueue.length = 0;
+            environment.logger?.info("Processing injected steering input", {
+              event: "processing_steering",
+              text: steeringText,
+            });
+            await thread.pushUserMessage({
+              text: `USER STEERING: ${steeringText}`,
+              modelId: message.modelId,
+            });
+          }
+
+          if (i === maxIterations - 2 && !isFinalRecoveryTurn) {
+            // Inject final recovery warning
+            environment.logger?.info("Execution limit reached. Initiating graceful recovery turn.", {
+              event: "execution_recovery_initiated",
+              iterations: i,
+            });
+            await thread.pushUserMessage({
+              text: "SYSTEM WARNING: You have reached the execution turn limit. You MUST call the finish action or return your final response immediately. Explain what remains unfinished. Do not call any other tools.",
+              modelId: message.modelId,
+            });
+            isFinalRecoveryTurn = true;
           }
 
           const turnResult = await runTurn({ model });

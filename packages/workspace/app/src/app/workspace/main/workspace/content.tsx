@@ -165,8 +165,8 @@ export function WorkspaceContent() {
         },
       );
 
-      const wsSpec = spec?.isValid ? spec.data : {};
-      const boards = { ...(wsSpec.boards || {}) };
+      const wsSpec = spec?.isValid ? spec.data : undefined;
+      const boards = { ...(wsSpec?.boards || {}) };
       if (boards[activeBoardId]) {
         boards[activeBoardId] = {
           ...boards[activeBoardId],
@@ -176,7 +176,7 @@ export function WorkspaceContent() {
           spec: {
             ...wsSpec,
             boards,
-          },
+          } as any,
         });
       }
 

@@ -38,7 +38,14 @@ export function CreateWorkspaceModal({
     setIsCreating(true);
     setError(null);
     try {
-      const data: Omit<WorkspaceSpec, "title" | "id"> = {};
+      const data: Omit<WorkspaceSpec, "title" | "id"> = {
+        version: 1,
+        services: {},
+        components: {},
+        libraries: {},
+        boards: {},
+        roots: [],
+      };
       const ws = await createWorkspace({
         name: workspaceName.trim(),
         team_id: session?.teamId!,

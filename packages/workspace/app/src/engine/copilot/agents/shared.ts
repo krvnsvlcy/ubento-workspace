@@ -94,7 +94,7 @@ const { goToBoard, goHome } = useNavigation();
 
 // Navigate to a board with parameters:
 const handleSelectProduct = (productId: string) => {
-  goToBoard("product-detail-board-id", { productId });
+  goToBoard("<!-- id of the board to navigate to -->", { productId });
 };
 
 // Navigate back to the workspace home:

@@ -35,13 +35,17 @@ export async function formatUserMessage(
 
   return [...parts, { type: "text", text: "\n\n" }];
 }
-
-function formatAction(action: AgentActionData): string {
+function formatAction(action: AgentActionData, options?: { compressOutputs?: boolean }): string {
+  let outputText = llmContentToText(action.output);
+  if (options?.compressOutputs && outputText.length > 500) {
+    const originalLength = outputText.length;
+    outputText = `[Output truncated - ${originalLength} characters. Preview: ${outputText.slice(0, 200)}... (truncated)]`;
+  }
   return [
     `**Action: ${action.tool}**`,
     `  - status: ${action.status}`,
     `  - input:\n${indent(renderYaml(action.input), 4)}`,
-    `  - output:\n${indent(llmContentToText(action.output), 4)}`,
+    `  - output:\n${indent(outputText, 4)}`,
   ].join("\n");
 }
 
@@ -54,7 +58,7 @@ function formatError(error: AgentError): string {
 
 export function formatAgentMessage(
   message: AgentMessageData,
-  options?: { isLast?: boolean },
+  options?: { isLast?: boolean; compressOutputs?: boolean },
 ): string {
   let actionsText = "";
   if (message.actions?.length) {
@@ -81,7 +85,7 @@ export function formatAgentMessage(
         return errText;
       }
 
-      return formatAction(action);
+      return formatAction(action, { compressOutputs: options?.compressOutputs });
     });
 
     actionsText = formattedEvents
