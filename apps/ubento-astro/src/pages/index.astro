@@ -1,0 +1,22 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { getSession } from "../lib/auth";
+import { LandingPage } from "../views/landing-page";
+import { Dashboard } from "../views/dashboard";
+
+const session = await getSession(Astro.request);
+
+const sessionData = session
+  ? {
+      userId: session.user_id,
+      teamId: session.team_id,
+      email: session.email,
+      name: session.name,
+      picture: session.picture,
+    }
+  : undefined;
+---
+
+<Layout>
+  {sessionData ? <Dashboard session={sessionData} client:load /> : <LandingPage client:load />}
+</Layout>

@@ -15,7 +15,7 @@
     "@microsoft/api-extractor-model": "^7.31.1",
     "cac": "^6.7.14",
     "dotenv": "^16.6.1",
-    "esbuild": "^0.25.11",
+    "esbuild": "^0.25.12",
     "execa": "^9.6.0",
     "fast-glob": "^3.3.3",
     "inflection": "^3.0.2",

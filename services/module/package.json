@@ -12,25 +12,25 @@
     "deploy": "scripts containerize module && scripts deploy module"
   },
   "dependencies": {
-    "@google-cloud/storage": "^7.11.2",
-    "@types/mime-types": "^3.0.1",
+    "@google-cloud/storage": "^7.19.0",
+    "zod": "^4.3.6",
     "@ubento/services.database": "workspace:*",
     "@ubento/services.primitives": "workspace:*",
     "@ubento/services.toolkit": "workspace:*",
     "cors": "^2.8.6",
-    "dotenv": "^16.3.1",
+    "dotenv": "^16.6.1",
     "esbuild": "^0.25.12",
     "express": "^5.2.1",
     "jose": "^6.2.3",
     "mime-types": "^3.0.2",
     "nanoid": "^5.1.9",
-    "openapi-types": "^12.1.3",
-    "zod": "^4.3.6"
+    "openapi-types": "^12.1.3"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
-    "tsx": "^4.15.2",
-    "typescript": "^5.0.4"
+    "tsx": "^4.21.0",
+    "typescript": "~6.0.2",
+    "@types/mime-types": "^3.0.1"
   }
 }

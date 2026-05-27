@@ -1,7 +1,5 @@
 packages:
-  - "apps/**"
-  - "json-render/**"
-  - "services/**"
-  - "packages/**"
-  - "registry/**"
-  - "scripts"
+- apps/**
+- services/**
+- packages/**
+- scripts

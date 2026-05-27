@@ -15,22 +15,22 @@
     "@ubento/workspace.app": "workspace:*",
     "@vercel/analytics": "^2.0.1",
     "axios": "^1.15.2",
-    "jose": "^6.2.2",
+    "jose": "^6.2.3",
     "js-cookie": "^3.0.5",
     "lucide-react": "^0.468.0",
     "motion": "^12.38.0",
     "next": "16.2.4",
-    "react": "19.2.4",
-    "react-dom": "19.2.4",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
     "typeit-react": "^2.7.8"
   },
   "devDependencies": {
     "@types/js-cookie": "^3.0.6",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
+    "@types/node": "^25.6.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "eslint": "^10.2.1",
     "eslint-config-next": "16.2.4",
-    "typescript": "^5"
+    "typescript": "~6.0.2"
   }
 }

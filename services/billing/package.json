@@ -13,14 +13,14 @@
     "seed": "tsx scripts/seed/seed.ts"
   },
   "dependencies": {
-    "@google-cloud/storage": "^7.11.2",
+    "@google-cloud/storage": "^7.19.0",
+    "@lemonsqueezy/lemonsqueezy.js": "^4.0.0",
     "@ubento/services.database": "workspace:*",
     "@ubento/services.primitives": "workspace:*",
     "@ubento/services.toolkit": "workspace:*",
-    "@lemonsqueezy/lemonsqueezy.js": "^4.0.0",
     "commander": "^14.0.2",
     "date-fns": "^4.1.0",
-    "dotenv": "^16.3.1",
+    "dotenv": "^16.6.1",
     "esbuild": "^0.25.12",
     "express": "^5.2.1",
     "express-validator": "^7.1.0",
@@ -31,7 +31,7 @@
   },
   "devDependencies": {
     "@types/express": "^5.0.3",
-    "tsx": "^4.15.2",
-    "typescript": "^5.0.4"
+    "tsx": "^4.21.0",
+    "typescript": "~6.0.2"
   }
 }
