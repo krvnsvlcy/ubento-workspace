@@ -16,7 +16,7 @@ export default function PricingPage() {
             <Terminal className="h-3 w-3" /> Early Preview Access
           </div>
 
-          <h1 className="mt-8 font-heading text-4xl font-bold tracking-tight text-neutral-content sm:text-6xl max-w-3xl mx-auto leading-tight">
+          <h1 className="mt-8 font-heading text-5xl font-bold tracking-tight text-neutral-content max-w-3xl mx-auto leading-tight">
             Simple, honest pricing. Built for autonomy.
           </h1>
           <p className="mt-6 text-lg text-neutral-content-subtle max-w-2xl mx-auto">

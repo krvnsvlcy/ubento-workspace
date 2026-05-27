@@ -14,11 +14,15 @@ import { useSession } from "../hooks/session";
 
 const workspaceRuntimeUrl = process.env.NEXT_PUBLIC_WORKSPACE_RUNTIME_URL!;
 const componentRuntimeUrl = process.env.NEXT_PUBLIC_COMPONENT_RUNTIME_URL!;
+const registryModuleUrlTemplate =
+  process.env.NEXT_PUBLIC_REGISTRY_MODULE_URL_TEMPLATE!;
 
 if (!workspaceRuntimeUrl)
   throw new Error("Missing NEXT_PUBLIC_WORKSPACE_RUNTIME_URL");
 if (!componentRuntimeUrl)
   throw new Error("Missing NEXT_PUBLIC_COMPONENT_RUNTIME_URL");
+if (!registryModuleUrlTemplate)
+  throw new Error("Missing NEXT_PUBLIC_REGISTRY_MODULE_URL_TEMPLATE");
 
 export function Dashboard() {
   const session = useSession();
@@ -37,6 +41,7 @@ export function Dashboard() {
         },
         workspaceRuntimeUrl,
         componentRuntimeUrl,
+        registryModuleUrlTemplate,
         ubentoApi,
       });
       setEngine(engine);

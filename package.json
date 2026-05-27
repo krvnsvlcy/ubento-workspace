@@ -8,7 +8,7 @@
     "clean:packages": "find . -type d \\( -name node_modules \\) -prune -exec rm -rf '{}' +",
     "dev": "turbo run dev --filter=@ubento/bento.runtime.app --filter=@ubento/bento.app --filter=@ubento/component.runtime",
     "build": "turbo run build --filter=@ubento/bento.runtime --filter=@ubento/bento.app",
-    "dev:web": "turbo run dev --filter=@ubento/bento.runtime --filter=@ubento/ubento-astro --filter=@ubento/bento.runtime.app",
+    "dev:web": "turbo run dev --filter=@ubento/bento.runtime --filter=@ubento/ubento --filter=@ubento/bento.runtime.app",
     "dev:apps": "turbo dev --filter='./apps/*'",
     "deploy:runtime": "turbo run deploy --filter=@ubento/bento.runtime.app",
     "deploy:app": "turbo run deploy --filter=@ubento/ubento"

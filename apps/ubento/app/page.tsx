@@ -2,7 +2,7 @@
 
 import { Dashboard } from "@/views/dashboard";
 import { useSession } from "../hooks/session";
-import { LandingPage } from "../views/landing-page";
+import { LandingPage } from "../views/landing-page/landing-page";
 
 export default function Home() {
   const currentSession = useSession();
