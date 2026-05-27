@@ -7,6 +7,7 @@ import {
   BentoEngineRuntimeRpcInterface,
   BentoLocation,
   BentoWorkspaceData,
+  getSpecOrDefault,
   ParsedSpec,
   ServiceData,
   ServiceOperationErrorData,
@@ -58,7 +59,6 @@ export type WorkspaceState = {
   workspace: BentoWorkspaceData;
 
   // synced from runtime
-  boards: Record<string, any>;
   selectionScope?: string;
   selection: string[];
   hover?: string;
@@ -678,12 +678,21 @@ export function createWorkspaceEngine({
     // set copilot context attachments
 
     if (location) {
+      const spec = getSpecOrDefault(store.getState().workspace.spec, {
+        version: 1,
+        services: {},
+        components: {},
+        libraries: {},
+        boards: {},
+        roots: [],
+      });
+
       copilot.setContextAttachments("bento-location", [
         {
           type: "bento-location",
           data: {
             ...location,
-            boardTitle: store.getState().boards[location.boardId]?.title,
+            boardTitle: spec.boards?.[location.boardId]?.title,
           },
         },
       ]);

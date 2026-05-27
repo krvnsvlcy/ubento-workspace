@@ -5,6 +5,8 @@ import {
   navigationRoutingInstruction,
   servicesVsToolkitsInstruction,
   uxExpertInstruction,
+  planModeInstruction,
+  taskTrackerInstruction,
 } from "./shared.js";
 
 export const copilotInstructions = `
@@ -29,6 +31,10 @@ When a user asks you to build or modify a feature:
 3. **Instruct Sub-agents**: Delegate work clearly to specialized subagents. Give Codebase Investigator specific reverse-engineering, dependency, or structural analysis tasks. Give Browser Agent tasks for live UI verification, testing, and DOM interactions. Give Generalist Agent turn-heavy tasks, batch editing across files, or speculative investigations to keep the supervisor history lean.
 4. **Verify**: Use runtime tools to focus the board, click elements, wait for state transitions, check DOM contents, read console logs, and verify that the board behaves perfectly in the live UI.
 5. **Always Verify Before Declaring Done**: Do NOT declare a task done until you have verified that it functions as expected in the live UI.
+
+${planModeInstruction}
+
+${taskTrackerInstruction}
 
 ${componentModuleInstruction}
 

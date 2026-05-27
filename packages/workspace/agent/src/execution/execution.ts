@@ -131,6 +131,32 @@ export function createAgentExecution({
       };
     }
 
+    const planModeResource = thread.context.getResource("plan_mode");
+    const isPlanModeActive = (planModeResource?.data as any)?.active === true;
+    const MUTATING_TOOL_NAMES = new Set([
+      "write_board_module",
+      "edit_board_module",
+      "create_board",
+      "update_board_metadata",
+      "delete_boards"
+    ]);
+
+    if (isPlanModeActive && MUTATING_TOOL_NAMES.has(tool.name)) {
+      const errorMsg = `Error: Cannot execute tool "${tool.name}" because Plan Mode is active. You are restricted to read-only actions and planning/tracker tools. Please formulate your plan, create tasks/dependencies, write the design details, and call 'approve_plan' or exit plan mode before executing code-modifying tools.`;
+      const actionId = await message.createAction({
+        tool: tool.name,
+        input: argParseResult.data,
+      });
+      await message.startAction(actionId);
+      const error = {
+        code: "tool_execution_failed" as const,
+        message: errorMsg,
+        data: { tool: tool.name, input: argParseResult.data },
+      };
+      await message.failAction(actionId, error);
+      return { error };
+    }
+
     const actionId = await message.createAction({
       tool: tool.name,
       input: argParseResult.data,
@@ -343,6 +369,7 @@ export function createAgentExecution({
         text,
       });
     },
+    runAction,
     run: async ({
       message,
       maxIterations = 100,

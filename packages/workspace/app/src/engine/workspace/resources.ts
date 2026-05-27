@@ -184,3 +184,18 @@ export const serviceSchemaResource: ServiceSchemaResourceType = {
     return { [data.schema]: schema };
   },
 };
+
+export const planModeResource: ResourceType<any, any> = {
+  type: "plan_mode",
+  resolveData: async ({ data }) => {
+    return data;
+  },
+};
+
+export const tasksResource: ResourceType<any, any> = {
+  type: "tasks",
+  resolveData: async ({ data }) => {
+    return data;
+  },
+};
+

@@ -27,3 +27,11 @@ export type BentoUserData = {
   name: string;
   email: string;
 };
+
+export function getSpecOrDefault<T>(parsed: ParsedSpec<T>, defaultValue: T): T {
+  if (parsed.isValid) {
+    return parsed.data;
+  } else {
+    return defaultValue;
+  }
+}

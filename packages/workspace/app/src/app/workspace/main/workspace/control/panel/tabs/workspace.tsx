@@ -1,4 +1,4 @@
-import { ServiceData } from "@ubento/bento.runtime";
+import { ServiceData, getSpecOrDefault } from "@ubento/bento.runtime";
 import { Globe, Plus, Puzzle, Settings2, Trash2 } from "lucide-react";
 import { WorkspaceEngine } from "../../../../../../../engine/workspace/engine";
 import { PropertyRow, Section, Select, TextInput } from "../shared";
@@ -51,7 +51,16 @@ export function WorkspaceTab({ controller }: { controller: WorkspaceEngine }) {
         <PropertyRow label="Home Board">
           <Select
             value={(workspace as any).homeBoardId || ""}
-            options={Object.values(state.boards).map((b: any) => b.id)}
+            options={Object.values(
+              getSpecOrDefault(workspace.spec, {
+                version: 1,
+                services: {},
+                components: {},
+                libraries: {},
+                boards: {},
+                roots: [],
+              }).boards || {},
+            ).map((b: any) => b.id)}
             onChange={(v) => updateWorkspace({ homeBoardId: v } as any)}
           />
         </PropertyRow>

@@ -8,7 +8,16 @@ import { ResourceType } from "@/context/resource.js";
 import { taskTool } from "@/execution/tools/task.js";
 import { messageTool } from "../execution/tools/message.js";
 import { describeToolTool, listToolsTool } from "../execution/tools/tools.js";
+import { enterPlanModeTool, approvePlanTool } from "../execution/tools/planning.js";
+import {
+  createTaskTool,
+  updateTaskTool,
+  listTasksTool,
+  addTaskDependencyTool,
+  visualizeTasksTool,
+} from "../execution/tools/tracker.js";
 import { AgentThread } from "../thread/thread.js";
+
 
 export type AgentEnvironment = {
   getModel: (id: string) => LanguageModel | undefined;
@@ -62,6 +71,13 @@ export function createEnvironment({
     [listToolsTool.name, listToolsTool],
     [describeToolTool.name, describeToolTool],
     [taskTool.name, taskTool],
+    [enterPlanModeTool.name, enterPlanModeTool],
+    [approvePlanTool.name, approvePlanTool],
+    [createTaskTool.name, createTaskTool],
+    [updateTaskTool.name, updateTaskTool],
+    [listTasksTool.name, listTasksTool],
+    [addTaskDependencyTool.name, addTaskDependencyTool],
+    [visualizeTasksTool.name, visualizeTasksTool],
   ]);
   const envTools = new Map<string, AgentTool>([
     ...upstreamTools.map((t) => [t.name, t] as const),
@@ -133,7 +149,7 @@ export function createEnvironment({
       }
 
       for (const name of agent.tools ?? []) {
-        const tool = envTools.get(name);
+        const tool = allTools.get(name);
         if (tool) {
           tools.push(tool);
         }

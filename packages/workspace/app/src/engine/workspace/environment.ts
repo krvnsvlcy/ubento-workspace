@@ -18,17 +18,21 @@ import {
 import {
   componentDetailResource,
   componentsListResource,
+  planModeResource,
   serviceActionResource,
   serviceDetailsResource,
   serviceQueryResource,
   serviceSchemaResource,
   servicesListResource,
+  tasksResource,
 } from "./resources";
 import { createCatalogToolkit } from "./toolkits/catalog";
 import { createModuleToolkit } from "./toolkits/module";
 import { createRuntimeToolkit } from "./toolkits/runtime";
 import { createServicesToolkit } from "./toolkits/services";
 import { createWorkspaceToolkit } from "./toolkits/workspace";
+
+
 
 export type WorkspaceToolApi = {
   listComponents: () => Promise<unknown>;
@@ -119,6 +123,7 @@ export function createWorkspaceCopilotAgentEnvironment(
     ],
   });
 
+
   environment.addResourceType(componentsListResource as any);
   environment.addResourceType(componentDetailResource as any);
   environment.addResourceType(servicesListResource as any);
@@ -126,6 +131,8 @@ export function createWorkspaceCopilotAgentEnvironment(
   environment.addResourceType(serviceActionResource as any);
   environment.addResourceType(serviceQueryResource as any);
   environment.addResourceType(serviceSchemaResource as any);
+  environment.addResourceType(planModeResource as any);
+  environment.addResourceType(tasksResource as any);
 
   environment.addAgent({
     name: "copilot",
@@ -154,9 +161,17 @@ export function createWorkspaceCopilotAgentEnvironment(
       moduleToolkit.tools.readBoardModule.name,
       moduleToolkit.tools.writeBoardModule.name,
       moduleToolkit.tools.editBoardModule.name,
+      "enter_plan_mode",
+      "approve_plan",
+      "create_task",
+      "update_task",
+      "list_tasks",
+      "add_task_dependency",
+      "visualize_tasks",
     ],
     enableMessage: true,
   });
+
 
   environment.addAgent({
     name: "codebase_investigator",
@@ -223,6 +238,13 @@ export function createWorkspaceCopilotAgentEnvironment(
       moduleToolkit.tools.readBoardModule.name,
       moduleToolkit.tools.writeBoardModule.name,
       moduleToolkit.tools.editBoardModule.name,
+      "enter_plan_mode",
+      "approve_plan",
+      "create_task",
+      "update_task",
+      "list_tasks",
+      "add_task_dependency",
+      "visualize_tasks",
     ],
     enableMessage: true,
   });
@@ -231,3 +253,4 @@ export function createWorkspaceCopilotAgentEnvironment(
     toolApi: api,
   }) as WorkspaceCopilotAgentEnvironment;
 }
+
