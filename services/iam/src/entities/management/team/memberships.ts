@@ -22,7 +22,7 @@ export async function listTeamMembers(filters: {
   limit?: number;
   cursor?: string;
 }) {
-  const { items, nextCursor } = await prismaListWithCursor(
+  const { data, nextPage } = await prismaListWithCursor(
     prisma.teamMembership,
     {
       where: {
@@ -38,14 +38,14 @@ export async function listTeamMembers(filters: {
   const users = await prisma.user.findMany({
     where: {
       id: {
-        in: items.map((m) => m.user_id),
+        in: data.map((m) => m.user_id),
       },
     },
   });
 
   return {
-    items: users,
-    nextCursor,
+    data: users,
+    nextPage,
   };
 }
 
@@ -192,7 +192,7 @@ export async function listUserTeams(filters: {
   limit?: number;
   cursor?: string;
 }) {
-  const { items, nextCursor } = await prismaListWithCursor(
+  const { data, nextPage } = await prismaListWithCursor(
     prisma.teamMembership,
     {
       where: {
@@ -208,13 +208,13 @@ export async function listUserTeams(filters: {
   const teams = await prisma.team.findMany({
     where: {
       id: {
-        in: items.map((m) => m.team_id),
+        in: data.map((m) => m.team_id),
       },
     },
   });
 
   return {
-    items: teams,
-    nextCursor,
+    data: teams,
+    nextPage,
   };
 }

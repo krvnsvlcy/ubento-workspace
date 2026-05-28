@@ -27,7 +27,7 @@ export async function listSessions(filters?: {
   ip?: string;
   user_agent?: string;
 }) {
-  const { items, ...rest } = await prismaListWithCursor(prisma.session, {
+  const { data, ...rest } = await prismaListWithCursor(prisma.session, {
     limit: filters?.limit,
     cursor: filters?.cursor,
     orderBy: [{ created_at: "desc" }, { id: "desc" }],
@@ -48,7 +48,7 @@ export async function listSessions(filters?: {
 
   return {
     ...rest,
-    items: items.map(sanitizeSession),
+    data: data.map(sanitizeSession),
   };
 }
 export async function getSession(sessionId: string) {

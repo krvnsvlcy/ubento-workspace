@@ -96,7 +96,7 @@ export async function getTokenWithAuthorizationCode({
     throw new AuthorizationError("Scope not authorized");
   }
 
-  const { items: teams } = await listUserTeams({ user_id: session.user_id });
+  const { data: teams } = await listUserTeams({ user_id: session.user_id });
 
   // 5. Issue Access Token
   const expiresIn = 3600;
@@ -282,7 +282,7 @@ export async function getTokenWithPassword({
     throw new AuthorizationError("Scope not authorized");
   }
 
-  const { items: teams } = await listUserTeams({ user_id: dbUser.id });
+  const { data: teams } = await listUserTeams({ user_id: dbUser.id });
 
   // 5. Issue Access Token
   const expiresIn = 3600;

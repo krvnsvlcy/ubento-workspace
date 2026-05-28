@@ -63,7 +63,7 @@ export async function listTeamInvites({
       ? [{ updated_at: "desc" }, { id: "desc" }]
       : /* default newest */ [{ created_at: "desc" }, { id: "desc" }];
 
-  const { items, ...rest } = await prismaListWithCursor(prisma.teamInvite, {
+  const { data, ...rest } = await prismaListWithCursor(prisma.teamInvite, {
     limit,
     cursor,
     orderBy,
@@ -77,7 +77,7 @@ export async function listTeamInvites({
 
   return {
     ...rest,
-    items: items.map(sanitizeInvite),
+    data: data.map(sanitizeInvite),
   };
 }
 export async function createTeamInvite({

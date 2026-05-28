@@ -50,10 +50,10 @@ export async function deleteUser(id: string) {
     return;
   }
 
-  const { items: teams } = await listUserTeams({ user_id: user.id });
+  const { data: teams } = await listUserTeams({ user_id: user.id });
   const canBeDeleted = await Promise.all(
     teams.map(async (team) => {
-      const { items: members } = await listTeamMembers({ team_id: team.id });
+      const { data: members } = await listTeamMembers({ team_id: team.id });
       return members.length === 1 && members[0].id === user.id;
     }),
   );
@@ -126,7 +126,7 @@ export async function syncUserData(user: WorkOSUser) {
     });
   }
 
-  const { items: teams } = await listUserTeams({ user_id: syncedUser.id });
+  const { data: teams } = await listUserTeams({ user_id: syncedUser.id });
   if (teams.length === 0) {
     let baseHandle = (syncedUser.name || syncedUser.email || syncedUser.id)
       .replace(/[^a-zA-Z0-9]+/g, "-")
