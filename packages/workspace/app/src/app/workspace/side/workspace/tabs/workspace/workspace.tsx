@@ -1,6 +1,6 @@
 import { TreeEntry } from "@/components/tree/tree-entry";
 import { WorkspaceEngineProvider } from "@/contexts/workspace";
-import { useUbento, useUbentoEngine } from "@/engine/app/engine";
+import { useUbento, useUbentoEngine } from "@/hooks/app-engine";
 import { TabDefinition } from "../../../types";
 
 import { BoardsSection } from "./boards-section";

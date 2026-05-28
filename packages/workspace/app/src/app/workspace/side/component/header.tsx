@@ -1,5 +1,5 @@
 import { ArrowLeft, Settings } from "lucide-react";
-import { useUbentoEngine } from "../../../../engine/app/engine";
+import { useUbentoEngine } from "@/hooks/app-engine";
 
 export function ComponentHeader() {
   const engine = useUbentoEngine();

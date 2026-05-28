@@ -4,6 +4,8 @@ import { AnimatedHeadline } from "@/components/animated-headline";
 import { HeroMockup } from "@/components/illustrations/hero-mockup";
 import { routes } from "@/routes";
 import { motion } from "motion/react";
+import { Button } from "@/components/button";
+import { Typography } from "@/components/typography";
 
 export function HeroSection() {
   return (
@@ -14,18 +16,23 @@ export function HeroSection() {
         transition={{ duration: 0.5 }}
       >
         <AnimatedHeadline />
-        <p className="mx-auto mb-10 max-w-2xl text-lg text-neutral-content-subtle sm:text-xl leading-relaxed">
+        <Typography
+          variant="body-large"
+          className="mx-auto mb-10 max-w-2xl"
+        >
           Ubento connects to your digital services to eliminate
           context-switching and bring your entire workflow into a single,
           high-agency environment.
-        </p>
+        </Typography>
         <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-          <a
+          <Button
             href={routes.login()}
-            className="group flex h-12 items-center justify-center gap-2 rounded-3xl bg-inverse px-8 text-sm font-medium text-inverse-contrast transition-all hover:bg-inverse-hover hover:shadow-xl sm:w-auto"
+            variant="primary"
+            size="md"
+            className="group gap-2 sm:w-auto"
           >
             Get Started Free
-          </a>
+          </Button>
         </div>
       </motion.div>
 

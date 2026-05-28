@@ -1,4 +1,4 @@
-import { useUbento } from "@/engine/app/engine";
+import { useUbento } from "@/hooks/app-engine";
 import { ConnectionProviderConfig } from "@ubento/vertex.core";
 import { Button, Text } from "@ubento/bento.arlo-core";
 

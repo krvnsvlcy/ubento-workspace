@@ -1,6 +1,6 @@
 import { ErrorView } from "@/components/error";
 import { useWorkspaceEngine } from "@/contexts/workspace";
-import { useUbentoEngine } from "@/engine/app/engine";
+import { useUbentoEngine } from "@/hooks/app-engine";
 import { useAppModal } from "@/modals/app/hook.js";
 import { appModalRoutes } from "@/modals/app/routes.js";
 import {

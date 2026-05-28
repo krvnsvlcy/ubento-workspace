@@ -8,7 +8,7 @@ import type { UbentoSDK, workspaceClient } from "@ubento/services.sdk";
 import { createZustandStateController, StateController } from "@ubento/state";
 import { createLogger, Logger } from "@ubento/telemetry";
 import { registerStore } from "@ubento/zustand-devtool";
-import React, { ComponentType, createContext, useContext } from "react";
+import React, { ComponentType } from "react";
 import { toast } from "sonner";
 import { createStore } from "zustand";
 import { makeLocationString } from "./app_modal";
@@ -366,19 +366,4 @@ export function createUbentoEngine({
   loadWorkspaceFromSlug(initialLocation.workspace);
 
   return appEngine;
-}
-
-export const UbentoEngineContext = createContext<UbentoEngine | null>(null);
-
-export function useUbentoEngine() {
-  const engine = useContext(UbentoEngineContext);
-  if (!engine) {
-    throw new Error("useUbentoEngine must be used within UbentoEngineProvider");
-  }
-  return engine;
-}
-
-export function useUbento() {
-  const engine = useUbentoEngine();
-  return engine.ubento;
 }

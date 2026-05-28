@@ -1,4 +1,4 @@
-import { useUbentoEngine } from "@/engine/app/engine";
+import { useUbentoEngine } from "@/hooks/app-engine";
 import { WorkspaceEngine } from "@/engine/workspace/engine";
 import { ErrorView, PendingView } from "@ubento/bento.arlo-core";
 import { createContext, useContext } from "react";

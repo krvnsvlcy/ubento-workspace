@@ -1,6 +1,6 @@
 import { Icon } from "@/components/icon/icon";
 import { useEffect, useMemo } from "react";
-import { useUbentoEngine } from "../../../../engine/app/engine";
+import { useUbentoEngine } from "@/hooks/app-engine";
 import { TabDefinition } from "../types";
 import { ComponentHeader } from "./header";
 import { componentAiTab } from "./tabs/component/ai-tab";

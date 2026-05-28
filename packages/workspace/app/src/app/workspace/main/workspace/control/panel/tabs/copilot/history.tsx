@@ -1,5 +1,5 @@
 import { useCopilot } from "@/contexts/copilot";
-import { useUbento, useUbentoEngine } from "@/engine/app/engine";
+import { useUbento, useUbentoEngine } from "@/hooks/app-engine";
 import cx from "clsx";
 import { History, Loader2, MessageSquare } from "lucide-react";
 

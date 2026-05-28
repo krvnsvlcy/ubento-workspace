@@ -1,16 +1,15 @@
-import { Terminal } from "lucide-react";
 import { routes } from "@/routes";
+import { Logo } from "./logo";
 
 export function Footer() {
   return (
-    <footer className="bg-neutral-surface py-24 border-t border-neutral-border/20">
+    <footer className="bg-neutral-surface-active/20 py-24">
       <div className="mx-auto max-w-7xl px-6">
         <div className="grid grid-cols-1 gap-12 md:grid-cols-12">
           {/* Brand Column */}
           <div className="md:col-span-6 space-y-6 text-left">
             <div className="flex items-center gap-2 font-heading font-bold text-neutral-content">
-              <Terminal className="h-5 w-5 text-accent shrink-0" />
-              <span className="tracking-tight text-lg">UBENTO</span>
+              <Logo height={30} />
             </div>
             <p className="text-sm text-neutral-content-subtle max-w-sm leading-relaxed">
               The dynamic WorkOS engine built for speed and autonomy.
@@ -63,7 +62,7 @@ export function Footer() {
                 </li>
                 <li>
                   <a
-                    href={routes.contact()}
+                    href="mailto:support@abstrea.com"
                     className="hover:text-neutral-content transition-colors"
                   >
                     Contact Us

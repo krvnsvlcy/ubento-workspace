@@ -2,7 +2,7 @@ import { useAppModal } from "@/modals/app/hook";
 import { appModalRoutes } from "@/modals/app/routes";
 import { Popper, PopperMenu, PopperProvider, PopperTrigger } from "@ubento/bento.arlo-core";
 import { LogOut, Settings, User } from "lucide-react";
-import { useUbentoEngine } from "../../../../engine/app/engine";
+import { useUbentoEngine } from "@/hooks/app-engine";
 
 export function WorkspaceFooter() {
   const { push: open } = useAppModal();

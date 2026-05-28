@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useUbentoEngine } from "../../engine/app/engine";
+import { useUbentoEngine } from "@/hooks/app-engine";
 import { Main } from "./main/main";
 import { SideSplitView } from "./main/workspace/components/split-view";
 import { Side } from "./side/side";

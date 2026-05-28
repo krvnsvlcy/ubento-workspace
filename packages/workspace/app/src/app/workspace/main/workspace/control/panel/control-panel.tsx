@@ -1,5 +1,5 @@
 import { useCopilot } from "@/contexts/copilot";
-import { useUbentoEngine } from "@/engine/app/engine.js";
+import { useUbentoEngine } from "@/hooks/app-engine";
 import { Button } from "@ubento/bento.arlo-core";
 import { Edit2, History, Plus, Sidebar, X } from "lucide-react";
 import { useState } from "react";

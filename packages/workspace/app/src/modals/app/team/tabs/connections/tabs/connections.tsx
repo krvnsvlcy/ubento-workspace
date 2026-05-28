@@ -1,14 +1,10 @@
 import { useSession } from "@/contexts/session";
-import { useUbento } from "@/engine/app/engine";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll.js";
-import {
-  Button,
-  Input,
-  ScrollArea,
-} from "@ubento/bento.arlo-core";
+import { Button, Input, ScrollArea } from "@ubento/bento.arlo-core";
 import { Globe, Plus, Settings, Trash2 } from "lucide-react";
 import { FC, useState } from "react";
 
+import { useUbento } from "@/hooks/app-engine";
 import { useAppModal } from "@/modals/app/hook";
 import { appModalRoutes } from "@/modals/app/routes";
 
@@ -26,12 +22,15 @@ export const ConnectionsTab: FC<ConnectionsTabProps> = ({
 
   const [connectionSearch, setConnectionSearch] = useState("");
 
-  const { data: connectionsData, isFetching: isFetchingConnections, fetchNextPage, hasNextPage } =
-    ubento.vertex.useConnections({
-      teamId: teamId,
-    });
-  const connections =
-    connectionsData?.pages.flatMap((page) => page.data) ?? [];
+  const {
+    data: connectionsData,
+    isFetching: isFetchingConnections,
+    fetchNextPage,
+    hasNextPage,
+  } = ubento.vertex.useConnections({
+    teamId: teamId,
+  });
+  const connections = connectionsData?.pages.flatMap((page) => page.data) ?? [];
 
   const sentinelRef = useInfiniteScroll({
     hasNextPage: !!hasNextPage,
@@ -150,10 +149,7 @@ export const ConnectionsTab: FC<ConnectionsTabProps> = ({
             );
           })}
 
-          <div
-            ref={sentinelRef}
-            className="flex justify-center h-6"
-          />
+          <div ref={sentinelRef} className="flex justify-center h-6" />
         </div>
       </ScrollArea>
     </section>

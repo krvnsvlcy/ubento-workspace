@@ -1,5 +1,5 @@
 import { useCopilot } from "@/contexts/copilot";
-import { useUbentoEngine } from "@/engine/app/engine";
+import { useUbentoEngine } from "@/hooks/app-engine";
 import { 
   AlertTriangle, 
   CheckCircle2, 

@@ -2,7 +2,7 @@ import { Icon } from "@/components/icon/icon";
 import { Button, useStoreState } from "@ubento/bento.arlo-core";
 import clsx from "clsx";
 import { useEffect, useMemo } from "react";
-import { useUbentoEngine } from "../../../../engine/app/engine";
+import { useUbentoEngine } from "@/hooks/app-engine";
 import { TabDefinition } from "../types";
 import { WorkspaceFooter } from "./footer";
 import { WorkspaceHeader } from "./header";

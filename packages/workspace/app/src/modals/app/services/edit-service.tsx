@@ -1,5 +1,5 @@
 import { useSession } from "@/contexts/session";
-import { useUbento } from "@/engine/app/engine";
+import { useUbento } from "@/hooks/app-engine";
 import { useAppModal } from "@/modals/app/hook.js";
 import { appModalRoutes } from "@/modals/app/routes.js";
 import { generateServiceSpecFromOpenApi } from "@ubento/vertex.core";

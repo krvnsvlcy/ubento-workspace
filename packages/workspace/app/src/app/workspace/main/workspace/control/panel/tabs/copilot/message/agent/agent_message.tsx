@@ -1,4 +1,4 @@
-import { useUbentoEngine } from "@/engine/app/engine";
+import { useUbentoEngine } from "@/hooks/app-engine";
 import { AgentActionData, AgentMessageData } from "@ubento/workspace.agent";
 import { Check, Copy, Loader2, Sparkles, Terminal, X } from "lucide-react";
 import { MouseEvent, useState } from "react";

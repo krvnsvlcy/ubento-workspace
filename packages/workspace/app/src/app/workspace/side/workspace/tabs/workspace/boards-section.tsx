@@ -2,7 +2,7 @@ import { SideSection } from "@/components/side/section";
 import { TreeEntry } from "@/components/tree/tree-entry";
 import { TreeIndent } from "@/components/tree/tree-indent";
 import { useWorkspaceEngine } from "@/contexts/workspace";
-import { useUbentoEngine } from "@/engine/app/engine";
+import { useUbentoEngine } from "@/hooks/app-engine";
 import {
   DndContext,
   DragEndEvent,

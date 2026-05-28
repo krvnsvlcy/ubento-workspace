@@ -1,6 +1,6 @@
 import { bentoModuleType } from "@/app/dnd";
 import { useSession } from "@/contexts/session";
-import { useUbento, useUbentoEngine } from "@/engine/app/engine";
+import { useUbento, useUbentoEngine } from "@/hooks/app-engine";
 import {
   BrowserDataTransferStore,
   DataTransferPayload,

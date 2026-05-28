@@ -1,5 +1,5 @@
 import { ModalInstanceProvider } from "@/utils/modal-store.js";
-import { useUbentoEngine } from "@/engine/app/engine.js";
+import { useUbentoEngine } from "@/hooks/app-engine";
 import { AnimatePresence, motion } from "motion/react";
 
 export function ModalRenderer() {

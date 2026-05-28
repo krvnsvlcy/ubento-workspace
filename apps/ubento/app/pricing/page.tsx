@@ -1,7 +1,9 @@
 "use client";
 
+import { Button } from "@/components/button";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
+import { Typography } from "@/components/typography";
 import { routes } from "@/routes";
 import { CheckCircle2 } from "lucide-react";
 
@@ -13,30 +15,31 @@ export default function PricingPage() {
       {/* Main Pricing Hero Section */}
       <main className="flex-grow pt-32 pb-24 md:pt-40">
         <div className="mx-auto max-w-7xl px-6 text-center">
-          <h1 className="mt-8 font-heading text-5xl font-bold tracking-tight text-neutral-content max-w-3xl mx-auto leading-tight">
+          <Typography
+            variant="h1"
+            className="mt-8 text-5xl max-w-3xl mx-auto font-bold tracking-tight"
+          >
             Scale your leverage.
-          </h1>
-          <p className="mt-6 text-lg text-neutral-content-subtle max-w-2xl mx-auto">
+          </Typography>
+          <Typography variant="body-large" className="mt-6 max-w-2xl mx-auto">
             Explore for free, upgrade to Pro for uncapped leverage.
-          </p>
+          </Typography>
 
           {/* Unified Pricing Card */}
           <div className="mt-16 mx-auto max-w-5xl rounded-3xl border border-neutral-border bg-background overflow-hidden flex flex-col md:flex-row text-left">
             {/* Hobby Plan */}
             <div className="flex-1 p-8 md:p-12 flex flex-col">
-              <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-6 pb-8 border-b border-neutral-border/50">
+              <div className="flex flex-col xl:flex-row xl:items-start justify-between gap-6 pb-8 border-b border-neutral-border/50">
                 <div>
-                  <h3 className="text-2xl font-bold font-heading text-neutral-content tracking-tight">
+                  <Typography shade="default" weight="bold">
                     Hobby
-                  </h3>
-                  <p className="mt-2 text-sm text-neutral-content-muted">
+                  </Typography>
+                  <Typography variant="body-small">
                     For individuals exploring the WorkOS architecture.
-                  </p>
+                  </Typography>
                 </div>
                 <div className="flex items-baseline">
-                  <span className="text-5xl font-extrabold tracking-tight font-heading text-neutral-content">
-                    Free
-                  </span>
+                  <Typography variant="h3">Free</Typography>
                 </div>
               </div>
 
@@ -50,44 +53,48 @@ export default function PricingPage() {
                   ].map((feature, i) => (
                     <li key={i} className="flex items-start gap-3">
                       <CheckCircle2 className="h-5 w-5 text-neutral-content-muted shrink-0 mt-0.5" />
-                      <span className="text-sm text-neutral-content-subtle leading-relaxed">
+                      <Typography
+                        variant="body-small"
+                        as="span"
+                        className="leading-relaxed"
+                      >
                         {feature}
-                      </span>
+                      </Typography>
                     </li>
                   ))}
                 </ul>
               </div>
 
               <div className="mt-10">
-                <a
+                <Button
                   href={routes.login()}
-                  className="flex h-12 w-full items-center justify-center rounded-xl border border-neutral-border bg-transparent text-sm font-semibold text-neutral-content transition-all hover:bg-neutral-border/20 active:scale-[0.99]"
+                  variant="outline"
+                  size="md"
+                  className="w-full"
                 >
                   Start Exploring
-                </a>
+                </Button>
               </div>
             </div>
 
             {/* Pro Plan */}
             <div className="flex-1 p-8 md:p-12 flex flex-col bg-neutral-surface/40 border-t md:border-t-0 md:border-l border-neutral-border relative group">
               {/* Premium Subtle Gradient */}
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-neutral-content/[0.02] to-transparent" />
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-neutral-surface-hover to-transparent" />
 
-              <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-6 pb-8 border-b border-neutral-border/50 relative">
+              <div className="flex flex-col xl:flex-row xl:items-start justify-between gap-6 pb-8 border-b border-neutral-border/50 relative">
                 <div>
-                  <h3 className="text-2xl font-bold font-heading text-neutral-content tracking-tight">
+                  <Typography shade="default" weight="bold">
                     Pro
-                  </h3>
-                  <p className="mt-2 text-sm text-neutral-content-muted">
+                  </Typography>
+                  <Typography variant="body-small">
                     Uncapped leverage for high-agency professionals.
-                  </p>
+                  </Typography>
                 </div>
                 <div className="flex items-baseline">
-                  <span className="text-5xl font-extrabold tracking-tight font-heading text-neutral-content">
-                    $20
-                  </span>
+                  <Typography variant="h3">$20</Typography>
                   <span className="ml-2 text-xs font-semibold text-neutral-content-muted uppercase tracking-wider font-mono">
-                    / Month
+                    /mo
                   </span>
                 </div>
               </div>
@@ -103,21 +110,29 @@ export default function PricingPage() {
                   ].map((feature, i) => (
                     <li key={i} className="flex items-start gap-3">
                       <CheckCircle2 className="h-5 w-5 text-neutral-content shrink-0 mt-0.5" />
-                      <span className="text-sm text-neutral-content leading-relaxed font-medium">
+                      <Typography
+                        variant="body-small"
+                        as="span"
+                        shade="default"
+                        weight="medium"
+                        className="leading-relaxed"
+                      >
                         {feature}
-                      </span>
+                      </Typography>
                     </li>
                   ))}
                 </ul>
               </div>
 
               <div className="mt-10 relative">
-                <a
+                <Button
                   href={routes.login()}
-                  className="flex h-12 w-full items-center justify-center rounded-xl bg-neutral-content text-sm font-semibold text-neutral-surface transition-all hover:scale-[1.01] active:scale-[0.99]"
+                  variant="secondary"
+                  size="md"
+                  className="w-full"
                 >
                   Upgrade to Pro
-                </a>
+                </Button>
               </div>
             </div>
           </div>

@@ -1,5 +1,5 @@
 import { useCopilot } from "@/contexts/copilot";
-import { useUbentoEngine } from "@/engine/app/engine";
+import { useUbentoEngine } from "@/hooks/app-engine";
 import { useStoreState } from "@ubento/bento.arlo-core";
 import { Loader2, Sparkles } from "lucide-react";
 import { useEffect, useRef } from "react";

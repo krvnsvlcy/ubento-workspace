@@ -1,5 +1,5 @@
 import { useSession } from "@/contexts/session";
-import { useUbento } from "@/engine/app/engine";
+import { useUbento } from "@/hooks/app-engine";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll.js";
 import { useAppModal } from "@/modals/app/hook.js";
 import { appModalRoutes } from "@/modals/app/routes.js";

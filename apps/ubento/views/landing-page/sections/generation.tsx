@@ -2,6 +2,7 @@
 
 import { VerticalScrollingLogos } from "@/components/illustrations/vertical-scrolling-logos";
 import { WorkspaceGeneratorMockup } from "@/components/illustrations/workspace-generator-mockup";
+import { Typography } from "@/components/typography";
 
 export function WorkspaceGeneratorShowcase() {
   return (
@@ -9,15 +10,15 @@ export function WorkspaceGeneratorShowcase() {
       <div className="space-y-16 grow">
         {/* Text Copy */}
         <div className="max-w-3xl space-y-6">
-          <h2 className="text-4xl sm:text-5xl font-heading font-bold tracking-tight text-neutral-content leading-tight">
+          <Typography variant="h2">
             AI generated software <br /> without the security risk.
-          </h2>
-          <p className="text-neutral-content-subtle text-base sm:text-lg leading-relaxed">
+          </Typography>
+          <Typography variant="body">
             Your workspace runs within an environment isolated from your
             business data. Every interaction with your services is routed
             through a transparent approval gate, guaranteeing absolute control
             and visibility over how your data is accessed and modified.
-          </p>
+          </Typography>
         </div>
 
         {/* Visual Mockup */}

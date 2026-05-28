@@ -1,5 +1,6 @@
 import { Logo } from "@/components/logo";
 import { routes } from "@/routes";
+import { Button } from "@/components/button";
 
 export function Header() {
   return (
@@ -18,12 +19,13 @@ export function Header() {
           >
             Pricing
           </a>
-          <a
+          <Button
             href={routes.login()}
-            className="rounded-3xl bg-inverse px-4 py-2 text-sm font-medium text-inverse-contrast transition-colors hover:bg-inverse-hover active:bg-inverse-active"
+            variant="primary"
+            size="sm"
           >
             Get Started Free
-          </a>
+          </Button>
         </div>
       </div>
     </nav>

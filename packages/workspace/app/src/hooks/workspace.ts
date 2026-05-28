@@ -1,5 +1,5 @@
 import { useSession } from "@/contexts/session";
-import { useUbento, useUbentoEngine } from "@/engine/app/engine";
+import { useUbento, useUbentoEngine } from "@/hooks/app-engine";
 import { WorkspaceEngine } from "@/engine/workspace/engine";
 import { useQuery } from "@tanstack/react-query";
 import { ServiceSpecV1 } from "@ubento/vertex.core";

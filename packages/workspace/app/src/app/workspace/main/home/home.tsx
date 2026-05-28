@@ -15,7 +15,7 @@ import {
 } from "@ubento/bento.arlo-core";
 import { Box, MoreHorizontal, Plus, Trash2 } from "lucide-react";
 import { useMemo } from "react";
-import { useUbento, useUbentoEngine } from "../../../../engine/app/engine";
+import { useUbento, useUbentoEngine } from "@/hooks/app-engine";
 
 function Greeting({ name }: { name?: string }) {
   const greeting = useMemo(() => {

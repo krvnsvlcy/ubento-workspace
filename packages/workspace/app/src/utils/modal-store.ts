@@ -1,5 +1,6 @@
-import React, { createContext, useContext } from "react";
-import { useUbentoEngine, ModalInstance } from "@/engine/app/engine.js";
+import { ModalInstance } from "@/engine/app/engine";
+import { useUbentoEngine } from "@/hooks/app-engine";
+import { createContext, useContext } from "react";
 
 export type { ModalInstance };
 

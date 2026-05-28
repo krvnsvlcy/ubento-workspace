@@ -1,6 +1,6 @@
 import { ErrorView } from "@/components/error.js";
 import { useWorkspaceEngine } from "@/contexts/workspace.js";
-import { useUbentoEngine } from "@/engine/app/engine.js";
+import { useUbentoEngine } from "@/hooks/app-engine";
 import { Button, PendingView, TabSwitch } from "@ubento/bento.arlo-core";
 import { Check, Copy, Save } from "lucide-react";
 import React, { useState } from "react";

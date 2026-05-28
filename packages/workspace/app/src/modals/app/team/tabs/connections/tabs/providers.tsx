@@ -1,4 +1,4 @@
-import { useUbento } from "@/engine/app/engine";
+import { useUbento } from "@/hooks/app-engine";
 import { useAppModal } from "@/modals/app/hook";
 import { appModalRoutes } from "@/modals/app/routes";
 import { Badge, Button, Input, ScrollArea } from "@ubento/bento.arlo-core";
@@ -14,7 +14,8 @@ export const ProvidersTab: FC = () => {
     ubento.vertex.useConnectionProviders({
       name: providerSearch,
     });
-  const allProviders = allProvidersData?.pages.flatMap((page) => page.data) ?? [];
+  const allProviders =
+    allProvidersData?.pages.flatMap((page) => page.data) ?? [];
 
   const handleCreateProvider = () => {
     navigate(appModalRoutes.providers.create);

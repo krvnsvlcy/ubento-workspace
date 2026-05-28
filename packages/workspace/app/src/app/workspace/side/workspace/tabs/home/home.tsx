@@ -3,10 +3,7 @@ import { SideSection } from "@/components/side/section";
 import { TreeEntry } from "@/components/tree/tree-entry";
 import { CreateWorkspaceModal } from "@/modals/create_workspace/create_workspace";
 import { useModal } from "@/utils/modal-store";
-import {
-  useUbento,
-  useUbentoEngine,
-} from "../../../../../../engine/app/engine";
+import { useUbento, useUbentoEngine } from "@/hooks/app-engine";
 import { TabDefinition } from "../../../types";
 
 export function WorkspaceItem({ workspace }: { workspace: any }) {

@@ -1,5 +1,5 @@
 import { parseLocationString } from "@/engine/app/app_modal";
-import { useUbentoEngine } from "@/engine/app/engine";
+import { useUbentoEngine } from "@/hooks/app-engine";
 
 export function useAppModal() {
   const engine = useUbentoEngine();

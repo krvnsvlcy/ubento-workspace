@@ -1,6 +1,7 @@
 "use client";
 
 import { FoundationsMockup } from "@/components/illustrations/foundations-mockup";
+import { Typography } from "@/components/typography";
 
 export function PersonalizationShowcase() {
   return (
@@ -14,16 +15,16 @@ export function PersonalizationShowcase() {
         {/* Right Column: Text Copy */}
         <div className="lg:col-span-5 text-left space-y-6">
           {/* Title & Subtitle */}
-          <h2 className="text-4xl sm:text-5xl font-heading font-bold tracking-tight text-neutral-content leading-tight">
+          <Typography variant="h2">
             Skip the scaffolding.
             <br />
             Focus on your work.
-          </h2>
-          <p className="text-neutral-content-subtle text-base sm:text-lg leading-relaxed">
+          </Typography>
+          <Typography variant="body">
             Maintaining a standalone repo is a distraction. Ubento delivers a
             batteries-included environment. No frameworks, no custom routing, no
             codebase, just pure workflow.
-          </p>
+          </Typography>
         </div>
       </div>
     </section>

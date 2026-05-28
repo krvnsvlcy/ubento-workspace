@@ -1,5 +1,5 @@
 import { useWorkspaceEngine } from "@/contexts/workspace.js";
-import { useUbentoEngine } from "@/engine/app/engine.js";
+import { useUbentoEngine } from "@/hooks/app-engine";
 import { Sparkles } from "lucide-react";
 import { motion } from "motion/react";
 import { ControlPanel } from "./panel/control-panel.js";

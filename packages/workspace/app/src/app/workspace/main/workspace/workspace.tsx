@@ -2,7 +2,7 @@ import {
   WorkspaceEngineProvider,
   useWorkspaceEngine,
 } from "@/contexts/workspace";
-import { useUbentoEngine } from "@/engine/app/engine.js";
+import { useUbentoEngine } from "@/hooks/app-engine";
 import { SideSplitView } from "./components/split-view";
 import { WorkspaceContent } from "./content";
 import { WorkspaceControl } from "./control/control";

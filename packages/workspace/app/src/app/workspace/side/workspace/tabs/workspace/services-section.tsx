@@ -1,7 +1,7 @@
 import { SideSection } from "@/components/side/section";
 import { TreeEntry } from "@/components/tree/tree-entry";
 import { useWorkspaceEngine } from "@/contexts/workspace";
-import { useUbentoEngine } from "@/engine/app/engine";
+import { useUbentoEngine } from "@/hooks/app-engine";
 import { useAppModal } from "@/modals/app/hook";
 import { appModalRoutes } from "@/modals/app/routes";
 import { ServiceData } from "@ubento/bento.runtime";
