@@ -90,12 +90,14 @@ type ModelData = {
 let modelData: Record<string, ModelData> | null = null;
 
 export async function getModelData(modelId: string): Promise<ModelData> {
-  if (!modelData) {
+  let currentModelData = modelData;
+  if (!currentModelData) {
     const response = await fetch(modelDataUrl);
     const data = (await response.json()) as ModelApiData;
-    modelData = Object.fromEntries(data.data.map((model) => [model.id, model]));
+    currentModelData = Object.fromEntries(data.data.map((model) => [model.id, model]));
+    modelData = currentModelData;
   }
-  const data = modelData[modelId];
+  const data = currentModelData[modelId];
   if (!data) {
     throw new Error(`Model data not found for model ID "${modelId}"`);
   }

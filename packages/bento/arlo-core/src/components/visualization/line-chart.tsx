@@ -93,7 +93,7 @@ interface ScrollButtonProps {
 const ScrollButton = ({ icon, onClick, disabled }: ScrollButtonProps) => {
   const Icon = icon;
   const [isPressed, setIsPressed] = React.useState(false);
-  const intervalRef = React.useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
 
   React.useEffect(() => {
     if (isPressed) {
@@ -101,14 +101,14 @@ const ScrollButton = ({ icon, onClick, disabled }: ScrollButtonProps) => {
         onClick?.();
       }, 300);
     } else {
-      clearInterval(intervalRef.current as NodeJS.Timeout);
+      clearInterval(intervalRef.current as any);
     }
-    return () => clearInterval(intervalRef.current as NodeJS.Timeout);
+    return () => clearInterval(intervalRef.current as any);
   }, [isPressed, onClick]);
 
   React.useEffect(() => {
     if (disabled) {
-      clearInterval(intervalRef.current as NodeJS.Timeout);
+      clearInterval(intervalRef.current as any);
       setIsPressed(false);
     }
   }, [disabled]);
@@ -169,7 +169,7 @@ const Legend = React.forwardRef<HTMLOListElement, LegendProps>((props, ref) => {
   const scrollButtonsRef = React.useRef<HTMLDivElement>(null);
   const [hasScroll, setHasScroll] = React.useState<HasScrollProps | null>(null);
   const [isKeyDowned, setIsKeyDowned] = React.useState<string | null>(null);
-  const intervalRef = React.useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
 
   const checkScroll = React.useCallback(() => {
     const scrollable = scrollableRef?.current;
@@ -219,9 +219,9 @@ const Legend = React.forwardRef<HTMLOListElement, LegendProps>((props, ref) => {
         keyDownHandler(isKeyDowned);
       }, 300);
     } else {
-      clearInterval(intervalRef.current as NodeJS.Timeout);
+      clearInterval(intervalRef.current as any);
     }
-    return () => clearInterval(intervalRef.current as NodeJS.Timeout);
+    return () => clearInterval(intervalRef.current as any);
   }, [isKeyDowned, scrollToTest]);
 
   const keyDown = (e: KeyboardEvent) => {
