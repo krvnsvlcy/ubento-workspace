@@ -30,12 +30,13 @@ export function IntegrationsShowcase() {
       <div className="max-w-3xl mx-auto space-y-8">
         <div className="space-y-6">
           {/* Title & Subtitle */}
-          <h2 className="text-3xl sm:text-4xl font-heading font-bold tracking-tight text-neutral-content leading-tight">
-            Bring your digital services in one environment.
+          <h2 className="text-4xl sm:text-5xl font-heading font-bold tracking-tight text-neutral-content leading-tight">
+            All your digital services in one environment.
           </h2>
           <p className="text-neutral-content-subtle text-base sm:text-lg leading-relaxed">
-            Connect your digital services natively. No writing complex API
-            wrappers or setting up insecure proxy gateways.
+            Access a growing library of digital integrations. Ubento provides a
+            ready-to-use programmatic surface, letting your workspaces connect
+            to the rest of the internet through a single, unified environment.
           </p>
         </div>
 

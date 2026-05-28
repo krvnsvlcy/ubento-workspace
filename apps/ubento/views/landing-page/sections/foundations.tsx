@@ -14,13 +14,15 @@ export function PersonalizationShowcase() {
         {/* Right Column: Text Copy */}
         <div className="lg:col-span-5 text-left space-y-6">
           {/* Title & Subtitle */}
-          <h2 className="text-3xl sm:text-4xl font-heading font-bold tracking-tight text-neutral-content leading-tight">
-            Prebuilt foundations so you can focus on your work.
+          <h2 className="text-4xl sm:text-5xl font-heading font-bold tracking-tight text-neutral-content leading-tight">
+            Skip the scaffolding.
+            <br />
+            Focus on your work.
           </h2>
           <p className="text-neutral-content-subtle text-base sm:text-lg leading-relaxed">
-            Routing, authentication, authorization, data management, and
-            integrations come ready out of the box — so your team ships
-            features, not scaffolding.
+            Maintaining a standalone repo is a distraction. Ubento delivers a
+            batteries-included environment. No frameworks, no custom routing, no
+            codebase, just pure workflow.
           </p>
         </div>
       </div>

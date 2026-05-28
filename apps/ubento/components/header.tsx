@@ -22,7 +22,7 @@ export function Header() {
             href={routes.login()}
             className="rounded-3xl bg-inverse px-4 py-2 text-sm font-medium text-inverse-contrast transition-colors hover:bg-inverse-hover active:bg-inverse-active"
           >
-            Get Ubento Free
+            Get Started Free
           </a>
         </div>
       </div>

@@ -10,18 +10,18 @@ export function CtaSection() {
 
       <div className="mx-auto max-w-5xl px-6 text-center relative z-10 space-y-8">
         <h2 className="text-4xl sm:text-5xl lg:text-6xl font-heading font-bold tracking-tight text-neutral-content leading-tight max-w-4xl mx-auto">
-          Take back ownership of your workflow.
+          Own your workflow.
         </h2>
         <p className="text-neutral-content-subtle text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed">
-          Experience a customizable, localized, high-agency workspace engine
-          built for speed and autonomy.
+          A unified, secure, high-agency workspace engine built for speed and
+          autonomy.
         </p>
         <div className="pt-4">
           <a
             href={routes.login()}
             className="inline-flex items-center justify-center rounded-xl bg-inverse px-8 py-4 text-base font-semibold text-inverse-contrast shadow-xl transition-all duration-300 hover:scale-[1.02] hover:bg-inverse-hover active:scale-[0.98] active:bg-inverse-active"
           >
-            Get Ubento Free
+            Get Started Free
           </a>
         </div>
       </div>
