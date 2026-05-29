@@ -1,6 +1,7 @@
 import React from "react";
 
 type TypographyVariant =
+  | "d1"
   | "h1"
   | "h2"
   | "h3"
@@ -31,6 +32,7 @@ export function Typography({
   children?: React.ReactNode;
 } & React.ComponentPropsWithoutRef<any>) {
   const variantClasses = {
+    d1: "font-heading text-4xl sm:text-5xl md:text-6xl tracking-tight leading-tight",
     h1: "font-heading text-4xl sm:text-5xl tracking-tight leading-tight",
     h2: "font-heading text-3xl sm:text-4xl tracking-tight leading-tight",
     h3: "font-heading text-2xl sm:text-3xl tracking-tight leading-tight",
@@ -55,6 +57,7 @@ export function Typography({
   };
 
   const defaultElement: Record<TypographyVariant, React.ElementType> = {
+    d1: "h1",
     h1: "h1",
     h2: "h2",
     h3: "h3",
@@ -66,6 +69,7 @@ export function Typography({
   };
 
   const defaultShades: Record<TypographyVariant, TypographyShade> = {
+    d1: "default",
     h1: "default",
     h2: "default",
     h3: "default",
@@ -77,6 +81,7 @@ export function Typography({
   };
 
   const defaultWeights: Record<TypographyVariant, TypographyWeight> = {
+    d1: "bold",
     h1: "bold",
     h2: "bold",
     h3: "bold",

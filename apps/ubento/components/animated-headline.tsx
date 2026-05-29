@@ -6,7 +6,8 @@ import { Typography } from "./typography";
 export function AnimatedHeadline() {
   return (
     <Typography variant="h1">
-      Maximize leverage with workspaces built for your{" "}
+      Maximize leverage with a workspace <br />
+      that molds around your{" "}
       <TypeIt
         options={{
           lifeLike: true,

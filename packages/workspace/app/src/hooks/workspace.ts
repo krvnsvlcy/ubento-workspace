@@ -1,6 +1,6 @@
 import { useSession } from "@/contexts/session";
-import { useUbento, useUbentoEngine } from "@/hooks/app-engine";
 import { WorkspaceEngine } from "@/engine/workspace/engine";
+import { useUbento, useUbentoEngine } from "@/hooks/app-engine";
 import { useQuery } from "@tanstack/react-query";
 import { ServiceSpecV1 } from "@ubento/vertex.core";
 
@@ -49,15 +49,16 @@ export function useServiceWorkspaceState(
     isPending: isPendingConnections,
     isError: isErrorConnections,
   } = useQuery({
-    queryKey: ["team-connections", session.teamId, provider],
+    queryKey: ["team-connections", session.teamId, provider?.id],
     queryFn: async () => {
+      if (!session.teamId || !provider?.id) return [];
       const result = await ubento.sdk.vertex.listConnections({
-        team_id: session.teamId || "",
-        provider_id: provider?.id || "",
+        team_id: session.teamId,
+        provider_id: provider.id,
       });
       return result?.data || [];
     },
-    enabled: !!session.teamId && !!provider,
+    enabled: !!session.teamId && !!provider?.id,
   });
 
   return {

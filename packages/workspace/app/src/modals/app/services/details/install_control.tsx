@@ -63,6 +63,7 @@ export function InstallControl({
     return (
       <Button disabled variant="primary">
         <Spinner /> Connection
+        {provider && "PP"}
       </Button>
     );
   }
