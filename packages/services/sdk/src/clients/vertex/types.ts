@@ -1246,6 +1246,7 @@ export interface components {
             id: string;
             /** @default connection_provider */
             entity: string;
+            team_id?: string;
             handle: string;
             type: string;
             name: string;

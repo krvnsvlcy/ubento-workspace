@@ -1,3 +1,4 @@
+import { useSession } from "@/contexts/session";
 import { useUbento } from "@/hooks/app-engine";
 import { useAppModal } from "@/modals/app/hook";
 import { appModalRoutes } from "@/modals/app/routes";
@@ -7,12 +8,14 @@ import { FC, useState } from "react";
 
 export const ProvidersTab: FC = () => {
   const ubento = useUbento();
+  const session = useSession();
   const { push: navigate } = useAppModal();
   const [providerSearch, setProviderSearch] = useState("");
 
   const { data: allProvidersData, isFetching: isFetchingAllProviders } =
     ubento.vertex.useConnectionProviders({
       name: providerSearch,
+      team_id: session.teamId,
     });
   const allProviders =
     allProvidersData?.pages.flatMap((page) => page.data) ?? [];

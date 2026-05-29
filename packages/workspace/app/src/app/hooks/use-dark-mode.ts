@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export function useDarkMode() {
   const [isDark, setIsDark] = useState(false);
@@ -6,8 +6,10 @@ export function useDarkMode() {
   useEffect(() => {
     const checkTheme = () => {
       const theme = document.documentElement.getAttribute("data-theme");
-      const systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      
+      const systemDark = window.matchMedia(
+        "(prefers-color-scheme: dark)",
+      ).matches;
+
       setIsDark(theme === "carbon" || (theme === null && systemDark));
     };
 
@@ -28,5 +30,5 @@ export function useDarkMode() {
     };
   }, []);
 
-  return isDark;
+  return isDark && false;
 }

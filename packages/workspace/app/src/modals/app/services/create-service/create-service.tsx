@@ -1,6 +1,11 @@
 import { useSession } from "@/contexts/session";
 import { useUbento } from "@/hooks/app-engine";
 import { useAppModal } from "@/modals/app/hook.js";
+import {
+  RailLayout,
+  RailLayoutMain,
+  RailLayoutSide,
+} from "@ubento/bento.arlo-core";
 import { useState } from "react";
 import { ServiceDetailsForm } from "./details-form.js";
 import { ServiceSpecEditor } from "./spec-editor.js";
@@ -25,6 +30,8 @@ export function CreateServiceModal() {
   const [description, setDescription] = useState("");
   const [error, setError] = useState("");
   const [specText, setSpecText] = useState("");
+  const [selectedProviderId, setSelectedProviderId] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   // Mutations
   const { mutate: createService, isPending: isCreatingService } =
@@ -33,8 +40,14 @@ export function CreateServiceModal() {
     ubento.vertex.useCreateServiceChannel();
   const { mutate: uploadSpec, isPending: isUploadingSpec } =
     ubento.vertex.useUploadServiceChannelSpec();
+  const { mutate: uploadServiceImage, isPending: isUploadingImage } =
+    ubento.vertex.useUploadServiceImage();
 
-  const isPending = isCreatingService || isCreatingChannel || isUploadingSpec;
+  const isPending =
+    isCreatingService ||
+    isCreatingChannel ||
+    isUploadingSpec ||
+    isUploadingImage;
 
   const handleNameChange = (value: string) => {
     setName(value);
@@ -52,6 +65,10 @@ export function CreateServiceModal() {
       setError(
         "Service identifier must only contain lowercase letters, numbers, hyphens, and underscores.",
       );
+      return;
+    }
+    if (!selectedProviderId) {
+      setError("Connection provider is required.");
       return;
     }
 
@@ -75,6 +92,24 @@ export function CreateServiceModal() {
       },
       {
         onSuccess: (createdService: any) => {
+          const proceed = () => {
+            if (imageFile) {
+              uploadServiceImage(
+                { serviceId: createdService.id, file: imageFile },
+                {
+                  onSuccess: () => {
+                    goBack();
+                  },
+                  onError: (err: any) => {
+                    setError(err.message || "Failed to upload service image.");
+                  },
+                },
+              );
+            } else {
+              goBack();
+            }
+          };
+
           // If a spec was provided, create a default channel and upload the spec to it!
           if (parsedSpec) {
             createChannel(
@@ -94,7 +129,7 @@ export function CreateServiceModal() {
                     },
                     {
                       onSuccess: () => {
-                        goBack();
+                        proceed();
                       },
                       onError: (err: any) => {
                         setError(
@@ -111,7 +146,7 @@ export function CreateServiceModal() {
               },
             );
           } else {
-            goBack();
+            proceed();
           }
         },
         onError: (err: any) => {
@@ -124,8 +159,8 @@ export function CreateServiceModal() {
   };
 
   return (
-    <div className="flex h-full w-full">
-      <div className="w-1/3 h-full">
+    <RailLayout>
+      <RailLayoutSide style={{ width: "33%" }}>
         <ServiceDetailsForm
           name={name}
           handleNameChange={handleNameChange}
@@ -134,17 +169,23 @@ export function CreateServiceModal() {
           description={description}
           setDescription={setDescription}
           error={error}
-          isPending={isPending}
-          handleCreate={handleCreate}
+          selectedProviderId={selectedProviderId}
+          setSelectedProviderId={setSelectedProviderId}
+          imageFile={imageFile}
+          onImageChange={setImageFile}
         />
-      </div>
-      <div className="w-2/3 h-full">
+      </RailLayoutSide>
+      <RailLayoutMain>
         <ServiceSpecEditor
           handle={handle}
           specText={specText}
           setSpecText={setSpecText}
+          handleCreate={handleCreate}
+          isPending={isPending}
+          createDisabled={!name || !handle || !selectedProviderId || isPending}
+          selectedProviderId={selectedProviderId}
         />
-      </div>
-    </div>
+      </RailLayoutMain>
+    </RailLayout>
   );
 }

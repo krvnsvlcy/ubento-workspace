@@ -1,6 +1,11 @@
 import { Text } from "@ubento/bento.arlo-core";
 import { AlertCircle, Terminal } from "lucide-react";
-import { ActionsSection, EntitiesSection, QueriesSection } from "./sections";
+import {
+  ActionsSection,
+  EntitiesSection,
+  QueriesSection,
+  SchemasSection,
+} from "./sections";
 
 interface DetailsBodyProps {
   isLoadingSpec: boolean;
@@ -46,6 +51,22 @@ export function DetailsBody({
       )
     : {};
 
+  const filteredSchemas = specData?.schemas
+    ? Object.entries(specData.schemas).reduce(
+        (acc, [key, schema]: [string, any]) => {
+          if (
+            key.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            schema?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            schema?.title?.toLowerCase().includes(searchQuery.toLowerCase())
+          ) {
+            acc[key] = schema;
+          }
+          return acc;
+        },
+        {} as Record<string, any>,
+      )
+    : {};
+
   return (
     <>
       {isLoadingSpec ? (
@@ -77,6 +98,10 @@ export function DetailsBody({
 
           {Object.keys(filteredActions).length > 0 && (
             <ActionsSection actions={filteredActions} />
+          )}
+
+          {Object.keys(filteredSchemas).length > 0 && (
+            <SchemasSection schemas={filteredSchemas} />
           )}
 
           {!specData && !isLoadingSpec && !specError && (

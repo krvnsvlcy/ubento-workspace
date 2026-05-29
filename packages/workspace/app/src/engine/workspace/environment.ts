@@ -7,9 +7,9 @@ import {
 } from "@ubento/bento.runtime";
 import { Logger } from "@ubento/telemetry";
 import { UbentoSession } from "../app/session";
-import { copilotInstructions } from "../copilot/agents/copilot";
-import { codebaseInvestigatorInstructions } from "../copilot/agents/codebase_investigator";
 import { browserAgentInstructions } from "../copilot/agents/browser_agent";
+import { codebaseInvestigatorInstructions } from "../copilot/agents/codebase_investigator";
+import { copilotInstructions } from "../copilot/agents/copilot";
 import { generalistAgentInstructions } from "../copilot/agents/generalist_agent";
 import {
   CopilotAgentEnvironment,
@@ -31,8 +31,6 @@ import { createModuleToolkit } from "./toolkits/module";
 import { createRuntimeToolkit } from "./toolkits/runtime";
 import { createServicesToolkit } from "./toolkits/services";
 import { createWorkspaceToolkit } from "./toolkits/workspace";
-
-
 
 export type WorkspaceToolApi = {
   listComponents: () => Promise<unknown>;
@@ -58,6 +56,7 @@ export type WorkspaceToolApi = {
   }) => Promise<void>;
   deleteBoard: (args: { boardId: string }) => Promise<void>;
   createBoard: (args: { title: string }) => Promise<WorkspaceBoardSpec>;
+  listBoards: () => Promise<Array<{ id: string; title: string; children: string[] }>>;
 };
 
 export type WorkspaceCopilotAgentEnvironment = CopilotAgentEnvironment & {
@@ -102,6 +101,7 @@ export function createWorkspaceCopilotAgentEnvironment(
       workspaceToolkit.tools.updateBoardTool,
       workspaceToolkit.tools.deleteBoardTool,
       workspaceToolkit.tools.createBoardTool,
+      workspaceToolkit.tools.listBoardsTool,
       // services
       servicesToolkit.tools.listServices,
       servicesToolkit.tools.describeService,
@@ -123,7 +123,6 @@ export function createWorkspaceCopilotAgentEnvironment(
     ],
   });
 
-
   environment.addResourceType(componentsListResource as any);
   environment.addResourceType(componentDetailResource as any);
   environment.addResourceType(servicesListResource as any);
@@ -144,6 +143,7 @@ export function createWorkspaceCopilotAgentEnvironment(
       workspaceToolkit.tools.createBoardTool.name,
       workspaceToolkit.tools.updateBoardTool.name,
       workspaceToolkit.tools.deleteBoardTool.name,
+      workspaceToolkit.tools.listBoardsTool.name,
       catalogToolkit.tools.listComponents.name,
       catalogToolkit.tools.describeComponents.name,
       servicesToolkit.tools.listServices.name,
@@ -172,12 +172,13 @@ export function createWorkspaceCopilotAgentEnvironment(
     enableMessage: true,
   });
 
-
   environment.addAgent({
     name: "codebase_investigator",
-    description: "Specialized in codebase analysis, architectural mapping, and reverse-engineering workspace modules and services",
+    description:
+      "Specialized in codebase analysis, architectural mapping, and reverse-engineering workspace modules and services",
     instructions: codebaseInvestigatorInstructions,
     tools: [
+      workspaceToolkit.tools.listBoardsTool.name,
       servicesToolkit.tools.listServices.name,
       servicesToolkit.tools.describeService.name,
       servicesToolkit.tools.describeActions.name,
@@ -192,10 +193,12 @@ export function createWorkspaceCopilotAgentEnvironment(
 
   environment.addAgent({
     name: "browser_agent",
-    description: "Specialized in real-time browser automation, user flow execution, and live UI/UX verification",
+    description:
+      "Specialized in real-time browser automation, user flow execution, and live UI/UX verification",
     instructions: browserAgentInstructions,
     tools: [
       workspaceToolkit.tools.goToTool.name,
+      workspaceToolkit.tools.listBoardsTool.name,
       moduleToolkit.tools.readBoardModule.name,
       moduleToolkit.tools.writeBoardModule.name,
       moduleToolkit.tools.editBoardModule.name,
@@ -214,13 +217,15 @@ export function createWorkspaceCopilotAgentEnvironment(
 
   environment.addAgent({
     name: "generalist",
-    description: "A general-purpose AI agent with access to all tools, recommended for turn-intensive tasks or batch refactoring",
+    description:
+      "A general-purpose AI agent with access to all tools, recommended for turn-intensive tasks or batch refactoring",
     instructions: generalistAgentInstructions,
     tools: [
       workspaceToolkit.tools.goToTool.name,
       workspaceToolkit.tools.updateBoardTool.name,
       workspaceToolkit.tools.deleteBoardTool.name,
       workspaceToolkit.tools.createBoardTool.name,
+      workspaceToolkit.tools.listBoardsTool.name,
       catalogToolkit.tools.listComponents.name,
       catalogToolkit.tools.describeComponents.name,
       servicesToolkit.tools.listServices.name,
@@ -253,4 +258,3 @@ export function createWorkspaceCopilotAgentEnvironment(
     toolApi: api,
   }) as WorkspaceCopilotAgentEnvironment;
 }
-

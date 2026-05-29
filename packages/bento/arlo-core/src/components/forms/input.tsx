@@ -9,7 +9,7 @@ export const inputContainerVariants = cva(
     variants: {
       variant: {
         default:
-          "border-neutral-border focus-within:border-neutral-border-active",
+          "border-neutral-border focus-within:border-neutral-border-active bg-background",
         error:
           "border-destructive focus-within:ring-1 focus-within:ring-destructive",
       },

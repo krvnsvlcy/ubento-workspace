@@ -8,6 +8,7 @@ import {
 } from "@ubento/services.toolkit";
 import { connectionProviderConfigSchema } from "@ubento/vertex.core";
 import { Request, Response, Router } from "express";
+import multer from "multer";
 import { z } from "zod";
 import {
   createConnectionProvider,
@@ -18,7 +19,6 @@ import {
   updateConnectionProvider,
   uploadConnectionProviderImage,
 } from "../entities/connection_provider.js";
-import multer from "multer";
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -89,6 +89,7 @@ router.get(
     async (req: Request, res: Response) => {
       const result = await listConnectionProviders({
         ...parseCursorQuery(req),
+        team_id: parseStringQuery(req, "team_id"),
         name: parseStringQuery(req, "name"),
         handle: parseStringQuery(req, "handle"),
         tags: parseStringQuery(req, "tags")?.split(","),
@@ -109,6 +110,7 @@ router.post(
         description: z.string().optional(),
         config: connectionProviderConfigSchema.optional(),
         tags: z.array(z.string()).optional(),
+        team_id: z.string().nullable().optional(),
       }),
     }),
     async (req: Request, res: Response) => {

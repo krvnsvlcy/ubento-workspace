@@ -104,6 +104,26 @@ export const createWorkspaceToolkit = (api: WorkspaceToolApi) => {
     },
   };
 
+  const listBoardsTool: AgentTool = {
+    name: "list_boards",
+    description: "List all boards in the current workspace, showing their IDs, titles, and children.",
+    args: z.object({}),
+    run: async () => {
+      const boards = await api.listBoards();
+      return {
+        content: [
+          {
+            type: "text",
+            text: boards.length > 0
+              ? boards.map((b) => `- ${b.title} (ID: ${b.id})${b.children.length > 0 ? `, children: [${b.children.join(", ")}]` : ""}`).join("\n")
+              : "No boards found in the workspace.",
+          },
+        ],
+        structuredContent: boards,
+      };
+    },
+  };
+
   return createLocalToolkit({
     name: "workspace",
     description: "Tools for navigating and inspecting the current workspace",
@@ -112,6 +132,7 @@ export const createWorkspaceToolkit = (api: WorkspaceToolApi) => {
       updateBoardTool,
       deleteBoardTool,
       createBoardTool,
+      listBoardsTool,
     },
   });
 };

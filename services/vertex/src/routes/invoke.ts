@@ -1,5 +1,10 @@
 import { ubentoAuth } from "@ubento/services.primitives";
-import { chain, enforce, validate } from "@ubento/services.toolkit";
+import {
+  chain,
+  enforce,
+  getRequestLogger,
+  validate,
+} from "@ubento/services.toolkit";
 import { invokeHttpService, ServiceSpecV1 } from "@ubento/vertex.core";
 import { Router } from "express";
 import z from "zod";
@@ -53,7 +58,7 @@ function createInvokeRoute(operationType: "query" | "action") {
         ubentoAuth.scopes.team({ team_id: params.team_id as string }),
     }),
     async (req, res) => {
-      console.log("step 1");
+      const logger = getRequestLogger(req);
       const { team_id } = req.params;
       const { service_channel_id, args } = req.body as {
         service_channel_id: string;
@@ -61,13 +66,30 @@ function createInvokeRoute(operationType: "query" | "action") {
       };
       const operationName = req.body[operationType] as string;
 
+      logger.info(
+        `[Vertex] Starting invocation: type=${operationType}, channel=${service_channel_id}, operation=${operationName}`,
+        { team_id, service_channel_id, operationName, operationType },
+      );
+
       const spec: ServiceSpecV1 = await getServiceSpec(service_channel_id);
-      console.log("step 2");
+      logger.info(
+        `[Vertex] Retrieved service spec: name=${spec.name}, handle=${spec.handle}`,
+        { team_id, service_name: spec.name, service_handle: spec.handle },
+      );
+
       let reservationKey: string;
       try {
         reservationKey = await vertexUsageProxy.reserve(team_id, 1);
+        logger.info(
+          `[Vertex] Secured quota reservation: key=${reservationKey}`,
+          { team_id, reservationKey },
+        );
       } catch (err: any) {
         const errMsg = err?.message || "";
+        logger.error(`[Vertex] Quota reservation failed: ${errMsg}`, {
+          team_id,
+          error: err,
+        });
         if (
           errMsg.includes("USAGE_LIMIT_EXCEEDED") ||
           errMsg.includes("Quota exceeded")
@@ -92,13 +114,17 @@ function createInvokeRoute(operationType: "query" | "action") {
         );
       }
 
-      console.log("step 3");
       const operation =
         operationType === "query"
           ? spec.queries?.[operationName]
           : spec.actions?.[operationName];
 
       if (!operation) {
+        logger.warn(
+          `[Vertex] Unsupported operation: type=${operationType}, name=${operationName}`,
+          { team_id, operationType, operationName },
+        );
+        vertexUsageProxy.release(reservationKey).catch(console.error);
         return res.status(200).json(
           vertexResult({
             error: {
@@ -108,13 +134,17 @@ function createInvokeRoute(operationType: "query" | "action") {
           }),
         );
       }
-      console.log("step 4");
       const connectionSpec = spec.connection;
 
       let connection;
       if (connectionSpec) {
         connection = await getTeamConnectionWithAuth(team_id, connectionSpec);
         if (!connection) {
+          logger.warn(
+            `[Vertex] No active connection found for service ${spec.name}`,
+            { team_id, service_name: spec.name },
+          );
+          vertexUsageProxy.release(reservationKey).catch(console.error);
           return res.status(200).json(
             vertexResult({
               error: {
@@ -124,8 +154,25 @@ function createInvokeRoute(operationType: "query" | "action") {
             }),
           );
         }
+        logger.info(
+          `[Vertex] Resolved connection: provider=${connection.provider.handle}, connection_id=${connection.id}`,
+          {
+            team_id,
+            provider: connection.provider.handle,
+            connection_id: connection.id,
+          },
+        );
       }
-      console.log("step 5");
+
+      logger.info(
+        `[Vertex] Triggering HTTP invocation: method=${operation.handler.request.method}, path=${operation.handler.request.path}`,
+        {
+          team_id,
+          method: operation.handler.request.method,
+          path: operation.handler.request.path,
+        },
+      );
+
       const result = await invokeHttpService({
         handler: operation.handler,
         connection:
@@ -138,8 +185,20 @@ function createInvokeRoute(operationType: "query" | "action") {
             : undefined,
         args: args ?? {},
       });
-      console.log("step 6");
+      logger.info(
+        `[Vertex] Invocation ${operation.name} response [${
+          result.status || result.error?.code
+        }]: ${result.url}`,
+        {
+          event: "vertex.invocation.result",
+        },
+      );
       if (result.error) {
+        console.error(JSON.stringify(result.error, null, 2));
+        logger.error(
+          `[Vertex] Invocation error: code=${result.error.code}, message=${result.error.message}`,
+          { team_id, error: result.error },
+        );
         vertexUsageProxy.release(reservationKey).catch(console.error);
 
         switch (result.error.code) {
@@ -178,7 +237,10 @@ function createInvokeRoute(operationType: "query" | "action") {
         }
       }
       vertexUsageProxy.commit(reservationKey, 1).catch(console.error);
-      console.log("step 7");
+      logger.info(`[Vertex] Invocation succeeded: operation=${operationName}`, {
+        team_id,
+        operationName,
+      });
       res.status(200).json(
         vertexResult({
           data: result.data,

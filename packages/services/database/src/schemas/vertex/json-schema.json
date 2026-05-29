@@ -11,6 +11,12 @@
           "type": "string",
           "default": "connection_provider"
         },
+        "team_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "handle": {
           "type": "string"
         },

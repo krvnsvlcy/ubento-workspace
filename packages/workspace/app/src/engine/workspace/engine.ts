@@ -626,6 +626,15 @@ export function createWorkspaceEngine({
       updateBoard,
       deleteBoard,
       createBoard,
+      listBoards: async () => {
+        const spec = readWorkspaceSpec();
+        if (!spec || !spec.boards) return [];
+        return Object.values(spec.boards).map((b: any) => ({
+          id: b.id,
+          title: b.title || b.name || "",
+          children: b.children || [],
+        }));
+      },
     },
     {
       session,

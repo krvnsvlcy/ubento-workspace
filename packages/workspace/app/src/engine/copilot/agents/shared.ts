@@ -7,6 +7,9 @@ export const servicesVsToolkitsInstruction = `
 
 ### 1. Fetching Data with \\\`useQuery\\\`
 Use \\\`useQuery\\\` for read-only queries. It automatically executes the query and handles loading/error states (backed by TanStack Query).
+
+The \\\`options\\\` object is typed as a subset of TanStack Query options (specifically, all standard options omitting \\\`queryKey\\\` and \\\`queryFn\\\`) plus a custom \\\`keepPreviousData?: boolean\\\` option to retain the last successful data while new data is fetching on argument changes.
+
 \\\`\\\`\\\`tsx
 import { useQuery } from "ubento";
 
@@ -14,11 +17,36 @@ import { useQuery } from "ubento";
 const { data, isLoading, error } = useQuery({
   service: "todo-service",
   query: "getTodos",
-  params: { status: "pending" }, // optional parameters
+  args: { status: "pending" }, // optional arguments
+  options: { 
+    enabled: true, 
+    keepPreviousData: true, // optional: keep previous data while fetching new data
+  },
 });
 \\\`\\\`\\\`
 
-### 2. Mutating Data with \\\`useAction\\\`
+### 2. Fetching Paginated/Infinite Data with \\\`useInfiniteQuery\\\`
+Use \\\`useInfiniteQuery\\\` for paginated queries (backed by TanStack's \\\`useInfiniteQuery\\\`). It automatically forwards the \\\`pageParam\\\` to the service operation. If \\\`pageParam\\\` is an object, it is merged into \\\`args\\\`; otherwise, it is passed as \\\`cursor: pageParam\\\` in the arguments.
+\\\`\\\`\\\`tsx
+import { useInfiniteQuery } from "ubento";
+
+// Inside the component:
+const {
+  data,
+  fetchNextPage,
+  hasNextPage,
+  isFetchingNextPage,
+} = useInfiniteQuery({
+  service: "todo-service",
+  query: "getTodos",
+  args: { limit: 10 }, // optional base arguments
+  initialPageParam: undefined, // required initial cursor or page param
+  getNextPageParam: (lastPage) => lastPage.nextPage?.cursor, // required function to get next page param
+  options: { enabled: true }, // optional extra TanStack Query options
+});
+\\\`\\\`\\\`
+
+### 3. Mutating Data with \\\`useAction\\\`
 Use \\\`useAction\\\` for actions that mutate state or perform operations (like creating, updating, or deleting). It returns a TanStack Mutation.
 \\\`\\\`\\\`tsx
 import { useAction } from "ubento";
@@ -27,7 +55,8 @@ import { useAction } from "ubento";
 const { mutate, isPending } = useAction({
   service: "todo-service",
   action: "createTodo",
-  params: { listId: "123" }, // optional initial parameters
+  args: { listId: "123" }, // optional initial arguments
+  options: { onSuccess: () => console.log("Success!") }, // optional TanStack Mutation options
 });
 
 // To invoke the action, call mutate with optional dynamic arguments:

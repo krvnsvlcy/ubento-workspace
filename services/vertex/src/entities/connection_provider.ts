@@ -36,7 +36,7 @@ export async function listConnectionProviders({
   handle,
   tags,
 }: {
-  team_id?: string;
+  team_id?: string | null;
   name?: string;
   cursor?: string;
   limit?: number;
@@ -54,9 +54,7 @@ export async function listConnectionProviders({
       ...(handle && {
         handle,
       }),
-      ...(team_id && {
-        team_id,
-      }),
+      team_id: !team_id ? { isSet: false } : team_id,
       ...(tags &&
         tags.length > 0 && {
           tags: { hasSome: tags },
@@ -91,6 +89,7 @@ export async function createConnectionProvider({
   description,
   config,
   tags,
+  team_id,
 }: {
   handle: string;
   type: string;
@@ -98,6 +97,7 @@ export async function createConnectionProvider({
   description?: string | null;
   config?: Prisma.InputJsonValue | null;
   tags?: string[];
+  team_id?: string | null;
 }) {
   const p = await prisma.connectionProvider.create({
     data: {
@@ -110,6 +110,7 @@ export async function createConnectionProvider({
       name,
       description,
       config,
+      team_id,
       ...(tags !== undefined && { tags }),
     },
   });
@@ -129,6 +130,7 @@ export async function updateConnectionProvider(
     description?: string | null;
     config?: Prisma.InputJsonValue | null;
     tags?: string[];
+    team_id?: string | null;
   },
 ) {
   const p = await prisma.connectionProvider.update({ where: { id }, data });

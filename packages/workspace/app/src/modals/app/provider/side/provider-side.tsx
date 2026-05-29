@@ -1,15 +1,21 @@
+import { useSession } from "@/contexts/session";
 import {
   Badge,
+  Button,
   Content,
+  ContentBody,
+  ContentFooter,
   ContentHeader,
   Heading,
   Text,
 } from "@ubento/bento.arlo-core";
 import { vertexClient } from "@ubento/services.sdk";
 import { ConnectionProviderConfig } from "@ubento/vertex.core";
-import { Globe } from "lucide-react";
+import { Edit, Globe } from "lucide-react";
 import { Case, Default, Switch } from "react-if";
 import { GoBack } from "../../go-back.js";
+import { useAppModal } from "../../hook.js";
+import { appModalRoutes } from "../../routes.js";
 
 export function ProviderSidebar({
   data,
@@ -18,6 +24,8 @@ export function ProviderSidebar({
   data?: vertexClient.ConnectionProvider;
   config?: ConnectionProviderConfig;
 }) {
+  const session = useSession();
+  const { push } = useAppModal();
   const supportedAuth: Array<{ label: string }> = [];
 
   if (config?.auth.apiKey) {
@@ -59,6 +67,26 @@ export function ProviderSidebar({
           ))}
         </div>
       </ContentHeader>
+
+      <ContentBody />
+
+      {data?.team_id === session.teamId && (
+        <ContentFooter className="border-t border-neutral-border/30 pt-3">
+          <Button
+            variant="primary"
+            className="w-full flex items-center justify-center gap-2"
+            onClick={() => {
+              if (data?.id) {
+                push(appModalRoutes.services.editProvider, {
+                  providerId: data.id,
+                });
+              }
+            }}
+          >
+            <Edit size={16} /> Edit Provider
+          </Button>
+        </ContentFooter>
+      )}
     </Content>
   );
 }

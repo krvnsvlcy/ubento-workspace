@@ -27,6 +27,7 @@ model ConnectionProvider {
     id     String @id @map("_id")
     entity String @default("connection_provider")
 
+    team_id     String?
     handle      String   @unique // eg. "stripe", "shopify" (machine-readable)
     type        String // eg. "http", "database", (protocol)
     name        String // eg. "Stripe", "Shopify", "PostgreSQL" (human-readable)

@@ -1,0 +1,68 @@
+{
+  "type": "http",
+  "handle": "ubento",
+  "name": "Ubento",
+  "auth": {
+    "oauth2": {
+      "baseUrl": "https://auth.ubento.pro",
+      "authorize": {
+        "request": {
+          "method": "GET",
+          "path": "/oauth/authorize",
+          "query": {
+            "provider": "google",
+            "client_id": {
+              "$resolve": "clientId"
+            },
+            "redirect_uri": {
+              "$resolve": "redirectUri"
+            },
+            "state": {
+              "$resolve": "state"
+            }
+          }
+        },
+        "response": {
+          "type": "json"
+        }
+      },
+      "token": {
+        "request": {
+          "method": "POST",
+          "path": "/oauth/token",
+          "body": {
+            "type": "json",
+            "data": {
+              "grant_type": "authorization_code",
+              "code": {
+                "$resolve": "code"
+              },
+              "client_id": {
+                "$resolve": "clientId"
+              },
+              "client_secret": {
+                "$resolve": "clientSecret"
+              },
+              "redirect_uri": {
+                "$resolve": "redirectUri"
+              }
+            }
+          }
+        },
+        "response": {
+          "type": "json"
+        }
+      },
+      "identity": {
+        "request": {
+          "method": "GET",
+          "path": "/oauth/self"
+        },
+        "response": {
+          "type": "json"
+        }
+      }
+    }
+  }
+}
+

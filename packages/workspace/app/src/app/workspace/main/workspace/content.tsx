@@ -1,3 +1,4 @@
+import { CodeEditor } from "@/components/code-editor.js";
 import { ErrorView } from "@/components/error.js";
 import { useWorkspaceEngine } from "@/contexts/workspace.js";
 import { useUbentoEngine } from "@/hooks/app-engine";
@@ -270,18 +271,18 @@ export function WorkspaceContent() {
                 <span>{error}</span>
               </div>
             )}
-            <div className="flex-1 relative border border-neutral-border rounded-xl overflow-hidden focus-within:border-accent/40 transition-colors">
+            <div className="flex-1 relative border border-neutral-border rounded-xl overflow-hidden focus-within:border-accent/40 transition-colors bg-background">
               {loading ? (
                 <div className="absolute inset-0 flex items-center justify-center bg-neutral-surface/10">
                   <PendingView message="Loading code..." />
                 </div>
               ) : (
-                <textarea
+                <CodeEditor
                   value={sourceCode}
-                  onChange={(e) => setSourceCode(e.target.value)}
-                  className="w-full h-full text-[11px] font-mono leading-relaxed text-neutral-content bg-neutral-surface/20 p-4 focus:outline-none resize-none"
-                  placeholder="Start writing React code for the board module..."
-                  spellCheck={false}
+                  onChange={setSourceCode}
+                  language="tsx"
+                  lineNumbers={true}
+                  className="w-full h-full"
                 />
               )}
             </div>

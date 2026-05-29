@@ -365,6 +365,7 @@ export function createUbentoVertexService({
           description?: string;
           config?: Record<string, any>;
           tags?: string[];
+          team_id?: string | null;
         }) => {
           const provider =
             await ubentoSdk.vertex.createConnectionProvider(data);
@@ -391,6 +392,7 @@ export function createUbentoVertexService({
             description?: string;
             config?: Record<string, any>;
             tags?: string[];
+            team_id?: string | null;
           };
         }) => {
           const provider = await ubentoSdk.vertex.updateConnectionProvider(
@@ -446,6 +448,45 @@ export function createUbentoVertexService({
           queryClient.invalidateQueries({
             queryKey: ["service-channel-spec", variables.serviceChannelId],
           });
+        },
+      });
+    },
+    useUploadServiceImage: () => {
+      const queryClient = useQueryClient();
+      return useMutation({
+        mutationFn: async ({
+          serviceId,
+          file,
+        }: {
+          serviceId: string;
+          file: Blob | File;
+        }) => {
+          return await ubentoSdk.vertex.uploadServiceImage(serviceId, file);
+        },
+        onSuccess: (service) => {
+          serviceStore.push(service);
+          queryClient.invalidateQueries({ queryKey: ["infinite-services"] });
+        },
+      });
+    },
+    useUploadConnectionProviderImage: () => {
+      const queryClient = useQueryClient();
+      return useMutation({
+        mutationFn: async ({
+          providerId,
+          file,
+        }: {
+          providerId: string;
+          file: Blob | File;
+        }) => {
+          return await ubentoSdk.vertex.uploadConnectionProviderImage(
+            providerId,
+            file,
+          );
+        },
+        onSuccess: (provider) => {
+          connectionProviderStore.push(provider);
+          queryClient.invalidateQueries({ queryKey: ["connection-providers"] });
         },
       });
     },

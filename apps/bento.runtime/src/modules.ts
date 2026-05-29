@@ -10,6 +10,7 @@ import {
   useNavigation,
   useParams,
   useQuery,
+  useInfiniteQuery,
   type ModuleRef,
 } from "@ubento/bento.runtime";
 import * as LucideReact from "lucide-react";
@@ -78,7 +79,7 @@ function createProxyModules(): Record<string, string> {
   // - useLocation: Hook returning the current active BentoLocation (boardId and params).
   // - useNavigation: Hook providing goToBoard(boardId, params) and goHome() routing controls.
   const bentoRuntimeScript = createModuleProxy(
-    { useAction, useQuery, useParams, useLocation, useNavigation },
+    { useAction, useQuery, useInfiniteQuery, useParams, useLocation, useNavigation },
     "BentoRuntime",
     false,
   );

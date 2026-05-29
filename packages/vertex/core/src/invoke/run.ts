@@ -13,8 +13,8 @@ export type RunHttpHandlerError = {
 };
 
 export type RunHttpHandlerResult<T = unknown> =
-  | { data: T; error: null }
-  | { data: null; error: RunHttpHandlerError };
+  | { url?: string; data: T; error: null; status?: number }
+  | { url?: string; data: null; error: RunHttpHandlerError; status?: number };
 
 export async function runHttpHandler<T>({
   baseUrl,
@@ -62,6 +62,7 @@ export async function runHttpHandler<T>({
     const errorMessage =
       err instanceof Error ? err.message : "Unknown network error";
     return {
+      url: url.toString(),
       data: null,
       error: {
         code: "UPSTREAM_ERROR",
@@ -73,6 +74,7 @@ export async function runHttpHandler<T>({
   const data = await parseBody(response, handler.response?.type);
   if (!response.ok) {
     return {
+      url: url.toString(),
       data: null,
       error: {
         code: "UPSTREAM_ERROR",
@@ -94,7 +96,12 @@ export async function runHttpHandler<T>({
       })
     : data;
 
-  return { data: resolvedResponse as T, error: null };
+  return {
+    url: url.toString(),
+    status: response.status,
+    data: resolvedResponse as T,
+    error: null,
+  };
 }
 
 export function resolvePath(

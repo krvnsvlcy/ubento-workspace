@@ -84,7 +84,7 @@ export function DetailsHeader({
         type="text"
         value={searchQuery}
         onChange={(e) => onSearchChange(e.target.value)}
-        placeholder="Filter operations..."
+        placeholder="Filter operations and schemas..."
         prefix={<Search size={16} />}
       />
     </div>

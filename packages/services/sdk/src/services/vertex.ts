@@ -63,6 +63,7 @@ export class VertexService {
     description?: string;
     config?: Record<string, any>;
     tags?: string[];
+    team_id?: string | null;
   }): Promise<ConnectionProvider> {
     const result = await this.vertexClient.post(
       "/vertex/connection-providers",
@@ -82,6 +83,7 @@ export class VertexService {
       description?: string;
       config?: Record<string, any>;
       tags?: string[];
+      team_id?: string | null;
     },
   ): Promise<ConnectionProvider> {
     const result = await this.vertexClient.patch(

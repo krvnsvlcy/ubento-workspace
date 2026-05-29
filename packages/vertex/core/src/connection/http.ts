@@ -24,6 +24,7 @@ export const verificationSchema = z.object({
 export const basicAuthStrategySchema = z.object({
   verification: verificationSchema.optional(),
 });
+export type BasicStrategySchema = z.infer<typeof basicAuthStrategySchema>;
 
 export const apiKeyStrategySchema = z.object({
   location: z.enum(["header", "query"]),
@@ -31,6 +32,7 @@ export const apiKeyStrategySchema = z.object({
   template: z.string().optional(), // e.g., "Bearer {{key}}"
   verification: verificationSchema.optional(),
 });
+export type APIKeyStrategySchema = z.infer<typeof apiKeyStrategySchema>;
 
 export const oauth2StrategySchema = z.object({
   defaultScopes: z.array(z.string()).optional(),
@@ -42,6 +44,7 @@ export const oauth2StrategySchema = z.object({
   identity: httpHandlerSchema.optional(), // Used strictly to fetch the user's profile/ID post-auth
   revoke: httpHandlerSchema.optional(),
 });
+export type OAuthStrategySchema = z.infer<typeof oauth2StrategySchema>;
 
 // --- 3. The Provider Configuration ---
 

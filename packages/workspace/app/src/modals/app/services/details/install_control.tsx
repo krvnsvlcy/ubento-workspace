@@ -6,7 +6,6 @@ import {
 import { useAppModal } from "@/modals/app/hook";
 import { appModalRoutes } from "@/modals/app/routes";
 import {
-  Badge,
   Button,
   Select,
   SelectContent,
@@ -104,23 +103,14 @@ export function InstallControl({
     return (
       <div className="flex items-center gap-2">
         {isInstalledWithActiveConnection ? (
-          <>
-            <Badge
-              variant="outline"
-              className="bg-success/10 border-success/20 text-success text-[10px] font-bold uppercase px-2 py-0.5 rounded-full"
-            >
-              Installed
-            </Badge>
-            <Button
-              onClick={handleUninstall}
-              variant="primary"
-              tone="destructive"
-              size="sm"
-              className="gap-2"
-            >
-              <Trash2 size={16} /> Uninstall
-            </Button>
-          </>
+          <Button
+            onClick={handleUninstall}
+            variant="primary"
+            tone="destructive"
+            className="gap-2"
+          >
+            <Trash2 size={16} /> Uninstall
+          </Button>
         ) : (
           <Button
             onClick={() =>
@@ -142,7 +132,6 @@ export function InstallControl({
               providerCode: specData?.connection?.provider || "",
             });
           }}
-          variant="ghost"
           size="icon"
           title="Manage Connections"
         >

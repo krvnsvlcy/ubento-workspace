@@ -3,10 +3,11 @@ import { useAppModal } from "@/modals/app/hook.js";
 import { appModalRoutes, routeMatch } from "@/modals/app/routes.js";
 import { Case, Switch } from "react-if";
 import { ServiceBrowser } from "./browser.js";
-import { CreateProviderModal } from "./create-provider-modal.js";
+import { CreateProviderModal } from "./create-provider/create-provider.js";
+import { EditProviderModal } from "./edit-provider/edit-provider.js";
 import { CreateServiceModal } from "./create-service/create-service.js";
 import { ServiceDetails } from "./details/details.js";
-import { EditServiceModal } from "./edit-service.js";
+import { EditServiceModal } from "./edit-service/edit-service.js";
 
 export function ServicesModal() {
   const { path } = useAppModal();
@@ -24,6 +25,11 @@ export function ServicesModal() {
           condition={routeMatch(path, appModalRoutes.services.createProvider)}
         >
           <CreateProviderModal />
+        </Case>
+        <Case
+          condition={routeMatch(path, appModalRoutes.services.editProvider)}
+        >
+          <EditProviderModal />
         </Case>
         <Case condition={routeMatch(path, appModalRoutes.services.service)}>
           <ServiceDetails />

@@ -2,6 +2,7 @@ import { Button, Card, Heading, Text } from "@ubento/bento.arlo-core";
 import { OperationSpec } from "@ubento/vertex.core";
 import {
   Boxes,
+  Braces,
   ChevronDown,
   ChevronUp,
   Copy,
@@ -154,4 +155,8 @@ export function QueriesSection({ queries }: { queries: Record<string, any> }) {
 
 export function ActionsSection({ actions }: { actions: Record<string, any> }) {
   return <OperationsSection title="Actions" icon={Zap} operations={actions} />;
+}
+
+export function SchemasSection({ schemas }: { schemas: Record<string, any> }) {
+  return <OperationsSection title="Schemas" icon={Braces} operations={schemas} />;
 }

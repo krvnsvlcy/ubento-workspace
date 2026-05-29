@@ -26,6 +26,7 @@ export const appModalRoutes = {
     create: "/services/create",
     edit: "/services/edit",
     createProvider: "/services/create-provider",
+    editProvider: "/services/edit-provider",
   },
 };
 
