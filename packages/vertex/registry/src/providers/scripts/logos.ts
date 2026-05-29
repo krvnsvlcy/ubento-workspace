@@ -370,9 +370,10 @@ function extractDomainFromUrl(urlStr?: string): string | null {
  */
 function getDomainFromProvider(
   provider: HttpConnectionProviderConfig,
+  code: string,
 ): string | null {
-  if (fallbackKownDomains[provider.code]) {
-    return fallbackKownDomains[provider.code];
+  if (fallbackKownDomains[code]) {
+    return fallbackKownDomains[code];
   }
 
   const auth = provider.auth;
@@ -431,7 +432,7 @@ export async function downloadLogosOnly(
           return;
         }
 
-        const domain = getDomainFromProvider(provider);
+        const domain = getDomainFromProvider(provider, code);
         if (!domain) {
           failedDownloads.push(code);
           return;
