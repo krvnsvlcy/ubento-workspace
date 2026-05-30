@@ -1,6 +1,11 @@
 import { TreeEntry } from "@/components/tree/tree-entry";
 import { WorkspaceEngineProvider } from "@/contexts/workspace";
-import { useUbento, useUbentoEngine } from "@/hooks/app-engine";
+import {
+  useActiveWorkspaceId,
+  useUbento,
+  useUbentoEngine,
+} from "@/hooks/app-engine";
+import { useUserWorkspaceSettings } from "@/hooks/settings/workspace";
 import { TabDefinition } from "../../../types";
 
 import { BoardsSection } from "./boards-section";
@@ -10,30 +15,31 @@ export function WorkspaceTab() {
   const engine = useUbentoEngine();
   const activeWorkspaceEngine = engine.useState((s) => s.workspace);
   const ubento = useUbento();
-  const location = engine.useState((s) => s.location);
-
-  const { data: workspace, isLoading } = ubento.workspace.useWorkspaceBySlug(
-    { slug: location.workspace! },
-    { enabled: !!location.workspace },
+  const workspaceId = useActiveWorkspaceId();
+  const { data: workspace, isLoading } = ubento.workspace.useWorkspace(
+    workspaceId || "",
+    { enabled: !!workspaceId },
   );
 
+  const { data: userSettings, update: updateSettings } =
+    useUserWorkspaceSettings(workspaceId || "");
+
   if (isLoading && !workspace) {
-    return (
-      <div className="p-4 text-xs text-content-muted">Workspace</div>
-    );
+    return <div className="p-4 text-xs text-content-muted">Workspace</div>;
   }
+
+  const activeBoardId = userSettings?.board?.id;
 
   return (
     <div className="flex flex-col gap-4 pb-8">
       <TreeEntry
         icon="home"
         onClick={() => {
-          engine.goToLocation({
+          updateSettings({
             board: undefined,
-            params: {},
           });
         }}
-        active={!location.board}
+        active={!activeBoardId}
       >
         <span>Home</span>
       </TreeEntry>
@@ -52,5 +58,5 @@ export const workspaceTab: TabDefinition = {
       <WorkspaceTab />
     </WorkspaceEngineProvider>
   ),
-  enabled: ({ location }) => !!location.workspace,
+  enabled: ({ location }) => location.view === "workspace",
 };

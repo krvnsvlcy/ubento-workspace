@@ -33,7 +33,7 @@ export class SettingsService {
 
   async getSettingByKey(key: string): Promise<Setting> {
     const result = await this.settingsClient.get("/settings/key/{key}", {
-      params: { path: { key } },
+      params: { path: { key: encodeURIComponent(key) } },
     });
     return extractResponseData(result, true);
   }

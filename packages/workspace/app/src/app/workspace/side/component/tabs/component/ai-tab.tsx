@@ -18,5 +18,5 @@ export const componentAiTab: TabDefinition = {
   name: "AI",
   icon: "sparkles",
   component: ComponentAiTab,
-  enabled: ({ location }) => !!location.component,
+  enabled: () => true,
 };

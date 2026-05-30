@@ -4,6 +4,7 @@ import {
 } from "@/engine/workspace/engine";
 import { AppModal } from "@/modals/app/app_modal";
 import { createUbentoService, UbentoService } from "@/services/ubento/ubento";
+import { ubentoAuth } from "@ubento/services.primitives";
 import type { UbentoSDK, workspaceClient } from "@ubento/services.sdk";
 import { createZustandStateController, StateController } from "@ubento/state";
 import { createLogger, Logger } from "@ubento/telemetry";
@@ -14,6 +15,7 @@ import { createStore } from "zustand";
 import { makeLocationString } from "./app_modal";
 import { parseLocation, stringifyLocation, UbentoLocation } from "./location";
 import { UbentoSession } from "./session";
+const workspaceSettingsKey = "ubento-workspace";
 
 export interface ModalInstance {
   id: string;
@@ -26,8 +28,8 @@ export interface ModalInstance {
 export type UbentoEngineState = {
   session: UbentoSession;
   location: UbentoLocation;
-  leftPanelPinned: boolean;
-  leftPanelWidth: number;
+  sidePanelPinned: boolean;
+  sidePanelWidth: number;
   rightPanelPinned: boolean;
   rightPanelWidth: number;
   dragActive: boolean;
@@ -50,8 +52,8 @@ export type UbentoEngine = StateController<UbentoEngineState> & {
   componentRuntimeUrl: string;
   registryModuleUrlTemplate: string;
 
-  goToLocation: (location: Partial<UbentoLocation>) => void;
-  openWorkspace: (slug: string) => void;
+  goToLocation: (location: UbentoLocation) => void;
+  openWorkspace: (workspaceId: string) => void;
   reloadWorkspace: () => void;
   setDragActive: (active: boolean) => void;
   setActiveWorkspaceEngine: (engine: WorkspaceEngine) => void;
@@ -104,8 +106,8 @@ export function createUbentoEngine({
   const store = createStore<UbentoEngineState>()(() => ({
     session,
     location: initialLocation,
-    leftPanelPinned: true,
-    leftPanelWidth: 240,
+    sidePanelPinned: true,
+    sidePanelWidth: 240,
     rightPanelPinned: false,
     rightPanelWidth: 400,
     dragActive: false,
@@ -149,43 +151,75 @@ export function createUbentoEngine({
   });
 
   // update workspace when location changes
-  let lastWorkspaceSlug: string | undefined = undefined;
+  let lastWorkspaceId: string | undefined = undefined;
   let lastWorkspace: WorkspaceEngine | undefined = undefined;
-  function loadWorkspaceFromSlug(slug?: string) {
+  function loadWorkspace(workspaceId?: string) {
     const prevWorkspace = lastWorkspace;
-    if (!slug) {
-      lastWorkspaceSlug = undefined;
+    if (!workspaceId) {
+      lastWorkspaceId = undefined;
       lastWorkspace = undefined;
     } else {
-      lastWorkspaceSlug = slug;
+      lastWorkspaceId = workspaceId;
       function handleWorkspaceData(workspace: workspaceClient.Workspace) {
-        if (lastWorkspaceSlug !== slug) {
+        if (lastWorkspaceId !== workspaceId) {
           return;
         }
-        const engine = createWorkspaceEngine({
-          workspace,
-          appEngine,
-          session,
-        });
-        lastWorkspace = engine;
-        stateController.setState({
-          workspaceStatus: "ready",
-          workspace: engine,
-        });
-        return engine;
+        const scopes = [
+          ubentoAuth.scopes.user({ user_id: session.userId }),
+          ubentoAuth.scopes.workspace({
+            team_id: session.teamId,
+            workspace_id: workspace.id,
+          }),
+        ];
+        const key = [...scopes].sort().join("|") + "|" + workspaceSettingsKey;
+        appEngine.ubento.settings
+          .getSettingByKey(key)
+          .then((setting) => {
+            if (lastWorkspaceId !== workspaceId) return;
+            const engine = createWorkspaceEngine({
+              workspace,
+              appEngine,
+              session,
+              initialSettings: setting.data,
+            });
+            lastWorkspace = engine;
+            stateController.setState({
+              workspaceStatus: "ready",
+              workspace: engine,
+            });
+          })
+          .catch((err) => {
+            console.warn(
+              "Failed to fetch workspace settings, using default initial settings",
+              err,
+            );
+            if (lastWorkspaceId !== workspaceId) return;
+            const engine = createWorkspaceEngine({
+              workspace,
+              appEngine,
+              session,
+              initialSettings: undefined,
+            });
+            lastWorkspace = engine;
+            stateController.setState({
+              workspaceStatus: "ready",
+              workspace: engine,
+            });
+          });
       }
-      const cachedWorkspace = ubento.workspace.getCachedWorkspaceBySlug(slug);
+      const cachedWorkspace =
+        ubento.workspace.workspaceStore.getCached(workspaceId);
       if (cachedWorkspace) {
         handleWorkspaceData(cachedWorkspace);
         return;
       } else {
         ubento.workspace
-          .getWorkspaceBySlug(slug)
+          .getWorkspace(workspaceId)
           .then(handleWorkspaceData)
           .catch((e) => {
             console.error("failed to get workspace", e);
             logger.error("failed to get workspace", {
-              event: "getWorkspaceBySlug",
+              event: "getWorkspace",
               error: String(e),
             });
             stateController.setState((state) => {
@@ -266,27 +300,28 @@ export function createUbentoEngine({
     workspaceRuntimeUrl,
     componentRuntimeUrl,
     registryModuleUrlTemplate,
-    goToLocation(location: Partial<UbentoLocation>) {
+    goToLocation(location: UbentoLocation) {
       stateController.setState((state) => ({
         ...state,
-        location: {
-          ...state.location,
-          ...location,
-        },
+        location,
       }));
     },
-    openWorkspace(slug: string) {
+    openWorkspace(workspaceId: string) {
       stateController.setState((state) => ({
         ...state,
         location: {
-          workspace: slug,
-          workspaceTab: "workspace",
-        },
+          view: "workspace",
+          params: {
+            workspaceId,
+          },
+        } as UbentoLocation,
       }));
     },
     reloadWorkspace() {
-      const slug = stateController.getState().location.workspace;
-      loadWorkspaceFromSlug(slug);
+      const location = stateController.getState().location;
+      if (location.view === "workspace") {
+        loadWorkspace(location.params.workspaceId);
+      }
     },
 
     setDragActive(active: boolean) {
@@ -359,11 +394,23 @@ export function createUbentoEngine({
   };
 
   store.subscribe((state, prevState) => {
-    if (state.location.workspace !== prevState.location.workspace) {
-      loadWorkspaceFromSlug(state.location.workspace);
+    const prevId =
+      prevState.location.view === "workspace"
+        ? prevState.location.params.workspaceId
+        : undefined;
+    const currId =
+      state.location.view === "workspace"
+        ? state.location.params.workspaceId
+        : undefined;
+    if (currId !== prevId) {
+      loadWorkspace(currId);
     }
   });
-  loadWorkspaceFromSlug(initialLocation.workspace);
+  if (initialLocation.view === "workspace") {
+    loadWorkspace(initialLocation.params.workspaceId);
+  } else {
+    loadWorkspace(undefined);
+  }
 
   return appEngine;
 }

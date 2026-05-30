@@ -26,6 +26,8 @@ import { createStore as createZustandStore } from "zustand/vanilla";
 import { UbentoSession } from "../app/session";
 import { createUbentoCopilot } from "../copilot/copilot";
 import { createWorkspaceCopilotAgentEnvironment } from "./environment";
+import { ubentoAuth } from "@ubento/services.primitives";
+const workspaceSettingsKey = "ubento-workspace";
 
 function parseSpecData<S extends z.ZodTypeAny>(
   schema: S,
@@ -57,6 +59,10 @@ export type WorkspaceState = {
   // local state
   mode: "edit" | "live";
   workspace: BentoWorkspaceData;
+  location: {
+    boardId: string;
+    params: Record<string, string>;
+  };
 
   // synced from runtime
   selectionScope?: string;
@@ -74,10 +80,12 @@ export function createWorkspaceEngine({
   workspace,
   appEngine,
   session,
+  initialSettings,
 }: {
   workspace: workspaceClient.Workspace;
   appEngine: UbentoEngine;
   session: UbentoSession;
+  initialSettings?: any;
 }) {
   const id = i;
   i++;
@@ -115,10 +123,10 @@ export function createWorkspaceEngine({
   );
   const store = createZustandStore<WorkspaceState>()(() => ({
     status: "pending",
-    mode: "live",
+    mode: initialSettings?.mode || "live",
     location: {
-      boardId: appEngine.getState().location.board || "",
-      params: appEngine.getState().location.params || {},
+      boardId: initialSettings?.board?.id || "",
+      params: initialSettings?.board?.params || {},
     },
     boards: deriveBoardsFromSpec(parsedWorkspaceSpec),
     selection: [],
@@ -136,13 +144,11 @@ export function createWorkspaceEngine({
   const controller = createZustandStateController(store);
   registerStore("workspaceEngine", store);
 
-  function getBentoLocation(
-    engineState: UbentoEngineState,
-  ): BentoLocation | undefined {
-    const location = engineState.location;
-    return location.board
+  function getBentoLocation(): BentoLocation | undefined {
+    const location = store.getState().location;
+    return location.boardId
       ? {
-          boardId: location.board,
+          boardId: location.boardId,
           params: location.params || {},
         }
       : undefined;
@@ -153,14 +159,13 @@ export function createWorkspaceEngine({
   async function connect() {
     console.log("[workspace.connect]", id);
     store.setState({ status: "connected" });
-    const engineState = appEngine.getState();
     const state = store.getState();
     const styleTag = document.getElementById("theme-variables");
     const themeCss = styleTag?.innerHTML || "";
 
     return {
       initialState: {
-        location: getBentoLocation(engineState),
+        location: getBentoLocation(),
         workspace: state.workspace,
         user: {
           name: session.name,
@@ -176,11 +181,42 @@ export function createWorkspaceEngine({
     store.setState({ status: "ready" });
   }
 
-  function goTo({ location }: { location?: BentoLocation }) {
-    appEngine.goToLocation({
-      board: location?.boardId,
-      params: location?.params,
+  function updateWorkspaceSettings(updater: (prev: any) => any) {
+    const scopes = [
+      ubentoAuth.scopes.user({ user_id: session.userId }),
+      ubentoAuth.scopes.workspace({
+        team_id: session.teamId,
+        workspace_id: workspace.id,
+      }),
+    ];
+    const key = [...scopes].sort().join("|") + "|" + workspaceSettingsKey;
+    const cached = appEngine.ubento.settings.settingStore.getCached(key);
+    const prevData = cached?.data || {};
+    const newData = updater(prevData);
+
+    appEngine.ubento.settings.upsertSetting({
+      scopes,
+      key: workspaceSettingsKey,
+      data: newData,
     });
+  }
+
+  function goTo({ location }: { location?: BentoLocation }) {
+    if (location) {
+      store.setState({
+        location: {
+          boardId: location.boardId,
+          params: location.params || {},
+        },
+      });
+      updateWorkspaceSettings((prev) => ({
+        ...prev,
+        board: {
+          id: location.boardId,
+          params: location.params || {},
+        },
+      }));
+    }
   }
 
   async function listComponents() {
@@ -680,7 +716,7 @@ export function createWorkspaceEngine({
   handleWorkspaceChange();
 
   function handleLocationChange() {
-    const location = getBentoLocation(appEngine.getState());
+    const location = getBentoLocation();
     console.log("location changed", { location, rpc, id });
     rpc?.egress.setLocation({ location });
 
@@ -710,10 +746,10 @@ export function createWorkspaceEngine({
       copilot.setContextAttachments("bento-location", []);
     }
   }
-  const unsubscribeEngine = appEngine.subscribe(
-    (curr: UbentoEngineState, prev: UbentoEngineState) => {
+  const unsubscribeEngine = store.subscribe(
+    (curr, prev) => {
       if (
-        curr.location.board !== prev.location.board ||
+        curr.location.boardId !== prev.location.boardId ||
         !dequal(curr.location.params, prev.location.params)
       ) {
         handleLocationChange();
@@ -745,6 +781,10 @@ export function createWorkspaceEngine({
     setInteractionMode: async (mode: "edit" | "live") => {
       await rpc?.egress.setInteractionMode({ mode });
       store.setState({ mode });
+      updateWorkspaceSettings((prev) => ({
+        ...prev,
+        mode,
+      }));
     },
     select: async (selection: string[]) => {
       // stubbed

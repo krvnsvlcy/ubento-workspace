@@ -71,6 +71,7 @@ const engine = createUbentoEngine({
       // intelligence: "http://localhost:44513",
       vertex: "http://localhost:28642",
       billing: "http://localhost:6124",
+      settings: "http://localhost:24333",
     },
   }),
   workspaceRuntimeUrl:

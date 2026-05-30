@@ -9,11 +9,11 @@ import { TabDefinition } from "../../../types";
 export function WorkspaceItem({ workspace }: { workspace: any }) {
   const engine = useUbentoEngine();
   const location = engine.useState((s) => s.location);
-  const isActive = location.workspace === workspace.slug;
+  const isActive = location.view === "workspace" && location.params.workspaceId === workspace.id;
 
   return (
     <button
-      onClick={() => engine.openWorkspace(workspace.slug)}
+      onClick={() => engine.openWorkspace(workspace.id)}
       className={`flex h-8 items-center gap-2 w-full rounded-lg px-3 cursor-pointer text-[13px] transition-all ${
         isActive
           ? "bg-base/10 text-base font-medium"
@@ -56,8 +56,8 @@ export function HomeTab() {
         <TreeEntry
           key={workspace.id}
           icon="workspace"
-          active={location.workspace === workspace.slug}
-          onClick={() => engine.openWorkspace(workspace.slug)}
+          active={location.view === "workspace" && location.params.workspaceId === workspace.id}
+          onClick={() => engine.openWorkspace(workspace.id)}
         >
           {workspace.name}
         </TreeEntry>

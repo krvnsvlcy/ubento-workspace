@@ -32,7 +32,7 @@ export function TeamSide() {
   return (
     <TeamSideLayout
       icon={<Building2 size={14} />}
-      title={team?.name}
+      title={team?.name || ""}
       onTitleClick={() => push(appModalRoutes.team.general)}
     >
       <div className="px-3">
@@ -51,8 +51,8 @@ export function TeamSide() {
             <TreeEntry
               key={workspace.id}
               icon="workspace"
-              active={location.workspace === workspace.slug}
-              onClick={() => engine.openWorkspace(workspace.slug)}
+              active={location.view === "workspace" && location.params.workspaceId === workspace.id}
+              onClick={() => engine.openWorkspace(workspace.id)}
             >
               {workspace.name}
             </TreeEntry>

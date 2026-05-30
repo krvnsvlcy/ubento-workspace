@@ -1,5 +1,5 @@
 import { Icon } from "@/components/icon/icon";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useUbentoEngine } from "@/hooks/app-engine";
 import { TabDefinition } from "../types";
 import { ComponentHeader } from "./header";
@@ -39,7 +39,7 @@ function TabButton({
 export function ComponentSide() {
   const engine = useUbentoEngine();
   const location = engine.useState((s) => s.location);
-  const activeTabId = location.componentTab || tabs[0].id;
+  const [activeTabId, setActiveTabId] = useState(tabs[0].id);
 
   const enabledTabs = useMemo(() => {
     return tabs.filter((tab) => tab.enabled?.({ location }) ?? true);
@@ -47,15 +47,9 @@ export function ComponentSide() {
 
   useEffect(() => {
     if (!enabledTabs.find((t) => t.id === activeTabId)) {
-      engine.setState((s) => ({
-        ...s,
-        location: {
-          ...s.location,
-          componentTab: enabledTabs[0]?.id || tabs[0].id,
-        },
-      }));
+      setActiveTabId(enabledTabs[0]?.id || tabs[0].id);
     }
-  }, [enabledTabs, activeTabId, engine]);
+  }, [enabledTabs, activeTabId]);
 
   const activeTab = useMemo(() => {
     return enabledTabs.find((t) => t.id === activeTabId) || enabledTabs[0];
@@ -74,12 +68,7 @@ export function ComponentSide() {
               tab={tab}
               isActive={activeTabId === tab.id}
               location={location}
-              onClick={() =>
-                engine.setState((s) => ({
-                  ...s,
-                  location: { ...s.location, componentTab: tab.id },
-                }))
-              }
+              onClick={() => setActiveTabId(tab.id)}
             />
           ))}
         </div>

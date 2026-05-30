@@ -128,6 +128,7 @@ export const ubentoAuth = {
   scopes: {
     root: "/",
     public: "/public",
+    user: ({ user_id }: { user_id: string }) => `/user/${user_id}`,
     team: ({ team_id }: { team_id: string }) => `/team/${team_id}`,
     workspace: ({
       team_id,

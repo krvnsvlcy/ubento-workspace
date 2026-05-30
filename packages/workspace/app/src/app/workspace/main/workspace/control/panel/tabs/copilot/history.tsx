@@ -8,13 +8,14 @@ export function HistoryTab({ onBack }: { onBack: () => void }) {
   const copilot = useCopilot();
   const ubento = useUbento();
 
-  const workspaceSlug = engine.useState((s) => s.location.workspace);
+  const location = engine.useState((s) => s.location);
+  const workspaceId = location.view === "workspace" ? location.params.workspaceId : "";
   const session = engine.useState((s) => s.session);
   const { data: workspace, isLoading: workspaceLoading } =
-    ubento.workspace.useWorkspaceBySlug(
-      { slug: workspaceSlug || "" },
+    ubento.workspace.useWorkspace(
+      workspaceId,
       {
-        enabled: !!workspaceSlug,
+        enabled: !!workspaceId,
       },
     );
 
@@ -25,11 +26,11 @@ export function HistoryTab({ onBack }: { onBack: () => void }) {
         team_id: session.teamId,
       },
       {
-        enabled: !workspaceSlug || !!workspace,
+        enabled: !workspaceId || !!workspace,
       },
     );
 
-  const isLoading = (workspaceSlug && workspaceLoading) || threadsLoading;
+  const isLoading = (workspaceId && workspaceLoading) || threadsLoading;
 
   const activeThreadId = copilot.useState((s) => s.activeThreadId);
 

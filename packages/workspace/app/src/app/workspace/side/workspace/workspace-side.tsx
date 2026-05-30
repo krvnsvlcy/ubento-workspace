@@ -1,5 +1,6 @@
 import { Icon } from "@/components/icon/icon";
-import { useUbentoEngine } from "@/hooks/app-engine";
+import { useActiveWorkspaceId, useUbentoEngine } from "@/hooks/app-engine";
+import { useUserWorkspaceSettings } from "@/hooks/settings/workspace";
 import { useAppModal } from "@/modals/app/hook";
 import { appModalRoutes } from "@/modals/app/routes";
 import { Button, ScrollArea, useStoreState } from "@ubento/bento.arlo-core";
@@ -8,9 +9,9 @@ import { Box } from "lucide-react";
 import { useEffect, useMemo } from "react";
 import { TeamSideLayout } from "../team/team-layout";
 import { TabDefinition } from "../types";
+import { assetsTab } from "./tabs/assets/assets-tab";
 import { homeTab } from "./tabs/home/home";
 import { workspaceTab } from "./tabs/workspace/workspace";
-import { assetsTab } from "./tabs/assets/assets-tab";
 import { WorkspaceTabDefinition } from "./types";
 
 const tabs: WorkspaceTabDefinition[] = [homeTab, workspaceTab, assetsTab];
@@ -46,13 +47,19 @@ export function WorkspaceSide() {
   const location = engine.useState((s) => s.location);
   const workspace = engine.useState((s) => s.workspace);
   const workspaceMode = useStoreState(workspace?.store, (s) => s.mode);
-  const activeTabId = location.workspaceTab || tabs[0].id;
 
-  const slug = location.workspace;
-  const { data: workspaceData } = engine.ubento.workspace.useWorkspaceBySlug(
-    { slug: slug! },
-    { enabled: !!slug },
+  const workspaceId = useActiveWorkspaceId();
+  const { data: workspaceData } = engine.ubento.workspace.useWorkspace(
+    workspaceId || "",
+    { enabled: !!workspaceId },
   );
+
+  const {
+    data: userSettings,
+    update: updateSettings,
+    isLoaded,
+  } = useUserWorkspaceSettings(workspaceId || "");
+  const activeTabId = userSettings.activeTab;
 
   const enabledTabs = useMemo(() => {
     return tabs.filter(
@@ -61,16 +68,16 @@ export function WorkspaceSide() {
   }, [location, workspaceMode]);
 
   useEffect(() => {
-    if (!enabledTabs.find((t) => t.id === activeTabId)) {
-      engine.setState((s) => ({
-        ...s,
-        location: {
-          ...s.location,
-          workspaceTab: enabledTabs[0]?.id || tabs[0].id,
-        },
-      }));
+    if (
+      isLoaded &&
+      workspaceId &&
+      !enabledTabs.find((t) => t.id === activeTabId)
+    ) {
+      updateSettings({
+        activeTab: (enabledTabs[0]?.id || tabs[0].id) as any,
+      });
     }
-  }, [enabledTabs, activeTabId, engine]);
+  }, [enabledTabs, activeTabId, workspaceId, updateSettings, isLoaded]);
 
   const activeTab = useMemo(() => {
     return enabledTabs.find((t) => t.id === activeTabId) || enabledTabs[0];
@@ -92,10 +99,9 @@ export function WorkspaceSide() {
               tab={tab}
               isActive={activeTabId === tab.id}
               onClick={() =>
-                engine.setState((s) => ({
-                  ...s,
-                  location: { ...s.location, workspaceTab: tab.id },
-                }))
+                updateSettings({
+                  activeTab: tab.id as any,
+                })
               }
             />
           ))}

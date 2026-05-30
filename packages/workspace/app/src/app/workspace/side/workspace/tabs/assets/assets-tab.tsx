@@ -23,5 +23,5 @@ export const assetsTab: TabDefinition = {
       <AssetsTab />
     </WorkspaceEngineProvider>
   ),
-  enabled: ({ location }) => !!location.workspace,
+  enabled: ({ location }) => location.view === "workspace",
 };

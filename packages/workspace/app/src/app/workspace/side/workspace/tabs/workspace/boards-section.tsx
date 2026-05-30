@@ -17,6 +17,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { WorkspaceBoardSpec } from "@ubento/bento.runtime";
 import clsx from "clsx";
 import React, { useState } from "react";
+import { useUserWorkspaceSettings } from "@/hooks/settings/workspace";
 
 function removeIdFromTree(
   boards: Record<string, any>,
@@ -255,6 +256,11 @@ export function BoardsSection() {
   const engine = useUbentoEngine();
   const location = engine.useState((s) => s.location);
   const workspaceEngine = useWorkspaceEngine();
+  
+  const workspaceId = location.view === "workspace" ? location.params.workspaceId : "";
+  const { data: userSettings, update: updateSettings } = useUserWorkspaceSettings(workspaceId);
+  const activeBoardId = userSettings?.board?.id;
+
   const [activeDragId, setActiveDragId] = useState<string | null>(null);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 
@@ -286,7 +292,12 @@ export function BoardsSection() {
   };
 
   const handleSelect = (boardId: string) => {
-    engine.goToLocation({ board: boardId });
+    updateSettings({
+      board: {
+        id: boardId,
+        params: {},
+      },
+    });
   };
 
   const handleRename = async (boardId: string, newTitle: string) => {
@@ -318,8 +329,8 @@ export function BoardsSection() {
         message: `Successfully deleted "${boardTitle}"`,
         type: "success",
       });
-      if (location.board === boardId) {
-        engine.goToLocation({ board: undefined });
+      if (activeBoardId === boardId) {
+        updateSettings({ board: undefined });
       }
     } catch (err) {
       engine.notify({
@@ -341,7 +352,12 @@ export function BoardsSection() {
 
       if (board) {
         setExpandedIds((prev) => new Set([...prev, parentId]));
-        engine.goToLocation({ board: board.id });
+        updateSettings({
+          board: {
+            id: board.id,
+            params: {},
+          },
+        });
       }
     } catch (err) {
       engine.notify({
@@ -362,7 +378,12 @@ export function BoardsSection() {
       });
 
       if (board) {
-        engine.goToLocation({ board: board.id });
+        updateSettings({
+          board: {
+            id: board.id,
+            params: {},
+          },
+        });
       }
     } catch (err) {
       engine.notify({
@@ -482,7 +503,7 @@ export function BoardsSection() {
                 <BoardNode
                   board={board}
                   allBoards={allBoards}
-                  activeBoardId={location.board}
+                  activeBoardId={activeBoardId}
                   depth={0}
                   onSelect={handleSelect}
                   onRename={handleRename}

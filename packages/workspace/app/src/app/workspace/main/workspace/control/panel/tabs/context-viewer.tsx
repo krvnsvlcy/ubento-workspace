@@ -143,13 +143,15 @@ function TreeNode({
   );
 }
 
+import { useUserActiveWorkspaceSettings } from "@/hooks/settings/workspace";
+
 export function ContextViewerTab({
   controller,
 }: {
   controller: WorkspaceEngine;
 }) {
-  const location = controller.appEngine.useState((s) => s.location);
-  const boardId = location?.board;
+  const { data: userSettings } = useUserActiveWorkspaceSettings();
+  const boardId = userSettings?.board?.id;
   const watchedContextNodes = controller.useState((s) => s.watchedContextNodes);
   const rootChildren = watchedContextNodes[""];
 
@@ -170,9 +172,7 @@ export function ContextViewerTab({
 
   if (!boardId) {
     return (
-      <div className="p-4 text-xs text-content-muted">
-        No active board
-      </div>
+      <div className="p-4 text-xs text-content-muted">No active board</div>
     );
   }
 

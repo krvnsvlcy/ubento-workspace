@@ -1,3 +1,4 @@
+import { useUbento, useUbentoEngine } from "@/hooks/app-engine";
 import { CreateWorkspaceModal } from "@/modals/create_workspace/create_workspace";
 import { DeleteWorkspaceModal } from "@/modals/delete_workspace/delete_workspace";
 import { useModal } from "@/utils/modal-store";
@@ -15,7 +16,6 @@ import {
 } from "@ubento/bento.arlo-core";
 import { Box, MoreHorizontal, Plus, Trash2 } from "lucide-react";
 import { useMemo } from "react";
-import { useUbento, useUbentoEngine } from "@/hooks/app-engine";
 
 function Greeting({ name }: { name?: string }) {
   const greeting = useMemo(() => {
@@ -116,7 +116,7 @@ export function Home() {
               <WorkspaceCard
                 key={workspace.id}
                 workspace={workspace}
-                onClick={() => engine.openWorkspace(workspace.slug)}
+                onClick={() => engine.openWorkspace(workspace.id)}
                 onDelete={async () => {
                   await deleteWorkspace(workspace.id);
                 }}

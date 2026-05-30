@@ -21,10 +21,11 @@ export const GeneralTab: FC = () => {
   const location = engine.useState((s) => s.location);
   const { close } = useModal();
 
-  const slug = location.workspace;
-  const { data: workspace, isLoading } = ubento.workspace.useWorkspaceBySlug(
-    { slug: slug! },
-    { enabled: !!slug },
+  const isWorkspace = location.view === "workspace";
+  const workspaceId = isWorkspace ? location.params.workspaceId : "";
+  const { data: workspace, isLoading } = ubento.workspace.useWorkspace(
+    workspaceId,
+    { enabled: !!workspaceId },
   );
 
   const [name, setName] = useState(workspace?.name || "");
@@ -68,9 +69,8 @@ export const GeneralTab: FC = () => {
         onSuccess: () => {
           // Clear active workspace in the engine location so it goes back to Team view
           engine.goToLocation({
-            workspace: undefined,
-            board: undefined,
-            component: undefined,
+            view: "home",
+            params: {},
           });
           close();
         },

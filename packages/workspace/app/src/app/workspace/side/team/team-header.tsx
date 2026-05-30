@@ -1,4 +1,5 @@
 import { useUbentoEngine } from "@/hooks/app-engine";
+import { useUserAppSettings } from "@/hooks/settings/app";
 import { Button } from "@ubento/bento.arlo-core";
 import { Home, Sidebar } from "lucide-react";
 
@@ -12,19 +13,12 @@ export function WorkspaceHeader({
   onTitleClick: () => void;
 }) {
   const engine = useUbentoEngine();
-  const location = engine.useState((s) => s.location);
-  const slug = location.workspace;
-
-  const { data: workspace } = engine.ubento.workspace.useWorkspaceBySlug(
-    { slug: slug! },
-    { enabled: !!slug },
-  );
+  const { data: userSettings, update: updateSettings } = useUserAppSettings();
 
   function handleSidebarClick() {
-    engine.setState((state) => ({
-      ...state,
-      leftPanelPinned: !state.leftPanelPinned,
-    }));
+    updateSettings({
+      sidePanelPinned: !userSettings.sidePanelPinned,
+    });
   }
 
   return (
@@ -42,9 +36,8 @@ export function WorkspaceHeader({
         size="icon"
         onClick={() =>
           engine.goToLocation({
-            workspace: undefined,
-            board: undefined,
-            component: undefined,
+            view: "home",
+            params: {},
           })
         }
         variant="ghost"

@@ -1,13 +1,13 @@
-import { useUbentoEngine } from "@/hooks/app-engine";
 import { useState } from "react";
 import { Main } from "./main/main";
 import { SideSplitView } from "./main/workspace/components/split-view";
 import { Side } from "./side/side";
+import { useUserAppSettings } from "@/hooks/settings/app";
 
 export function Layout() {
-  const ubento = useUbentoEngine();
-  const leftPanelPinned = ubento.useState((s) => s.leftPanelPinned);
-  const leftPanelWidth = ubento.useState((s) => s.leftPanelWidth);
+  const { data: userSettings, update: updateSettings } = useUserAppSettings();
+  const sidePanelPinned = userSettings.sidePanelPinned;
+  const sidePanelWidth = userSettings.sidePanelWidth;
   const [isHovered, setIsHovered] = useState(false);
 
   return (
@@ -21,11 +21,11 @@ export function Layout() {
       }}
     >
       {/* Floating Left Panel */}
-      {!leftPanelPinned && (
+      {!sidePanelPinned && (
         <div
           className="fixed top-0 left-0 bottom-0 z-[100] transition-all duration-300 ease-in-out bg-surface/60 backdrop-blur-xl border-r border-border"
           style={{
-            width: leftPanelWidth,
+            width: sidePanelWidth,
             transform: isHovered ? "translateX(0)" : "translateX(-100%)",
             pointerEvents: isHovered ? "auto" : "none",
           }}
@@ -36,7 +36,7 @@ export function Layout() {
         </div>
       )}
       {/* Hover Trigger Area at the left edge */}
-      {!leftPanelPinned && !isHovered && (
+      {!sidePanelPinned && !isHovered && (
         <div
           className="fixed top-0 left-0 bottom-0 w-4 z-[90]"
           onMouseEnter={() => setIsHovered(true)}
@@ -44,14 +44,14 @@ export function Layout() {
       )}
       <SideSplitView
         left={{
-          content: leftPanelPinned ? (
+          content: sidePanelPinned ? (
             <div className="h-full bg-surface/60 border-r">
               <Side />
             </div>
           ) : null,
-          size: leftPanelPinned ? leftPanelWidth : 0,
+          size: sidePanelPinned ? sidePanelWidth : 0,
           onSizeChange: (size) => {
-            ubento.setState((state) => ({ ...state, leftPanelWidth: size }));
+            updateSettings({ sidePanelWidth: size });
           },
           minSize: 240,
           maxSize: 600,

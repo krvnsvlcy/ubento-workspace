@@ -6,6 +6,7 @@ import { createUbentoVertexService } from "./services/vertex";
 import { createUbentoIntelligenceService } from "./services/intelligence";
 import { createUbentoModuleService } from "./services/module";
 import { createUbentoWorkspaceService } from "./services/workspace";
+import { createUbentoSettingsService } from "./services/settings";
 
 export function createUbentoService({ ubentoSdk, logger }: { ubentoSdk: UbentoSDK; logger: Logger }) {
   return {
@@ -17,6 +18,7 @@ export function createUbentoService({ ubentoSdk, logger }: { ubentoSdk: UbentoSD
     intelligence: createUbentoIntelligenceService({ ubentoSdk }),
     billing: createUbentoBillingService({ ubentoSdk }),
     vertex: createUbentoVertexService({ ubentoSdk }),
+    settings: createUbentoSettingsService({ ubentoSdk }),
   };
 }
 
