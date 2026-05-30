@@ -691,7 +691,8 @@ export function createWorkspaceEngine({
         version: 1,
         services: {},
         components: {},
-        libraries: {},
+        modules: {},
+        packages: {},
         boards: {},
         roots: [],
       });

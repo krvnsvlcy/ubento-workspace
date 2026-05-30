@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "Setting": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "entity": {
+          "type": "string",
+          "default": "setting"
+        },
+        "key": {
+          "type": "string"
+        },
+        "scopes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "data": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "version": {
+          "type": "integer",
+          "default": 1
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "key",
+        "scopes",
+        "data",
+        "updated_at"
+      ]
+    }
+  },
+  "type": "object",
+  "properties": {
+    "setting": {
+      "$ref": "#/definitions/Setting"
+    }
+  }
+}

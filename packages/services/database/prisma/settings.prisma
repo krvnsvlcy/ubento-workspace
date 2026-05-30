@@ -1,0 +1,34 @@
+generator client {
+    provider      = "prisma-client-js"
+    binaryTargets = ["native", "debian-openssl-3.0.x"]
+    output        = "./generated/settings"
+}
+
+generator jsonSchema {
+    provider                 = "prisma-json-schema-generator"
+    output                   = "../src/schemas/settings"
+    keepRelationFields       = "false"
+    keepRelationScalarFields = "true"
+    includeRequiredFields    = "true"
+}
+
+datasource db {
+    provider = "mongodb"
+    url      = env("SETTINGS_DATABASE_URL")
+}
+
+model Setting {
+    id         String   @id @map("_id") // App-generated
+    entity     String   @default("setting")
+    key        String   @unique // e.g., "{sorted(scope_o,...,scope_n).join('|')}|theme"
+    scopes     String[]
+    data       Json
+
+    version    Int      @default(1)
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+
+    // Restores lightning-fast access control queries
+    @@index([scopes])
+    @@map("settings")
+}

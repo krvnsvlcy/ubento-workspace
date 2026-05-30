@@ -99,6 +99,11 @@ export const ubentoAuth = {
       mutate: "vertex:mutate",
       subscribe: "vertex:subscribe",
     },
+    setting: {
+      read: "setting:read",
+      update: "setting:update",
+      delete: "setting:delete",
+    },
   },
   roles: {
     root: {

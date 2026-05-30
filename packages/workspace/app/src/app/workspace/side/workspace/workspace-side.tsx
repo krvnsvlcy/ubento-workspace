@@ -10,9 +10,10 @@ import { TeamSideLayout } from "../team/team-layout";
 import { TabDefinition } from "../types";
 import { homeTab } from "./tabs/home/home";
 import { workspaceTab } from "./tabs/workspace/workspace";
+import { assetsTab } from "./tabs/assets/assets-tab";
 import { WorkspaceTabDefinition } from "./types";
 
-const tabs: WorkspaceTabDefinition[] = [homeTab, workspaceTab];
+const tabs: WorkspaceTabDefinition[] = [homeTab, workspaceTab, assetsTab];
 
 function TabButton({
   tab,

@@ -42,7 +42,8 @@ export function CreateWorkspaceModal({
         version: 1,
         services: {},
         components: {},
-        libraries: {},
+        modules: {},
+        packages: {},
         boards: {},
         roots: [],
       };

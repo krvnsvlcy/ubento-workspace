@@ -1,11 +1,17 @@
 export type UbentoLocation = {
-  workspace?: string;
-  board?: string;
-  params?: Record<string, string>;
-  workspaceTab?: string;
-  componentTab?: string;
-  component?: string;
-  style?: boolean;
+  page: "home" | "workspace";
+  state: {
+    workspace: {
+      id?: string;
+      tab?: "home" | "workspace" | "assets";
+      mode?: "live" | "edit";
+      board?: {
+        id: string;
+        params?: Record<string, string>;
+      };
+      module?: string;
+    };
+  };
 };
 
 // /w/{workspaceSlug}/{boardId}?params={json}&workspaceTab={tab}&component={moduleId}&componentTab={tab}

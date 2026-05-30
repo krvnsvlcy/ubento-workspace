@@ -282,6 +282,13 @@ export const ubentoEntities = {
     name: "module_version",
     code: "mdv",
   },
+  /**
+   * Represents a setting.
+   */
+  setting: {
+    name: "setting",
+    code: "stg",
+  },
 } as const;
 
 // Ensure all entities are unique

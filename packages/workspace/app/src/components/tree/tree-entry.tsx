@@ -1,3 +1,4 @@
+import { Spinner } from "@ubento/bento.arlo-core";
 import clsx from "clsx";
 import { ChevronRight } from "lucide-react";
 import { useState } from "react";
@@ -17,6 +18,8 @@ export function TreeEntry({
   onMouseLeave,
   isOpen,
   onOpenChange,
+  loading,
+  error,
   ...props
 }: {
   className?: string;
@@ -27,6 +30,8 @@ export function TreeEntry({
   isContainer?: boolean;
   isOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
+  loading?: boolean;
+  error?: string;
 } & React.ComponentProps<"div">) {
   const depth = useTreeDepth();
   const [isHovered, setIsHovered] = useState(false);
@@ -51,7 +56,21 @@ export function TreeEntry({
     </div>
   );
 
-  if (isContainer && isHovered) {
+  if (loading) {
+    iconNode = (
+      <div
+        style={{
+          width: 24,
+          height: 24,
+        }}
+        className="flex items-center justify-center p-1"
+      >
+        <Spinner className="w-4 h-4 text-content-muted" />
+      </div>
+    );
+  }
+
+  if (isContainer && isHovered && !loading) {
     iconNode = (
       <button
         style={{
@@ -77,50 +96,68 @@ export function TreeEntry({
   }
 
   return (
-    <div
-      onMouseEnter={(e) => {
-        setIsHovered(true);
-        onMouseEnter?.(e);
-      }}
-      onMouseLeave={(e) => {
-        setIsHovered(false);
-        onMouseLeave?.(e);
-      }}
-      className={clsx(
-        "group h-8 text-sm cursor-pointer flex items-center rounded-xl px-1",
-        className,
-        {
-          "text-content hover:bg-current/7": !active,
-          "bg-base text-contrast hover:bg-hover": active,
-        },
-      )}
-      {...props}
-    >
-      {depth ? <div style={{ width: depth * 12, flexShrink: 0 }} /> : <></>}
-      {icon ? (
-        <div
-          className="flex items-center justify-center"
-          style={{ flexShrink: 0 }}
-        >
-          {iconNode}
+    <div className="relative flex flex-col gap-1 w-full">
+      <div
+        onMouseEnter={(e) => {
+          setIsHovered(true);
+          onMouseEnter?.(e);
+        }}
+        onMouseLeave={(e) => {
+          setIsHovered(false);
+          onMouseLeave?.(e);
+        }}
+        className={clsx(
+          "group h-8 text-sm cursor-pointer flex items-center rounded-xl px-1",
+          className,
+          {
+            "text-content hover:bg-current/7": !active,
+            "bg-base text-contrast hover:bg-hover": active,
+          },
+        )}
+        {...props}
+      >
+        {depth ? <div style={{ width: depth * 12, flexShrink: 0 }} /> : <></>}
+        {icon || loading ? (
+          <div
+            className="flex items-center justify-center"
+            style={{ flexShrink: 0 }}
+          >
+            {iconNode}
+          </div>
+        ) : (
+          <></>
+        )}
+        <div className="px-1 grow overflow-hidden whitespace-nowrap truncate">
+          {children}
         </div>
-      ) : (
-        <></>
-      )}
-      <div className="px-1 grow overflow-hidden whitespace-nowrap truncate">
-        {children}
-      </div>
 
-      {actions?.length && (
+        {actions?.length && (
+          <div
+            className={clsx("items-center gap-1", {
+              "hidden group-hover:flex": actionMode === "hover",
+              flex: actionMode === "visible",
+            })}
+          >
+            {actions.map((action, index) => (
+              <Action key={index} {...action} />
+            ))}
+          </div>
+        )}
+      </div>
+      {error && (
         <div
-          className={clsx("items-center gap-1", {
-            "hidden group-hover:flex": actionMode === "hover",
-            flex: actionMode === "visible",
-          })}
+          data-tone="destructive"
+          style={{
+            position: "absolute",
+            bottom: -4,
+            left: 0,
+            right: 0,
+            transform: "translateY(100%)",
+            zIndex: 10,
+          }}
+          className="text-xs bg-content/90 text-contrast font-medium leading-normal px-2 py-1 rounded-md"
         >
-          {actions.map((action, index) => (
-            <Action key={index} {...action} />
-          ))}
+          {error}
         </div>
       )}
     </div>

@@ -48,6 +48,13 @@
       "clean": true,
       "host": "http://localhost:6124",
     },
+    {
+      "service": "settings-service",
+      "output": "./src/clients/settings",
+      "clientName": "createSettingsServiceClient",
+      "clean": true,
+      "host": "http://localhost:24333",
+    },
   ],
-  "only": ["billing-service"],
+  "only": ["settings-service"],
 }

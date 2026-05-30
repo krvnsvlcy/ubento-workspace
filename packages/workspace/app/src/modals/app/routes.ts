@@ -32,6 +32,11 @@ export const appModalRoutes = {
     createProvider: "/services/create-provider",
     editProvider: "/services/edit-provider",
   },
+  assets: {
+    browse: "/assets",
+    packages: "/packages",
+    package: "/packages/package",
+  },
 };
 
 export function routeMatch(location: string, path: string): boolean {

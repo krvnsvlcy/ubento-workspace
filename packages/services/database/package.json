@@ -27,25 +27,31 @@
     "./intelligence": {
       "import": "./build/intelligence.js",
       "types": "./build/intelligence.d.ts"
+    },
+    "./settings": {
+      "import": "./build/settings.js",
+      "types": "./build/settings.d.ts"
     }
   },
   "scripts": {
     "build": "npm run generate && scripts build",
     "watch": "scripts watch",
-    "generate": "npm run generate:iam && npm run generate:workspace && npm run generate:module && npm run generate:vertex && npm run generate:intelligence && npm run generate:billing",
+    "generate": "npm run generate:iam && npm run generate:workspace && npm run generate:module && npm run generate:vertex && npm run generate:intelligence && npm run generate:billing && npm run generate:settings",
     "generate:iam": "prisma generate --schema=./prisma/iam.prisma",
     "generate:workspace": "prisma generate --schema=./prisma/workspace.prisma",
     "generate:module": "prisma generate --schema=./prisma/module.prisma",
     "generate:vertex": "prisma generate --schema=./prisma/vertex.prisma",
     "generate:intelligence": "prisma generate --schema=./prisma/intelligence.prisma",
     "generate:billing": "prisma generate --schema=./prisma/billing.prisma",
-    "push": "npm run push:iam && npm run push:workspace && npm run push:module && npm run push:vertex && npm run push:intelligence && npm run push:billing",
+    "generate:settings": "prisma generate --schema=./prisma/settings.prisma",
+    "push": "npm run push:iam && npm run push:workspace && npm run push:module && npm run push:vertex && npm run push:intelligence && npm run push:billing && npm run push:settings",
     "push:iam": "prisma db push --schema=./prisma/iam.prisma",
     "push:workspace": "prisma db push --schema=./prisma/workspace.prisma",
     "push:module": "prisma db push --schema=./prisma/module.prisma",
     "push:vertex": "prisma db push --schema=./prisma/vertex.prisma",
     "push:intelligence": "prisma db push --schema=./prisma/intelligence.prisma",
-    "push:billing": "prisma db push --schema=./prisma/billing.prisma"
+    "push:billing": "prisma db push --schema=./prisma/billing.prisma",
+    "push:settings": "prisma db push --schema=./prisma/settings.prisma"
   },
   "dependencies": {
     "@prisma/client": "5.18.0",

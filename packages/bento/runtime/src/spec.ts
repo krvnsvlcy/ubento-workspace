@@ -37,7 +37,8 @@ export const workspaceSpecSchema = z.object({
   version: z.literal(1).default(1),
   services: z.record(z.string(), serviceDataSchema).default({}),
   components: z.record(z.string(), moduleRef).default({}),
-  libraries: z.record(z.string(), moduleRef).default({}),
+  modules: z.record(z.string(), moduleRef).default({}),
+  packages: z.record(z.string(), z.string()).default({}),
   boards: z.record(z.string(), workspaceBoardSpecSchema).default({}),
   roots: z.array(z.string()).default([]),
 });

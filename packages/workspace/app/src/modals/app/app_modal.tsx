@@ -10,6 +10,9 @@ import { routeMatch } from "./routes";
 import { ServicesModal } from "./services/services";
 import { TeamModal } from "./team/team_modal";
 import { WorkspaceModal } from "./workspace/workspace_modal.js";
+import { AssetsBrowserModal } from "./assets/assets.js";
+import { PackagesBrowserModal } from "./assets/packages.js";
+import { WorkspaceEngineProvider } from "@/contexts/workspace.js";
 
 export function AppModal() {
   const { path } = useAppModal();
@@ -45,6 +48,16 @@ export function AppModal() {
         </Case>
         <Case condition={routeMatch(path, "/services")}>
           <ServicesModal />
+        </Case>
+        <Case condition={routeMatch(path, "/assets")}>
+          <WorkspaceEngineProvider>
+            <AssetsBrowserModal />
+          </WorkspaceEngineProvider>
+        </Case>
+        <Case condition={routeMatch(path, "/packages")}>
+          <WorkspaceEngineProvider>
+            <PackagesBrowserModal />
+          </WorkspaceEngineProvider>
         </Case>
       </Switch>
     </PageModalContainer>
