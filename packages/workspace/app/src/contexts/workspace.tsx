@@ -1,5 +1,5 @@
-import { useUbentoEngine } from "@/hooks/app-engine";
 import { WorkspaceEngine } from "@/engine/workspace/engine";
+import { useUbentoEngine } from "@/hooks/app-engine";
 import { ErrorView, PendingView } from "@ubento/bento.arlo-core";
 import { createContext, useContext } from "react";
 import { CopilotContext } from "./copilot";
@@ -20,24 +20,30 @@ export function useWorkspaceEngine() {
 
 export function WorkspaceEngineProvider({
   children,
+  loadingFallback,
+  errorFallback,
 }: {
   children: React.ReactNode;
+  loadingFallback?: React.ReactNode;
+  errorFallback?: React.ReactNode;
 }) {
   const appEngine = useUbentoEngine();
   const workspaceEngine = appEngine.useState((state) => state.workspace);
   const workspaceStatus = appEngine.useState((state) => state.workspaceStatus);
 
   if (workspaceStatus === "inactive" || workspaceStatus === "initializing") {
-    return <PendingView message="Workspace" />;
+    return loadingFallback || <PendingView message="Workspace" />;
   } else if (workspaceStatus === "error" || !workspaceEngine) {
     return (
-      <ErrorView
-        message="Failed to load workspace"
-        action={{
-          label: "Retry",
-          onClick: () => appEngine.reloadWorkspace(),
-        }}
-      />
+      errorFallback || (
+        <ErrorView
+          message="Failed to load workspace"
+          action={{
+            label: "Retry",
+            onClick: () => appEngine.reloadWorkspace(),
+          }}
+        />
+      )
     );
   }
 

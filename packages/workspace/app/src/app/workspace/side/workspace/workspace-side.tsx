@@ -1,9 +1,17 @@
 import { Icon } from "@/components/icon/icon";
+import {
+  useWorkspaceEngine,
+  WorkspaceEngineProvider,
+} from "@/contexts/workspace";
 import { useActiveWorkspaceId, useUbentoEngine } from "@/hooks/app-engine";
-import { useUserWorkspaceSettings } from "@/hooks/settings/workspace";
 import { useAppModal } from "@/modals/app/hook";
 import { appModalRoutes } from "@/modals/app/routes";
-import { Button, ScrollArea, useStoreState } from "@ubento/bento.arlo-core";
+import {
+  Button,
+  ErrorView,
+  ScrollArea,
+  Skeleton,
+} from "@ubento/bento.arlo-core";
 import clsx from "clsx";
 import { Box } from "lucide-react";
 import { useEffect, useMemo } from "react";
@@ -41,25 +49,23 @@ function TabButton({
   );
 }
 
-export function WorkspaceSide() {
-  const engine = useUbentoEngine();
+function WorkspaceSideContent() {
+  const appEngine = useUbentoEngine();
+  const workspaceEngine = useWorkspaceEngine();
   const { push } = useAppModal();
-  const location = engine.useState((s) => s.location);
-  const workspace = engine.useState((s) => s.workspace);
-  const workspaceMode = useStoreState(workspace?.store, (s) => s.mode);
-
-  const workspaceId = useActiveWorkspaceId();
-  const { data: workspaceData } = engine.ubento.workspace.useWorkspace(
-    workspaceId || "",
-    { enabled: !!workspaceId },
+  const location = appEngine.useState((s) => s.location);
+  const workspaceMode = workspaceEngine.userSetting.useState(
+    (s) => s.data.mode,
+  );
+  const activeTabId = workspaceEngine.userSetting.useState(
+    (s) => s.data.activeTab,
   );
 
-  const {
-    data: userSettings,
-    update: updateSettings,
-    isLoaded,
-  } = useUserWorkspaceSettings(workspaceId || "");
-  const activeTabId = userSettings.activeTab;
+  const workspaceId = useActiveWorkspaceId();
+  const { data: workspaceData, isLoading } =
+    appEngine.ubento.workspace.useWorkspace(workspaceId || "", {
+      enabled: !!workspaceId,
+    });
 
   const enabledTabs = useMemo(() => {
     return tabs.filter(
@@ -68,16 +74,12 @@ export function WorkspaceSide() {
   }, [location, workspaceMode]);
 
   useEffect(() => {
-    if (
-      isLoaded &&
-      workspaceId &&
-      !enabledTabs.find((t) => t.id === activeTabId)
-    ) {
-      updateSettings({
+    if (workspaceId && !enabledTabs.find((t) => t.id === activeTabId)) {
+      workspaceEngine.userSetting.update({
         activeTab: (enabledTabs[0]?.id || tabs[0].id) as any,
       });
     }
-  }, [enabledTabs, activeTabId, workspaceId, updateSettings, isLoaded]);
+  }, [enabledTabs, activeTabId, workspaceId, workspaceEngine]);
 
   const activeTab = useMemo(() => {
     return enabledTabs.find((t) => t.id === activeTabId) || enabledTabs[0];
@@ -87,8 +89,11 @@ export function WorkspaceSide() {
 
   return (
     <TeamSideLayout
-      icon={<Box size={14} />}
-      title={workspaceData?.name || ""}
+      icon={isLoading ? <Skeleton className="h-4 w-4" /> : <Box size={14} />}
+      title={
+        workspaceData?.name ||
+        (isLoading ? <Skeleton className="h-4 w-20" /> : "Untitled")
+      }
       onTitleClick={() => push(appModalRoutes.workspace.general)}
     >
       <div className="h-full w-full flex flex-col gap-4">
@@ -99,7 +104,7 @@ export function WorkspaceSide() {
               tab={tab}
               isActive={activeTabId === tab.id}
               onClick={() =>
-                updateSettings({
+                workspaceEngine.userSetting.update({
                   activeTab: tab.id as any,
                 })
               }
@@ -115,5 +120,64 @@ export function WorkspaceSide() {
         </div>
       </div>
     </TeamSideLayout>
+  );
+}
+
+function PendingWorkspaceView() {
+  return (
+    <TeamSideLayout
+      icon={<Skeleton className="h-4 w-4" />}
+      title={<Skeleton className="h-4 w-20 rounded-sm" />}
+      onTitleClick={() => {}}
+    >
+      <div className="h-full w-full flex flex-col gap-4">
+        <div className="grow overflow-hidden px-3 space-y-4">
+          <Skeleton className="h-8 w-[60%] rounded-md" />
+          <Skeleton className="h-8 w-[80%] rounded-md" />
+          <Skeleton className="h-8 w-[40%] rounded-md" />
+        </div>
+      </div>
+    </TeamSideLayout>
+  );
+}
+
+function ErrorWorkspaceView({
+  message,
+  action,
+}: {
+  message: string;
+  action: { label: string; onClick: () => void };
+}) {
+  return (
+    <TeamSideLayout
+      icon={<Box size={14} className="text-destructive" />}
+      title="Error"
+      onTitleClick={() => {}}
+    >
+      <div className="h-full w-full flex flex-col p-3">
+        <ErrorView message={message} action={action} />
+      </div>
+    </TeamSideLayout>
+  );
+}
+
+export function WorkspaceSide() {
+  const appEngine = useUbentoEngine();
+
+  return (
+    <WorkspaceEngineProvider
+      loadingFallback={<PendingWorkspaceView />}
+      errorFallback={
+        <ErrorWorkspaceView
+          message="Failed to load workspace"
+          action={{
+            label: "Retry",
+            onClick: () => appEngine.reloadWorkspace(),
+          }}
+        />
+      }
+    >
+      <WorkspaceSideContent />
+    </WorkspaceEngineProvider>
   );
 }

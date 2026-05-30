@@ -1,14 +1,23 @@
+import { QueryClient } from "@tanstack/react-query";
 import { UbentoSDK } from "@ubento/services.sdk";
 import { Logger } from "@ubento/telemetry";
 import { createUbentoBillingService } from "./services/billing";
 import { createUbentoIamService } from "./services/iam";
-import { createUbentoVertexService } from "./services/vertex";
 import { createUbentoIntelligenceService } from "./services/intelligence";
 import { createUbentoModuleService } from "./services/module";
-import { createUbentoWorkspaceService } from "./services/workspace";
 import { createUbentoSettingsService } from "./services/settings";
+import { createUbentoVertexService } from "./services/vertex";
+import { createUbentoWorkspaceService } from "./services/workspace";
 
-export function createUbentoService({ ubentoSdk, logger }: { ubentoSdk: UbentoSDK; logger: Logger }) {
+export function createUbentoService({
+  ubentoSdk,
+  logger,
+  queryClient,
+}: {
+  ubentoSdk: UbentoSDK;
+  logger: Logger;
+  queryClient: QueryClient;
+}) {
   return {
     logger,
     sdk: ubentoSdk,
@@ -18,7 +27,7 @@ export function createUbentoService({ ubentoSdk, logger }: { ubentoSdk: UbentoSD
     intelligence: createUbentoIntelligenceService({ ubentoSdk }),
     billing: createUbentoBillingService({ ubentoSdk }),
     vertex: createUbentoVertexService({ ubentoSdk }),
-    settings: createUbentoSettingsService({ ubentoSdk }),
+    settings: createUbentoSettingsService({ ubentoSdk, queryClient }),
   };
 }
 

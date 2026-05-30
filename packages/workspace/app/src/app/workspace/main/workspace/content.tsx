@@ -4,7 +4,6 @@ import { useWorkspaceEngine } from "@/contexts/workspace.js";
 import { useUbentoEngine } from "@/hooks/app-engine";
 import { Button, PendingView, TabSwitch } from "@ubento/bento.arlo-core";
 import { Check, Copy, Save } from "lucide-react";
-import { useUserActiveWorkspaceSettings } from "@/hooks/settings/workspace.js";
 import React, { useState } from "react";
 import { If } from "react-if";
 import { WorkspaceEngine } from "../../../../engine/workspace/engine.js";
@@ -92,12 +91,11 @@ function InvalidSpecOverlay({ engine }: { engine: WorkspaceEngine }) {
     </div>
   );
 }
-
 export function WorkspaceContent() {
   const appEngine = useUbentoEngine();
-  const { data: userSettings } = useUserActiveWorkspaceSettings();
-  const activeBoardId = userSettings?.board?.id;
   const workspaceEngine = useWorkspaceEngine();
+  const userSettings = workspaceEngine.userSetting.useState((s) => s.data);
+  const activeBoardId = userSettings?.board?.id;
   const mode = workspaceEngine.useState((state) => state.mode);
   const spec = workspaceEngine.useState((state) => state.workspace.spec);
 

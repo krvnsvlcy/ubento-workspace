@@ -143,14 +143,12 @@ function TreeNode({
   );
 }
 
-import { useUserActiveWorkspaceSettings } from "@/hooks/settings/workspace";
-
 export function ContextViewerTab({
   controller,
 }: {
   controller: WorkspaceEngine;
 }) {
-  const { data: userSettings } = useUserActiveWorkspaceSettings();
+  const userSettings = controller.userSetting.useState((s) => s.data);
   const boardId = userSettings?.board?.id;
   const watchedContextNodes = controller.useState((s) => s.watchedContextNodes);
   const rootChildren = watchedContextNodes[""];

@@ -16,8 +16,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { WorkspaceBoardSpec } from "@ubento/bento.runtime";
 import clsx from "clsx";
-import React, { useState } from "react";
-import { useUserWorkspaceSettings } from "@/hooks/settings/workspace";
+import React, { useCallback, useState } from "react";
 
 function removeIdFromTree(
   boards: Record<string, any>,
@@ -116,8 +115,6 @@ interface BoardNodeProps {
   onDelete: (boardId: string, boardName: string) => Promise<void>;
   onCreateChild: (parentId: string) => Promise<void>;
   activeDragId: string | null;
-  expandedIds: Set<string>;
-  toggleExpanded: (id: string) => void;
 }
 
 function BoardNode({
@@ -130,10 +127,11 @@ function BoardNode({
   onDelete,
   onCreateChild,
   activeDragId,
-  expandedIds,
-  toggleExpanded,
 }: BoardNodeProps) {
-  const isExpanded = expandedIds.has(board.id);
+  const workspaceEngine = useWorkspaceEngine();
+  const isExpanded = workspaceEngine.userSetting.useState(
+    (s) => s.data.boardExplorer?.expandedStates?.[board.id],
+  );
   const childBoards = (board.children || [])
     .map((cid: string) => allBoards[cid])
     .filter(Boolean);
@@ -160,6 +158,22 @@ function BoardNode({
     opacity: isDragging ? 0.3 : 1,
   };
 
+  const toggleExpanded = useCallback(() => {
+    workspaceEngine.userSetting.update((s) => {
+      const update = {
+        boardExplorer: {
+          ...s.boardExplorer,
+          expandedStates: {
+            ...s.boardExplorer?.expandedStates,
+            [board.id]: !s.boardExplorer?.expandedStates?.[board.id],
+          },
+        },
+      };
+
+      return update;
+    });
+  }, [board.id, workspaceEngine]);
+
   return (
     <div style={style} className="w-full">
       <div
@@ -169,7 +183,6 @@ function BoardNode({
         }}
         {...attributes}
         {...listeners}
-        onClick={() => onSelect(board.id)}
         className={clsx(
           "relative cursor-pointer select-none rounded-lg transition-all duration-150",
           {
@@ -182,7 +195,7 @@ function BoardNode({
           isContainer={hasChildren}
           active={activeBoardId === board.id}
           isOpen={isExpanded}
-          onOpenChange={() => toggleExpanded(board.id)}
+          onOpenChange={toggleExpanded}
           actions={[
             {
               icon: "plus" as any,
@@ -210,6 +223,7 @@ function BoardNode({
               },
             },
           ]}
+          onClick={() => onSelect(board.id)}
         >
           <span className="truncate">{board.title}</span>
         </TreeEntry>
@@ -234,8 +248,6 @@ function BoardNode({
                   onDelete={onDelete}
                   onCreateChild={onCreateChild}
                   activeDragId={activeDragId}
-                  expandedIds={expandedIds}
-                  toggleExpanded={toggleExpanded}
                 />
                 <SeparatorDropZone
                   id={`sibling-separator:${board.id}:${child.id}:${
@@ -254,12 +266,11 @@ function BoardNode({
 
 export function BoardsSection() {
   const engine = useUbentoEngine();
-  const location = engine.useState((s) => s.location);
   const workspaceEngine = useWorkspaceEngine();
-  
-  const workspaceId = location.view === "workspace" ? location.params.workspaceId : "";
-  const { data: userSettings, update: updateSettings } = useUserWorkspaceSettings(workspaceId);
-  const activeBoardId = userSettings?.board?.id;
+  const updateSettings = workspaceEngine.userSetting.update;
+  const activeBoardId = workspaceEngine.userSetting.useState(
+    (s) => s.data?.board?.id,
+  );
 
   const [activeDragId, setActiveDragId] = useState<string | null>(null);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
@@ -510,8 +521,6 @@ export function BoardsSection() {
                   onDelete={handleDelete}
                   onCreateChild={handleCreateChild}
                   activeDragId={activeDragId}
-                  expandedIds={expandedIds}
-                  toggleExpanded={toggleExpanded}
                 />
                 <SeparatorDropZone
                   id={`sibling-separator:root:${board.id}:${

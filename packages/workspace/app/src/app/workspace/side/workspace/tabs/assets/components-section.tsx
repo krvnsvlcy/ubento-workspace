@@ -8,7 +8,6 @@ import { appModalRoutes } from "@/modals/app/routes.js";
 import { ModuleRef } from "@ubento/bento.runtime";
 import { Globe2, Plus } from "lucide-react";
 import React from "react";
-import { useUserWorkspaceSettings } from "@/hooks/settings/workspace";
 
 interface ComponentEntryProps {
   name: string;
@@ -206,11 +205,7 @@ function AddComponentEntry({
 
 export function ComponentsSection() {
   const workspaceEngine = useWorkspaceEngine();
-  const ubento = useUbentoEngine();
-  const location = ubento.useState((s) => s.location);
-
-  const workspaceId = location.view === "workspace" ? location.params.workspaceId : "";
-  const { update: updateSettings } = useUserWorkspaceSettings(workspaceId);
+  const updateSettings = workspaceEngine.userSetting.update;
 
   const [isAdding, setIsAdding] = React.useState(false);
 

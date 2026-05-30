@@ -9,7 +9,7 @@ export function TeamSideLayout({
   children,
 }: PropsWithChildren<{
   icon: React.ReactNode;
-  title: string;
+  title: React.ReactNode;
   onTitleClick: () => void;
 }>) {
   return (

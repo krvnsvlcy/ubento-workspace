@@ -1,11 +1,9 @@
 import { TreeEntry } from "@/components/tree/tree-entry";
-import { WorkspaceEngineProvider } from "@/contexts/workspace";
 import {
   useActiveWorkspaceId,
   useUbento,
   useUbentoEngine,
 } from "@/hooks/app-engine";
-import { useUserWorkspaceSettings } from "@/hooks/settings/workspace";
 import { TabDefinition } from "../../../types";
 
 import { BoardsSection } from "./boards-section";
@@ -21,8 +19,11 @@ export function WorkspaceTab() {
     { enabled: !!workspaceId },
   );
 
-  const { data: userSettings, update: updateSettings } =
-    useUserWorkspaceSettings(workspaceId || "");
+  const userSettings = activeWorkspaceEngine?.userSetting?.useState(
+    (s) => s.data,
+  );
+  const updateSettings =
+    activeWorkspaceEngine?.userSetting?.update || (() => {});
 
   if (isLoading && !workspace) {
     return <div className="p-4 text-xs text-content-muted">Workspace</div>;
@@ -53,10 +54,6 @@ export const workspaceTab: TabDefinition = {
   id: "workspace",
   name: "Workspace",
   icon: "workspace",
-  component: () => (
-    <WorkspaceEngineProvider>
-      <WorkspaceTab />
-    </WorkspaceEngineProvider>
-  ),
+  component: WorkspaceTab,
   enabled: ({ location }) => location.view === "workspace",
 };

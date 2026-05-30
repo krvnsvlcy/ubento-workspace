@@ -4,6 +4,7 @@ import { Ubento, createUbentoEngine } from "@ubento/workspace.app";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
+import "@ubento/bento.style/css/fonts.css";
 import "@ubento/bento.style/css/themes.css";
 
 const user = {

@@ -1,5 +1,4 @@
-import { WorkspaceEngineProvider } from "@/contexts/workspace";
-import { TabDefinition } from "../../../types";
+import { WorkspaceTabDefinition } from "../../types";
 import { ComponentsSection } from "./components-section";
 import { ModulesSection } from "./modules-section";
 import { PackagesSection } from "./packages-section";
@@ -14,14 +13,10 @@ export function AssetsTab() {
   );
 }
 
-export const assetsTab: TabDefinition = {
+export const assetsTab: WorkspaceTabDefinition = {
   id: "assets",
   name: "Assets",
   icon: "assets",
-  component: () => (
-    <WorkspaceEngineProvider>
-      <AssetsTab />
-    </WorkspaceEngineProvider>
-  ),
-  enabled: ({ location }) => location.view === "workspace",
+  component: AssetsTab,
+  enabled: ({ workspaceMode }) => workspaceMode === "edit",
 };

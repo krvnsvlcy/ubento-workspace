@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { QueryClient, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   createStore,
   useMutation,
@@ -11,10 +11,16 @@ import { settingsClient, UbentoSDK } from "@ubento/services.sdk";
 import { useCallback } from "react";
 import { UbentoApiPage, ubentoToFabricPagedResponse } from "../libs/pagination";
 
+function makeCompositeKey(scopes: string[], key: string) {
+  return [...scopes].sort().join("|") + "|" + key;
+}
+
 export function createUbentoSettingsService({
   ubentoSdk,
+  queryClient,
 }: {
   ubentoSdk: UbentoSDK;
+  queryClient: QueryClient;
 }) {
   // --- Stores ---
 
@@ -146,10 +152,43 @@ export function createUbentoSettingsService({
       settingStore.push(setting);
       return setting;
     },
-    getSettingByKey: async (key: string) => {
-      const setting = await ubentoSdk.settings.getSettingByKey(key);
+    getSettingByScopesAndKey: async (
+      scopes: string[],
+      key: string,
+      options: {
+        initialData: any;
+        enabled?: boolean;
+      },
+    ) => {
+      const compositeKey = makeCompositeKey(scopes, key);
+      const setting = await queryClient.fetchQuery({
+        queryKey: ["setting", "compositeKey", compositeKey],
+        queryFn: async () => {
+          return await ubentoSdk.settings.getSettingByKey(compositeKey);
+        },
+        initialData: options?.initialData
+          ? {
+              id: "",
+              entity: ubentoEntities.setting.name,
+              key: compositeKey,
+              scopes,
+              data: options?.initialData,
+              version: 0,
+              created_at: "",
+              updated_at: "",
+            }
+          : undefined,
+      });
       settingStore.push(setting);
       return setting;
+    },
+    getCachedSettingByScopesAndKey: (scopes: string[], key: string) => {
+      const compositeKey = makeCompositeKey(scopes, key);
+      return queryClient.getQueryData<settingsClient.Setting>([
+        "setting",
+        "compositeKey",
+        compositeKey,
+      ]);
     },
     listSettings: async (params: {
       scopes?: string[];
@@ -167,6 +206,10 @@ export function createUbentoSettingsService({
     }) => {
       const setting = await ubentoSdk.settings.upsertSetting(data);
       settingStore.push(setting);
+      queryClient.setQueryData(
+        ["setting", "compositeKey", makeCompositeKey(data.scopes, data.key)],
+        setting,
+      );
       return setting;
     },
     deleteSetting: async (id: string) => {

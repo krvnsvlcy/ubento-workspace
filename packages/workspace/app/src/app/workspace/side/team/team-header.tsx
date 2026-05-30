@@ -1,5 +1,4 @@
 import { useUbentoEngine } from "@/hooks/app-engine";
-import { useUserAppSettings } from "@/hooks/settings/app";
 import { Button } from "@ubento/bento.arlo-core";
 import { Home, Sidebar } from "lucide-react";
 
@@ -9,11 +8,12 @@ export function WorkspaceHeader({
   onTitleClick,
 }: {
   icon: React.ReactNode;
-  title: string;
+  title: React.ReactNode;
   onTitleClick: () => void;
 }) {
   const engine = useUbentoEngine();
-  const { data: userSettings, update: updateSettings } = useUserAppSettings();
+  const userSettings = engine.userSetting.useState((s) => s.data);
+  const updateSettings = engine.userSetting.update;
 
   function handleSidebarClick() {
     updateSettings({

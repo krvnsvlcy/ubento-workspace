@@ -4,7 +4,6 @@ import { useWorkspaceEngine } from "@/contexts/workspace";
 import { useUbentoEngine } from "@/hooks/app-engine";
 import { ModuleRef } from "@ubento/bento.runtime";
 import React from "react";
-import { useUserWorkspaceSettings } from "@/hooks/settings/workspace";
 import { useAppModal } from "@/modals/app/hook.js";
 import { appModalRoutes } from "@/modals/app/routes.js";
 import { Plus } from "lucide-react";
@@ -99,11 +98,7 @@ function ModuleEntry({
 
 export function ModulesSection() {
   const workspaceEngine = useWorkspaceEngine();
-  const ubento = useUbentoEngine();
-  const location = ubento.useState((s) => s.location);
-
-  const workspaceId = location.view === "workspace" ? location.params.workspaceId : "";
-  const { update: updateSettings } = useUserWorkspaceSettings(workspaceId);
+  const updateSettings = workspaceEngine.userSetting.update;
 
   const modules = workspaceEngine.useState((s) => {
     const spec = s.workspace.spec;

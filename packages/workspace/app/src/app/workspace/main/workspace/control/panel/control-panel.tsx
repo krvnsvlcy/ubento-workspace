@@ -1,7 +1,7 @@
 import { useCopilot } from "@/contexts/copilot";
 import { useUbentoEngine } from "@/hooks/app-engine";
 import { Button } from "@ubento/bento.arlo-core";
-import { Edit2, History, Plus, Sidebar, X } from "lucide-react";
+import { History, Plus, Sidebar, X } from "lucide-react";
 import { useState } from "react";
 import { WorkspaceEngine } from "../../../../../../engine/workspace/engine";
 import { CopilotTab } from "./tabs/copilot/copilot";
@@ -18,7 +18,7 @@ export function ControlPanel({
   const appEngine = useUbentoEngine();
   const rightPanelPinned = appEngine.useState((s) => s.rightPanelPinned);
   const [activeTab, setActiveTab] = useState<string>("ai");
-  const mode = controller.useState((s) => s.mode);
+  const mode = controller.userSetting.useState((s) => s.data.mode);
 
   let content = <></>;
   let actions: Array<{
@@ -75,17 +75,6 @@ export function ControlPanel({
           ))}
         </div>
         <div className="flex gap-2">
-          <Button
-            variant={mode === "edit" ? "primary" : "ghost"}
-            size="icon"
-            shape="circle"
-            onClick={() => {
-              controller.setInteractionMode(mode === "live" ? "edit" : "live");
-            }}
-            title={`Switch to ${mode === "live" ? "edit" : "live"} mode`}
-          >
-            {mode === "live" ? <Edit2 size={16} /> : <Edit2 size={16} />}
-          </Button>
           <Button
             variant={rightPanelPinned ? "ghost" : "ghost"}
             size="icon"

@@ -14,7 +14,6 @@
   "dependencies": {
     "@google-cloud/secret-manager": "^6.1.2",
     "@google-cloud/storage": "^7.19.0",
-    "zod": "^4.3.6",
     "@ubento/services.billing-edge": "workspace:*",
     "@ubento/services.database": "workspace:*",
     "@ubento/services.primitives": "workspace:*",
@@ -27,16 +26,17 @@
     "ioredis": "^5.4.1",
     "lodash.get": "^4.4.2",
     "mime-types": "^3.0.2",
-    "multer": "^2.1.1"
+    "multer": "^2.1.1",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@types/dotenv": "^8.2.0",
     "@types/express": "^5.0.3",
     "@types/lodash.get": "^4.4.9",
     "@types/mime-types": "^3.0.1",
+    "@types/multer": "^2.1.0",
     "@types/semver": "^7.7.1",
     "tsx": "^4.21.0",
-    "typescript": "~6.0.2",
-    "@types/multer": "^2.1.0"
+    "typescript": "~6.0.2"
   }
 }

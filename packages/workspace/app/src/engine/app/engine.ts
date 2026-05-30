@@ -4,6 +4,7 @@ import {
 } from "@/engine/workspace/engine";
 import { AppModal } from "@/modals/app/app_modal";
 import { createUbentoService, UbentoService } from "@/services/ubento/ubento";
+import { QueryClient } from "@tanstack/react-query";
 import { ubentoAuth } from "@ubento/services.primitives";
 import type { UbentoSDK, workspaceClient } from "@ubento/services.sdk";
 import { createZustandStateController, StateController } from "@ubento/state";
@@ -11,7 +12,14 @@ import { createLogger, Logger } from "@ubento/telemetry";
 import { registerStore } from "@ubento/zustand-devtool";
 import React, { ComponentType } from "react";
 import { toast } from "sonner";
+import { z } from "zod";
 import { createStore } from "zustand";
+import {
+  createSettingState,
+  SettingState,
+  teamAppSettingsSchema,
+  userAppSettingsSchema,
+} from "../settings";
 import { makeLocationString } from "./app_modal";
 import { parseLocation, stringifyLocation, UbentoLocation } from "./location";
 import { UbentoSession } from "./session";
@@ -48,9 +56,12 @@ export type UbentoEngineState = {
 export type UbentoEngine = StateController<UbentoEngineState> & {
   logger: Logger;
   ubento: UbentoService;
+  queryClient: QueryClient;
   workspaceRuntimeUrl: string;
   componentRuntimeUrl: string;
   registryModuleUrlTemplate: string;
+  userSetting: SettingState<z.infer<typeof userAppSettingsSchema>>;
+  teamSetting: SettingState<z.infer<typeof teamAppSettingsSchema>>;
 
   goToLocation: (location: UbentoLocation) => void;
   openWorkspace: (workspaceId: string) => void;
@@ -145,7 +156,9 @@ export function createUbentoEngine({
     stateController.setState((state) => ({ ...state, dragActive: false }));
   });
 
+  const queryClient = new QueryClient();
   const ubento = createUbentoService({
+    queryClient,
     ubentoSdk: ubentoApi,
     logger: logger.child({ module: "service" }),
   });
@@ -158,54 +171,33 @@ export function createUbentoEngine({
     if (!workspaceId) {
       lastWorkspaceId = undefined;
       lastWorkspace = undefined;
+      stateController.setState({
+        workspaceStatus: "inactive",
+        workspace: undefined,
+      });
     } else {
       lastWorkspaceId = workspaceId;
-      function handleWorkspaceData(workspace: workspaceClient.Workspace) {
+      async function handleWorkspaceData(workspace: workspaceClient.Workspace) {
         if (lastWorkspaceId !== workspaceId) {
           return;
         }
-        const scopes = [
-          ubentoAuth.scopes.user({ user_id: session.userId }),
-          ubentoAuth.scopes.workspace({
-            team_id: session.teamId,
-            workspace_id: workspace.id,
-          }),
-        ];
-        const key = [...scopes].sort().join("|") + "|" + workspaceSettingsKey;
-        appEngine.ubento.settings
-          .getSettingByKey(key)
-          .then((setting) => {
-            if (lastWorkspaceId !== workspaceId) return;
-            const engine = createWorkspaceEngine({
-              workspace,
-              appEngine,
-              session,
-              initialSettings: setting.data,
-            });
-            lastWorkspace = engine;
-            stateController.setState({
-              workspaceStatus: "ready",
-              workspace: engine,
-            });
-          })
-          .catch((err) => {
-            console.warn(
-              "Failed to fetch workspace settings, using default initial settings",
-              err,
-            );
-            if (lastWorkspaceId !== workspaceId) return;
-            const engine = createWorkspaceEngine({
-              workspace,
-              appEngine,
-              session,
-              initialSettings: undefined,
-            });
-            lastWorkspace = engine;
-            stateController.setState({
-              workspaceStatus: "ready",
-              workspace: engine,
-            });
-          });
+        const engine = createWorkspaceEngine({
+          workspace,
+          appEngine,
+          session,
+        });
+        // make sure settings are loaded before setting the workspace
+        await Promise.all([
+          engine.userSetting.isLoaded,
+          engine.teamSetting.isLoaded,
+          // enforce a minimum of 500ms to show the workspace skeleton
+          new Promise((resolve) => setTimeout(resolve, 500)),
+        ]);
+        lastWorkspace = engine;
+        stateController.setState({
+          workspaceStatus: "ready",
+          workspace: engine,
+        });
       }
       const cachedWorkspace =
         ubento.workspace.workspaceStore.getCached(workspaceId);
@@ -293,10 +285,35 @@ export function createUbentoEngine({
     }));
   }
 
+  const userScopes = [ubentoAuth.scopes.user({ user_id: session.userId })];
+  const teamScopes = [ubentoAuth.scopes.team({ team_id: session.teamId })];
+
+  const userSetting = createSettingState({
+    key: "ubento",
+    scopes: userScopes,
+    schema: userAppSettingsSchema,
+    ubentoService: ubento,
+    init: {
+      sidePanelPinned: true,
+      sidePanelWidth: 240,
+    },
+  });
+
+  const teamSetting = createSettingState({
+    key: "ubento",
+    scopes: teamScopes,
+    schema: teamAppSettingsSchema,
+    ubentoService: ubento,
+    init: {},
+  });
+
   const appEngine: UbentoEngine = {
     logger,
     ...stateController,
     ubento,
+    queryClient,
+    userSetting,
+    teamSetting,
     workspaceRuntimeUrl,
     componentRuntimeUrl,
     registryModuleUrlTemplate,

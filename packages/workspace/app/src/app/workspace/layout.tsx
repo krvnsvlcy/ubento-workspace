@@ -1,13 +1,18 @@
+import { useUbentoEngine } from "@/hooks/app-engine";
 import { useState } from "react";
 import { Main } from "./main/main";
 import { SideSplitView } from "./main/workspace/components/split-view";
 import { Side } from "./side/side";
-import { useUserAppSettings } from "@/hooks/settings/app";
 
 export function Layout() {
-  const { data: userSettings, update: updateSettings } = useUserAppSettings();
-  const sidePanelPinned = userSettings.sidePanelPinned;
-  const sidePanelWidth = userSettings.sidePanelWidth;
+  const engine = useUbentoEngine();
+  const updateSettings = engine.userSetting.update;
+  const sidePanelPinned = engine.userSetting.useState(
+    (s) => s.data.sidePanelPinned,
+  );
+  const sidePanelWidth = engine.userSetting.useState(
+    (s) => s.data.sidePanelWidth,
+  );
   const [isHovered, setIsHovered] = useState(false);
 
   return (
@@ -23,7 +28,7 @@ export function Layout() {
       {/* Floating Left Panel */}
       {!sidePanelPinned && (
         <div
-          className="fixed top-0 left-0 bottom-0 z-[100] transition-all duration-300 ease-in-out bg-surface/60 backdrop-blur-xl border-r border-border"
+          className="fixed top-0 left-0 bottom-0 z-[100] transition-all duration-300 ease-in-out bg-background/60 backdrop-blur-xl border-r border-border"
           style={{
             width: sidePanelWidth,
             transform: isHovered ? "translateX(0)" : "translateX(-100%)",
@@ -45,7 +50,7 @@ export function Layout() {
       <SideSplitView
         left={{
           content: sidePanelPinned ? (
-            <div className="h-full bg-surface/60 border-r">
+            <div className="h-full bg-surface/30 border-r">
               <Side />
             </div>
           ) : null,

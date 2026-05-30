@@ -96,54 +96,54 @@ export function TreeEntry({
   }
 
   return (
-    <div className="relative flex flex-col gap-1 w-full">
-      <div
-        onMouseEnter={(e) => {
-          setIsHovered(true);
-          onMouseEnter?.(e);
-        }}
-        onMouseLeave={(e) => {
-          setIsHovered(false);
-          onMouseLeave?.(e);
-        }}
-        className={clsx(
-          "group h-8 text-sm cursor-pointer flex items-center rounded-xl px-1",
-          className,
-          {
-            "text-content hover:bg-current/7": !active,
-            "bg-base text-contrast hover:bg-hover": active,
-          },
-        )}
-        {...props}
-      >
-        {depth ? <div style={{ width: depth * 12, flexShrink: 0 }} /> : <></>}
-        {icon || loading ? (
-          <div
-            className="flex items-center justify-center"
-            style={{ flexShrink: 0 }}
-          >
-            {iconNode}
-          </div>
-        ) : (
-          <></>
-        )}
-        <div className="px-1 grow overflow-hidden whitespace-nowrap truncate">
-          {children}
+    <div
+      onMouseEnter={(e) => {
+        setIsHovered(true);
+        onMouseEnter?.(e);
+      }}
+      onMouseLeave={(e) => {
+        setIsHovered(false);
+        onMouseLeave?.(e);
+      }}
+      className={clsx(
+        "relative w-full group h-8 text-sm cursor-pointer flex items-center rounded-xl px-1 text-content transition-colors",
+        className,
+        {
+          "bg-current/0 hover:bg-current/5": !active,
+          "bg-current/7 hover:bg-current/9": active,
+        },
+      )}
+      data-tone={error ? "destructive" : undefined}
+      {...props}
+    >
+      {depth ? <div style={{ width: depth * 12, flexShrink: 0 }} /> : <></>}
+      {icon || loading ? (
+        <div
+          className="flex items-center justify-center"
+          style={{ flexShrink: 0 }}
+        >
+          {iconNode}
         </div>
-
-        {actions?.length && (
-          <div
-            className={clsx("items-center gap-1", {
-              "hidden group-hover:flex": actionMode === "hover",
-              flex: actionMode === "visible",
-            })}
-          >
-            {actions.map((action, index) => (
-              <Action key={index} {...action} />
-            ))}
-          </div>
-        )}
+      ) : (
+        <></>
+      )}
+      <div className="px-1 grow overflow-hidden whitespace-nowrap truncate">
+        {children}
       </div>
+
+      {actions?.length && (
+        <div
+          className={clsx("items-center gap-1", {
+            "hidden group-hover:flex": actionMode === "hover",
+            flex: actionMode === "visible",
+          })}
+        >
+          {actions.map((action, index) => (
+            <Action key={index} {...action} />
+          ))}
+        </div>
+      )}
+
       {error && (
         <div
           data-tone="destructive"

@@ -1,8 +1,8 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Toaster } from "@ubento/bento.arlo-core";
-import { ModalRenderer } from "../components/modal/renderer";
+import { ModalRenderer } from "@/components/modal/renderer";
 import { UbentoEngineContext } from "@/contexts/app_engine";
 import { UbentoEngine } from "@/engine/app/engine";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "sonner";
 import { SessionProvider } from "./session";
 import { Layout } from "./workspace/layout";
 
