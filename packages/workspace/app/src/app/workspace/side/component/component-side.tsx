@@ -26,8 +26,8 @@ function TabButton({
       onClick={onClick}
       className={`flex-1 flex items-center justify-center py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider transition-all ${
         isActive
-          ? "bg-neutral-surface shadow-sm text-accent"
-          : "text-neutral-content-muted hover:bg-neutral-surface-hover"
+          ? "bg-surface shadow-sm text-base"
+          : "text-content-muted hover:bg-surface-hover"
       }`}
     >
       <Icon icon={tab.icon} size={12} className="mr-1.5" />
@@ -67,7 +67,7 @@ export function ComponentSide() {
     <>
       <ComponentHeader />
       {enabledTabs.length > 1 && (
-        <div className="flex p-1.5 gap-1 border-b border-neutral-border bg-neutral-surface/30">
+        <div className="flex p-1.5 gap-1 border-b border-border bg-surface/30">
           {enabledTabs.map((tab) => (
             <TabButton
               key={tab.id}

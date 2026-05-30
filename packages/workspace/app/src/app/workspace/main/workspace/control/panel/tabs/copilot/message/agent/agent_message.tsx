@@ -78,7 +78,7 @@ function TaskActionView({ action }: { action: AgentActionData }) {
         <span className="font-medium">
           Task: {action.input?.title || "Specialized Agent"} ({action.input?.agent})
         </span>
-        <span className="text-neutral-500">({action.status})</span>
+        <span className="text-base-500">({action.status})</span>
         <button
           onClick={handleCopy}
           className="ml-1 flex items-center justify-center rounded p-1 hover:bg-surface-active transition-colors text-content-muted hover:text-content"

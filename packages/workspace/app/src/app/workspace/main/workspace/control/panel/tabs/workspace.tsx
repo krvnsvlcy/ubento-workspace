@@ -44,7 +44,7 @@ export function WorkspaceTab({ controller }: { controller: WorkspaceEngine }) {
           />
         </PropertyRow>
         <PropertyRow label="Slug">
-          <span className="font-mono text-[10px] text-neutral-content-subtle">
+          <span className="font-mono text-[10px] text-content-subtle">
             {workspace.slug}
           </span>
         </PropertyRow>
@@ -76,13 +76,13 @@ export function WorkspaceTab({ controller }: { controller: WorkspaceEngine }) {
           ).map(([name, data]) => (
             <div key={name} className="mb-2 flex flex-col rounded-md p-2">
               <div className="flex items-center justify-between">
-                <span className="text-[11px] font-bold text-neutral-content">
+                <span className="text-[11px] font-bold text-content">
                   {name}
                 </span>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => handleRemoveService(name)}
-                    className="text-neutral-content-subtle hover:text-destructive transition-colors"
+                    className="text-content-subtle hover:text-base transition-colors"
                   >
                     <Trash2 size={12} />
                   </button>
@@ -90,18 +90,18 @@ export function WorkspaceTab({ controller }: { controller: WorkspaceEngine }) {
               </div>
               <div className="mt-1 flex flex-col gap-1 pt-1">
                 <div className="flex items-center justify-between">
-                  <span className="text-[9px] uppercase tracking-wider text-neutral-content-subtle">
+                  <span className="text-[9px] uppercase tracking-wider text-content-subtle">
                     Channel
                   </span>
-                  <span className="text-[10px] font-mono text-neutral-content-subtle">
+                  <span className="text-[10px] font-mono text-content-subtle">
                     {(data as any).channelId || (data as any).channel}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[9px] uppercase tracking-wider text-neutral-content-subtle">
+                  <span className="text-[9px] uppercase tracking-wider text-content-subtle">
                     Connection
                   </span>
-                  <span className="text-[10px] font-mono text-neutral-content-subtle">
+                  <span className="text-[10px] font-mono text-content-subtle">
                     {data.connectionId}
                   </span>
                 </div>
@@ -110,7 +110,7 @@ export function WorkspaceTab({ controller }: { controller: WorkspaceEngine }) {
           ))}
           <button
             onClick={handleAddService}
-            className="mt-2 flex w-full items-center justify-center gap-2 rounded-md py-2 text-[10px] font-bold uppercase tracking-wider text-neutral-content-muted transition-colors hover:text-accent"
+            className="mt-2 flex w-full items-center justify-center gap-2 rounded-md py-2 text-[10px] font-bold uppercase tracking-wider text-content-muted transition-colors hover:text-base"
           >
             <Plus size={12} />
             Add Service
@@ -120,12 +120,12 @@ export function WorkspaceTab({ controller }: { controller: WorkspaceEngine }) {
 
       <Section title="Info" icon={Globe}>
         <PropertyRow label="Workspace ID">
-          <span className="font-mono text-[10px] text-neutral-content-subtle">
+          <span className="font-mono text-[10px] text-content-subtle">
             {workspace.id}
           </span>
         </PropertyRow>
         <PropertyRow label="Team ID">
-          <span className="font-mono text-[10px] text-neutral-content-subtle">
+          <span className="font-mono text-[10px] text-content-subtle">
             {(workspace as any).teamId}
           </span>
         </PropertyRow>

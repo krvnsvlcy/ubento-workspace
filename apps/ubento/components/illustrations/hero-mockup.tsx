@@ -15,22 +15,22 @@ export function HeroMockup() {
         {/* Workspace Grid */}
         <div className="grid grid-cols-4 h-[500px]">
           {/* Sidebar */}
-          <div className="col-span-1 border-r border-neutral-border bg-neutral-surface p-4 space-y-4">
-            <div className="h-6 w-24 rounded bg-neutral-surface-hover" />
+          <div className="col-span-1 border-r border-border bg-surface p-4 space-y-4">
+            <div className="h-6 w-24 rounded bg-surface-hover" />
             <div className="space-y-2 pt-4">
               {[...Array(5)].map((_, i) => (
                 <div
                   key={i}
-                  className="h-4 w-full rounded bg-neutral-surface-hover"
+                  className="h-4 w-full rounded bg-surface-hover"
                 />
               ))}
             </div>
           </div>
           {/* Main Content */}
           <div className="col-span-3 p-8 bg-background">
-            <div className="flex justify-between items-center mb-8 pb-4 border-b border-neutral-border">
-              <div className="h-8 w-48 rounded bg-neutral-surface" />
-              <div className="h-8 w-24 rounded bg-inverse text-inverse-contrast flex items-center justify-center text-xs font-medium">
+            <div className="flex justify-between items-center mb-8 pb-4 border-b border-border">
+              <div className="h-8 w-48 rounded bg-surface" />
+              <div className="h-8 w-24 rounded bg-base text-contrast flex items-center justify-center text-xs font-medium">
                 Generate
               </div>
             </div>
@@ -38,11 +38,11 @@ export function HeroMockup() {
               {[...Array(6)].map((_, i) => (
                 <div
                   key={i}
-                  className="h-32 rounded-lg border border-neutral-border bg-neutral-surface p-4"
+                  className="h-32 rounded-lg border border-border bg-surface p-4"
                 >
-                  <div className="h-4 w-1/2 rounded bg-neutral-surface-hover mb-4" />
-                  <div className="h-2 w-full rounded bg-neutral-border mb-2" />
-                  <div className="h-2 w-2/3 rounded bg-neutral-border" />
+                  <div className="h-4 w-1/2 rounded bg-surface-hover mb-4" />
+                  <div className="h-2 w-full rounded bg-border mb-2" />
+                  <div className="h-2 w-2/3 rounded bg-border" />
                 </div>
               ))}
             </div>

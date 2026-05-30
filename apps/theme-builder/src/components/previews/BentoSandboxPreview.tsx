@@ -66,7 +66,7 @@ export default function BentoSandboxPreview({
       <div className="flex items-center justify-between">
         <div>
           <Heading level="h1">Bento Sandbox</Heading>
-          <p className="text-neutral-content-muted mt-1">
+          <p className="text-content-muted mt-1">
             A comprehensive playground demonstrating the Bento Design System
             components and active styles.
           </p>

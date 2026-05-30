@@ -14,7 +14,7 @@ export function RailLayout({
 const railLayoutSideVariants = cva("shrink-0 w-[240px] h-full", {
   variants: {
     variant: {
-      default: "bg-neutral-surface/50",
+      default: "bg-surface/50",
     },
     side: {
       left: "border-r",

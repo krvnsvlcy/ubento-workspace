@@ -9,7 +9,7 @@ import { CheckCircle2 } from "lucide-react";
 
 export default function PricingPage() {
   return (
-    <div className="min-h-screen bg-neutral-surface font-body text-neutral-content selection:bg-neutral-surface-active flex flex-col">
+    <div className="min-h-screen bg-surface font-body text-content selection:bg-surface-active flex flex-col">
       <Header />
 
       {/* Main Pricing Hero Section */}
@@ -26,10 +26,10 @@ export default function PricingPage() {
           </Typography>
 
           {/* Unified Pricing Card */}
-          <div className="mt-16 mx-auto max-w-5xl rounded-3xl border border-neutral-border bg-background overflow-hidden flex flex-col md:flex-row text-left">
+          <div className="mt-16 mx-auto max-w-5xl rounded-3xl border border-border bg-background overflow-hidden flex flex-col md:flex-row text-left">
             {/* Hobby Plan */}
             <div className="flex-1 p-8 md:p-12 flex flex-col">
-              <div className="flex flex-col xl:flex-row xl:items-start justify-between gap-6 pb-8 border-b border-neutral-border/50">
+              <div className="flex flex-col xl:flex-row xl:items-start justify-between gap-6 pb-8 border-b border-border/50">
                 <div>
                   <Typography shade="default" weight="bold">
                     Hobby
@@ -52,7 +52,7 @@ export default function PricingPage() {
                     "Single user environment",
                   ].map((feature, i) => (
                     <li key={i} className="flex items-start gap-3">
-                      <CheckCircle2 className="h-5 w-5 text-neutral-content-muted shrink-0 mt-0.5" />
+                      <CheckCircle2 className="h-5 w-5 text-content-muted shrink-0 mt-0.5" />
                       <Typography
                         variant="body-small"
                         as="span"
@@ -78,11 +78,11 @@ export default function PricingPage() {
             </div>
 
             {/* Pro Plan */}
-            <div className="flex-1 p-8 md:p-12 flex flex-col bg-neutral-surface/40 border-t md:border-t-0 md:border-l border-neutral-border relative group">
+            <div className="flex-1 p-8 md:p-12 flex flex-col bg-surface/40 border-t md:border-t-0 md:border-l border-border relative group">
               {/* Premium Subtle Gradient */}
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-neutral-surface-hover to-transparent" />
 
-              <div className="flex flex-col xl:flex-row xl:items-start justify-between gap-6 pb-8 border-b border-neutral-border/50 relative">
+              <div className="flex flex-col xl:flex-row xl:items-start justify-between gap-6 pb-8 border-b border-border/50 relative">
                 <div>
                   <Typography shade="default" weight="bold">
                     Pro
@@ -93,7 +93,7 @@ export default function PricingPage() {
                 </div>
                 <div className="flex items-baseline">
                   <Typography variant="h3">$20</Typography>
-                  <span className="ml-2 text-xs font-semibold text-neutral-content-muted uppercase tracking-wider font-mono">
+                  <span className="ml-2 text-xs font-semibold text-content-muted uppercase tracking-wider font-mono">
                     /mo
                   </span>
                 </div>
@@ -109,7 +109,7 @@ export default function PricingPage() {
                     "Priority access to new API surfaces",
                   ].map((feature, i) => (
                     <li key={i} className="flex items-start gap-3">
-                      <CheckCircle2 className="h-5 w-5 text-neutral-content shrink-0 mt-0.5" />
+                      <CheckCircle2 className="h-5 w-5 text-content shrink-0 mt-0.5" />
                       <Typography
                         variant="body-small"
                         as="span"

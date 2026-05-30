@@ -45,7 +45,7 @@ export function AddConnection() {
 
   if (!providerData || !config) {
     return (
-      <Content className="p-6 text-sm text-destructive">
+      <Content className="p-6 text-sm text-base">
         Provider not found.
       </Content>
     );
@@ -163,7 +163,7 @@ function AddConnectionForm({
 
       <ContentBody className="space-y-4">
         {error && (
-          <div className="p-3 text-xs text-destructive bg-destructive/10 rounded-lg font-medium">
+          <div className="p-3 text-xs text-base bg-base/10 rounded-lg font-medium">
             {error}
           </div>
         )}

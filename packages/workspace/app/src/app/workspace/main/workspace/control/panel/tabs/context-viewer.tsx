@@ -67,11 +67,11 @@ function TreeNode({
   return (
     <div className="flex flex-col select-none">
       <div
-        className={`flex items-center gap-1.5 py-1 px-1.5 rounded hover:bg-neutral-surface-hover/20 cursor-pointer text-xs transition-colors group`}
+        className={`flex items-center gap-1.5 py-1 px-1.5 rounded hover:bg-surface-hover/20 cursor-pointer text-xs transition-colors group`}
         onClick={toggleExpand}
       >
         {hasChildren ? (
-          <div className="text-neutral-content-muted">
+          <div className="text-content-muted">
             {isExpanded ? (
               <ChevronDown size={14} />
             ) : (
@@ -82,15 +82,15 @@ function TreeNode({
           <div className="w-3.5" />
         )}
 
-        <span className="font-mono text-neutral-content-strong font-medium">
+        <span className="font-mono text-content-strong font-medium">
           {label}
         </span>
-        <span className="text-[10px] text-neutral-content-muted px-1.5 py-0.5 rounded bg-neutral-surface-active/10 font-mono">
+        <span className="text-[10px] text-content-muted px-1.5 py-0.5 rounded bg-surface-active/10 font-mono">
           {type}
         </span>
 
         {displayValue !== undefined && (
-          <span className="font-mono text-neutral-content-strong/80 truncate max-w-[200px]">
+          <span className="font-mono text-content-strong/80 truncate max-w-[200px]">
             : {displayValue}
           </span>
         )}
@@ -98,12 +98,12 @@ function TreeNode({
         {displayValue !== undefined && (
           <button
             type="button"
-            className="ml-auto opacity-0 group-hover:opacity-100 transition-all p-1 rounded hover:bg-neutral-surface-active/20 text-neutral-content-muted hover:text-neutral-content-strong flex items-center justify-center"
+            className="ml-auto opacity-0 group-hover:opacity-100 transition-all p-1 rounded hover:bg-surface-active/20 text-content-muted hover:text-content-strong flex items-center justify-center"
             onClick={handleCopy}
             title="Copy value"
           >
             {copied ? (
-              <Check size={12} className="text-success" />
+              <Check size={12} className="text-base" />
             ) : (
               <Copy size={12} />
             )}
@@ -112,13 +112,13 @@ function TreeNode({
       </div>
 
       {isExpanded && hasChildren && (
-        <div className="pl-3 border-l border-neutral-border/20 ml-3 mt-0.5 flex flex-col gap-0.5">
+        <div className="pl-3 border-l border-border/20 ml-3 mt-0.5 flex flex-col gap-0.5">
           {children === undefined ? (
-            <div className="text-[10px] text-neutral-content-muted pl-4 py-1 italic">
+            <div className="text-[10px] text-content-muted pl-4 py-1 italic">
               Loading...
             </div>
           ) : children.length === 0 ? (
-            <div className="text-[10px] text-neutral-content-muted pl-4 py-1 italic">
+            <div className="text-[10px] text-content-muted pl-4 py-1 italic">
               Empty
             </div>
           ) : (
@@ -170,7 +170,7 @@ export function ContextViewerTab({
 
   if (!boardId) {
     return (
-      <div className="p-4 text-xs text-neutral-content-muted">
+      <div className="p-4 text-xs text-content-muted">
         No active board
       </div>
     );
@@ -179,11 +179,11 @@ export function ContextViewerTab({
   return (
     <div className="p-4 h-full overflow-auto flex flex-col gap-4">
       {rootChildren === undefined ? (
-        <div className="text-xs text-neutral-content-muted italic">
+        <div className="text-xs text-content-muted italic">
           Connecting to context...
         </div>
       ) : rootChildren.length === 0 ? (
-        <div className="text-xs text-neutral-content-muted italic">
+        <div className="text-xs text-content-muted italic">
           No context available
         </div>
       ) : (

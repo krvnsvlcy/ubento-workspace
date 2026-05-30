@@ -29,7 +29,7 @@ export function UserButton() {
     return (
       <a
         href="/auth/login"
-        className="flex h-10 items-center justify-center rounded-full bg-neutral-content px-6 text-sm font-medium text-neutral-contrast transition-transform hover:scale-105 active:scale-95"
+        className="flex h-10 items-center justify-center rounded-full bg-content px-6 text-sm font-medium text-contrast transition-transform hover:scale-105 active:scale-95"
       >
         Sign In
       </a>
@@ -42,7 +42,7 @@ export function UserButton() {
         onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
         className="group flex items-center gap-2"
       >
-        <div className="flex h-9 w-9 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-neutral-surface-hover text-neutral-content-subtle ring-2 ring-transparent transition-all hover:scale-105 hover:bg-neutral-surface-active active:scale-95 group-hover:ring-accent/30">
+        <div className="flex h-9 w-9 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-surface-hover text-content-subtle ring-2 ring-transparent transition-all hover:scale-105 hover:bg-surface-active active:scale-95 group-hover:ring-accent/30">
           {user?.picture ? (
             <img
               src={user.picture}
@@ -62,13 +62,13 @@ export function UserButton() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="z-50 absolute right-0 top-full mt-2 w-56 origin-top-right overflow-hidden rounded-2xl border border-neutral-border bg-neutral-surface p-1.5 shadow-2xl"
+            className="z-50 absolute right-0 top-full mt-2 w-56 origin-top-right overflow-hidden rounded-2xl border border-border bg-surface p-1.5 shadow-2xl"
           >
-            <div className="mb-1 border-b border-neutral-border px-3 py-2">
-              <p className="text-xs font-semibold uppercase tracking-wider text-neutral-content-muted">
+            <div className="mb-1 border-b border-border px-3 py-2">
+              <p className="text-xs font-semibold uppercase tracking-wider text-content-muted">
                 Account
               </p>
-              <p className="truncate text-sm font-medium text-neutral-content">
+              <p className="truncate text-sm font-medium text-content">
                 {user?.name || "Loading..."}
               </p>
             </div>
@@ -78,9 +78,9 @@ export function UserButton() {
                 setIsUserMenuOpen(false);
                 open(AccountModal, { user: session });
               }}
-              className="group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-neutral-content-subtle transition-all hover:bg-neutral-surface-hover hover:text-neutral-content"
+              className="group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-content-subtle transition-all hover:bg-surface-hover hover:text-content"
             >
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-neutral-surface-active/50 transition-colors group-hover:bg-accent-surface group-hover:text-accent">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-surface-active/50 transition-colors group-hover:bg-surface group-hover:text-base">
                 <SettingsIcon className="h-4 w-4" />
               </div>
               Settings
@@ -88,9 +88,9 @@ export function UserButton() {
 
             <a
               href="/auth/logout"
-              className="group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-destructive-content transition-all hover:bg-destructive-surface hover:text-destructive"
+              className="group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-content transition-all hover:bg-surface hover:text-base"
             >
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-destructive-surface/50 transition-colors group-hover:bg-destructive-surface-hover">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-surface/50 transition-colors group-hover:bg-surface-hover">
                 <LogOut className="h-4 w-4" />
               </div>
               Logout

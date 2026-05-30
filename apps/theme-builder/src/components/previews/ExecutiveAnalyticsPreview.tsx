@@ -20,7 +20,7 @@ export default function ExecutiveAnalyticsPreview({
       <div className="flex items-center justify-between">
         <div>
           <Heading level="h1">Executive Analytics</Heading>
-          <p className="text-neutral-content-muted mt-1">
+          <p className="text-content-muted mt-1">
             Data metrics, latency progress bars, and audience traffic distribution.
           </p>
         </div>

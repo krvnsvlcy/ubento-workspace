@@ -1,11 +1,19 @@
 import chroma from "chroma-js";
 
 export type ColorPalette = {
-  base: string;
-  surface: string;
+  default: string;
+  hover: string;
+  active: string;
   contrast: string;
+  surface: string;
+  surfaceHover: string;
+  surfaceActive: string;
   border: string;
+  borderHover: string;
+  borderActive: string;
   content: string;
+  contentSubtle: string;
+  contentMuted: string;
 };
 
 export type Theme = {

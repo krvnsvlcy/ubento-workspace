@@ -51,7 +51,7 @@ function ServiceEntry({
       <TreeEntry icon="service" actionMode="hidden">
         <input
           autoFocus
-          className="w-full bg-transparent border-none outline-none p-0 text-[13px] text-foreground placeholder:text-neutral-content-muted"
+          className="w-full bg-transparent border-none outline-none p-0 text-[13px] text-foreground placeholder:text-content-muted"
           value={editName}
           onChange={(e) => setEditName(e.target.value)}
           onBlur={handleSave}
@@ -149,7 +149,7 @@ export function ServicesSection() {
     >
       {serviceEntries.length === 0 ? (
         <div className="px-3 py-4 text-center">
-          <p className="text-[11px] text-neutral-content-muted italic">
+          <p className="text-[11px] text-content-muted italic">
             No services installed
           </p>
         </div>

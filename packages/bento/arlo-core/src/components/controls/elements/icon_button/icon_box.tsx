@@ -13,7 +13,7 @@ export function IconBox({
   return (
     <div
       className={cx(
-        "flex items-center justify-center text-neutral-content",
+        "flex items-center justify-center text-content",
         {
           "h-full w-full": full,
           "h-5 w-5": !full,

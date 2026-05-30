@@ -72,7 +72,7 @@ const ServiceCard: FC<ServiceCardProps> = ({
       onClick={() => onSelect(service.id)}
       className={`flex flex-col items-start text-left ${isInstalled ? "opacity-50" : ""}`}
     >
-      <div className="h-10 w-10 rounded-xl flex items-center justify-center bg-background text-neutral-content-muted group-hover:text-neutral-content transition-all mb-3 overflow-hidden">
+      <div className="h-10 w-10 rounded-xl flex items-center justify-center bg-background text-content-muted group-hover:text-content transition-all mb-3 overflow-hidden">
         <Switch>
           <Case condition={!!service.image_url}>
             <img
@@ -87,16 +87,16 @@ const ServiceCard: FC<ServiceCardProps> = ({
         </Switch>
       </div>
       <div className="w-full flex items-center justify-between gap-2 mb-1">
-        <h4 className="text-sm font-bold text-neutral-content group-hover:text-foreground transition-colors truncate">
+        <h4 className="text-sm font-bold text-content group-hover:text-foreground transition-colors truncate">
           {service.name}
         </h4>
         {isInstalled && (
-          <span className="px-2 py-0.5 rounded-full bg-success/10 border border-success/20 text-success text-[9px] font-bold uppercase tracking-wider shrink-0">
+          <span className="px-2 py-0.5 rounded-full bg-base/10 border border-border/20 text-base text-[9px] font-bold uppercase tracking-wider shrink-0">
             Installed
           </span>
         )}
       </div>
-      <p className="text-xs text-neutral-content-muted line-clamp-2">
+      <p className="text-xs text-content-muted line-clamp-2">
         {service.description}
       </p>
     </Card>
@@ -172,7 +172,7 @@ export const ServiceBrowser: FC = () => {
               })}
             </div>
           </ContentBody>
-          <ContentFooter className="border-t border-neutral-border/30 pt-3">
+          <ContentFooter className="border-t border-border/30 pt-3">
             <Button
               onClick={() => push(appModalRoutes.services.create)}
               className="w-full"
@@ -188,7 +188,7 @@ export const ServiceBrowser: FC = () => {
         <Content>
           <ContentHeader className="space-y-4">
             <Input
-              prefix={<Search className="h-4 w-4 text-neutral-content-muted" />}
+              prefix={<Search className="h-4 w-4 text-content-muted" />}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search for services, integrations, and tools..."
@@ -209,7 +209,7 @@ export const ServiceBrowser: FC = () => {
             <Switch>
               <Case condition={isFetching && !services.length}>
                 <div className="flex justify-center p-12">
-                  <Spinner className="text-neutral-content-muted" />
+                  <Spinner className="text-content-muted" />
                 </div>
               </Case>
               <Case condition={!services.length}>
@@ -232,7 +232,7 @@ export const ServiceBrowser: FC = () => {
                     />
                     {isFetching && (
                       <div className="flex justify-center p-6 col-span-2">
-                        <Spinner className="text-neutral-content-muted" />
+                        <Spinner className="text-content-muted" />
                       </div>
                     )}
                   </div>

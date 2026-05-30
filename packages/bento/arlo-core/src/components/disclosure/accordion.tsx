@@ -18,11 +18,11 @@ const AccordionTrigger = React.forwardRef<
         // base
         "group flex flex-1 cursor-pointer items-center justify-between py-3 text-left text-sm leading-none font-medium",
         // text color
-        "text-neutral-content",
+        "text-content",
         // disabled
-        "data-disabled:cursor-default data-disabled:text-neutral-content-muted",
+        "data-disabled:cursor-default data-disabled:text-content-muted",
         //focus
-        "focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-accent-border focus-visible:outline-hidden focus-visible:ring-inset",
+        "focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-border focus-visible:outline-hidden focus-visible:ring-inset",
         className,
       )}
       {...props}
@@ -34,9 +34,9 @@ const AccordionTrigger = React.forwardRef<
           // base
           "size-5 shrink-0 transition-transform duration-150 ease-[cubic-bezier(0.87,_0,_0.13,_1)] group-data-[state=open]:-rotate-45",
           // text color
-          "text-neutral-content-subtle",
+          "text-content-subtle",
           // disabled
-          "group-data-disabled:text-neutral-content-muted",
+          "group-data-disabled:text-content-muted",
         )}
         aria-hidden="true"
         focusable="false"
@@ -63,7 +63,7 @@ const AccordionContent = React.forwardRef<
         // base
         "overflow-hidden pb-4 text-sm",
         // text color
-        "text-neutral-content-subtle",
+        "text-content-subtle",
         className,
       )}
     >
@@ -84,7 +84,7 @@ const AccordionItem = React.forwardRef<
       // base
       "overflow-hidden border-b first:mt-0",
       // border color
-      "border-neutral-border",
+      "border-border",
       className,
     )}
     {...props}

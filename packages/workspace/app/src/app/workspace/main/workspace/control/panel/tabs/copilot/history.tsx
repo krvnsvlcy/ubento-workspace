@@ -42,10 +42,10 @@ export function HistoryTab({ onBack }: { onBack: () => void }) {
     <div className="h-full overflow-y-auto">
       {isLoading ? (
         <div className="h-full w-full flex items-center justify-center p-8">
-          <Loader2 size={20} className="animate-spin text-accent" />
+          <Loader2 size={20} className="animate-spin text-base" />
         </div>
       ) : threads.length === 0 ? (
-        <div className="h-full w-full flex flex-col items-center justify-center text-neutral-content-muted gap-2">
+        <div className="h-full w-full flex flex-col items-center justify-center text-content-muted gap-2">
           <History size={24} opacity={0.5} />
           <span className="text-xs">No history yet</span>
         </div>
@@ -58,8 +58,8 @@ export function HistoryTab({ onBack }: { onBack: () => void }) {
               className={cx(
                 "w-full flex flex-col items-start gap-1 p-3 rounded-lg text-left transition-colors",
                 activeThreadId === thread.id
-                  ? "bg-accent/10 border-accent/20"
-                  : "hover:bg-neutral-content/5",
+                  ? "bg-base/10 border-border/20"
+                  : "hover:bg-content/5",
               )}
             >
               <div className="flex items-center gap-2 w-full">
@@ -67,20 +67,20 @@ export function HistoryTab({ onBack }: { onBack: () => void }) {
                   size={14}
                   className={cx(
                     activeThreadId === thread.id
-                      ? "text-accent"
-                      : "text-neutral-content-muted",
+                      ? "text-base"
+                      : "text-content-muted",
                   )}
                 />
                 <span
                   className={cx("text-xs font-medium truncate flex-1", {
-                    "text-accent": activeThreadId === thread.id,
-                    "text-neutral-content": activeThreadId !== thread.id,
+                    "text-base": activeThreadId === thread.id,
+                    "text-content": activeThreadId !== thread.id,
                   })}
                 >
                   {thread.title || "Untitled Conversation"}
                 </span>
               </div>
-              <div className="text-[10px] text-neutral-content-muted flex justify-between w-full">
+              <div className="text-[10px] text-content-muted flex justify-between w-full">
                 <span>{new Date(thread.created_at).toLocaleDateString()}</span>
                 <span>
                   {new Date(thread.created_at).toLocaleTimeString([], {

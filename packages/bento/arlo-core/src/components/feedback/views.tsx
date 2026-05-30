@@ -20,7 +20,7 @@ export const PendingView: React.FC<ViewProps> = ({ message }) => {
     >
       <Spinner />
       {message && (
-        <p className="text-neutral-content-muted text-sm font-medium tracking-wide animate-pulse">
+        <p className="text-content-muted text-sm font-medium tracking-wide animate-pulse">
           {message}
         </p>
       )}
@@ -42,7 +42,7 @@ export function EmptyView({
       className={`h-full w-full flex flex-col items-center justify-center p-8 gap-4 text-center ${className}`}
     >
       {message && (
-        <p className="text-neutral-content-muted text-sm font-medium tracking-wide">
+        <p className="text-content-muted text-sm font-medium tracking-wide">
           {message}
         </p>
       )}
@@ -66,12 +66,13 @@ export function ErrorView({
 }) {
   return (
     <div
-      className={`text-tone-content h-full w-full flex flex-col items-center justify-center p-8 gap-4 text-center ${className}`}
+      data-tone="destructive"
+      className={`text-content h-full w-full flex flex-col items-center justify-center p-8 gap-4 text-center ${className}`}
     >
       <AlertCircle size={16} />
       {message && <Text>{message}</Text>}
       {error && (
-        <p className="text-sm text-destructive-content/60 font-mono mb-4 max-w-md break-all">
+        <p className="text-sm text-content/60 font-mono mb-4 max-w-md break-all">
           {typeof error === "string" ? error : error.message}
         </p>
       )}

@@ -15,36 +15,36 @@ export function ComponentPreview({ engine }: { engine: ComponentEngine }) {
   };
 
   return (
-    <div className="flex-1 h-full bg-neutral-border/10 flex flex-col min-w-0">
+    <div className="flex-1 h-full bg-border/10 flex flex-col min-w-0">
       {/* Preview Header / Controls */}
-      <div className="h-10 px-4 border-b border-neutral-border bg-neutral-surface/30 flex items-center justify-between shrink-0">
+      <div className="h-10 px-4 border-b border-border bg-surface/30 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-2">
-          <p className="text-[10px] font-bold text-neutral-content-muted uppercase tracking-wider">
+          <p className="text-[10px] font-bold text-content-muted uppercase tracking-wider">
             Preview
           </p>
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1 bg-neutral-surface-hover rounded-md border border-neutral-border px-2 py-0.5">
+          <div className="flex items-center gap-1 bg-surface-hover rounded-md border border-border px-2 py-0.5">
             <input
               type="text"
               value={width}
               onChange={(e) => setWidth(e.target.value)}
-              className="w-12 bg-transparent text-[10px] font-bold text-center outline-none text-neutral-content"
+              className="w-12 bg-transparent text-[10px] font-bold text-center outline-none text-content"
               placeholder="Width"
             />
-            <span className="text-[10px] text-neutral-content-muted">×</span>
+            <span className="text-[10px] text-content-muted">×</span>
             <input
               type="text"
               value={height}
               onChange={(e) => setHeight(e.target.value)}
-              className="w-12 bg-transparent text-[10px] font-bold text-center outline-none text-neutral-content"
+              className="w-12 bg-transparent text-[10px] font-bold text-center outline-none text-content"
               placeholder="Height"
             />
           </div>
           <button
             onClick={resetSize}
-            className="p-1.5 rounded-md text-neutral-content-muted hover:bg-neutral-surface-hover hover:text-neutral-content transition-all"
+            className="p-1.5 rounded-md text-content-muted hover:bg-surface-hover hover:text-content transition-all"
             title="Reset to full size"
           >
             <Maximize2 size={14} />
@@ -54,9 +54,9 @@ export function ComponentPreview({ engine }: { engine: ComponentEngine }) {
 
       <div className="flex-1 overflow-hidden relative flex flex-col">
         {/* Viewport Area */}
-        <div className="flex-1 relative overflow-auto bg-neutral-border/5 flex items-center justify-center p-12 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:20px_20px]">
+        <div className="flex-1 relative overflow-auto bg-border/5 flex items-center justify-center p-12 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:20px_20px]">
           <div
-            className="transition-all duration-300 ease-out border border-neutral-border/50 overflow-hidden bg-white/50 backdrop-blur-sm rounded-md"
+            className="transition-all duration-300 ease-out border border-border/50 overflow-hidden bg-white/50 backdrop-blur-sm rounded-md"
             style={{
               width: typeof width === "number" ? `${width}px` : width,
               height: typeof height === "number" ? `${height}px` : height,

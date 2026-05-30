@@ -61,9 +61,9 @@ const TableHeaderCell = React.forwardRef<
       // base
       "border-b px-4 py-3.5 text-left text-sm font-semibold",
       // text color
-      "text-neutral-content",
+      "text-content",
       // border color
-      "border-neutral-border",
+      "border-border",
       className,
     )}
     {...props}
@@ -82,7 +82,7 @@ const TableBody = React.forwardRef<
       // base
       "divide-y",
       // divide color
-      "divide-neutral-border",
+      "divide-border",
       className,
     )}
     {...props}
@@ -118,7 +118,7 @@ const TableCell = React.forwardRef<
       // base
       "p-4 text-sm",
       // text color
-      "text-neutral-content-subtle",
+      "text-content-subtle",
       className,
     )}
     {...props}
@@ -138,9 +138,9 @@ const TableFoot = React.forwardRef<
         // base
         "border-t text-left font-medium",
         // text color
-        "text-neutral-content",
+        "text-content",
         // border color
-        "border-neutral-border",
+        "border-border",
         className,
       )}
       {...props}
@@ -160,7 +160,7 @@ const TableCaption = React.forwardRef<
       // base
       "mt-3 px-3 text-center text-sm",
       // text color
-      "text-neutral-content-muted",
+      "text-content-muted",
       className,
     )}
     {...props}

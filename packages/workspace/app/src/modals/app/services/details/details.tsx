@@ -85,7 +85,7 @@ export function ServiceDetails() {
           <ContentBody className="space-y-4">
             <GoBack />
             {/* Service Icon */}
-            <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-neutral-border/50 text-neutral-content backdrop-blur-sm overflow-hidden bg-background">
+            <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-border/50 text-content backdrop-blur-sm overflow-hidden bg-background">
               <Switch>
                 <Case condition={!!serviceData.image_url}>
                   <img
@@ -106,7 +106,7 @@ export function ServiceDetails() {
             </Text>
           </ContentBody>
           {serviceData.team_id === session?.teamId && (
-            <ContentFooter className="border-t border-neutral-border/30 pt-3">
+            <ContentFooter className="border-t border-border/30 pt-3">
               <Button
                 variant="primary"
                 className="w-full"

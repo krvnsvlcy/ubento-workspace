@@ -78,20 +78,20 @@ export function SwatchCard({ themeName, setThemeName }: SwatchCardProps) {
       <Text shade="muted">Space Grotesk typography, color grid.</Text>
 
       <div className="grid grid-cols-5 gap-2">
-        <div className="h-8 rounded-lg bg-accent" title="Accent" />
+        <div className="h-8 rounded-lg bg-base" title="Accent" />
         <div
-          className="h-8 rounded-lg bg-neutral-border"
+          className="h-8 rounded-lg bg-border"
           title="Neutral Border"
         />
         <div
-          className="h-8 rounded-lg bg-neutral-surface-hover"
+          className="h-8 rounded-lg bg-surface-hover"
           title="Neutral Hover"
         />
         <div
-          className="h-8 rounded-lg bg-neutral-surface"
+          className="h-8 rounded-lg bg-surface"
           title="Neutral Surface"
         />
-        <div className="h-8 rounded-lg bg-destructive" title="Destructive" />
+        <div className="h-8 rounded-lg bg-base" title="Destructive" />
       </div>
 
       <div className="flex gap-2">
@@ -173,12 +173,12 @@ export function InvoiceCard() {
         </Table>
       </TableRoot>
 
-      <div className="space-y-1 border-t bg-neutral-surface/10 p-4 text-sm">
-        <div className="flex justify-between text-neutral-content-muted">
+      <div className="space-y-1 border-t bg-surface/10 p-4 text-sm">
+        <div className="flex justify-between text-content-muted">
           <span>Subtotal</span>
           <span>$44.00</span>
         </div>
-        <div className="flex justify-between font-bold text-neutral-content">
+        <div className="flex justify-between font-bold text-content">
           <span>Total Paid</span>
           <span>$44.00</span>
         </div>
@@ -200,28 +200,28 @@ export function IconsCard() {
         <Text shade="muted">Selected utility icons</Text>
       </div>
       <div className="grid grid-cols-4 gap-3 text-center">
-        <div className="flex flex-col items-center justify-center rounded-xl border bg-neutral-surface p-2 hover:bg-neutral-surface-hover">
-          <Fingerprint className="size-5 text-neutral-content" />
+        <div className="flex flex-col items-center justify-center rounded-xl border bg-surface p-2 hover:bg-surface-hover">
+          <Fingerprint className="size-5 text-content" />
         </div>
-        <div className="flex flex-col items-center justify-center rounded-xl border bg-neutral-surface p-2 hover:bg-neutral-surface-hover">
-          <Activity className="size-5 text-accent" />
+        <div className="flex flex-col items-center justify-center rounded-xl border bg-surface p-2 hover:bg-surface-hover">
+          <Activity className="size-5 text-base" />
         </div>
-        <div className="flex flex-col items-center justify-center rounded-xl border bg-neutral-surface p-2 hover:bg-neutral-surface-hover">
-          <AlertTriangle className="size-5 text-neutral-content-muted" />
+        <div className="flex flex-col items-center justify-center rounded-xl border bg-surface p-2 hover:bg-surface-hover">
+          <AlertTriangle className="size-5 text-content-muted" />
         </div>
-        <div className="flex flex-col items-center justify-center rounded-xl border bg-neutral-surface p-2 hover:bg-neutral-surface-hover">
-          <Sparkles className="size-5 text-accent" />
+        <div className="flex flex-col items-center justify-center rounded-xl border bg-surface p-2 hover:bg-surface-hover">
+          <Sparkles className="size-5 text-base" />
         </div>
-        <div className="flex flex-col items-center justify-center rounded-xl border bg-neutral-surface p-2 hover:bg-neutral-surface-hover">
-          <Lock className="size-5 text-destructive" />
+        <div className="flex flex-col items-center justify-center rounded-xl border bg-surface p-2 hover:bg-surface-hover">
+          <Lock className="size-5 text-base" />
         </div>
-        <div className="flex flex-col items-center justify-center rounded-xl border bg-neutral-surface p-2 hover:bg-neutral-surface-hover">
-          <Globe className="size-5 text-neutral-content" />
+        <div className="flex flex-col items-center justify-center rounded-xl border bg-surface p-2 hover:bg-surface-hover">
+          <Globe className="size-5 text-content" />
         </div>
-        <div className="flex flex-col items-center justify-center rounded-xl border bg-neutral-surface p-2 hover:bg-neutral-surface-hover">
+        <div className="flex flex-col items-center justify-center rounded-xl border bg-surface p-2 hover:bg-surface-hover">
           <Settings className="size-5" />
         </div>
-        <div className="flex flex-col items-center justify-center rounded-xl border bg-neutral-surface p-2 hover:bg-neutral-surface-hover">
+        <div className="flex flex-col items-center justify-center rounded-xl border bg-surface p-2 hover:bg-surface-hover">
           <Bell className="size-5" />
         </div>
       </div>
@@ -275,13 +275,13 @@ export function SandboxCard({
         />
       </Field>
 
-      <div className="flex items-center justify-between border rounded-xl p-3 bg-neutral-surface/20">
+      <div className="flex items-center justify-between border rounded-xl p-3 bg-surface/20">
         <div className="space-y-0.5">
           <Label className="font-semibold text-sm flex items-center gap-2">
-            <Shield size={16} className="text-accent" /> Two-Factor
+            <Shield size={16} className="text-base" /> Two-Factor
             Authentication
           </Label>
-          <span className="text-xs text-neutral-content-muted">
+          <span className="text-xs text-content-muted">
             Secure account access.
           </span>
         </div>
@@ -291,7 +291,7 @@ export function SandboxCard({
       <Separator />
 
       <div className="space-y-2">
-        <Label className="text-xs font-semibold tracking-wider text-neutral-content-muted uppercase">
+        <Label className="text-xs font-semibold tracking-wider text-content-muted uppercase">
           Notification Mode
         </Label>
         <RadioGroup
@@ -368,16 +368,16 @@ export function AddressCard() {
 export function ObservabilityCard() {
   return (
     <Card variant="outline" gap={16} padding="none" className="overflow-hidden">
-      <div className="relative flex aspect-video items-center justify-center bg-neutral-surface-hover/80 text-neutral-content">
+      <div className="relative flex aspect-video items-center justify-center bg-surface-hover/80 text-content">
         <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/20 to-transparent" />
         <div className="absolute start-4 bottom-4 z-20 space-y-1">
           <Badge variant="destructive">Alert</Badge>
-          <h4 className="text-sm font-bold text-neutral-content">
+          <h4 className="text-sm font-bold text-content">
             System Alert Level 2
           </h4>
         </div>
-        <div className="z-10 flex items-center gap-2 text-neutral-content-muted">
-          <Activity className="size-8 animate-pulse text-destructive" />
+        <div className="z-10 flex items-center gap-2 text-content-muted">
+          <Activity className="size-8 animate-pulse text-base" />
         </div>
       </div>
       <div className="p-6 space-y-2">
@@ -411,12 +411,12 @@ export function EnvironmentsCard() {
         </TabsList>
 
         <TabsContent value="codespaces" className="space-y-3 pt-2">
-          <div className="flex items-center justify-between rounded-xl border p-3 bg-neutral-surface">
+          <div className="flex items-center justify-between rounded-xl border p-3 bg-surface">
             <div className="flex items-center gap-2">
-              <Terminal className="size-4 text-neutral-content-muted" />
+              <Terminal className="size-4 text-content-muted" />
               <div>
                 <div className="text-sm font-medium">ubento-sandbox-alpha</div>
-                <div className="text-xs text-neutral-content-muted">
+                <div className="text-xs text-content-muted">
                   Paid by shadcn
                 </div>
               </div>
@@ -424,12 +424,12 @@ export function EnvironmentsCard() {
             <Badge variant="secondary">Ready</Badge>
           </div>
 
-          <div className="flex items-center justify-between rounded-xl border p-3 bg-neutral-surface">
+          <div className="flex items-center justify-between rounded-xl border p-3 bg-surface">
             <div className="flex items-center gap-2">
-              <Terminal className="size-4 text-neutral-content-muted" />
+              <Terminal className="size-4 text-content-muted" />
               <div>
                 <div className="text-sm font-medium">ubento-sandbox-beta</div>
-                <div className="text-xs text-neutral-content-muted">
+                <div className="text-xs text-content-muted">
                   Paid by user
                 </div>
               </div>
@@ -440,10 +440,10 @@ export function EnvironmentsCard() {
 
         <TabsContent
           value="local"
-          className="py-6 text-center text-sm text-neutral-content-muted"
+          className="py-6 text-center text-sm text-content-muted"
         >
           <div className="flex flex-col items-center gap-2">
-            <Globe className="size-8 text-neutral-content-muted/50" />
+            <Globe className="size-8 text-content-muted/50" />
             <span>No local dev environments found.</span>
             <Button variant="outline" className="mt-2">
               Connect Local
@@ -510,7 +510,7 @@ export function VariablesCard() {
         <div className="flex items-center justify-between border-b pb-2">
           <div>
             <div className="font-mono text-sm font-medium">DATABASE_URL</div>
-            <div className="text-xs text-neutral-content-muted">
+            <div className="text-xs text-content-muted">
               postgresql://user:pass@host/db
             </div>
           </div>
@@ -520,7 +520,7 @@ export function VariablesCard() {
         <div className="flex items-center justify-between border-b pb-2">
           <div>
             <div className="font-mono text-sm font-medium">NEXTAUTH_SECRET</div>
-            <div className="text-xs text-neutral-content-muted">
+            <div className="text-xs text-content-muted">
               ************************
             </div>
           </div>
@@ -530,7 +530,7 @@ export function VariablesCard() {
         <div className="flex items-center justify-between">
           <div>
             <div className="font-mono text-sm font-medium">NODE_ENV</div>
-            <div className="text-xs text-neutral-content-muted">production</div>
+            <div className="text-xs text-content-muted">production</div>
           </div>
           <Badge variant="secondary">Public</Badge>
         </div>
@@ -565,10 +565,10 @@ export function AgentCard() {
       variant="outline"
       gap={16}
       padding="md"
-      className="border-accent/20 bg-accent/5"
+      className="border-border/20 bg-base/5"
     >
       <div className="flex items-center gap-2">
-        <Sparkles className="size-5 text-accent" />
+        <Sparkles className="size-5 text-base" />
         <Heading level="h3">Vercel Agent</Heading>
       </div>
       <Text shade="muted">AI-powered deployment companion.</Text>
@@ -576,7 +576,7 @@ export function AgentCard() {
         Ship faster and safer with codebase context, preview sandboxes, and
         root-cause production analysis.
       </Text>
-      <div className="flex items-center justify-between rounded-xl border bg-neutral-surface p-3">
+      <div className="flex items-center justify-between rounded-xl border bg-surface p-3">
         <span className="text-xs font-semibold">Vercel AI Trial</span>
         <Badge variant="accent">Active</Badge>
       </div>
@@ -640,8 +640,8 @@ export function EmptyCard() {
   return (
     <Card variant="outline" gap={16} padding="md">
       <div className="py-8 text-center space-y-4">
-        <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-neutral-surface">
-          <UserPlus className="size-6 text-neutral-content-muted" />
+        <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-surface">
+          <UserPlus className="size-6 text-content-muted" />
         </div>
         <div className="space-y-1">
           <Heading level="h3">No Team Members</Heading>
@@ -709,36 +709,36 @@ export function ContributorsCard() {
 
       <div className="space-y-3">
         <div className="flex items-center gap-3 p-1">
-          <div className="size-8 rounded-full bg-neutral-surface border flex items-center justify-center text-xs font-semibold">
+          <div className="size-8 rounded-full bg-surface border flex items-center justify-center text-xs font-semibold">
             JD
           </div>
           <div>
             <div className="text-sm font-semibold">Jane Doe</div>
-            <div className="text-xs text-neutral-content-muted">
+            <div className="text-xs text-content-muted">
               42 commits • JaneDoe
             </div>
           </div>
         </div>
 
         <div className="flex items-center gap-3 p-1">
-          <div className="size-8 rounded-full bg-neutral-surface border flex items-center justify-center text-xs font-semibold">
+          <div className="size-8 rounded-full bg-surface border flex items-center justify-center text-xs font-semibold">
             JS
           </div>
           <div>
             <div className="text-sm font-semibold">John Smith</div>
-            <div className="text-xs text-neutral-content-muted">
+            <div className="text-xs text-content-muted">
               28 commits • jsmith
             </div>
           </div>
         </div>
 
         <div className="flex items-center gap-3 p-1">
-          <div className="size-8 rounded-full bg-neutral-surface border flex items-center justify-center text-xs font-semibold">
+          <div className="size-8 rounded-full bg-surface border flex items-center justify-center text-xs font-semibold">
             AM
           </div>
           <div>
             <div className="text-sm font-semibold">Alex Morgan</div>
-            <div className="text-xs text-neutral-content-muted">
+            <div className="text-xs text-content-muted">
               15 commits • alexm
             </div>
           </div>

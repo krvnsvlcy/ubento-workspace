@@ -22,20 +22,20 @@ export function BentoBoardView({
   // Handle the case where the board definition doesn't exist
   if (!board) {
     return (
-      <div className="h-full flex flex-col items-center justify-center bg-neutral-surface/20 p-6">
+      <div className="h-full flex flex-col items-center justify-center bg-surface/20 p-6">
         <div className="w-20 h-20 rounded-full bg-red-500/10 flex items-center justify-center text-red-500 mb-6">
           <AlertCircle size={40} />
         </div>
-        <h2 className="text-2xl font-bold text-neutral-content mb-2">
+        <h2 className="text-2xl font-bold text-content mb-2">
           Board Not Found
         </h2>
-        <p className="text-neutral-content-muted text-center max-w-md mb-8 font-mono text-sm bg-neutral-surface border border-neutral-border rounded-xl p-4">
+        <p className="text-content-muted text-center max-w-md mb-8 font-mono text-sm bg-surface border border-border rounded-xl p-4">
           The board you are looking for does not exist in the current workspace
           spec.
         </p>
         <button
           onClick={() => runtime.goHome()}
-          className="px-6 py-3 bg-neutral-surface border border-neutral-border rounded-xl font-bold hover:bg-neutral-surface-hover transition-colors"
+          className="px-6 py-3 bg-surface border border-border rounded-xl font-bold hover:bg-surface-hover transition-colors"
         >
           Return to Home
         </button>

@@ -16,8 +16,8 @@ export function WorkspaceItem({ workspace }: { workspace: any }) {
       onClick={() => engine.openWorkspace(workspace.slug)}
       className={`flex h-8 items-center gap-2 w-full rounded-lg px-3 cursor-pointer text-[13px] transition-all ${
         isActive
-          ? "bg-accent/10 text-accent font-medium"
-          : "text-neutral-content-subtle hover:bg-neutral-surface-hover hover:text-neutral-content"
+          ? "bg-base/10 text-base font-medium"
+          : "text-content-subtle hover:bg-surface-hover hover:text-content"
       }`}
     >
       <Icon icon="workspace" />

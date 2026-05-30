@@ -138,7 +138,7 @@ function OpenApiImporter({
 
       <ContentBody className="space-y-4 overflow-y-auto">
         {!selectedProviderId && (
-          <div className="p-3 text-xs text-warning bg-warning/10 rounded-lg font-medium">
+          <div className="p-3 text-xs text-base bg-base/10 rounded-lg font-medium">
             ⚠️ Please select a Connection Provider in the side form first.
           </div>
         )}
@@ -153,7 +153,7 @@ function OpenApiImporter({
         </Field>
 
         {specError && (
-          <div className="p-2.5 text-xs text-destructive bg-destructive/10 rounded-lg font-medium">
+          <div className="p-2.5 text-xs text-base bg-base/10 rounded-lg font-medium">
             {specError}
           </div>
         )}

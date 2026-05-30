@@ -35,11 +35,11 @@ export function ConfirmMutationModal({
             <span className="font-semibold">{service}</span>?
           </Text>
           {args && Object.keys(args).length > 0 && (
-            <div className="bg-neutral-50 dark:bg-neutral-900 rounded p-4 border border-neutral-200 dark:border-neutral-800">
-              <span className="text-xs font-semibold text-neutral-500 uppercase block mb-1">
+            <div className="bg-base-50 dark:bg-base-900 rounded p-4 border border-border-200 dark:border-border-800">
+              <span className="text-xs font-semibold text-base-500 uppercase block mb-1">
                 Arguments:
               </span>
-              <pre className="text-xs overflow-auto max-h-40 font-mono text-neutral-800 dark:text-neutral-200">
+              <pre className="text-xs overflow-auto max-h-40 font-mono text-base-800 dark:text-base-200">
                 {JSON.stringify(args, null, 2)}
               </pre>
             </div>

@@ -25,8 +25,8 @@ interface TabsListProps
 }
 
 const variantStyles: Record<TabsListVariant, string> = {
-  line: "flex items-center justify-start border-b border-neutral-border bg-transparent w-full",
-  solid: "bg-neutral-surface/80 text-neutral-content-muted inline-flex h-9 w-fit items-center justify-center rounded-lg p-[3px]",
+  line: "flex items-center justify-start border-b border-border bg-transparent w-full",
+  solid: "bg-surface/80 text-content-muted inline-flex h-9 w-fit items-center justify-center rounded-lg p-[3px]",
 };
 
 function TabsList({
@@ -50,9 +50,9 @@ function TabsList({
 
 function getTriggerStyles(variant: TabsListVariant) {
   if (variant === "line") {
-    return "-mb-px items-center justify-center border-b-2 border-transparent px-3 pb-2 text-sm font-medium whitespace-nowrap transition-all text-neutral-content-muted hover:text-neutral-content hover:border-neutral-border-hover data-[state=active]:border-accent data-[state=active]:text-accent data-disabled:pointer-events-none data-disabled:text-neutral-content-muted inline-flex h-9";
+    return "-mb-px items-center justify-center border-b-2 border-transparent px-3 pb-2 text-sm font-medium whitespace-nowrap transition-all text-content-muted hover:text-content hover:border-border-hover data-[state=active]:border-border data-[state=active]:text-base data-disabled:pointer-events-none data-disabled:text-content-muted inline-flex h-9";
   }
-  return "data-[state=active]:bg-neutral-surface dark:data-[state=active]:text-neutral-content focus-visible:border-accent focus-visible:ring-accent/50 focus-visible:outline-pm dark:data-[state=active]:border dark:data-[state=active]:bg-neutral-surface/50/30 text-neutral-content dark:text-neutral-content-muted inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:shadow-sm [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4";
+  return "data-[state=active]:bg-surface dark:data-[state=active]:text-content focus-visible:border-border focus-visible:ring-accent/50 focus-visible:outline-pm dark:data-[state=active]:border dark:data-[state=active]:bg-surface/50/30 text-content dark:text-content-muted inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:shadow-sm [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4";
 }
 
 function TabsTrigger({

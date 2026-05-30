@@ -10,7 +10,7 @@ import { IntegrationsShowcase } from "./sections/integrations";
 
 export function LandingPage() {
   return (
-    <div className="min-h-screen bg-neutral-surface font-body text-neutral-content selection:bg-neutral-surface-active">
+    <div className="min-h-screen bg-surface font-body text-content selection:bg-surface-active">
       <Header />
       <HeroSection />
       <IntegrationsShowcase />

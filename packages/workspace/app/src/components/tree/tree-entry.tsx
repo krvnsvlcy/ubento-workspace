@@ -90,8 +90,8 @@ export function TreeEntry({
         "group h-8 text-sm cursor-pointer flex items-center rounded-xl px-1",
         className,
         {
-          "text-neutral-content hover:bg-current/7": !active,
-          "bg-accent text-accent-contrast hover:bg-accent-hover": active,
+          "text-content hover:bg-current/7": !active,
+          "bg-base text-contrast hover:bg-hover": active,
         },
       )}
       {...props}

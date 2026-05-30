@@ -22,7 +22,7 @@ export const AddonsTab: FC = () => {
 
   if (isFetching) {
     return (
-      <div className="py-12 text-center text-neutral-content-muted">
+      <div className="py-12 text-center text-content-muted">
         <p className="text-[13px]">Loading addons...</p>
       </div>
     );
@@ -37,29 +37,29 @@ export const AddonsTab: FC = () => {
   return (
     <div className="space-y-4">
       {addons.length === 0 && (
-        <div className="py-12 text-center text-neutral-content-muted">
+        <div className="py-12 text-center text-content-muted">
           <p className="text-[13px]">No addons available at the moment.</p>
         </div>
       )}
       {addons.map((addon) => (
         <div
           key={addon.id}
-          className="p-6 rounded-2xl bg-neutral-surface border border-neutral-border flex justify-between items-center"
+          className="p-6 rounded-2xl bg-surface border border-border flex justify-between items-center"
         >
           <div className="flex gap-4">
-            <div className="h-12 w-12 rounded-xl bg-accent-surface flex items-center justify-center">
-              <Package className="h-6 w-6 text-accent" />
+            <div className="h-12 w-12 rounded-xl bg-surface flex items-center justify-center">
+              <Package className="h-6 w-6 text-base" />
             </div>
             <div>
-              <h4 className="font-bold text-neutral-content">{addon.name}</h4>
-              <p className="text-xs text-neutral-content-subtle">
+              <h4 className="font-bold text-content">{addon.name}</h4>
+              <p className="text-xs text-content-subtle">
                 {addon.description || "Add this to your plan."}
               </p>
             </div>
           </div>
           <button
             onClick={() => handleBuy(addon)}
-            className="px-4 py-2 rounded-xl bg-neutral-content text-neutral-contrast text-xs font-black uppercase tracking-wider"
+            className="px-4 py-2 rounded-xl bg-content text-contrast text-xs font-black uppercase tracking-wider"
           >
             Add ${(addon as any).price || "0"}
           </button>

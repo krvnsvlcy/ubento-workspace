@@ -22,15 +22,15 @@ export function Section({
       >
         <Icon
           size={14}
-          className="text-neutral-content-muted transition-colors group-hover:text-accent-active"
+          className="text-content-muted transition-colors group-hover:text-active"
         />
-        <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-content-muted group-hover:text-neutral-content">
+        <span className="text-[11px] font-bold uppercase tracking-wider text-content-muted group-hover:text-content">
           {title}
         </span>
         <div className="ml-auto">
           <ChevronRight
             size={14}
-            className={`text-neutral-content-subtle transition-transform duration-300 ${
+            className={`text-content-subtle transition-transform duration-300 ${
               isOpen ? "rotate-90" : ""
             }`}
           />
@@ -62,7 +62,7 @@ export function PropertyRow({
 }) {
   return (
     <div className="flex items-center justify-between px-4 py-1.5">
-      <span className="text-xs font-medium text-neutral-content-muted">
+      <span className="text-xs font-medium text-content-muted">
         {label}
       </span>
       <div className="flex max-w-[60%] flex-1 justify-end">{children}</div>
@@ -99,7 +99,7 @@ export function TextInput({
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         onChange={(e) => handleChange(e.target.value)}
-        className="w-full border-none bg-transparent text-xs text-neutral-content-subtle outline-none"
+        className="w-full border-none bg-transparent text-xs text-content-subtle outline-none"
       />
     </div>
   );
@@ -181,9 +181,9 @@ export function NumberInput({
       }}
       className={cx(
         "group flex items-center rounded-md px-2 py-0.5 transition-all border border-transparent",
-        "bg-neutral-surface/30 hover:bg-neutral-surface/50",
+        "bg-surface/30 hover:bg-surface/50",
         {
-          "ring-1 ring-accent/30 border-accent/20":
+          "ring-1 ring-accent/30 border-border/20":
             isFocused || mode === "edit",
           "cursor-ew-resize": mode === "view",
         },
@@ -202,14 +202,14 @@ export function NumberInput({
         }}
         onChange={(e) => handleChange(e.target.value)}
         className={cx(
-          "w-full border-none bg-transparent font-mono text-[11px] text-right outline-none text-neutral-content-subtle [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
+          "w-full border-none bg-transparent font-mono text-[11px] text-right outline-none text-content-subtle [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
           {
             "pointer-events-none": mode === "view",
           },
         )}
       />
       {unit && (
-        <span className="ml-1 text-[9px] font-bold text-neutral-content-muted select-none">
+        <span className="ml-1 text-[9px] font-bold text-content-muted select-none">
           {unit}
         </span>
       )}
@@ -220,7 +220,7 @@ export function NumberInput({
             onChange(undefined);
             setLocalValue("");
           }}
-          className="ml-1 text-neutral-content-muted hover:text-destructive transition-colors"
+          className="ml-1 text-content-muted hover:text-base transition-colors"
           title="Clear"
         >
           <X size={10} />
@@ -243,7 +243,7 @@ export function Select({
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="cursor-pointer rounded-md border-none px-2 py-1 text-xs text-neutral-content-subtle outline-none transition-colors"
+      className="cursor-pointer rounded-md border-none px-2 py-1 text-xs text-content-subtle outline-none transition-colors"
     >
       {options.map((opt) => (
         <option key={opt} value={opt}>
@@ -287,7 +287,7 @@ export function ColorInput({
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         onChange={(e) => handleChange(e.target.value)}
-        className="w-full border-none bg-transparent font-mono text-[10px] text-neutral-content-subtle outline-none"
+        className="w-full border-none bg-transparent font-mono text-[10px] text-content-subtle outline-none"
         placeholder="#000000"
       />
     </div>

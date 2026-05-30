@@ -69,19 +69,19 @@ const TimeSegment = ({ segment, state }: TimeSegmentProps) => {
         // base
         "relative block w-full appearance-none rounded-md border px-2.5 py-1.5 text-left uppercase tabular-nums shadow-xs outline-hidden transition sm:text-sm",
         // border color
-        "border-neutral-border",
+        "border-border",
         // text color
-        "text-neutral-content",
+        "text-content",
         // background color
-        "bg-neutral-surface",
+        "bg-surface",
         // focus
         focusInput,
         // invalid (optional)
         "group-aria-invalid/time-input:border-red-500 group-aria-invalid/time-input:ring-2 group-aria-invalid/time-input:ring-red-200 invalid:border-red-500 invalid:ring-2 invalid:ring-red-200 dark:group-aria-invalid/time-input:ring-red-400/20",
         {
-          "w-fit! border-none bg-transparent px-0 text-neutral-content-muted shadow-none":
+          "w-fit! border-none bg-transparent px-0 text-content-muted shadow-none":
             segment.type === "literal",
-          "border-neutral-border bg-neutral-surface text-neutral-content-muted":
+          "border-border bg-surface text-content-muted":
             state.isDisabled && segment.text !== ":",
         },
       )}
@@ -148,18 +148,18 @@ const triggerStyles = tv({
     // base
     "peer flex w-full cursor-pointer appearance-none items-center gap-x-2 truncate rounded-md border px-3 py-2 shadow-xs outline-hidden transition-all sm:text-sm",
     // background color
-    "bg-neutral-surface",
+    "bg-surface",
     // border color
-    "border-neutral-border",
+    "border-border",
     // text color
-    "text-neutral-content",
+    "text-content",
     // placeholder color
     "placeholder-neutral-content-muted",
     // hover
-    "hover:bg-neutral-surface-hover",
+    "hover:bg-surface-hover",
     // disabled
     "disabled:pointer-events-none",
-    "disabled:bg-neutral-surface disabled:text-neutral-content-muted",
+    "disabled:bg-surface disabled:text-content-muted",
     // focus
     focusInput,
     // invalid (optional)
@@ -189,12 +189,12 @@ const Trigger = React.forwardRef<HTMLButtonElement, TriggerProps>(
           className={cx(triggerStyles({ hasError }), className)}
           {...props}
         >
-          <Calendar className="size-5 shrink-0 text-neutral-content-muted" />
-          <span className="flex-1 overflow-hidden text-left text-ellipsis whitespace-nowrap text-neutral-content">
+          <Calendar className="size-5 shrink-0 text-content-muted" />
+          <span className="flex-1 overflow-hidden text-left text-ellipsis whitespace-nowrap text-content">
             {children ? (
               children
             ) : placeholder ? (
-              <span className="text-neutral-content-muted">{placeholder}</span>
+              <span className="text-content-muted">{placeholder}</span>
             ) : null}
           </span>
         </button>
@@ -227,9 +227,9 @@ const CalendarPopover = React.forwardRef<
           // widths
           "max-w-[95vw] min-w-[calc(var(--radix-select-trigger-width)-2px)]",
           // border color
-          "border-neutral-border",
+          "border-border",
           // background color
-          "bg-neutral-surface",
+          "bg-surface",
           // transition
           "will-change-[transform,opacity]",
           "data-[state=closed]:animate-hide",
@@ -362,16 +362,16 @@ const PresetContainer = <TPreset extends Preset, TValue>({
                 // base
                 "relative w-full overflow-hidden rounded-sm border px-2.5 py-1.5 text-left text-base text-ellipsis whitespace-nowrap shadow-xs outline-hidden transition-all sm:border-none sm:py-2 sm:text-sm sm:shadow-none",
                 // text color
-                "text-neutral-content",
+                "text-content",
                 // border color
-                "border-neutral-border",
+                "border-border",
                 // focus
                 focusRing,
                 // background color
-                "focus-visible:bg-neutral-surface-hover",
-                "hover:bg-neutral-surface-hover",
+                "focus-visible:bg-surface-hover",
+                "hover:bg-surface-hover",
                 {
-                  "bg-neutral-surface-hover": matchesCurrent(preset),
+                  "bg-surface-hover": matchesCurrent(preset),
                 },
               )}
               onClick={() => handleClick(preset)}
@@ -617,7 +617,7 @@ export const SingleDatePicker = React.forwardRef<HTMLDivElement, SingleProps>(
                   <div
                     className={cx(
                       "relative flex h-14 w-full items-center sm:h-full sm:w-40",
-                      "border-b border-neutral-border sm:border-r sm:border-b-0",
+                      "border-b border-border sm:border-r sm:border-b-0",
                       "overflow-auto",
                     )}
                   >
@@ -645,7 +645,7 @@ export const SingleDatePicker = React.forwardRef<HTMLDivElement, SingleProps>(
                     {...props}
                   />
                   {showTimePicker && (
-                    <div className="border-t border-neutral-border p-3">
+                    <div className="border-t border-border p-3">
                       <TimeInput
                         aria-label="Time"
                         onChange={onTimeChange}
@@ -655,7 +655,7 @@ export const SingleDatePicker = React.forwardRef<HTMLDivElement, SingleProps>(
                       />
                     </div>
                   )}
-                  <div className="flex items-center gap-x-2 border-t border-neutral-border p-3">
+                  <div className="flex items-center gap-x-2 border-t border-border p-3">
                     <Button
                       variant="secondary"
                       className="h-8 w-full"
@@ -929,7 +929,7 @@ export const RangeDatePicker = React.forwardRef<HTMLDivElement, RangeProps>(
                   <div
                     className={cx(
                       "relative flex h-16 w-full items-center sm:h-full sm:w-40",
-                      "border-b border-neutral-border sm:border-r sm:border-b-0",
+                      "border-b border-border sm:border-r sm:border-b-0",
                       "overflow-auto",
                     )}
                   >
@@ -957,14 +957,14 @@ export const RangeDatePicker = React.forwardRef<HTMLDivElement, RangeProps>(
                     initialFocus
                     classNames={{
                       months:
-                        "flex flex-row divide-x divide-neutral-border overflow-x-auto",
+                        "flex flex-row divide-x divide-border overflow-x-auto",
                     }}
                     {...props}
                   />
                   {showTimePicker && (
-                    <div className="flex items-center justify-evenly gap-x-3 border-t border-neutral-border p-3">
+                    <div className="flex items-center justify-evenly gap-x-3 border-t border-border p-3">
                       <div className="flex flex-1 items-center gap-x-2">
-                        <span className="text-neutral-content">
+                        <span className="text-content">
                           {translations?.start ?? "Start"}:
                         </span>
                         <TimeInput
@@ -975,9 +975,9 @@ export const RangeDatePicker = React.forwardRef<HTMLDivElement, RangeProps>(
                           isRequired={props.required}
                         />
                       </div>
-                      <Minus className="size-4 shrink-0 text-neutral-content-muted" />
+                      <Minus className="size-4 shrink-0 text-content-muted" />
                       <div className="flex flex-1 items-center gap-x-2">
-                        <span className="text-neutral-content">
+                        <span className="text-content">
                           {translations?.end ?? "End"}:
                         </span>
                         <TimeInput
@@ -990,9 +990,9 @@ export const RangeDatePicker = React.forwardRef<HTMLDivElement, RangeProps>(
                       </div>
                     </div>
                   )}
-                  <div className="border-t border-neutral-border p-3 sm:flex sm:items-center sm:justify-between">
-                    <p className="text-neutral-content tabular-nums">
-                      <span className="text-neutral-content-muted">
+                  <div className="border-t border-border p-3 sm:flex sm:items-center sm:justify-between">
+                    <p className="text-content tabular-nums">
+                      <span className="text-content-muted">
                         {translations?.range ?? "Range"}:
                       </span>{" "}
                       <span className="font-medium">{displayRange}</span>

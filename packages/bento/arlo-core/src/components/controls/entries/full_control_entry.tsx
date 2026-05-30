@@ -31,10 +31,10 @@ function FullControlEntryLabel({
         flexShrink: 0,
       }}
       className={cx("h-7", {
-        "text-neutral-content-subtle": !active,
-        "hover:text-neutral-content": !active && hasMenu,
-        "text-accent-300": active,
-        "text-accent-300 hover:text-accent-500": active && hasMenu,
+        "text-content-subtle": !active,
+        "hover:text-content": !active && hasMenu,
+        "text-base-300": active,
+        "text-base-300 hover:text-base-500": active && hasMenu,
       })}
     >
       <div className="group grow h-full overflow-hidden flex items-center gap-1">
@@ -69,7 +69,7 @@ function FullControlEntryLabel({
                 onClick={quickAction.handler}
                 className="h-4 w-4 items-center justify-center flex"
               >
-                <div className="h-4 w-4 bg-neutral-content/10 rounded-sm" title={quickAction.icon} />
+                <div className="h-4 w-4 bg-content/10 rounded-sm" title={quickAction.icon} />
               </button>
             </Tooltip>
           </div>

@@ -12,6 +12,7 @@ export function Layout() {
 
   return (
     <div
+      data-tone="neutral"
       className="bg-background relative z-0 select-none"
       style={{
         height: "100vh",
@@ -22,7 +23,7 @@ export function Layout() {
       {/* Floating Left Panel */}
       {!leftPanelPinned && (
         <div
-          className="fixed top-0 left-0 bottom-0 z-[100] transition-all duration-300 ease-in-out bg-neutral-surface/60 backdrop-blur-xl border-r border-neutral-border"
+          className="fixed top-0 left-0 bottom-0 z-[100] transition-all duration-300 ease-in-out bg-surface/60 backdrop-blur-xl border-r border-border"
           style={{
             width: leftPanelWidth,
             transform: isHovered ? "translateX(0)" : "translateX(-100%)",
@@ -44,7 +45,7 @@ export function Layout() {
       <SideSplitView
         left={{
           content: leftPanelPinned ? (
-            <div className="h-full bg-neutral-surface/60 border-r">
+            <div className="h-full bg-surface/60 border-r">
               <Side />
             </div>
           ) : null,

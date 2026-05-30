@@ -48,7 +48,7 @@ export const FileDropzone = React.forwardRef<HTMLDivElement, FileDropzoneProps>(
           {...getRootProps()}
           className={cx(
             "relative flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-10 transition-all",
-            "border-neutral-border bg-neutral-surface/50 hover:bg-neutral-surface",
+            "border-border bg-surface/50 hover:bg-surface",
             isDragActive && "border-blue-500 bg-blue-50/50 dark:bg-blue-500/10",
             focusRing,
             className,
@@ -57,17 +57,17 @@ export const FileDropzone = React.forwardRef<HTMLDivElement, FileDropzoneProps>(
           <input {...getInputProps()} />
           <UploadCloud
             className={cx(
-              "mb-4 h-10 w-10 text-neutral-content-muted",
+              "mb-4 h-10 w-10 text-content-muted",
               isDragActive && "text-blue-500",
             )}
           />
           <div className="text-center">
-            <p className="text-sm font-medium text-neutral-content">
+            <p className="text-sm font-medium text-content">
               {label ||
                 (isDragActive ? "Drop files here" : "Click or drag to upload")}
             </p>
             {description && (
-              <p className="mt-1 text-xs text-neutral-content-muted">
+              <p className="mt-1 text-xs text-content-muted">
                 {description}
               </p>
             )}
@@ -79,14 +79,14 @@ export const FileDropzone = React.forwardRef<HTMLDivElement, FileDropzoneProps>(
             {files.map((file, index) => (
               <li
                 key={index}
-                className="flex items-center justify-between rounded-md border border-neutral-border p-2"
+                className="flex items-center justify-between rounded-md border border-border p-2"
               >
                 <div className="flex items-center gap-2 overflow-hidden">
-                  <File className="h-4 w-4 shrink-0 text-neutral-content-muted" />
-                  <span className="truncate text-sm text-neutral-content">
+                  <File className="h-4 w-4 shrink-0 text-content-muted" />
+                  <span className="truncate text-sm text-content">
                     {file.name}
                   </span>
-                  <span className="shrink-0 text-xs text-neutral-content-muted">
+                  <span className="shrink-0 text-xs text-content-muted">
                     ({(file.size / 1024).toFixed(1)} KB)
                   </span>
                 </div>

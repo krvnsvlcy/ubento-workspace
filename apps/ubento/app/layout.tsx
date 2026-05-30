@@ -27,7 +27,7 @@ export default async function RootLayout({
 
   return (
     <html lang="en" className={`${fontRegistryClassNames} antialiased`}>
-      <body className="min-h-full flex flex-col">
+      <body data-tone="neutral" className="min-h-full flex flex-col">
         <SessionProvider
           session={
             session

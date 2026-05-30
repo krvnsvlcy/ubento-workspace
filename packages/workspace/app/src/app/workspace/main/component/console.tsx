@@ -21,10 +21,10 @@ export function ComponentConsole({ engine }: { engine: ComponentEngine }) {
 
   if (!isExpanded) {
     return (
-      <div className="h-8 border-t border-neutral-border bg-neutral-surface flex items-center justify-between px-4 shrink-0">
+      <div className="h-8 border-t border-border bg-surface flex items-center justify-between px-4 shrink-0">
         <button
           onClick={() => setIsExpanded(true)}
-          className="flex items-center gap-2 text-[10px] font-bold text-neutral-content-muted uppercase tracking-wider hover:text-neutral-content transition-colors"
+          className="flex items-center gap-2 text-[10px] font-bold text-content-muted uppercase tracking-wider hover:text-content transition-colors"
         >
           <Terminal size={12} />
           Console ({logs.length})
@@ -32,7 +32,7 @@ export function ComponentConsole({ engine }: { engine: ComponentEngine }) {
         </button>
         <button
           onClick={() => engine.clearLogs()}
-          className="p-1 hover:bg-neutral-surface-hover rounded-md text-neutral-content-muted transition-colors"
+          className="p-1 hover:bg-surface-hover rounded-md text-content-muted transition-colors"
         >
           <Trash2 size={12} />
         </button>
@@ -43,12 +43,12 @@ export function ComponentConsole({ engine }: { engine: ComponentEngine }) {
   return (
     <div
       style={{ height: 320 }}
-      className="border-t border-neutral-border bg-neutral-surface flex flex-col shrink-0 overflow-hidden"
+      className="border-t border-border bg-surface flex flex-col shrink-0 overflow-hidden"
     >
-      <div className="h-8 flex items-center justify-between px-4 border-b border-neutral-border bg-neutral-surface/50">
+      <div className="h-8 flex items-center justify-between px-4 border-b border-border bg-surface/50">
         <button
           onClick={() => setIsExpanded(false)}
-          className="flex items-center gap-2 text-[10px] font-bold text-neutral-content-muted uppercase tracking-wider hover:text-neutral-content transition-colors"
+          className="flex items-center gap-2 text-[10px] font-bold text-content-muted uppercase tracking-wider hover:text-content transition-colors"
         >
           <Terminal size={12} />
           Console ({logs.length})
@@ -57,7 +57,7 @@ export function ComponentConsole({ engine }: { engine: ComponentEngine }) {
         <div className="flex items-center gap-2">
           <button
             onClick={() => engine.clearLogs()}
-            className="p-1 hover:bg-neutral-surface-hover rounded-md text-neutral-content-muted transition-colors"
+            className="p-1 hover:bg-surface-hover rounded-md text-content-muted transition-colors"
             title="Clear console"
           >
             <Trash2 size={12} />
@@ -66,10 +66,10 @@ export function ComponentConsole({ engine }: { engine: ComponentEngine }) {
       </div>
       <div
         ref={scrollRef}
-        className="flex-1 overflow-auto p-2 font-mono text-[11px] selection:bg-accent/30"
+        className="flex-1 overflow-auto p-2 font-mono text-[11px] selection:bg-base/30"
       >
         {logs.length === 0 ? (
-          <div className="h-full flex items-center justify-center text-neutral-content-muted italic">
+          <div className="h-full flex items-center justify-center text-content-muted italic">
             No logs yet...
           </div>
         ) : (
@@ -77,7 +77,7 @@ export function ComponentConsole({ engine }: { engine: ComponentEngine }) {
             {logs.map((log) => (
               <div
                 key={log.id}
-                className={`flex gap-3 px-2 py-1 rounded hover:bg-neutral-surface-hover/50 border-l-2 ${
+                className={`flex gap-3 px-2 py-1 rounded hover:bg-surface-hover/50 border-l-2 ${
                   log.type === "error"
                     ? "border-red-500 bg-red-500/5"
                     : log.type === "warn"
@@ -85,7 +85,7 @@ export function ComponentConsole({ engine }: { engine: ComponentEngine }) {
                       : "border-transparent"
                 }`}
               >
-                <span className="text-neutral-content-muted shrink-0 opacity-50">
+                <span className="text-content-muted shrink-0 opacity-50">
                   {new Date(log.timestamp).toLocaleTimeString([], {
                     hour12: false,
                     hour: "2-digit",
@@ -110,9 +110,9 @@ export function ComponentConsole({ engine }: { engine: ComponentEngine }) {
 function LogValue({ value }: { value: any }) {
   if (value === null) return <span className="text-purple-400">null</span>;
   if (value === undefined)
-    return <span className="text-neutral-content-muted">undefined</span>;
+    return <span className="text-content-muted">undefined</span>;
   if (typeof value === "string")
-    return <span className="text-neutral-content">{value}</span>;
+    return <span className="text-content">{value}</span>;
   if (typeof value === "number")
     return <span className="text-blue-400">{value}</span>;
   if (typeof value === "boolean")
@@ -120,12 +120,12 @@ function LogValue({ value }: { value: any }) {
   if (typeof value === "object") {
     try {
       return (
-        <span className="text-neutral-content-subtle">
+        <span className="text-content-subtle">
           {JSON.stringify(value, null, 2)}
         </span>
       );
     } catch (e) {
-      return <span className="text-neutral-content-subtle">[Object]</span>;
+      return <span className="text-content-subtle">[Object]</span>;
     }
   }
   return <span>{String(value)}</span>;

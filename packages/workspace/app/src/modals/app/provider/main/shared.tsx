@@ -147,7 +147,7 @@ export function OAuthClientSelector({
 
   if (isLoading) {
     return (
-      <div className="text-xs text-neutral-content-muted">
+      <div className="text-xs text-content-muted">
         Loading OAuth clients...
       </div>
     );
@@ -221,7 +221,7 @@ export function OAuthClientSelector({
           <Heading className="text-sm font-semibold">OAuth Client</Heading>
 
           {formError && (
-            <div className="p-2 text-xs text-destructive bg-destructive/10 rounded-lg">
+            <div className="p-2 text-xs text-base bg-base/10 rounded-lg">
               {formError}
             </div>
           )}

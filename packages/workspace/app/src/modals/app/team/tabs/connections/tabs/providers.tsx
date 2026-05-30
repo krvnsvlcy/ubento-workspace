@@ -44,12 +44,12 @@ export const ProvidersTab: FC = () => {
       <ScrollArea className="flex-1 px-6 pb-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {isFetchingAllProviders && (
-            <div className="col-span-full py-12 text-center text-neutral-content-muted">
+            <div className="col-span-full py-12 text-center text-content-muted">
               <p className="text-[13px]">Loading providers...</p>
             </div>
           )}
           {!isFetchingAllProviders && allProviders.length === 0 && (
-            <div className="col-span-full py-12 text-center text-neutral-content-muted">
+            <div className="col-span-full py-12 text-center text-content-muted">
               <p className="text-[13px]">
                 {providerSearch
                   ? "No providers match search query."
@@ -71,10 +71,10 @@ export const ProvidersTab: FC = () => {
                     providerCode: p.handle,
                   })
                 }
-                className="flex flex-col text-left items-start p-5 rounded-2xl bg-neutral-surface border border-neutral-border hover:border-neutral-border-hover hover:bg-neutral-surface-hover/30 hover:shadow-lg transition-all group duration-200 cursor-pointer"
+                className="flex flex-col text-left items-start p-5 rounded-2xl bg-surface border border-border hover:border-border-hover hover:bg-surface-hover/30 hover:shadow-lg transition-all group duration-200 cursor-pointer"
               >
                 <div className="flex items-start justify-between mb-4">
-                  <div className="h-10 w-10 rounded-xl flex items-center justify-center bg-neutral-surface-hover text-neutral-content-muted group-hover:text-neutral-content transition-all">
+                  <div className="h-10 w-10 rounded-xl flex items-center justify-center bg-surface-hover text-content-muted group-hover:text-content transition-all">
                     <Globe className="h-5 w-5" />
                   </div>
                   <div className="flex gap-1.5 flex-wrap justify-end">
@@ -89,10 +89,10 @@ export const ProvidersTab: FC = () => {
                     ))}
                   </div>
                 </div>
-                <h4 className="text-sm font-bold text-neutral-content group-hover:text-foreground transition-colors mb-1">
+                <h4 className="text-sm font-bold text-content group-hover:text-foreground transition-colors mb-1">
                   {p.name || p.id}
                 </h4>
-                <p className="text-xs text-neutral-content-muted line-clamp-2">
+                <p className="text-xs text-content-muted line-clamp-2">
                   {p.description ||
                     `Integration provider for ${p.name || p.id}.`}
                 </p>

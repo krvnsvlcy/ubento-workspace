@@ -52,16 +52,16 @@ export const CreateProvider: FC = () => {
 
   return (
     <Content>
-      <ContentHeader className="border-b border-neutral-border/30 pb-4">
+      <ContentHeader className="border-b border-border/30 pb-4">
         <Heading className="text-xl font-bold">Create Connection Provider</Heading>
-        <p className="text-sm text-neutral-content-subtle">
+        <p className="text-sm text-content-subtle">
           Register a new custom integration provider.
         </p>
       </ContentHeader>
 
       <ContentBody className="space-y-4 pt-4">
         {error && (
-          <div className="p-3 text-xs text-destructive bg-destructive/10 rounded-lg font-medium">
+          <div className="p-3 text-xs text-base bg-base/10 rounded-lg font-medium">
             {error}
           </div>
         )}
@@ -110,7 +110,7 @@ export const CreateProvider: FC = () => {
         </Field>
       </ContentBody>
 
-      <ContentFooter className="border-t border-neutral-border/30 pt-4 flex justify-end gap-2">
+      <ContentFooter className="border-t border-border/30 pt-4 flex justify-end gap-2">
         <Button onClick={goBack} variant="ghost" size="sm">
           Cancel
         </Button>

@@ -86,7 +86,7 @@ export function RawTextFieldControl({
 
         {suffix ? (
           <div
-            className="text-neutral-content-subtle"
+            className="text-content-subtle"
             style={{
               flexShrink: 0,
             }}

@@ -65,7 +65,7 @@ const BarLabels = ({ values }: { values: number[] }) => {
         // base
         "relative mb-2 flex h-5 w-full text-sm font-medium",
         // text color
-        "text-neutral-content",
+        "text-content",
       )}
     >
       <div className="absolute bottom-0 left-0 flex items-center">0</div>

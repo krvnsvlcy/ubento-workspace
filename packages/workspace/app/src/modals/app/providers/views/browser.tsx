@@ -76,7 +76,7 @@ export const ProvidersBrowser: FC = () => {
         <Content>
           <ContentHeader>
             <Input
-              prefix={<Search className="h-4 w-4 text-neutral-content-muted" />}
+              prefix={<Search className="h-4 w-4 text-content-muted" />}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search integrations (e.g., Slack, GitHub...)"
@@ -114,7 +114,7 @@ export const ProvidersBrowser: FC = () => {
 
                     {isFetching && (
                       <div className="flex justify-center p-6 col-span-2">
-                        <Spinner className="text-neutral-content-muted" />
+                        <Spinner className="text-content-muted" />
                       </div>
                     )}
                   </div>
@@ -140,13 +140,13 @@ const ProviderCard: FC<ProviderCardProps> = ({ provider, onSelect }) => {
       onClick={() => onSelect(provider)}
       className="flex flex-col items-start text-left"
     >
-      <div className="h-10 w-10 rounded-xl flex items-center justify-center bg-background text-neutral-content-muted group-hover:text-neutral-content transition-all mb-3">
+      <div className="h-10 w-10 rounded-xl flex items-center justify-center bg-background text-content-muted group-hover:text-content transition-all mb-3">
         <Globe className="h-5 w-5" />
       </div>
-      <h4 className="text-sm font-bold text-neutral-content group-hover:text-foreground transition-colors mb-1">
+      <h4 className="text-sm font-bold text-content group-hover:text-foreground transition-colors mb-1">
         {provider.name || provider.handle}
       </h4>
-      <p className="text-xs text-neutral-content-muted line-clamp-2">
+      <p className="text-xs text-content-muted line-clamp-2">
         {provider.description ||
           `Integrate ${provider.name || provider.handle} services with your team.`}
       </p>

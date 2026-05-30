@@ -66,7 +66,7 @@ export function ColorControl({
           onClick={settings?.onClick}
         >
           <div
-            className="rounded outline outline-1 outline-neutral-border/10 -outline-offset-1"
+            className="rounded outline outline-1 outline-border/10 -outline-offset-1"
             style={{
               height: 18,
               width: 18,

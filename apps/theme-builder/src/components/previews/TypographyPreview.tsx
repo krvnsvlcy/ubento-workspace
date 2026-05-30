@@ -140,7 +140,7 @@ export default function TypographyPreview() {
 
             <div className="space-y-3">
               <div className="flex items-center justify-between border-b pb-2">
-                <span className="text-xs font-semibold text-neutral-content-muted">
+                <span className="text-xs font-semibold text-content-muted">
                   Regular
                 </span>
                 <Text weight="regular" size="lg">
@@ -148,7 +148,7 @@ export default function TypographyPreview() {
                 </Text>
               </div>
               <div className="flex items-center justify-between border-b pb-2">
-                <span className="text-xs font-semibold text-neutral-content-muted">
+                <span className="text-xs font-semibold text-content-muted">
                   Medium
                 </span>
                 <Text weight="medium" size="lg">
@@ -156,7 +156,7 @@ export default function TypographyPreview() {
                 </Text>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-neutral-content-muted">
+                <span className="text-xs font-semibold text-content-muted">
                   Semibold
                 </span>
                 <Text weight="semibold" size="lg">

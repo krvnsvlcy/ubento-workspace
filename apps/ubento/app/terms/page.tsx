@@ -4,22 +4,22 @@ import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 export default function TermsPage() {
   return (
-    <div className="min-h-screen bg-neutral-surface font-body text-neutral-content selection:bg-neutral-surface-active flex flex-col">
+    <div className="min-h-screen bg-surface font-body text-content selection:bg-surface-active flex flex-col">
       <Header />
 
       {/* Main Terms Content */}
       <main className="flex-grow pt-32 pb-24 md:pt-40">
         <div className="mx-auto max-w-3xl px-6">
-          <h1 className="mt-8 font-heading text-4xl font-bold tracking-tight text-neutral-content sm:text-5xl leading-tight">
+          <h1 className="mt-8 font-heading text-4xl font-bold tracking-tight text-content sm:text-5xl leading-tight">
             Terms of Service
           </h1>
-          <p className="mt-2 text-xs font-mono text-neutral-content-muted uppercase tracking-wider">
+          <p className="mt-2 text-xs font-mono text-content-muted uppercase tracking-wider">
             Effective Date: May 18, 2026
           </p>
 
-          <div className="mt-16 space-y-12 text-sm text-neutral-content-subtle leading-relaxed border-t border-neutral-border/20 pt-12">
+          <div className="mt-16 space-y-12 text-sm text-content-subtle leading-relaxed border-t border-border/20 pt-12">
             <section className="space-y-4">
-              <h2 className="text-lg font-bold font-heading text-neutral-content">
+              <h2 className="text-lg font-bold font-heading text-content">
                 1. Agreement to Terms
               </h2>
               <p>
@@ -31,7 +31,7 @@ export default function TermsPage() {
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-lg font-bold font-heading text-neutral-content">
+              <h2 className="text-lg font-bold font-heading text-content">
                 2. Core Software License
               </h2>
               <p>
@@ -45,7 +45,7 @@ export default function TermsPage() {
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-lg font-bold font-heading text-neutral-content">
+              <h2 className="text-lg font-bold font-heading text-content">
                 3. Infrastructure Autonomy & Local Execution
               </h2>
               <p>
@@ -59,7 +59,7 @@ export default function TermsPage() {
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-lg font-bold font-heading text-neutral-content">
+              <h2 className="text-lg font-bold font-heading text-content">
                 4. Acceptable System Invocation
               </h2>
               <p>
@@ -73,7 +73,7 @@ export default function TermsPage() {
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-lg font-bold font-heading text-neutral-content">
+              <h2 className="text-lg font-bold font-heading text-content">
                 5. Limitation of Liability
               </h2>
               <p>

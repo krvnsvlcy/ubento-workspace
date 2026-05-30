@@ -76,7 +76,7 @@ export function ProviderDetailsForm({
         <ScrollArea>
           <div className="flex-1 space-y-4 px-6 py-4">
             {error && (
-              <div className="p-3 text-xs text-destructive bg-destructive/10 rounded-lg font-medium">
+              <div className="p-3 text-xs text-base bg-base/10 rounded-lg font-medium">
                 {error}
               </div>
             )}
@@ -86,10 +86,10 @@ export function ProviderDetailsForm({
               <div className="flex items-center gap-4">
                 <div
                   onClick={() => !isUploadingImage && fileInputRef.current?.click()}
-                  className="relative group flex items-center justify-center h-16 w-16 bg-neutral-surface/50 border border-dashed border-neutral-border/50 rounded-xl overflow-hidden cursor-pointer hover:border-accent hover:bg-neutral-surface-hover/30 transition-all duration-200"
+                  className="relative group flex items-center justify-center h-16 w-16 bg-surface/50 border border-dashed border-border/50 rounded-xl overflow-hidden cursor-pointer hover:border-border hover:bg-surface-hover/30 transition-all duration-200"
                 >
                   {isUploadingImage ? (
-                    <Loader2 className="h-6 w-6 text-accent animate-spin" />
+                    <Loader2 className="h-6 w-6 text-base animate-spin" />
                   ) : previewUrl || imageUrl ? (
                     <img
                       src={previewUrl || imageUrl}
@@ -97,7 +97,7 @@ export function ProviderDetailsForm({
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <ImageIcon className="h-6 w-6 text-neutral-content-muted group-hover:text-accent transition-colors" />
+                    <ImageIcon className="h-6 w-6 text-content-muted group-hover:text-base transition-colors" />
                   )}
                   {!isUploadingImage && (
                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
@@ -110,14 +110,14 @@ export function ProviderDetailsForm({
                 <div className="flex flex-col gap-1">
                   {imageFile ? (
                     <>
-                      <span className="text-xs text-neutral-content-subtle max-w-[150px] truncate">
+                      <span className="text-xs text-content-subtle max-w-[150px] truncate">
                         {imageFile.name}
                       </span>
                       {onImageChange && (
                         <button
                           type="button"
                           onClick={() => onImageChange(null)}
-                          className="text-[11px] text-destructive hover:underline text-left font-medium"
+                          className="text-[11px] text-base hover:underline text-left font-medium"
                         >
                           Remove
                         </button>
@@ -125,10 +125,10 @@ export function ProviderDetailsForm({
                     </>
                   ) : (
                     <>
-                      <span className="text-xs text-neutral-content font-medium font-semibold">
+                      <span className="text-xs text-content font-medium font-semibold">
                         Upload Logo
                       </span>
-                      <span className="text-[10px] text-neutral-content-muted">
+                      <span className="text-[10px] text-content-muted">
                         Supports PNG, JPG, or WEBP.
                       </span>
                     </>

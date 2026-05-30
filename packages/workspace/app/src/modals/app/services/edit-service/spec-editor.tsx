@@ -60,7 +60,7 @@ export function ServiceSpecEditor({
           </Field>
 
           {specError && (
-            <div className="p-2.5 text-xs text-destructive bg-destructive/10 rounded-lg font-medium">
+            <div className="p-2.5 text-xs text-base bg-base/10 rounded-lg font-medium">
               {specError}
             </div>
           )}

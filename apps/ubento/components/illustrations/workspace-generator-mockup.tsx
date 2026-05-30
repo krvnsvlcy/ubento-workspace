@@ -102,27 +102,27 @@ export function WorkspaceGeneratorMockup() {
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center min-h-[360px] relative z-10">
         {/* 1. Left: AI-Generated Application */}
         <div className="md:col-span-4 flex flex-col justify-center">
-          <div className="border border-neutral-border bg-neutral-surface/10 rounded-xl p-4 shadow-sm relative overflow-hidden backdrop-blur-sm">
+          <div className="border border-border bg-surface/10 rounded-xl p-4 shadow-sm relative overflow-hidden backdrop-blur-sm">
             <div className="absolute top-0 right-0 p-2 opacity-30">
-              <Cpu className="h-5 w-5 text-neutral-content" />
+              <Cpu className="h-5 w-5 text-content" />
             </div>
-            <span className="px-2 py-0.5 rounded text-[9px] font-bold font-code bg-accent-surface text-accent border border-accent/20 uppercase tracking-wider">
+            <span className="px-2 py-0.5 rounded text-[9px] font-bold font-code bg-surface text-base border border-border/20 uppercase tracking-wider">
               Built with AI
             </span>
-            <h3 className="font-heading font-bold text-sm text-neutral-content mt-2">
+            <h3 className="font-heading font-bold text-sm text-content mt-2">
               Workspace App
             </h3>
-            <p className="text-[11px] text-neutral-content-subtle mt-1">
+            <p className="text-[11px] text-content-subtle mt-1">
               Generating client endpoints and queries.
             </p>
 
             {/* Fake UI code block */}
-            <div className="mt-4 p-2.5 rounded-lg bg-background/80 border border-neutral-border/50 font-code text-[10px] text-neutral-content-muted space-y-1">
+            <div className="mt-4 p-2.5 rounded-lg bg-background/80 border border-border/50 font-code text-[10px] text-content-muted space-y-1">
               <div className="flex justify-between">
-                <span className="text-accent">const</span> app = dev.spawn()
+                <span className="text-base">const</span> app = dev.spawn()
               </div>
               <div>app.query(payload)</div>
-              <div className="text-[9px] text-success-subtle font-semibold mt-1 animate-pulse">
+              <div className="text-[9px] text-base-subtle font-semibold mt-1 animate-pulse">
                 ⚡ Outgoing request stream...
               </div>
             </div>
@@ -182,24 +182,24 @@ export function WorkspaceGeneratorMockup() {
                 <span
                   className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
                     proxyState === "pass"
-                      ? "bg-success"
+                      ? "bg-base"
                       : proxyState === "alert"
                         ? "bg-danger"
-                        : "bg-neutral-content-muted"
+                        : "bg-content-muted"
                   }`}
                 />
                 <span
                   className={`relative inline-flex rounded-full h-2 w-2 ${
                     proxyState === "pass"
-                      ? "bg-success"
+                      ? "bg-base"
                       : proxyState === "alert"
                         ? "bg-danger"
-                        : "bg-neutral-content-muted"
+                        : "bg-content-muted"
                   }`}
                 />
               </div>
 
-              <div className="text-neutral-content flex flex-col items-center gap-1.5 p-3">
+              <div className="text-content flex flex-col items-center gap-1.5 p-3">
                 <Logo className="h-5 w-auto" />
                 <span className="text-[9px] font-code font-bold tracking-wider opacity-60">
                   GATEWAY
@@ -212,10 +212,10 @@ export function WorkspaceGeneratorMockup() {
               <span
                 className={`inline-block font-code text-[10px] font-bold px-2 py-0.5 rounded border uppercase tracking-wider ${
                   proxyState === "pass"
-                    ? "bg-success-surface text-success border-success/30"
+                    ? "bg-surface text-base border-border/30"
                     : proxyState === "alert"
                       ? "bg-danger-surface text-danger border-danger/30"
-                      : "bg-neutral-surface text-neutral-content-subtle border-neutral-border"
+                      : "bg-surface text-content-subtle border-border"
                 }`}
               >
                 {proxyState === "pass"
@@ -292,12 +292,12 @@ export function WorkspaceGeneratorMockup() {
                   ease: "easeInOut",
                 }}
                 exit={{ opacity: 0 }}
-                className="absolute z-30 flex items-center gap-1.5 px-2.5 py-1 rounded-full border bg-neutral-surface/90 text-[10px] font-code font-medium shadow-md transition-all"
+                className="absolute z-30 flex items-center gap-1.5 px-2.5 py-1 rounded-full border bg-surface/90 text-[10px] font-code font-medium shadow-md transition-all"
               >
                 <span
                   className={`px-1 rounded text-[8px] font-bold ${
                     packet.type === "allow"
-                      ? "bg-accent-surface text-accent"
+                      ? "bg-surface text-base"
                       : "bg-danger-surface text-danger"
                   }`}
                 >

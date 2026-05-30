@@ -67,22 +67,22 @@ export const TreeEntry = memo(function ({
     <TreeEntryRaw
       ref={ref}
       className={cx(
-        "relative w-full shrink-0 grow-0 flex items-center text-neutral-content-subtle text-start overflow-hidden outline outline-1 -outline-offset-1",
+        "relative w-full shrink-0 grow-0 flex items-center text-content-subtle text-start overflow-hidden outline outline-1 -outline-offset-1",
         {
           "cursor-pointer": hoverable,
           "outline-transparent": !active,
-          "hover:bg-neutral-surface/30": !active && !hover && hoverable && !accent,
-          "focus:bg-neutral-surface/50 focus:text-neutral-content focus:outline-neutral-border":
+          "hover:bg-surface/30": !active && !hover && hoverable && !accent,
+          "focus:bg-surface/50 focus:text-content focus:outline-border":
             !active && !accent,
-          "bg-neutral-surface/30 hover:bg-neutral-surface/50 text-neutral-content outline-neutral-border":
+          "bg-surface/30 hover:bg-surface/50 text-content outline-border":
             active && !accent,
-          "bg-neutral-surface/30": hover && hoverable && !accent,
-          "hover:bg-accent/20": !active && !hover && hoverable && accent,
-          "focus:bg-accent/20 focus:text-neutral-content focus:outline-accent/40":
+          "bg-surface/30": hover && hoverable && !accent,
+          "hover:bg-base/20": !active && !hover && hoverable && accent,
+          "focus:bg-base/20 focus:text-content focus:outline-accent/40":
             !active && accent,
-          "bg-accent/10 hover:bg-accent/20 text-neutral-content outline-accent/30":
+          "bg-base/10 hover:bg-base/20 text-content outline-accent/30":
             active && accent,
-          "bg-accent/10 hover:bg-accent/10": hover && hoverable && accent,
+          "bg-base/10 hover:bg-base/10": hover && hoverable && accent,
           "rounded-md": !square, //
           "h-7": size === "medium",
           "h-6 text-sm": size === "small",
@@ -120,7 +120,7 @@ export const TreeEntry = memo(function ({
         {nested ? (
           container ? (
             <button
-              className="w-5 h-5 rounded hover:bg-neutral-surface/30 p-0.5"
+              className="w-5 h-5 rounded hover:bg-surface/30 p-0.5"
               onClick={(e) => {
                 e.stopPropagation();
                 onToggleOpen?.(!open);
@@ -202,7 +202,7 @@ export const TreeEntry = memo(function ({
             {actions.map(({ icon, handler, persistent }, index) => (
               <button
                 key={index}
-                className="w-5 h-5 rounded hover:bg-neutral-surface/50 p-0.5"
+                className="w-5 h-5 rounded hover:bg-surface/50 p-0.5"
                 onClick={(e) => {
                   e.stopPropagation();
                   handler?.(e);

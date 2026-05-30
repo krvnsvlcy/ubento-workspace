@@ -18,7 +18,7 @@ const buttonVariants = cva(
         primary: "bg-base text-contrast hover:bg-hover",
         secondary: "bg-content/8 hover:bg-content/15",
         outline:
-          "border border-tone-border bg-transparent hover:bg-tone-surface text-tone-content",
+          "border border-border bg-transparent hover:bg-surface text-content",
         ghost: "hover:bg-content/15 hover:text-content",
         link: "text-content/80 hover:text-content",
         "secondary-primary": "bg-content/8 hover:bg-content hover:text-content",
@@ -42,10 +42,8 @@ const buttonVariants = cva(
         variant: [
           "primary",
           "secondary",
-          "secondary-destructive",
           "outline",
           "ghost",
-          "destructive",
         ],
         size: "sm",
         class: "h-6 px-2 text-xs",
@@ -54,10 +52,8 @@ const buttonVariants = cva(
         variant: [
           "primary",
           "secondary",
-          "secondary-destructive",
           "outline",
           "ghost",
-          "destructive",
         ],
         size: "md",
         class: "h-8 px-4",
@@ -66,10 +62,8 @@ const buttonVariants = cva(
         variant: [
           "primary",
           "secondary",
-          "secondary-destructive",
           "outline",
           "ghost",
-          "destructive",
         ],
         size: "lg",
         class: "h-10 px-4",

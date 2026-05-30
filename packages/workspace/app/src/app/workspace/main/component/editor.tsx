@@ -13,13 +13,13 @@ export function ComponentCodeEditor({
   const source = engine.useState((s) => s.source);
 
   return (
-    <div className="flex-1 h-full bg-neutral-surface border-r border-neutral-border flex flex-col shrink-0 min-w-0">
-      <div className="px-4 py-2 border-b border-neutral-border bg-neutral-surface/30 flex items-center justify-between">
-        <p className="text-[10px] font-bold text-neutral-content-muted uppercase tracking-wider">
+    <div className="flex-1 h-full bg-surface border-r border-border flex flex-col shrink-0 min-w-0">
+      <div className="px-4 py-2 border-b border-border bg-surface/30 flex items-center justify-between">
+        <p className="text-[10px] font-bold text-content-muted uppercase tracking-wider">
           index.tsx
         </p>
         {isLoading && (
-          <span className="text-[9px] text-neutral-content-muted animate-pulse">
+          <span className="text-[9px] text-content-muted animate-pulse">
             Fetching source...
           </span>
         )}

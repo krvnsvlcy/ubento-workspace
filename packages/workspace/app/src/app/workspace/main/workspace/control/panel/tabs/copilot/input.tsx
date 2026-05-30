@@ -17,9 +17,9 @@ function AttachmentChip({
   const icon = typeConfig?.icon(attachment.data as any);
 
   return (
-    <div className="flex items-center gap-1.5 rounded-full bg-neutral-surface border border-neutral-border px-2.5 py-1 text-xs text-neutral-content">
+    <div className="flex items-center gap-1.5 rounded-full bg-surface border border-border px-2.5 py-1 text-xs text-content">
       {icon && (
-        <span className="flex-shrink-0 text-neutral-content-subtle w-3.5 h-3.5 flex items-center justify-center">
+        <span className="flex-shrink-0 text-content-subtle w-3.5 h-3.5 flex items-center justify-center">
           {icon}
         </span>
       )}
@@ -27,7 +27,7 @@ function AttachmentChip({
       {onRemove && (
         <button
           onClick={onRemove}
-          className="ml-0.5 text-neutral-content-subtle hover:text-neutral-content transition-colors"
+          className="ml-0.5 text-content-subtle hover:text-content transition-colors"
         >
           <X size={12} />
         </button>
@@ -67,7 +67,7 @@ export function CopilotInput() {
 
   return (
     <div className="p-3">
-      <div className="flex flex-col overflow-hidden rounded-2xl border border-neutral-border transition-all focus-within:border-neutral-border-active">
+      <div className="flex flex-col overflow-hidden rounded-2xl border border-border transition-all focus-within:border-border-active">
         {/* Attachments Section */}
         {(input.userAttachments.length > 0 ||
           allContextAttachments.length > 0) && (
@@ -95,7 +95,7 @@ export function CopilotInput() {
           onKeyDown={handleKeyDown}
           placeholder="Message AI Copilot..."
           rows={1}
-          className="max-h-[200px] w-full resize-none bg-transparent p-4 text-[14px] leading-relaxed text-neutral-content outline-none scrollbar-hide placeholder:text-neutral-content-subtle"
+          className="max-h-[200px] w-full resize-none bg-transparent p-4 text-[14px] leading-relaxed text-content outline-none scrollbar-hide placeholder:text-content-subtle"
           style={{ height: "auto" }}
           onInput={(e) => {
             const target = e.target as HTMLTextAreaElement;

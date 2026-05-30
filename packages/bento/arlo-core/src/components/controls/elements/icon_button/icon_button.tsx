@@ -66,14 +66,14 @@ export const IconButton = forwardRef<
             "border": active,
 
             // primary
-            "text-accent-400 hover:bg-accent/5": color === "primary" && !active,
-            "bg-accent/10 text-accent-500 hover:bg-accent/20":
+            "text-base-400 hover:bg-base/5": color === "primary" && !active,
+            "bg-base/10 text-base-500 hover:bg-base/20":
               color === "primary" && active,
 
             // neutral
-            "border-neutral-border/10": color === "neutral",
-            "text-neutral-content-subtle hover:bg-neutral-surface/5": color === "neutral" && !active,
-            "bg-neutral-surface/5 text-neutral-content hover:bg-neutral-surface/10":
+            "border-border/10": color === "neutral",
+            "text-content-subtle hover:bg-surface/5": color === "neutral" && !active,
+            "bg-surface/5 text-content hover:bg-surface/10":
               color === "neutral" && active,
 
             // red

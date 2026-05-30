@@ -28,7 +28,7 @@ export function PopperMenuOption({
     if (typeof icon === "string") {
       iconNode = (
         <div
-          className="h-4 w-4 shrink-0 bg-neutral-content/10 rounded-sm"
+          className="h-4 w-4 shrink-0 bg-content/10 rounded-sm"
           title={`Icon: ${icon}`}
         />
       );
@@ -42,9 +42,9 @@ export function PopperMenuOption({
       className={cx(
         "h-8 py-1 px-2 w-full rounded-md text-sm flex items-center gap-2",
         {
-          "text-neutral-content": dimmed || disabled,
+          "text-content": dimmed || disabled,
           "hover:bg-current/7": !disabled,
-          "text-destructive": destructive,
+          "text-base": destructive,
         },
       )}
       style={{

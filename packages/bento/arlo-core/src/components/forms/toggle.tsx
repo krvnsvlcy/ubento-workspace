@@ -4,13 +4,13 @@ import cn from "clsx";
 import * as React from "react";
 
 const toggleVariants = cva(
-  "inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium hover:bg-neutral-surface/80 hover:text-neutral-content-muted disabled:pointer-events-none disabled:opacity-50 data-[state=on]:bg-neutral-surface/50 data-[state=on]:text-neutral-content [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0 focus-visible:border-accent focus-visible:ring-accent/50 focus-visible:ring-[3px] outline-none transition-[color,box-shadow] aria-invalid:ring-red/20 dark:aria-invalid:ring-red/40 aria-invalid:border-red whitespace-nowrap",
+  "inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium hover:bg-surface/80 hover:text-content-muted disabled:pointer-events-none disabled:opacity-50 data-[state=on]:bg-surface/50 data-[state=on]:text-content [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0 focus-visible:border-border focus-visible:ring-accent/50 focus-visible:ring-[3px] outline-none transition-[color,box-shadow] aria-invalid:ring-red/20 dark:aria-invalid:ring-red/40 aria-invalid:border-red whitespace-nowrap",
   {
     variants: {
       variant: {
         default: "bg-transparent",
         outline:
-          "border border bg-transparent shadow-xs hover:bg-neutral-surface/50 hover:text-neutral-content",
+          "border border bg-transparent shadow-xs hover:bg-surface/50 hover:text-content",
       },
       size: {
         default: "h-9 px-2 min-w-9",

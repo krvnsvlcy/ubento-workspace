@@ -84,12 +84,12 @@ export const ConnectionsTab: FC<ConnectionsTabProps> = ({
       <ScrollArea className="flex-1 px-6 pb-6">
         <div className="space-y-3">
           {isFetchingConnections && (
-            <div className="py-12 text-center text-neutral-content-muted">
+            <div className="py-12 text-center text-content-muted">
               <p className="text-[13px]">Loading connections...</p>
             </div>
           )}
           {!isFetchingConnections && filteredConnections.length === 0 && (
-            <div className="py-12 text-center text-neutral-content-muted">
+            <div className="py-12 text-center text-content-muted">
               <p className="text-[13px]">
                 {connectionSearch
                   ? "No connections match search query."
@@ -102,29 +102,29 @@ export const ConnectionsTab: FC<ConnectionsTabProps> = ({
             return (
               <div
                 key={conn.id}
-                className="flex items-center justify-between p-4 rounded-2xl bg-neutral-surface border border-neutral-border group hover:border-neutral-border-hover transition-all"
+                className="flex items-center justify-between p-4 rounded-2xl bg-surface border border-border group hover:border-border-hover transition-all"
               >
                 <div className="flex items-center gap-4">
-                  <div className="h-10 w-10 rounded-xl flex items-center justify-center bg-neutral-surface-hover text-neutral-content-muted">
+                  <div className="h-10 w-10 rounded-xl flex items-center justify-center bg-surface-hover text-content-muted">
                     <Globe className="h-5 w-5" />
                   </div>
                   <div>
                     <p className="text-sm font-bold">
                       {conn.name || provider?.name || conn.provider_id}
                     </p>
-                    <p className="text-[10px] text-neutral-content-subtle font-medium">
+                    <p className="text-[10px] text-content-subtle font-medium">
                       Provider: {provider?.name || conn.provider_id}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-accent">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-base">
                     Active
                   </span>
                   <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all">
                     <button
                       onClick={() => deleteConnection(conn.id)}
-                      className="p-2 rounded-lg bg-neutral-surface-hover hover:text-destructive transition-all"
+                      className="p-2 rounded-lg bg-surface-hover hover:text-base transition-all"
                       title="Delete Connection"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
@@ -138,7 +138,7 @@ export const ConnectionsTab: FC<ConnectionsTabProps> = ({
                           });
                         }
                       }}
-                      className="p-2 rounded-lg bg-neutral-surface-hover hover:text-accent transition-all"
+                      className="p-2 rounded-lg bg-surface-hover hover:text-base transition-all"
                       title="Manage Connection"
                     >
                       <Settings className="h-3.5 w-3.5" />

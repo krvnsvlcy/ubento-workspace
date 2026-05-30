@@ -70,8 +70,8 @@ export function DetailsBody({
   return (
     <>
       {isLoadingSpec ? (
-        <div className="flex items-center gap-2 text-neutral-content-muted">
-          <div className="w-4 h-4 border-2 border-neutral-border border-t-accent rounded-full animate-spin" />
+        <div className="flex items-center gap-2 text-content-muted">
+          <div className="w-4 h-4 border-2 border-border border-t-accent rounded-full animate-spin" />
           <p className="text-[13px]">Loading specification...</p>
         </div>
       ) : (
@@ -105,8 +105,8 @@ export function DetailsBody({
           )}
 
           {!specData && !isLoadingSpec && !specError && (
-            <div className="flex flex-col items-center justify-center py-12 bg-neutral-surface/10 rounded-2xl border border-neutral-border/20">
-              <Terminal size={32} className="text-neutral-content-muted mb-4" />
+            <div className="flex flex-col items-center justify-center py-12 bg-surface/10 rounded-2xl border border-border/20">
+              <Terminal size={32} className="text-content-muted mb-4" />
               <Text shade="muted" className="text-[13px]">
                 No specification details available for this channel.
               </Text>

@@ -24,7 +24,7 @@ export function TabSwitch<T extends string = string>({
   return (
     <div
       className={cn(
-        "flex gap-1 p-1 rounded-2xl bg-neutral-surface w-fit",
+        "flex gap-1 p-1 rounded-2xl bg-surface w-fit",
         className,
       )}
     >
@@ -35,8 +35,8 @@ export function TabSwitch<T extends string = string>({
           className={cn(
             "px-4 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer",
             value === option.key
-              ? "bg-background shadow-sm text-neutral-content"
-              : "text-neutral-content-muted hover:text-neutral-content",
+              ? "bg-background shadow-sm text-content"
+              : "text-content-muted hover:text-content",
             optionClassName,
           )}
         >

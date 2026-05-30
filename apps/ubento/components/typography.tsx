@@ -50,10 +50,10 @@ export function Typography({
   };
 
   const shadeClasses = {
-    default: "text-neutral-content",
-    subtle: "text-neutral-content-subtle",
-    muted: "text-neutral-content-muted",
-    accent: "text-accent",
+    default: "text-content",
+    subtle: "text-content-subtle",
+    muted: "text-content-muted",
+    accent: "text-base",
   };
 
   const defaultElement: Record<TypographyVariant, React.ElementType> = {

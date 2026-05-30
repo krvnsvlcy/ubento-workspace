@@ -34,7 +34,7 @@ export default function AdminSettingsPreview({
       <div className="flex items-center justify-between">
         <div>
           <Heading level="h1">Admin Settings</Heading>
-          <p className="text-neutral-content-muted mt-1">
+          <p className="text-content-muted mt-1">
             Configure user controls, invitations, theme swatches, and billing topic alerts.
           </p>
         </div>

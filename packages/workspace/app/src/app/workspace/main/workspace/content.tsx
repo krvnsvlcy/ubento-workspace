@@ -195,10 +195,10 @@ export function WorkspaceContent() {
   return (
     <div className="h-full w-full relative overflow-hidden flex flex-col">
       <If condition={canEdit}>
-        <div className="flex items-center justify-between px-4 py-2 border-b border-neutral-border bg-neutral-surface/30 shrink-0">
+        <div className="flex items-center justify-between px-4 py-2 border-b border-border bg-surface/30 shrink-0">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
-            <span className="text-xs font-semibold text-neutral-content">
+            <span className="w-2 h-2 rounded-full bg-base animate-pulse" />
+            <span className="text-xs font-semibold text-content">
               {boardMeta?.title
                 ? `Editing: ${boardMeta.title}`
                 : "Board Canvas"}
@@ -215,7 +215,7 @@ export function WorkspaceContent() {
                   disabled={loading}
                 >
                   {copied ? (
-                    <Check size={12} className="text-success mr-1" />
+                    <Check size={12} className="text-base mr-1" />
                   ) : (
                     <Copy size={12} className="mr-1" />
                   )}
@@ -267,13 +267,13 @@ export function WorkspaceContent() {
         <If condition={canEdit && editMode === "code"}>
           <div className="absolute inset-0 bg-background flex flex-col p-4 gap-3 z-50">
             {error && (
-              <div className="text-xs text-destructive-content bg-destructive-surface p-2.5 rounded-lg border border-destructive-border flex gap-2 items-center shrink-0">
+              <div className="text-xs text-content bg-surface p-2.5 rounded-lg border border-border flex gap-2 items-center shrink-0">
                 <span>{error}</span>
               </div>
             )}
-            <div className="flex-1 relative border border-neutral-border rounded-xl overflow-hidden focus-within:border-accent/40 transition-colors bg-background">
+            <div className="flex-1 relative border border-border rounded-xl overflow-hidden focus-within:border-border/40 transition-colors bg-background">
               {loading ? (
-                <div className="absolute inset-0 flex items-center justify-center bg-neutral-surface/10">
+                <div className="absolute inset-0 flex items-center justify-center bg-surface/10">
                   <PendingView message="Loading code..." />
                 </div>
               ) : (

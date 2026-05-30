@@ -15,27 +15,27 @@ export const HistoryTab: FC = () => {
   return (
     <div className="space-y-2">
       {isFetching && (
-        <div className="py-12 text-center text-neutral-content-muted">
+        <div className="py-12 text-center text-content-muted">
           <p className="text-[13px]">Loading invoice history...</p>
         </div>
       )}
       {!isFetching && invoices.length === 0 && (
-        <div className="py-12 text-center text-neutral-content-muted">
+        <div className="py-12 text-center text-content-muted">
           <p className="text-[13px]">No invoices found.</p>
         </div>
       )}
       {invoices.map((inv, i) => (
         <div
           key={inv.id}
-          className="flex items-center justify-between p-4 rounded-xl hover:bg-neutral-surface transition-all group"
+          className="flex items-center justify-between p-4 rounded-xl hover:bg-surface transition-all group"
         >
           <div className="flex items-center gap-4">
-            <div className="h-10 w-10 rounded-full bg-neutral-surface-hover flex items-center justify-center">
-              <History className="h-4 w-4 text-neutral-content-muted" />
+            <div className="h-10 w-10 rounded-full bg-surface-hover flex items-center justify-center">
+              <History className="h-4 w-4 text-content-muted" />
             </div>
             <div>
               <p className="text-sm font-bold">{inv.created_at || "Recent"}</p>
-              <p className="text-[10px] text-neutral-content-muted font-bold uppercase">
+              <p className="text-[10px] text-content-muted font-bold uppercase">
                 Invoice #{(inv as any).number || `INV-00${i + 1}`}
               </p>
             </div>
@@ -45,7 +45,7 @@ export const HistoryTab: FC = () => {
               <p className="text-sm font-black">
                 ${(inv.total / 100).toFixed(2)}
               </p>
-              <p className="text-[10px] text-accent font-bold uppercase">
+              <p className="text-[10px] text-base font-bold uppercase">
                 {inv.status}
               </p>
             </div>
@@ -54,7 +54,7 @@ export const HistoryTab: FC = () => {
                 href={(inv as any).pdf_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="opacity-0 group-hover:opacity-100 p-2 rounded-lg bg-neutral-surface-hover transition-all"
+                className="opacity-0 group-hover:opacity-100 p-2 rounded-lg bg-surface-hover transition-all"
               >
                 <ArrowUpRight className="h-4 w-4" />
               </a>

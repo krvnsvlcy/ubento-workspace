@@ -78,7 +78,7 @@ export function ProviderSelector({
         <Button
           variant="link"
           size="sm"
-          className="h-auto p-0 text-xs font-semibold text-accent hover:underline"
+          className="h-auto p-0 text-xs font-semibold text-base hover:underline"
           onClick={() => push(appModalRoutes.services.createProvider)}
         >
           Create new provider
@@ -101,7 +101,7 @@ export function ProviderSelector({
       />
 
       {showSuggestions && (
-        <div className="absolute z-[100] top-full left-0 right-0 mt-1 max-h-[220px] overflow-hidden bg-background border border-neutral-border rounded-xl shadow-xl p-1 flex flex-col">
+        <div className="absolute z-[100] top-full left-0 right-0 mt-1 max-h-[220px] overflow-hidden bg-background border border-border rounded-xl shadow-xl p-1 flex flex-col">
           {providers.length > 0 ? (
             <ScrollArea className="flex-1">
               <div className="flex flex-col">
@@ -113,14 +113,14 @@ export function ProviderSelector({
                       setProviderSearch(p.name || p.id);
                       setShowSuggestions(false);
                     }}
-                    className={`rounded-lg px-3 py-2 text-xs text-neutral-content hover:bg-neutral-surface-hover cursor-pointer flex justify-between items-center ${
+                    className={`rounded-lg px-3 py-2 text-xs text-content hover:bg-surface-hover cursor-pointer flex justify-between items-center ${
                       selectedProviderId === p.id
-                        ? "bg-neutral-surface-hover/60 text-accent font-medium"
+                        ? "bg-surface-hover/60 text-base font-medium"
                         : ""
                     }`}
                   >
                     <span>{p.name || p.id}</span>
-                    <span className="text-[9px] text-neutral-content-muted uppercase font-mono px-1 bg-neutral-surface-hover rounded">
+                    <span className="text-[9px] text-content-muted uppercase font-mono px-1 bg-surface-hover rounded">
                       {p.type}
                     </span>
                   </div>
@@ -136,7 +136,7 @@ export function ProviderSelector({
               </div>
             </ScrollArea>
           ) : (
-            <div className="px-3 py-2 text-xs text-neutral-content-muted italic">
+            <div className="px-3 py-2 text-xs text-content-muted italic">
               {isLoading ? "Loading..." : "No providers found"}
             </div>
           )}

@@ -83,11 +83,11 @@ export function SplitView({
           document.body.style.cursor = "ew-resize";
         }}
         className={`absolute top-0 bottom-0 w-1.5 -ml-0.75 cursor-ew-resize z-50 transition-colors group ${
-          isResizing ? "bg-accent" : "hover:bg-accent/30"
+          isResizing ? "bg-base" : "hover:bg-base/30"
         } ${position <= 0 || position >= 100 ? "hidden" : ""}`}
         style={{ left: `${position}%` }}
       >
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1 h-8 rounded-full bg-neutral-border group-hover:bg-accent/50 transition-colors" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1 h-8 rounded-full bg-border group-hover:bg-base/50 transition-colors" />
       </div>
       <div
         style={{

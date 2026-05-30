@@ -187,20 +187,20 @@ export default function App() {
       `}</style>
 
       {/* Navbar */}
-      <header className="flex-none h-16 border-b border-neutral-border bg-neutral-surface/50 backdrop-blur flex items-center justify-between px-6 z-10 sticky top-0">
+      <header className="flex-none h-16 border-b border-border bg-surface/50 backdrop-blur flex items-center justify-between px-6 z-10 sticky top-0">
         <div className="flex items-center gap-3">
           <Button
             variant="outline"
             size="icon"
             onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-            className="text-neutral-content-muted hover:text-neutral-content"
+            className="text-content-muted hover:text-content"
             title={isSidebarCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
           >
             <PanelLeftOpen
               className={`size-[18px] transition-transform duration-300 ${isSidebarCollapsed ? "" : "rotate-180"}`}
             />
           </Button>
-          <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center text-accent-contrast shadow-md">
+          <div className="w-8 h-8 rounded-lg bg-base flex items-center justify-center text-contrast shadow-md">
             <Palette size={16} />
           </div>
           <h1 className="text-xl font-bold tracking-tight">Theme Builder</h1>
@@ -226,11 +226,11 @@ export default function App() {
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
         <aside
-          className={`flex-none border-r border-neutral-border bg-neutral-surface/30 flex flex-col backdrop-blur-sm shadow-sm z-0 transition-all duration-300 ease-in-out ${
+          className={`flex-none border-r border-border bg-surface/30 flex flex-col backdrop-blur-sm shadow-sm z-0 transition-all duration-300 ease-in-out ${
             isSidebarCollapsed ? "w-0 border-r-0 overflow-hidden" : "w-80"
           }`}
         >
-          <div className="border-b border-neutral-border p-3">
+          <div className="border-b border-border p-3">
             <Tabs
               value={sidebarTab}
               onValueChange={(val) => setSidebarTab(val as "theme" | "preview")}
@@ -246,13 +246,13 @@ export default function App() {
             {sidebarTab === "theme" ? (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-content-muted mb-3 px-1">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-content-muted mb-3 px-1">
                     Colors (HSL)
                   </h3>
 
                   {/* Accent */}
                   <div className="space-y-3 mb-6">
-                    <label className="text-sm font-bold text-accent">
+                    <label className="text-sm font-bold text-base">
                       Accent Color
                     </label>
                     <div className="space-y-1">
@@ -328,7 +328,7 @@ export default function App() {
                   </div>
 
                   {/* Neutral */}
-                  <div className="space-y-3 mb-6 border-t border-neutral-border pt-4">
+                  <div className="space-y-3 mb-6 border-t border-border pt-4">
                     <label className="text-sm font-bold">Neutral Color</label>
                     <div className="space-y-1">
                       <div className="flex justify-between text-xs font-medium">
@@ -403,7 +403,7 @@ export default function App() {
                   </div>
 
                   {/* Background */}
-                  <div className="space-y-3 border-t border-neutral-border pt-4">
+                  <div className="space-y-3 border-t border-border pt-4">
                     <label className="text-sm font-bold">Background</label>
                     <div className="space-y-1">
                       <div className="flex justify-between text-xs font-medium">
@@ -428,8 +428,8 @@ export default function App() {
                   </div>
                 </div>
 
-                <div className="border-t border-neutral-border pt-4">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-content-muted mb-3 px-1">
+                <div className="border-t border-border pt-4">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-content-muted mb-3 px-1">
                     Fonts
                   </h3>
                   <div className="space-y-3">
@@ -440,7 +440,7 @@ export default function App() {
                         onChange={(e) =>
                           handleFontChange("heading", e.target.value)
                         }
-                        className="w-full h-10 rounded border border-neutral-border bg-neutral-surface px-2 text-sm focus:outline-none"
+                        className="w-full h-10 rounded border border-border bg-surface px-2 text-sm focus:outline-none"
                       >
                         {commonFonts.map((font) => (
                           <option key={font} value={font}>
@@ -456,7 +456,7 @@ export default function App() {
                         onChange={(e) =>
                           handleFontChange("body", e.target.value)
                         }
-                        className="w-full h-10 rounded border border-neutral-border bg-neutral-surface px-2 text-sm focus:outline-none"
+                        className="w-full h-10 rounded border border-border bg-surface px-2 text-sm focus:outline-none"
                       >
                         {commonFonts.map((font) => (
                           <option key={font} value={font}>
@@ -472,7 +472,7 @@ export default function App() {
                         onChange={(e) =>
                           handleFontChange("code", e.target.value)
                         }
-                        className="w-full h-10 rounded border border-neutral-border bg-neutral-surface px-2 text-sm focus:outline-none"
+                        className="w-full h-10 rounded border border-border bg-surface px-2 text-sm focus:outline-none"
                       >
                         {commonFonts.map((font) => (
                           <option key={font} value={font}>
@@ -486,15 +486,15 @@ export default function App() {
               </div>
             ) : (
               <div className="space-y-4">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-content-muted mb-3 px-1">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-content-muted mb-3 px-1">
                   Preview Layout
                 </h3>
 
                 <div
                   className={`p-4 border rounded-xl cursor-pointer transition-all duration-200 ${
                     activePreview === "sandbox"
-                      ? "border-accent bg-accent/5 ring-1 ring-accent/30"
-                      : "border-neutral-border hover:bg-neutral-surface/50"
+                      ? "border-border bg-base/5 ring-1 ring-accent/30"
+                      : "border-border hover:bg-surface/50"
                   }`}
                   onClick={() => setActivePreview("sandbox")}
                 >
@@ -503,13 +503,13 @@ export default function App() {
                       size={16}
                       className={
                         activePreview === "sandbox"
-                          ? "text-accent"
-                          : "text-neutral-content-muted"
+                          ? "text-base"
+                          : "text-content-muted"
                       }
                     />
                     <span className="font-semibold text-sm">Bento Sandbox</span>
                   </div>
-                  <p className="text-xs text-neutral-content-muted mt-1.5">
+                  <p className="text-xs text-content-muted mt-1.5">
                     Re-engineered 7-column design system showcase.
                   </p>
                 </div>
@@ -517,8 +517,8 @@ export default function App() {
                 <div
                   className={`p-4 border rounded-xl cursor-pointer transition-all duration-200 ${
                     activePreview === "analytics"
-                      ? "border-accent bg-accent/5 ring-1 ring-accent/30"
-                      : "border-neutral-border hover:bg-neutral-surface/50"
+                      ? "border-border bg-base/5 ring-1 ring-accent/30"
+                      : "border-border hover:bg-surface/50"
                   }`}
                   onClick={() => setActivePreview("analytics")}
                 >
@@ -527,15 +527,15 @@ export default function App() {
                       size={16}
                       className={
                         activePreview === "analytics"
-                          ? "text-accent"
-                          : "text-neutral-content-muted"
+                          ? "text-base"
+                          : "text-content-muted"
                       }
                     />
                     <span className="font-semibold text-sm">
                       Executive Analytics
                     </span>
                   </div>
-                  <p className="text-xs text-neutral-content-muted mt-1.5">
+                  <p className="text-xs text-content-muted mt-1.5">
                     Visual dashboards, system latency stats, and charts.
                   </p>
                 </div>
@@ -543,8 +543,8 @@ export default function App() {
                 <div
                   className={`p-4 border rounded-xl cursor-pointer transition-all duration-200 ${
                     activePreview === "admin"
-                      ? "border-accent bg-accent/5 ring-1 ring-accent/30"
-                      : "border-neutral-border hover:bg-neutral-surface/50"
+                      ? "border-border bg-base/5 ring-1 ring-accent/30"
+                      : "border-border hover:bg-surface/50"
                   }`}
                   onClick={() => setActivePreview("admin")}
                 >
@@ -553,15 +553,15 @@ export default function App() {
                       size={16}
                       className={
                         activePreview === "admin"
-                          ? "text-accent"
-                          : "text-neutral-content-muted"
+                          ? "text-base"
+                          : "text-content-muted"
                       }
                     />
                     <span className="font-semibold text-sm">
                       Admin Settings
                     </span>
                   </div>
-                  <p className="text-xs text-neutral-content-muted mt-1.5">
+                  <p className="text-xs text-content-muted mt-1.5">
                     User inputs, security configurations, and dialog forms.
                   </p>
                 </div>
@@ -569,8 +569,8 @@ export default function App() {
                 <div
                   className={`p-4 border rounded-xl cursor-pointer transition-all duration-200 ${
                     activePreview === "typography"
-                      ? "border-accent bg-accent/5 ring-1 ring-accent/30"
-                      : "border-neutral-border hover:bg-neutral-surface/50"
+                      ? "border-border bg-base/5 ring-1 ring-accent/30"
+                      : "border-border hover:bg-surface/50"
                   }`}
                   onClick={() => setActivePreview("typography")}
                 >
@@ -579,15 +579,15 @@ export default function App() {
                       size={16}
                       className={
                         activePreview === "typography"
-                          ? "text-accent"
-                          : "text-neutral-content-muted"
+                          ? "text-base"
+                          : "text-content-muted"
                       }
                     />
                     <span className="font-semibold text-sm">
                       Typography Specimen
                     </span>
                   </div>
-                  <p className="text-xs text-neutral-content-muted mt-1.5">
+                  <p className="text-xs text-content-muted mt-1.5">
                     Specimen breakdowns of headings, body, and inline/block
                     code.
                   </p>

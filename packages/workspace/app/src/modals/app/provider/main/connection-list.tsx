@@ -73,7 +73,7 @@ export function ConnectionList() {
 
   if (isLoadingConnections) {
     return (
-      <div className="text-center py-6 text-neutral-content-muted text-sm">
+      <div className="text-center py-6 text-content-muted text-sm">
         Loading connections...
       </div>
     );
@@ -122,7 +122,7 @@ export function ConnectionList() {
 
               {isFetching && !isLoadingConnections && (
                 <div className="flex justify-center p-6">
-                  <Spinner className="text-neutral-content-muted" />
+                  <Spinner className="text-content-muted" />
                 </div>
               )}
             </div>
@@ -185,7 +185,7 @@ const ConnectionCard: FC<ConnectionCardProps> = ({
       onClick={() => onEdit(connection)}
     >
       <div className="flex items-center gap-4">
-        <div className="h-10 w-10 rounded-lg flex items-center justify-center bg-neutral-content/10 text-neutral-content-muted">
+        <div className="h-10 w-10 rounded-lg flex items-center justify-center bg-content/10 text-content-muted">
           <Globe className="h-4 w-4" />
         </div>
         <div>

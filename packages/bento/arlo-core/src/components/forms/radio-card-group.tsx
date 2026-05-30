@@ -31,14 +31,14 @@ const RadioCardItem = React.forwardRef<
         // base
         "group relative w-full rounded-md border p-4 text-left shadow-xs transition focus:outline-hidden",
         // background color
-        "bg-neutral-surface",
+        "bg-surface",
         // border color
-        "border-neutral-border",
+        "border-border",
         "data-[state=checked]:border-blue-500",
         "dark:data-[state=checked]:border-blue-500",
         // disabled
-        "data-disabled:border-neutral-border",
-        "data-disabled:bg-neutral-surface data-disabled:shadow-none",
+        "data-disabled:border-border",
+        "data-disabled:bg-surface data-disabled:shadow-none",
         focusInput,
         className,
       )}
@@ -61,13 +61,13 @@ const RadioCardIndicator = React.forwardRef<
         // base
         "relative flex size-4 shrink-0 appearance-none items-center justify-center rounded-full border shadow-xs outline-hidden",
         // border color
-        "border-neutral-border",
+        "border-border",
         // background color
-        "bg-neutral-surface",
+        "bg-surface",
         // checked
         "group-data-[state=checked]:border-0 group-data-[state=checked]:border-transparent group-data-[state=checked]:bg-blue-500",
         // disabled
-        "group-data-disabled:border-neutral-border group-data-disabled:bg-neutral-surface group-data-disabled:text-neutral-content-muted",
+        "group-data-disabled:border-border group-data-disabled:bg-surface group-data-disabled:text-content-muted",
         // focus
         focusRing,
         className,
@@ -83,9 +83,9 @@ const RadioCardIndicator = React.forwardRef<
             // base
             "size size-1.5 shrink-0 rounded-full",
             // indicator
-            "bg-accent-contrast",
+            "bg-contrast",
             // disabled
-            "group-data-disabled:text-neutral-content-muted",
+            "group-data-disabled:text-content-muted",
           )}
         />
       </RadioGroupPrimitives.Indicator>

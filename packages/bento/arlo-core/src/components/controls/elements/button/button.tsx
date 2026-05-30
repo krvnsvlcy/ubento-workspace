@@ -53,8 +53,8 @@ export const ControlButton = forwardRef<
     <button
       ref={ref}
       className={cx("border w-full h-7 rounded-md", {
-        "text-neutral-content": dimmed,
-        "hover:bg-neutral-surface/20": !accent,
+        "text-content": dimmed,
+        "hover:bg-surface/20": !accent,
         "border-yellow/20 bg-yellow/10 hover:bg-yellow/20":
           accent === "yellow",
         "border-green/20 bg-green/10 hover:bg-green/20":
@@ -64,7 +64,7 @@ export const ControlButton = forwardRef<
         "border-red/20 bg-red/10 hover:bg-red/20": accent === "red",
         "border-violet/20 bg-violet/10 hover:bg-violet/20":
           accent === "violet",
-        "border-accent/20 bg-accent/10 hover:bg-accent/20": accent === "primary",
+        "border-border/20 bg-base/10 hover:bg-base/20": accent === "primary",
       })}
       style={{
         display: "flex",
@@ -125,7 +125,7 @@ export const ControlButton = forwardRef<
             action.handler();
           }}
           className={cx(
-            "cursor-pointer h-5 w-5 rounded shrink-0 items-center opacity-50 hover:opacity-100 justify-center flex hover:bg-neutral-surface/10 border",
+            "cursor-pointer h-5 w-5 rounded shrink-0 items-center opacity-50 hover:opacity-100 justify-center flex hover:bg-surface/10 border",
           )}
         >
           {ActionIcon && <ActionIcon className="h-4 w-4" />}

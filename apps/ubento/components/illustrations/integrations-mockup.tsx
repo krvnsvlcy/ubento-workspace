@@ -34,11 +34,11 @@ export function IntegrationsMockup() {
       {/* Window Content */}
       <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[520px]">
         {/* Left Sidebar / Registry Select */}
-        <div className="lg:col-span-5 border-r border-neutral-border p-6 bg-neutral-surface/20 flex flex-col justify-between">
+        <div className="lg:col-span-5 border-r border-border p-6 bg-surface/20 flex flex-col justify-between">
           <div>
             <div className="flex items-center gap-2 mb-6">
-              <Layers className="h-4 w-4 text-neutral-content" />
-              <span className="text-xs font-code font-bold tracking-wider uppercase text-neutral-content-muted">
+              <Layers className="h-4 w-4 text-content" />
+              <span className="text-xs font-code font-bold tracking-wider uppercase text-content-muted">
                 Credential Registry
               </span>
             </div>
@@ -71,23 +71,23 @@ export function IntegrationsMockup() {
                   onClick={() => setActiveInt(service.id as any)}
                   className={`w-full text-left p-4 rounded-xl border transition-all duration-200 flex items-center justify-between cursor-pointer ${
                     activeInt === service.id
-                      ? "border-inverse bg-neutral-surface shadow-md"
-                      : "border-neutral-border hover:border-neutral-border-hover hover:bg-neutral-surface-hover/30"
+                      ? "border-border bg-surface shadow-md"
+                      : "border-border hover:border-border-hover hover:bg-surface-hover/30"
                   }`}
                 >
                   <div>
-                    <div className="font-heading font-semibold text-sm text-neutral-content mb-1">
+                    <div className="font-heading font-semibold text-sm text-content mb-1">
                       {service.name}
                     </div>
-                    <div className="text-xs text-neutral-content-subtle">
+                    <div className="text-xs text-content-subtle">
                       {service.category}
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <span
-                      className={`h-2.5 w-2.5 rounded-full ${connectedState[service.id] ? "bg-success shadow-[0_0_8px_rgba(39,201,63,0.5)]" : "bg-neutral-border-active"}`}
+                      className={`h-2.5 w-2.5 rounded-full ${connectedState[service.id] ? "bg-base shadow-[0_0_8px_rgba(39,201,63,0.5)]" : "bg-border-active"}`}
                     />
-                    <span className="text-[10px] font-code uppercase text-neutral-content-muted font-bold">
+                    <span className="text-[10px] font-code uppercase text-content-muted font-bold">
                       {connectedState[service.id] ? "Active" : "Offline"}
                     </span>
                   </div>
@@ -97,14 +97,14 @@ export function IntegrationsMockup() {
           </div>
 
           {/* Security Badge */}
-          <div className="mt-8 pt-6 border-t border-neutral-border/80">
-            <div className="flex items-center gap-3 bg-background border border-neutral-border rounded-xl p-3.5 shadow-inner">
-              <ShieldCheck className="h-6 w-6 text-success shrink-0" />
+          <div className="mt-8 pt-6 border-t border-border/80">
+            <div className="flex items-center gap-3 bg-background border border-border rounded-xl p-3.5 shadow-inner">
+              <ShieldCheck className="h-6 w-6 text-base shrink-0" />
               <div>
-                <div className="text-xs font-semibold text-neutral-content">
+                <div className="text-xs font-semibold text-content">
                   Pre-Authenticated Proxy
                 </div>
-                <div className="text-[10px] text-neutral-content-muted">
+                <div className="text-[10px] text-content-muted">
                   Server-injected auth ensures keys remain invisible to the
                   client.
                 </div>
@@ -117,12 +117,12 @@ export function IntegrationsMockup() {
         <div className="lg:col-span-7 p-6 bg-background flex flex-col justify-between min-h-[440px]">
           {/* Credentials Details Configuration Panel */}
           <div className="space-y-6">
-            <div className="flex justify-between items-center pb-4 border-b border-neutral-border">
+            <div className="flex justify-between items-center pb-4 border-b border-border">
               <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold bg-accent-surface text-accent border border-accent/20 px-2 py-0.5 rounded uppercase font-code">
+                <span className="text-xs font-semibold bg-surface text-base border border-border/20 px-2 py-0.5 rounded uppercase font-code">
                   Configuring
                 </span>
-                <h3 className="font-heading font-bold text-neutral-content">
+                <h3 className="font-heading font-bold text-content">
                   {activeInt === "stripe" && "Stripe Production Keys"}
                   {activeInt === "slack" && "Slack App Routing Credentials"}
                   {activeInt === "github" && "GitHub OAuth App Integration"}
@@ -135,8 +135,8 @@ export function IntegrationsMockup() {
                 onClick={() => toggleConnection(activeInt)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-semibold tracking-wide border transition-all duration-200 cursor-pointer shadow-sm uppercase ${
                   connectedState[activeInt]
-                    ? "border-destructive/20 bg-destructive-surface text-destructive hover:bg-destructive/10"
-                    : "border-success/20 bg-success-surface text-success hover:bg-success/10"
+                    ? "border-border/20 bg-surface text-base hover:bg-base/10"
+                    : "border-border/20 bg-surface text-base hover:bg-base/10"
                 }`}
               >
                 {connectedState[activeInt] ? "Disconnect" : "Connect"}
@@ -147,7 +147,7 @@ export function IntegrationsMockup() {
             <div className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <span className="text-[10px] uppercase font-bold text-neutral-content-muted tracking-wider">
+                  <span className="text-[10px] uppercase font-bold text-content-muted tracking-wider">
                     Client Registry ID
                   </span>
                   <input
@@ -162,25 +162,25 @@ export function IntegrationsMockup() {
                             ? "github_oauth_082a938cbeacdfd1101d"
                             : "google_cal_629cdacd83efcdca22bc"
                     }
-                    className="w-full text-xs font-code bg-neutral-surface/40 border border-neutral-border p-3.5 rounded-xl text-neutral-content-subtle select-none cursor-not-allowed"
+                    className="w-full text-xs font-code bg-surface/40 border border-border p-3.5 rounded-xl text-content-subtle select-none cursor-not-allowed"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <span className="text-[10px] uppercase font-bold text-neutral-content-muted tracking-wider">
+                  <span className="text-[10px] uppercase font-bold text-content-muted tracking-wider">
                     Encrypted Server Hash
                   </span>
                   <input
                     type="text"
                     disabled
                     value="••••••••••••••••••••••••••••••••••••"
-                    className="w-full text-xs font-code bg-neutral-surface/40 border border-neutral-border p-3.5 rounded-xl text-neutral-content-subtle select-none cursor-not-allowed"
+                    className="w-full text-xs font-code bg-surface/40 border border-border p-3.5 rounded-xl text-content-subtle select-none cursor-not-allowed"
                   />
                 </div>
               </div>
 
               {/* Configured Scopes */}
               <div className="space-y-2">
-                <span className="text-[10px] uppercase font-bold text-neutral-content-muted tracking-wider">
+                <span className="text-[10px] uppercase font-bold text-content-muted tracking-wider">
                   Authorized Gateway Scopes
                 </span>
                 <div className="flex flex-wrap gap-2">
@@ -189,9 +189,9 @@ export function IntegrationsMockup() {
                       (s) => (
                         <span
                           key={s}
-                          className="inline-flex items-center gap-1 text-[11px] font-code bg-neutral-surface border border-neutral-border px-2.5 py-1 rounded-lg text-neutral-content-subtle font-semibold"
+                          className="inline-flex items-center gap-1 text-[11px] font-code bg-surface border border-border px-2.5 py-1 rounded-lg text-content-subtle font-semibold"
                         >
-                          <Check className="h-3 w-3 text-success" /> {s}
+                          <Check className="h-3 w-3 text-base" /> {s}
                         </span>
                       ),
                     )}
@@ -199,18 +199,18 @@ export function IntegrationsMockup() {
                     ["channels:read", "chat:write", "users:read"].map((s) => (
                       <span
                         key={s}
-                        className="inline-flex items-center gap-1 text-[11px] font-code bg-neutral-surface border border-neutral-border px-2.5 py-1 rounded-lg text-neutral-content-subtle font-semibold"
+                        className="inline-flex items-center gap-1 text-[11px] font-code bg-surface border border-border px-2.5 py-1 rounded-lg text-content-subtle font-semibold"
                       >
-                        <Check className="h-3 w-3 text-success" /> {s}
+                        <Check className="h-3 w-3 text-base" /> {s}
                       </span>
                     ))}
                   {activeInt === "github" &&
                     ["repo", "read:org", "workflow"].map((s) => (
                       <span
                         key={s}
-                        className="inline-flex items-center gap-1 text-[11px] font-code bg-neutral-surface border border-neutral-border px-2.5 py-1 rounded-lg text-neutral-content-subtle font-semibold"
+                        className="inline-flex items-center gap-1 text-[11px] font-code bg-surface border border-border px-2.5 py-1 rounded-lg text-content-subtle font-semibold"
                       >
-                        <Check className="h-3 w-3 text-success" /> {s}
+                        <Check className="h-3 w-3 text-base" /> {s}
                       </span>
                     ))}
                   {activeInt === "google" &&
@@ -218,9 +218,9 @@ export function IntegrationsMockup() {
                       (s) => (
                         <span
                           key={s}
-                          className="inline-flex items-center gap-1 text-[11px] font-code bg-neutral-surface border border-neutral-border px-2.5 py-1 rounded-lg text-neutral-content-subtle font-semibold"
+                          className="inline-flex items-center gap-1 text-[11px] font-code bg-surface border border-border px-2.5 py-1 rounded-lg text-content-subtle font-semibold"
                         >
-                          <Check className="h-3 w-3 text-success" /> {s}
+                          <Check className="h-3 w-3 text-base" /> {s}
                         </span>
                       ),
                     )}
@@ -231,18 +231,18 @@ export function IntegrationsMockup() {
 
           {/* REST API Gateway Terminal Code Output */}
           <div className="mt-8 text-left">
-            <div className="px-4 py-2 border border-b-0 border-neutral-border rounded-t-xl bg-neutral-surface/30 flex justify-between items-center text-[10px] uppercase tracking-wider font-semibold text-neutral-content-muted">
+            <div className="px-4 py-2 border border-b-0 border-border rounded-t-xl bg-surface/30 flex justify-between items-center text-[10px] uppercase tracking-wider font-semibold text-content-muted">
               <span>Vertex proxy gateway logs</span>
               <Code className="h-3 w-3" />
             </div>
-            <div className="bg-neutral-surface border border-neutral-border rounded-b-xl p-4 font-code text-xs text-neutral-content shadow-inner">
+            <div className="bg-surface border border-border rounded-b-xl p-4 font-code text-xs text-content shadow-inner">
               {connectedState[activeInt] ? (
-                <div className="space-y-1 text-neutral-content-subtle text-left">
+                <div className="space-y-1 text-content-subtle text-left">
                   <p>
-                    <span className="text-info">POST</span> /vertex/oauth/
+                    <span className="text-base">POST</span> /vertex/oauth/
                     {activeInt}/exchange
                   </p>
-                  <p className="text-success font-semibold">200 OK</p>
+                  <p className="text-base font-semibold">200 OK</p>
                   <p>{"{"}</p>
                   {activeInt === "stripe" && (
                     <>
@@ -275,10 +275,10 @@ export function IntegrationsMockup() {
                 </div>
               ) : (
                 <div className="space-y-1 py-4 text-center">
-                  <p className="text-warning-hover font-semibold">
+                  <p className="text-hover font-semibold">
                     ⚠️ SERVICE DISCONNECTED
                   </p>
-                  <p className="text-neutral-content-subtle text-[11px] leading-relaxed max-w-sm mx-auto">
+                  <p className="text-content-subtle text-[11px] leading-relaxed max-w-sm mx-auto">
                     OAuth token registry for{" "}
                     <span className="font-bold">{activeInt}</span> is currently
                     empty. Connect the service to configure proxy gateway logs.

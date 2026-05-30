@@ -48,7 +48,7 @@ export const PlanTab: FC = () => {
 
   if (isFetching) {
     return (
-      <div className="py-12 text-center text-neutral-content-muted">
+      <div className="py-12 text-center text-content-muted">
         <p className="text-[13px]">Loading plan details...</p>
       </div>
     );
@@ -73,36 +73,36 @@ export const PlanTab: FC = () => {
   if (!subscription) {
     return (
       <div className="space-y-6">
-        <div className="p-6 rounded-3xl bg-gradient-to-br from-neutral-surface to-neutral-surface-hover border border-neutral-border relative overflow-hidden group">
+        <div className="p-6 rounded-3xl bg-gradient-to-br from-neutral-surface to-neutral-surface-hover border border-border relative overflow-hidden group">
           <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
             <Zap className="h-32 w-32" />
           </div>
           <div className="relative z-10">
             <div className="flex justify-between items-start mb-8">
               <div>
-                <p className="text-[10px] font-black text-accent uppercase tracking-[0.2em] mb-2">
+                <p className="text-[10px] font-black text-base uppercase tracking-[0.2em] mb-2">
                   Current Plan
                 </p>
-                <h3 className="text-3xl font-black text-neutral-content">
+                <h3 className="text-3xl font-black text-content">
                   {hobbyOffer?.name || "Hobby"}
                 </h3>
               </div>
-              <span className="px-3 py-1 rounded-full bg-neutral-surface text-neutral-content-muted text-[10px] font-black uppercase tracking-wider border border-neutral-border">
+              <span className="px-3 py-1 rounded-full bg-surface text-content-muted text-[10px] font-black uppercase tracking-wider border border-border">
                 Free
               </span>
             </div>
             <div className="flex items-baseline gap-1 mb-8">
               <span className="text-4xl font-black">$0</span>
-              <span className="text-neutral-content-muted font-medium text-sm">
+              <span className="text-content-muted font-medium text-sm">
                 /month
               </span>
             </div>
-            <div className="grid grid-cols-2 gap-4 pt-6 border-t border-neutral-border">
+            <div className="grid grid-cols-2 gap-4 pt-6 border-t border-border">
               {(hobbyOffer as any)?.metadata?.ui?.features?.map(
                 (feature: any, idx: number) => (
                   <div key={idx} className="flex items-center gap-3">
-                    <div className="h-2 w-2 rounded-full bg-neutral-content-subtle" />
-                    <span className="text-sm text-neutral-content-subtle">
+                    <div className="h-2 w-2 rounded-full bg-content-subtle" />
+                    <span className="text-sm text-content-subtle">
                       {feature.name}
                     </span>
                   </div>
@@ -114,7 +114,7 @@ export const PlanTab: FC = () => {
         <div className="flex gap-3">
           <button
             onClick={handleUpgrade}
-            className="flex-1 py-3 rounded-2xl bg-neutral-content text-neutral-contrast font-black text-sm uppercase tracking-wider hover:opacity-90 transition-all"
+            className="flex-1 py-3 rounded-2xl bg-content text-contrast font-black text-sm uppercase tracking-wider hover:opacity-90 transition-all"
           >
             Upgrade to Pro
           </button>
@@ -125,21 +125,21 @@ export const PlanTab: FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="p-6 rounded-3xl bg-gradient-to-br from-neutral-surface to-neutral-surface-hover border border-neutral-border relative overflow-hidden group">
+      <div className="p-6 rounded-3xl bg-gradient-to-br from-neutral-surface to-neutral-surface-hover border border-border relative overflow-hidden group">
         <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
           <Zap className="h-32 w-32" />
         </div>
         <div className="relative z-10">
           <div className="flex justify-between items-start mb-8">
             <div>
-              <p className="text-[10px] font-black text-accent uppercase tracking-[0.2em] mb-2">
+              <p className="text-[10px] font-black text-base uppercase tracking-[0.2em] mb-2">
                 Current Plan
               </p>
-              <h3 className="text-3xl font-black text-neutral-content">
+              <h3 className="text-3xl font-black text-content">
                 {product?.name || subscription.product_code || "Pro"}
               </h3>
             </div>
-            <span className="px-3 py-1 rounded-full bg-accent-surface text-accent text-[10px] font-black uppercase tracking-wider border border-accent-border">
+            <span className="px-3 py-1 rounded-full bg-surface text-base text-[10px] font-black uppercase tracking-wider border border-border">
               {subscription.status}
             </span>
           </div>
@@ -149,17 +149,17 @@ export const PlanTab: FC = () => {
               {((subscription as any)?.data?.attributes?.first_subscription_item
                 ?.price || 2900) / 100}
             </span>
-            <span className="text-neutral-content-muted font-medium text-sm">
+            <span className="text-content-muted font-medium text-sm">
               /month
             </span>
           </div>
-          <div className="grid grid-cols-2 gap-4 pt-6 border-t border-neutral-border">
+          <div className="grid grid-cols-2 gap-4 pt-6 border-t border-border">
             {proOffer &&
               (proOffer as any)?.metadata?.ui?.features?.map(
                 (feature: any, idx: number) => (
                   <div key={idx} className="flex items-center gap-3">
-                    <div className="h-2 w-2 rounded-full bg-accent" />
-                    <span className="text-sm text-neutral-content-subtle">
+                    <div className="h-2 w-2 rounded-full bg-base" />
+                    <span className="text-sm text-content-subtle">
                       {feature.name}
                     </span>
                   </div>
@@ -171,14 +171,14 @@ export const PlanTab: FC = () => {
       <div className="flex gap-3">
         <button
           onClick={handleChangePlan}
-          className="flex-1 py-3 rounded-2xl bg-neutral-content text-neutral-contrast font-black text-sm uppercase tracking-wider hover:opacity-90 transition-all"
+          className="flex-1 py-3 rounded-2xl bg-content text-contrast font-black text-sm uppercase tracking-wider hover:opacity-90 transition-all"
         >
           Change Plan
         </button>
         <button
           onClick={handleCancel}
           disabled={isCancelling}
-          className="px-6 py-3 rounded-2xl bg-neutral-surface text-neutral-content-subtle font-bold text-sm hover:text-destructive transition-all disabled:opacity-50"
+          className="px-6 py-3 rounded-2xl bg-surface text-content-subtle font-bold text-sm hover:text-base transition-all disabled:opacity-50"
         >
           {isCancelling ? "Cancelling..." : "Cancel"}
         </button>

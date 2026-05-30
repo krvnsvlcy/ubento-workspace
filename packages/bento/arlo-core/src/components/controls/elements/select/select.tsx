@@ -85,7 +85,7 @@ export function SelectControl<T>({
         suffix={
           <ChevronRight
             className={cx("h-4 w-4", {
-              "text-neutral-content": isUnset || isMixedValue || !isHovered,
+              "text-content": isUnset || isMixedValue || !isHovered,
             })}
             style={{
               transform: "rotate(90deg)",

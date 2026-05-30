@@ -29,7 +29,7 @@ export function ComponentMain({ componentId }: { componentId: string }) {
 
   if (status === "pending") {
     return (
-      <div className="flex h-full w-full items-center justify-center bg-neutral-surface text-neutral-content-muted text-[11px] animate-pulse">
+      <div className="flex h-full w-full items-center justify-center bg-surface text-content-muted text-[11px] animate-pulse">
         Loading component...
       </div>
     );
@@ -37,7 +37,7 @@ export function ComponentMain({ componentId }: { componentId: string }) {
 
   if (status === "error") {
     return (
-      <div className="flex flex-col h-full w-full items-center justify-center bg-neutral-surface text-red-500 text-[11px]">
+      <div className="flex flex-col h-full w-full items-center justify-center bg-surface text-red-500 text-[11px]">
         Failed to load component.
         <pre>{String(error)}</pre>
       </div>
@@ -45,7 +45,7 @@ export function ComponentMain({ componentId }: { componentId: string }) {
   }
 
   return (
-    <div className="flex flex-col h-full w-full bg-neutral-surface overflow-hidden">
+    <div className="flex flex-col h-full w-full bg-surface overflow-hidden">
       <ComponentEditorHeader
         engine={componentEngine}
         componentName={module?.name || componentId.split("-")[0]}

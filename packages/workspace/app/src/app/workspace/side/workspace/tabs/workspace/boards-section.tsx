@@ -96,8 +96,8 @@ function SeparatorDropZone({ id, activeDragId }: SeparatorProps) {
         className={clsx(
           "absolute inset-x-0 top-1/2 -translate-y-1/2 rounded-full transition-all",
           {
-            "h-[4px] bg-accent": isOver,
-            "h-[2px] bg-transparent hover:bg-neutral-content/10": !isOver,
+            "h-[4px] bg-base": isOver,
+            "h-[2px] bg-transparent hover:bg-content/10": !isOver,
           },
         )}
       />
@@ -172,7 +172,7 @@ function BoardNode({
         className={clsx(
           "relative cursor-pointer select-none rounded-lg transition-all duration-150",
           {
-            "ring-2 ring-accent ring-dashed bg-accent/5": isOverNest,
+            "ring-2 ring-accent ring-dashed bg-base/5": isOverNest,
           },
         )}
       >
@@ -502,7 +502,7 @@ export function BoardsSection() {
             ))}
           </>
         ) : (
-          <div className="text-xs text-neutral-content-subtle p-4 text-center">
+          <div className="text-xs text-content-subtle p-4 text-center">
             No boards found
           </div>
         )}

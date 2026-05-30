@@ -35,7 +35,7 @@ const TabNavigation = React.forwardRef<
         // base
         "flex items-center justify-start whitespace-nowrap border-b [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
         // border color
-        "border-neutral-border",
+        "border-border",
         className,
       )}
     >
@@ -71,15 +71,15 @@ const TabNavigationLink = React.forwardRef<
             // base
             "-mb-px flex items-center justify-center whitespace-nowrap border-b-2 border-transparent px-3 pb-2 text-sm font-medium transition-all",
             // text color
-            "text-neutral-content-muted",
+            "text-content-muted",
             // hover
-            "group-hover:text-neutral-content",
+            "group-hover:text-content",
             // border hover
-            "group-hover:border-neutral-border-hover",
+            "group-hover:border-border-hover",
             // selected
-            "group-data-active:border-accent group-data-active:text-accent",
+            "group-data-active:border-border group-data-active:text-base",
             // disabled
-            disabled ? "pointer-events-none text-neutral-content-muted" : "",
+            disabled ? "pointer-events-none text-content-muted" : "",
             focusRing,
             className,
           )}

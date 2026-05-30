@@ -293,7 +293,7 @@ export function createWorkspaceEngine({
     const newModule = await appEngine.ubento.sdk.module.createModule({
       name: title,
       team_id: session.teamId,
-      source: `export default function Board() {\n  return (\n    <div className="p-8 bg-neutral-surface/10 rounded-2xl border border-neutral-border">\n      <h1 className="text-2xl font-bold mb-4">${title}</h1>\n      <p className="text-neutral-content-muted">Start editing this board module in code.</p>\n    </div>\n  );\n}`,
+      source: `export default function Board() {\n  return (\n    <div className="p-8 bg-surface/10 rounded-2xl border border-border">\n      <h1 className="text-2xl font-bold mb-4">${title}</h1>\n      <p className="text-content-muted">Start editing this board module in code.</p>\n    </div>\n  );\n}`,
       scope: "private",
       type: "board",
     });

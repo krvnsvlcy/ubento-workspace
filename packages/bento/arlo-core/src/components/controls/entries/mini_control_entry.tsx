@@ -24,10 +24,10 @@ function MiniControlEntryLabel({
         textAlign: "start",
       }}
       className={cx("h-7 ", {
-        "text-neutral-content-subtle": !active,
-        "hover:text-neutral-content": !active && hasMenu,
-        "text-accent": active,
-        "text-accent hover:text-accent-500": active && hasMenu,
+        "text-content-subtle": !active,
+        "hover:text-content": !active && hasMenu,
+        "text-base": active,
+        "text-base hover:text-base-500": active && hasMenu,
       })}
     >
       {onRemove ? <RemoveButton onRemove={onRemove} /> : <></>}

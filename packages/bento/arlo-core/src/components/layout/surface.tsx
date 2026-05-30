@@ -6,13 +6,13 @@ import { ComponentProps } from "react";
 const surfaceVariants = cva("transition-colors", {
   variants: {
     fill: {
-      flat: "bg-background text-tone-content",
-      subtle: "bg-tone-surface/50 text-tone-content",
-      tinted: "bg-tone-surface text-tone-content",
-      bold: "bg-tone text-tone-contrast",
+      flat: "bg-background text-content",
+      subtle: "bg-surface/50 text-content",
+      tinted: "bg-surface text-content",
+      bold: "bg-base text-contrast",
     },
     interactive: {
-      true: "cursor-pointer hover:bg-tone-surface-hover hover:border-tone-border-hover",
+      true: "cursor-pointer hover:bg-surface-hover hover:border-border-hover",
       false: "",
     },
   },

@@ -23,15 +23,15 @@ function CopilotStatusIndicator() {
   switch (executionStatus) {
     case "thinking":
       return (
-        <div className="flex items-center gap-2 px-1 py-1 text-xs text-neutral-content-muted animate-in fade-in">
-          <Loader2 size={12} className="animate-spin text-accent" />
+        <div className="flex items-center gap-2 px-1 py-1 text-xs text-content-muted animate-in fade-in">
+          <Loader2 size={12} className="animate-spin text-base" />
           <span>Thinking...</span>
         </div>
       );
     case "working":
       return (
-        <div className="flex items-center gap-2 px-1 py-1 text-xs text-neutral-content-muted animate-in fade-in">
-          <Loader2 size={12} className="animate-spin text-accent" />
+        <div className="flex items-center gap-2 px-1 py-1 text-xs text-content-muted animate-in fade-in">
+          <Loader2 size={12} className="animate-spin text-base" />
           <span>Working...</span>
         </div>
       );

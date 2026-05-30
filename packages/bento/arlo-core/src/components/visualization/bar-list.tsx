@@ -75,7 +75,7 @@ function BarListInner<T>(
                 ? [
                     "-m-0! cursor-pointer",
                     // hover
-                    "hover:bg-neutral-surface-hover",
+                    "hover:bg-surface-hover",
                   ]
                 : "",
             )}
@@ -106,7 +106,7 @@ function BarListInner<T>(
                       // base
                       "truncate whitespace-nowrap rounded-sm text-sm",
                       // text color
-                      "text-neutral-content",
+                      "text-content",
                       // hover
                       "hover:underline hover:underline-offset-2",
                       // focus
@@ -124,7 +124,7 @@ function BarListInner<T>(
                       // base
                       "truncate whitespace-nowrap text-sm",
                       // text color
-                      "text-neutral-content",
+                      "text-content",
                     )}
                   >
                     {item.name}
@@ -150,7 +150,7 @@ function BarListInner<T>(
                 // base
                 "truncate whitespace-nowrap text-sm leading-none",
                 // text color
-                "text-neutral-content",
+                "text-content",
               )}
             >
               {valueFormatter(item.value)}

@@ -53,7 +53,7 @@ export const TreeHeading = forwardRef<HTMLDivElement, TreeHeadingProps>(
       <TreeEntryRaw
         ref={ref}
         className={cx(
-          "h-7 relative w-full shrink-0 grow-0 flex items-center text-neutral-content-muted text-start overflow-hidden cursor-pointer uppercase text-xs font-semibold",
+          "h-7 relative w-full shrink-0 grow-0 flex items-center text-content-muted text-start overflow-hidden cursor-pointer uppercase text-xs font-semibold",
           className,
         )}
         style={{
@@ -73,7 +73,7 @@ export const TreeHeading = forwardRef<HTMLDivElement, TreeHeadingProps>(
           {nested ? (
             container ? (
               <button
-                className="w-5 h-5 rounded hover:bg-neutral-surface/30 p-0.5"
+                className="w-5 h-5 rounded hover:bg-surface/30 p-0.5"
                 onClick={(e) => {
                   e.stopPropagation();
                   onToggleOpen?.(!open);
@@ -150,7 +150,7 @@ export const TreeHeading = forwardRef<HTMLDivElement, TreeHeadingProps>(
           {actions.map(({ icon, handler }, index) => (
             <button
               key={index}
-              className="w-5 h-5 rounded hover:bg-neutral-surface/50 p-0.5"
+              className="w-5 h-5 rounded hover:bg-surface/50 p-0.5"
               onClick={(e) => {
                 e.stopPropagation();
                 handler?.(e);

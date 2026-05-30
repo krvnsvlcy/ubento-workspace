@@ -21,17 +21,17 @@ const selectTriggerVariants = cva(
     // base
     "group/trigger flex w-full select-none items-center justify-between gap-2 truncate rounded-xl border outline-hidden transition",
     // border color
-    "border-neutral-border",
+    "border-border",
     // text color
-    "text-neutral-content",
+    "text-content",
     // placeholder
-    "data-placeholder:text-neutral-content-muted",
+    "data-placeholder:text-content-muted",
     // background color
-    "bg-neutral-surface",
+    "bg-surface",
     // hover
-    "hover:bg-neutral-surface-hover",
+    "hover:bg-surface-hover",
     // disabled
-    "data-disabled:bg-neutral-surface data-disabled:text-neutral-content-muted",
+    "data-disabled:bg-surface data-disabled:text-content-muted",
     focusInput,
   ),
   {
@@ -72,9 +72,9 @@ const SelectTrigger = React.forwardRef<
             // base
             "size-4 shrink-0",
             // text color
-            "text-neutral-content-muted",
+            "text-content-muted",
             // disabled
-            "group-data-disabled/trigger:text-neutral-content-muted",
+            "group-data-disabled/trigger:text-content-muted",
           )}
         />
       </SelectPrimitives.Icon>
@@ -147,9 +147,9 @@ const SelectContent = React.forwardRef<
           // background color
           "bg-background",
           // text color
-          "text-neutral-content",
+          "text-content",
           // border color
-          "border-neutral-border",
+          "border-border",
           // transition
           "will-change-[transform,opacity]",
           // "data-[state=open]:animate-slide-down-and-fade",
@@ -190,7 +190,7 @@ const SelectGroupLabel = React.forwardRef<
       // base
       "px-3 py-2 text-xs font-medium tracking-wide",
       // text color
-      "text-neutral-content-muted",
+      "text-content-muted",
       className,
     )}
     {...props}
@@ -210,13 +210,13 @@ const SelectItem = React.forwardRef<
         // base
         "grid cursor-pointer grid-cols-[1fr_20px] gap-x-2 rounded-md px-3 py-2 outline-hidden transition-colors data-[state=checked]:font-semibold sm:text-sm",
         // text color
-        "text-neutral-content",
+        "text-content",
         // disabled
-        "data-disabled:pointer-events-none data-disabled:text-neutral-content-muted data-disabled:hover:bg-none",
+        "data-disabled:pointer-events-none data-disabled:text-content-muted data-disabled:hover:bg-none",
         // focus
-        "focus-visible:bg-neutral-surface-hover",
+        "focus-visible:bg-surface-hover",
         // hover
-        "hover:bg-neutral-surface-hover",
+        "hover:bg-surface-hover",
         className,
       )}
       {...props}
@@ -226,7 +226,7 @@ const SelectItem = React.forwardRef<
       </SelectPrimitives.ItemText>
       <SelectPrimitives.ItemIndicator>
         <Check
-          className="size-5 shrink-0 text-neutral-content"
+          className="size-5 shrink-0 text-content"
           aria-hidden="true"
         />
       </SelectPrimitives.ItemIndicator>
@@ -246,7 +246,7 @@ const SelectSeparator = React.forwardRef<
       // base
       "-mx-1 my-1 h-px",
       // background color
-      "bg-neutral-border",
+      "bg-border",
       className,
     )}
     {...props}

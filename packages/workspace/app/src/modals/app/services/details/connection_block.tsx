@@ -31,7 +31,7 @@ export function ConnectionBlock({
         </p>
       </div>
       <div className="flex flex-col gap-3">
-        <span className="text-[12px] font-mono text-neutral-content-subtle truncate bg-black/20 px-2 py-1 rounded">
+        <span className="text-[12px] font-mono text-content-subtle truncate bg-black/20 px-2 py-1 rounded">
           {providerName}
         </span>
         <div className="flex gap-2 justify-end">

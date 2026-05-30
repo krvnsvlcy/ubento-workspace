@@ -28,7 +28,7 @@ export function EditableControlLabel({
         ref={inputRef}
         className={cx("w-full rounded-md h-7 focus:px-2", {
           "text-red focus:bg-red/10": error,
-          "hover:text-neutral-content focus:text-neutral-content focus:bg-fg/5": !error,
+          "hover:text-content focus:text-content focus:bg-fg/5": !error,
         })}
         placeholder={placeholder}
         value={inputValue}

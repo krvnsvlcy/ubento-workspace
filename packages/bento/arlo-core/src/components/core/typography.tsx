@@ -7,6 +7,7 @@ import * as React from "react";
 const heading = cva("font-heading font-medium leading-tight tracking-tight", {
   variants: {
     level: {
+      display: "text-5xl font-semibold tracking-tight",
       h1: "text-4xl font-semibold",
       h2: "text-3xl font-semibold",
       h3: "text-2xl font-semibold",
@@ -25,16 +26,16 @@ const heading = cva("font-heading font-medium leading-tight tracking-tight", {
 });
 
 export function Heading({
-  level,
+  level = "h1",
   shade,
   tone,
   className,
   ...props
-}: React.ComponentProps<"h1"> &
+}: Omit<React.ComponentProps<"h1">, "color"> &
   VariantProps<typeof heading> & {
     tone?: Tone;
   }) {
-  const Tag = level as React.ElementType;
+  const Tag = (level === "display" ? "h1" : (level || "h1")) as React.ElementType;
 
   return (
     <Tag

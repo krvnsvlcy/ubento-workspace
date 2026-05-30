@@ -121,7 +121,7 @@ export function DimensionControl<U extends string>({
           step={unitDatum?.step}
           suffix={
             <div
-              className="hover:text-neutral-content"
+              className="hover:text-content"
               style={{
                 cursor: "pointer",
               }}
@@ -150,7 +150,7 @@ export function DimensionControl<U extends string>({
                 label: (
                   <div className="flex gap-3">
                     <span className="grow">{unitDatum.label}</span>
-                    <span className="text-neutral-content-subtle">
+                    <span className="text-content-subtle">
                       {" "}
                       {unitDatum.unit}
                     </span>

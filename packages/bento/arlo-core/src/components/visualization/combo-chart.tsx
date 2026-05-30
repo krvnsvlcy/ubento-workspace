@@ -112,7 +112,7 @@ const LegendItem = ({
         // base
         "group inline-flex flex-nowrap items-center gap-1.5 rounded-sm px-2 py-1 whitespace-nowrap transition",
         hasOnValueChange
-          ? "cursor-pointer hover:bg-neutral-surface-hover"
+          ? "cursor-pointer hover:bg-surface-hover"
           : "cursor-default",
       )}
       onClick={(e) => {
@@ -137,8 +137,8 @@ const LegendItem = ({
           // base
           "truncate text-xs whitespace-nowrap",
           // text color
-          "text-neutral-content",
-          hasOnValueChange && "group-hover:text-neutral-content",
+          "text-content",
+          hasOnValueChange && "group-hover:text-content",
           activeLegend && activeLegend !== name ? "opacity-40" : "opacity-100",
         )}
       >
@@ -184,8 +184,8 @@ const ScrollButton = ({ icon, onClick, disabled }: ScrollButtonProps) => {
         // base
         "group inline-flex size-5 items-center truncate rounded-sm transition",
         disabled
-          ? "cursor-not-allowed text-neutral-content-muted"
-          : "cursor-pointer text-neutral-content hover:bg-neutral-surface-hover hover:text-neutral-content",
+          ? "cursor-not-allowed text-content-muted"
+          : "cursor-pointer text-content hover:bg-surface-hover hover:text-content",
       )}
       disabled={disabled}
       onClick={(e) => {
@@ -355,7 +355,7 @@ const Legend = React.forwardRef<HTMLOListElement, LegendProps>((props, ref) => {
               // base
               "absolute top-0 right-0 bottom-0 flex h-full items-center justify-center pr-1",
               // background color
-              "bg-neutral-surface",
+              "bg-surface",
             )}
           >
             <ScrollButton
@@ -482,9 +482,9 @@ const ChartTooltip = ({
           // base
           "rounded-md border text-sm shadow-md",
           // border color
-          "border-neutral-border",
+          "border-border",
           // background color
-          "bg-neutral-surface",
+          "bg-surface",
         )}
       >
         <div className={cx("border-b border-inherit px-4 py-2")}>
@@ -493,7 +493,7 @@ const ChartTooltip = ({
               // base
               "font-medium",
               // text color
-              "text-neutral-content",
+              "text-content",
             )}
           >
             {label}
@@ -529,7 +529,7 @@ const ChartTooltip = ({
                       // base
                       "text-right whitespace-nowrap",
                       // text color
-                      "text-neutral-content",
+                      "text-content",
                     )}
                   >
                     {category}
@@ -540,7 +540,7 @@ const ChartTooltip = ({
                     // base
                     "text-right font-medium whitespace-nowrap tabular-nums",
                     // text color
-                    "text-neutral-content",
+                    "text-content",
                   )}
                 >
                   {chartType === "bar"
@@ -809,7 +809,7 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
           >
             {showGridLines ? (
               <CartesianGrid
-                className={cx("stroke-neutral-border stroke-1")}
+                className={cx("stroke-border stroke-1")}
                 horizontal={true}
                 vertical={false}
               />
@@ -825,7 +825,7 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
                 // base
                 "mt-4 text-xs",
                 // text fill
-                "fill-neutral-content-muted",
+                "fill-content-muted",
               )}
               tickLine={false}
               axisLine={false}
@@ -846,7 +846,7 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
                 <Label
                   position="insideBottom"
                   offset={-20}
-                  className="fill-neutral-content text-sm font-medium"
+                  className="fill-content text-sm font-medium"
                 >
                   {xAxisLabel}
                 </Label>
@@ -864,7 +864,7 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
                 // base
                 "text-xs",
                 // text fill
-                "fill-neutral-content-muted",
+                "fill-content-muted",
               )}
               tick={{
                 transform: "translate(-3, 0)",
@@ -880,7 +880,7 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
                   style={{ textAnchor: "middle" }}
                   angle={-90}
                   offset={-15}
-                  className="fill-neutral-content text-sm font-medium"
+                  className="fill-content text-sm font-medium"
                 >
                   {mergedBarSeries.yAxisLabel}
                 </Label>
@@ -901,7 +901,7 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
                   // base
                   "text-xs",
                   // text fill
-                  "fill-neutral-content-muted",
+                  "fill-content-muted",
                 )}
                 tick={{
                   transform: "translate(3, 0)",
@@ -917,7 +917,7 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
                     style={{ textAnchor: "middle" }}
                     angle={-90}
                     offset={-15}
-                    className="fill-neutral-content text-sm font-medium"
+                    className="fill-content text-sm font-medium"
                   >
                     {mergedLineSeries.yAxisLabel}
                   </Label>
@@ -929,7 +929,7 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
               wrapperStyle={{ outline: "none" }}
               isAnimationActive={true}
               animationDuration={100}
-              cursor={{ stroke: "var(--neutral-border)", strokeWidth: 1 }}
+              cursor={{ stroke: "var(--color-border)", strokeWidth: 1 }}
               offset={20}
               position={{
                 y: 0,
@@ -1084,7 +1084,7 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
                   return (
                     <Dot
                       className={cx(
-                        "stroke-neutral-surface",
+                        "stroke-surface",
                         onValueChange ? "cursor-pointer" : "",
                         getColorClassName(
                           lineCategoryColors.get(
@@ -1138,7 +1138,7 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
                         strokeLinejoin={strokeLinejoin}
                         strokeWidth={strokeWidth}
                         className={cx(
-                          "stroke-neutral-surface",
+                          "stroke-surface",
                           onValueChange ? "cursor-pointer" : "",
                           getColorClassName(
                             lineCategoryColors.get(

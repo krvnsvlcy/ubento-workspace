@@ -75,7 +75,7 @@ export function Home() {
     return (
       <div
         key="empty"
-        className="h-full w-full flex flex-col items-center justify-center bg-background p-8 selection:bg-neutral-800 selection:text-white"
+        className="h-full w-full flex flex-col items-center justify-center bg-background p-8 selection:bg-base-800 selection:text-white"
       >
         <div className="flex flex-col items-center text-center max-w-md animate-in fade-in duration-500 gap-6">
           <Text shade="muted" size="sm">
@@ -96,7 +96,7 @@ export function Home() {
 
   // The Populated Dashboard
   return (
-    <div className="h-full w-full flex flex-col items-center overflow-auto bg-background p-8 md:p-12 lg:p-16 selection:bg-neutral-800 selection:text-white">
+    <div className="h-full w-full flex flex-col items-center overflow-auto bg-background p-8 md:p-12 lg:p-16 selection:bg-base-800 selection:text-white">
       <div className="w-full max-w-5xl space-y-12 animate-in fade-in duration-500 mt-8">
         {/* Command Center Header */}
         <div className="space-y-1">
@@ -155,7 +155,7 @@ export function WorkspaceCard({
       className="space-y-3 cursor-pointer group relative"
     >
       <div className="flex items-start justify-between">
-        <div className="w-12 h-12 rounded-xl border border-neutral-border bg-background flex items-center justify-center text-neutral-content group-hover:bg-neutral-content group-hover:text-background transition-colors shrink-0">
+        <div className="w-12 h-12 rounded-xl border border-border bg-background flex items-center justify-center text-content group-hover:bg-content group-hover:text-background transition-colors shrink-0">
           <Box size={18} />
         </div>
 
@@ -164,7 +164,7 @@ export function WorkspaceCard({
           <DropdownMenuTrigger asChild>
             <button
               onClick={(e) => e.stopPropagation()}
-              className="flex h-7 w-7 items-center justify-center rounded-lg text-neutral-content-muted opacity-0 group-hover:opacity-100 transition-all hover:bg-neutral-surface hover:text-neutral-content"
+              className="flex h-7 w-7 items-center justify-center rounded-lg text-content-muted opacity-0 group-hover:opacity-100 transition-all hover:bg-surface hover:text-content"
               aria-label="More options"
             >
               <MoreHorizontal size={15} />
@@ -172,7 +172,7 @@ export function WorkspaceCard({
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
             <DropdownMenuItem
-              className="text-destructive-content focus:text-destructive-content focus:bg-destructive-surface"
+              className="text-content focus:text-content focus:bg-surface"
               onSelect={handleDeleteClick}
             >
               <Trash2 size={13} className="mr-2 shrink-0" />

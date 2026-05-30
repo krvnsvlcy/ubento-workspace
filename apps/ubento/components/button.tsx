@@ -20,12 +20,12 @@ export function Button({
 
   const variantClasses = {
     primary:
-      "bg-accent text-accent-contrast hover:bg-accent-hover active:bg-accent-active",
+      "bg-base text-contrast hover:bg-hover active:bg-active",
     secondary:
-      "bg-neutral-content text-neutral-surface hover:scale-[1.01] active:scale-[0.99]",
-    link: "text-accent hover:underline font-mono bg-transparent hover:scale-100",
+      "bg-content text-surface hover:scale-[1.01] active:scale-[0.99]",
+    link: "text-base hover:underline font-mono bg-transparent hover:scale-100",
     outline:
-      "border border-neutral-border bg-transparent text-neutral-content hover:bg-neutral-border/20 hover:scale-[1.01] active:scale-[0.99]",
+      "border border-border bg-transparent text-content hover:bg-border/20 hover:scale-[1.01] active:scale-[0.99]",
   };
 
   const sizeClasses = {

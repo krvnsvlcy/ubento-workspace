@@ -108,11 +108,11 @@ export function ErrorFallBack({
         </svg>
       </div>
 
-      <h2 className="mb-2 text-xl font-bold tracking-tight text-neutral-content">
+      <h2 className="mb-2 text-xl font-bold tracking-tight text-content">
         Something went wrong
       </h2>
 
-      <div className="mb-8 max-w-md text-sm text-neutral-content-muted">
+      <div className="mb-8 max-w-md text-sm text-content-muted">
         {children || (
           <p>{error?.message || "An unexpected error occurred in this section."}</p>
         )}
@@ -122,8 +122,8 @@ export function ErrorFallBack({
         <button
           onClick={resetErrorBoundary}
           className={cx(
-            "rounded-lg bg-neutral-surface px-6 py-2 text-[10px] font-bold uppercase tracking-widest text-neutral-content",
-            "transition-all hover:bg-neutral-surface/80 active:scale-95",
+            "rounded-lg bg-surface px-6 py-2 text-[10px] font-bold uppercase tracking-widest text-content",
+            "transition-all hover:bg-surface/80 active:scale-95",
           )}
         >
           Try Again

@@ -78,7 +78,7 @@ export function ServiceDetailsForm({
         <ScrollArea>
           <div className="flex-1 space-y-4 px-6 py-4">
             {error && (
-              <div className="p-3 text-xs text-destructive bg-destructive/10 rounded-lg font-medium">
+              <div className="p-3 text-xs text-base bg-base/10 rounded-lg font-medium">
                 {error}
               </div>
             )}
@@ -88,10 +88,10 @@ export function ServiceDetailsForm({
               <div className="flex items-center gap-4">
                 <div
                   onClick={() => !isUploadingImage && fileInputRef.current?.click()}
-                  className="relative group flex items-center justify-center h-16 w-16 bg-neutral-surface/50 border border-dashed border-neutral-border/50 rounded-xl overflow-hidden cursor-pointer hover:border-accent hover:bg-neutral-surface-hover/30 transition-all duration-200"
+                  className="relative group flex items-center justify-center h-16 w-16 bg-surface/50 border border-dashed border-border/50 rounded-xl overflow-hidden cursor-pointer hover:border-border hover:bg-surface-hover/30 transition-all duration-200"
                 >
                   {isUploadingImage ? (
-                    <Loader2 className="h-6 w-6 text-accent animate-spin" />
+                    <Loader2 className="h-6 w-6 text-base animate-spin" />
                   ) : imageUrl ? (
                     <img
                       src={imageUrl}
@@ -99,7 +99,7 @@ export function ServiceDetailsForm({
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <ImageIcon className="h-6 w-6 text-neutral-content-muted group-hover:text-accent transition-colors" />
+                    <ImageIcon className="h-6 w-6 text-content-muted group-hover:text-base transition-colors" />
                   )}
                   {!isUploadingImage && (
                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
@@ -108,10 +108,10 @@ export function ServiceDetailsForm({
                   )}
                 </div>
                 <div className="flex flex-col gap-0.5">
-                  <span className="text-xs text-neutral-content font-medium">
+                  <span className="text-xs text-content font-medium">
                     Upload new image
                   </span>
-                  <span className="text-[10px] text-neutral-content-muted">
+                  <span className="text-[10px] text-content-muted">
                     Supports PNG, JPG, or WEBP.
                   </span>
                 </div>
@@ -143,7 +143,7 @@ export function ServiceDetailsForm({
                 onChange={(e) => setHandle(e.target.value)}
                 placeholder="e.g. my-custom-analytics"
               />
-              <span className="text-[11px] text-neutral-content-muted">
+              <span className="text-[11px] text-content-muted">
                 Used as the service ID/key. Must be alphanumeric with dashes or
                 underscores.
               </span>
@@ -171,7 +171,7 @@ export function ServiceDetailsForm({
                     setSelectedChannelId(val);
                   }
                 }}
-                className="w-full bg-neutral-surface/50 border border-neutral-border/30 rounded-lg px-2.5 py-1.5 text-sm text-neutral-content focus:outline-none focus:ring-1 focus:ring-accent cursor-pointer"
+                className="w-full bg-surface/50 border border-border/30 rounded-lg px-2.5 py-1.5 text-sm text-content focus:outline-none focus:ring-1 focus:ring-accent cursor-pointer"
               >
                 <option value="">Select a channel...</option>
                 {channels.map((c: any) => (
@@ -179,14 +179,14 @@ export function ServiceDetailsForm({
                     {c.name}
                   </option>
                 ))}
-                <option value="__new__" className="text-accent font-semibold">
+                <option value="__new__" className="text-base font-semibold">
                   + Create New Channel...
                 </option>
               </select>
             </Field>
 
             {showCreateChannel && (
-              <div className="p-3 bg-neutral-surface-hover/20 border border-neutral-border/30 rounded-lg space-y-3">
+              <div className="p-3 bg-surface-hover/20 border border-border/30 rounded-lg space-y-3">
                 <Field>
                   <FieldLabel>New Channel Name</FieldLabel>
                   <div className="flex gap-2">

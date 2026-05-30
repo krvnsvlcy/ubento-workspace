@@ -20,8 +20,8 @@ export function Ubento({ engine }: { engine: UbentoEngine }) {
             style={
               {
                 "--normal-bg": "var(--color-background)",
-                "--normal-text": "var(--color-neutral-content)",
-                "--normal-border": "var(--color-neutral-border)",
+                "--normal-text": "var(--color-content)",
+                "--normal-border": "var(--color-border)",
                 "--border-radius": "1em",
               } as any
             }

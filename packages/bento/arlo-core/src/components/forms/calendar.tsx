@@ -45,15 +45,15 @@ const NavigationButton = React.forwardRef<
         disabled={disabled}
         className={cx(
           "flex size-8 shrink-0 select-none items-center justify-center rounded-sm border p-1 outline-hidden transition sm:size-[30px]",
-          "text-neutral-content-muted hover:text-neutral-content",
+          "text-content-muted hover:text-content",
           // border color
-          "border-neutral-border",
+          "border-border",
           // background color
-          "hover:bg-neutral-surface-hover active:bg-neutral-surface-hover",
+          "hover:bg-surface-hover active:bg-surface-hover",
           // disabled
           "disabled:pointer-events-none",
-          "disabled:border-neutral-border",
-          "disabled:text-neutral-content-muted",
+          "disabled:border-border",
+          "disabled:text-content-muted",
           focusRing,
         )}
         onClick={onClick}
@@ -112,16 +112,16 @@ const Calendar = ({
         nav: "gap-1 flex items-center rounded-full size-full justify-between p-4",
         table: "w-full border-collapse space-y-1",
         head_cell:
-          "w-9 font-medium text-sm sm:text-xs text-center text-neutral-content-muted pb-2",
+          "w-9 font-medium text-sm sm:text-xs text-center text-content-muted pb-2",
         row: "w-full mt-0.5",
         cell: cx(
           "relative p-0 text-center focus-within:relative",
-          "text-neutral-content",
+          "text-content",
         ),
         day: cx(
           "size-9 rounded-sm text-sm focus:z-10",
-          "text-neutral-content",
-          "hover:bg-neutral-surface-hover",
+          "text-content",
+          "hover:bg-surface-hover",
           focusRing,
         ),
         day_today: "font-semibold",
@@ -131,11 +131,11 @@ const Calendar = ({
           "dark:aria-selected:bg-blue-500 dark:aria-selected:text-white",
         ),
         day_disabled:
-          "text-neutral-content-muted! line-through disabled:hover:bg-transparent",
-        day_outside: "text-neutral-content-muted",
+          "text-content-muted! line-through disabled:hover:bg-transparent",
+        day_outside: "text-content-muted",
         day_range_middle: cx(
           "rounded-none!",
-          "aria-selected:bg-neutral-surface! aria-selected:text-neutral-content!",
+          "aria-selected:bg-surface! aria-selected:text-content!",
         ),
         day_range_start: "rounded-r-none rounded-l!",
         day_range_end: "rounded-l-none rounded-r!",
@@ -214,7 +214,7 @@ const Calendar = ({
               <div
                 role="presentation"
                 aria-live="polite"
-                className="text-sm font-medium capitalize tabular-nums text-neutral-content"
+                className="text-sm font-medium capitalize tabular-nums text-content"
               >
                 {format(props.displayMonth, "LLLL yyy", { locale })}
               </div>
@@ -292,9 +292,9 @@ const Calendar = ({
                     "absolute inset-x-1/2 bottom-1.5 h-0.5 w-4 -translate-x-1/2 rounded-[2px]",
                     {
                       "bg-blue-500 dark:bg-blue-500": !selected,
-                      "bg-accent-contrast!": selected,
-                      "bg-neutral-content-muted!": selected && range_middle,
-                      "bg-neutral-content-muted text-neutral-content-muted":
+                      "bg-contrast!": selected,
+                      "bg-content-muted!": selected && range_middle,
+                      "bg-content-muted text-content-muted":
                         disabled,
                     },
                   )}

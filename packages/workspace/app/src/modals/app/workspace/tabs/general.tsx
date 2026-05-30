@@ -88,7 +88,7 @@ export const GeneralTab: FC = () => {
           </div>
         </ContentHeader>
         <ContentBody className="flex items-center justify-center">
-          <Loader2 className="h-6 w-6 animate-spin text-neutral-content-muted" />
+          <Loader2 className="h-6 w-6 animate-spin text-content-muted" />
         </ContentBody>
       </Content>
     );
@@ -135,9 +135,9 @@ export const GeneralTab: FC = () => {
                 </Field>
               </div>
 
-              <div className="h-6 flex items-center justify-end px-1 text-neutral-content-muted">
+              <div className="h-6 flex items-center justify-end px-1 text-content-muted">
                 {isUpdating && (
-                  <div className="flex items-center gap-2 text-neutral-content-muted animate-in fade-in duration-200">
+                  <div className="flex items-center gap-2 text-content-muted animate-in fade-in duration-200">
                     <Loader2 className="h-3 w-3 animate-spin" />
                     <span className="text-[11px] font-medium">Saving...</span>
                   </div>
@@ -150,8 +150,8 @@ export const GeneralTab: FC = () => {
               </div>
             </section>
 
-            <section className="pt-8 border-t border-neutral-border">
-              <div className="p-4 rounded-2xl border border-neutral-border bg-neutral-surface">
+            <section className="pt-8 border-t border-border">
+              <div className="p-4 rounded-2xl border border-border bg-surface">
                 <div className="flex items-center justify-between">
                   <div>
                     <Text weight="semibold">Delete Workspace</Text>

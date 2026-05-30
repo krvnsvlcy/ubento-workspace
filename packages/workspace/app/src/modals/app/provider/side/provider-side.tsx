@@ -71,7 +71,7 @@ export function ProviderSidebar({
       <ContentBody />
 
       {data?.team_id === session.teamId && (
-        <ContentFooter className="border-t border-neutral-border/30 pt-3">
+        <ContentFooter className="border-t border-border/30 pt-3">
           <Button
             variant="primary"
             className="w-full flex items-center justify-center gap-2"

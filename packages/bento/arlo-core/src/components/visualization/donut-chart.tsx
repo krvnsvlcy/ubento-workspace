@@ -76,9 +76,9 @@ const ChartTooltip = ({
           // base
           "rounded-md border text-sm shadow-md",
           // border color
-          "border-neutral-border",
+          "border-border",
           // background color
-          "bg-neutral-surface",
+          "bg-surface",
         )}
       >
         <div className={cx("space-y-1 px-4 py-2")}>
@@ -100,7 +100,7 @@ const ChartTooltip = ({
                     // base
                     "text-right whitespace-nowrap",
                     // text color
-                    "text-neutral-content",
+                    "text-content",
                   )}
                 >
                   {category}
@@ -111,7 +111,7 @@ const ChartTooltip = ({
                   // base
                   "text-right font-medium whitespace-nowrap tabular-nums",
                   // text color
-                  "text-neutral-content",
+                  "text-content",
                 )}
               >
                 {valueFormatter(value)}
@@ -245,7 +245,7 @@ const DonutChart = React.forwardRef<HTMLDivElement, DonutChartProps>(
           >
             {showLabel && isDonut && (
               <text
-                className="fill-neutral-content"
+                className="fill-content"
                 x="50%"
                 y="50%"
                 textAnchor="middle"
@@ -256,7 +256,7 @@ const DonutChart = React.forwardRef<HTMLDivElement, DonutChartProps>(
             )}
             <Pie
               className={cx(
-                "stroke-neutral-surface [&_.recharts-pie-sector]:outline-hidden",
+                "stroke-surface [&_.recharts-pie-sector]:outline-hidden",
                 onValueChange ? "cursor-pointer" : "cursor-default",
               )}
               data={parseData(data, categoryColors, category)}

@@ -55,7 +55,7 @@ export function CopilotPlanStatus() {
       case "blocked":
         return <AlertTriangle className="text-rose-500 w-4 h-4" />;
       default:
-        return <Circle className="text-neutral-content-muted w-4 h-4" />;
+        return <Circle className="text-content-muted w-4 h-4" />;
     }
   };
 
@@ -68,19 +68,19 @@ export function CopilotPlanStatus() {
       case "blocked":
         return "border-rose-500/25 bg-rose-500/5 text-rose-400";
       default:
-        return "border-neutral-border bg-neutral-surface text-neutral-content-subtle";
+        return "border-border bg-surface text-content-subtle";
     }
   };
 
   return (
-    <div className="mx-3 mt-3 overflow-hidden rounded-2xl border border-neutral-border bg-neutral-surface/20 backdrop-blur-md animate-in fade-in slide-in-from-top duration-300">
+    <div className="mx-3 mt-3 overflow-hidden rounded-2xl border border-border bg-surface/20 backdrop-blur-md animate-in fade-in slide-in-from-top duration-300">
       {/* Header / Plan Mode active bar */}
       {isPlanModeActive && (
-        <div className="flex items-center justify-between border-b border-neutral-border bg-amber-500/5 px-4 py-2.5 text-xs text-amber-500">
+        <div className="flex items-center justify-between border-b border-border bg-amber-500/5 px-4 py-2.5 text-xs text-amber-500">
           <div className="flex items-center gap-2">
             <Lock size={14} className="animate-pulse" />
             <span className="font-semibold">Plan Mode Active</span>
-            <span className="text-neutral-content-subtle font-normal">
+            <span className="text-content-subtle font-normal">
               • Mutating tools locked until approved
             </span>
           </div>
@@ -99,32 +99,32 @@ export function CopilotPlanStatus() {
           className="flex cursor-pointer items-center justify-between p-4 hover:bg-white/5 transition-colors"
         >
           <div className="flex items-center gap-3">
-            <div className="rounded-lg bg-neutral-surface border border-neutral-border p-1.5 text-neutral-content">
+            <div className="rounded-lg bg-surface border border-border p-1.5 text-content">
               <ListTodo size={16} />
             </div>
             <div>
-              <div className="text-xs font-semibold text-neutral-content font-mono uppercase tracking-wider">Task Checklist</div>
-              <div className="text-[10px] text-neutral-content-subtle mt-0.5">
+              <div className="text-xs font-semibold text-content font-mono uppercase tracking-wider">Task Checklist</div>
+              <div className="text-[10px] text-content-subtle mt-0.5">
                 {completedTasks} of {totalTasks} tasks completed ({progressPercent}%)
               </div>
             </div>
           </div>
           <div className="flex items-center gap-4">
             {/* Progress bar */}
-            <div className="w-24 h-1.5 rounded-full bg-neutral-border overflow-hidden">
+            <div className="w-24 h-1.5 rounded-full bg-border overflow-hidden">
               <div 
                 className="h-full bg-emerald-500 transition-all duration-500" 
                 style={{ width: `${progressPercent}%` }} 
               />
             </div>
-            {isExpanded ? <ChevronUp size={16} className="text-neutral-content-subtle" /> : <ChevronDown size={16} className="text-neutral-content-subtle" />}
+            {isExpanded ? <ChevronUp size={16} className="text-content-subtle" /> : <ChevronDown size={16} className="text-content-subtle" />}
           </div>
         </div>
       )}
 
       {/* Expandable Task List */}
       {hasTasks && isExpanded && (
-        <div className="border-t border-neutral-border bg-black/10 px-4 py-3 max-h-[220px] overflow-y-auto scrollbar-hide">
+        <div className="border-t border-border bg-black/10 px-4 py-3 max-h-[220px] overflow-y-auto scrollbar-hide">
           <div className="flex flex-col gap-2.5">
             {rootTasks.map((task: any) => {
               const subtasks = getSubtasks(task.id);
@@ -134,12 +134,12 @@ export function CopilotPlanStatus() {
                     <div className="flex items-start gap-2">
                       <span className="mt-0.5 flex-shrink-0">{getStatusIcon(task.status)}</span>
                       <div>
-                        <span className="font-semibold text-neutral-content">{task.id}: {task.title}</span>
+                        <span className="font-semibold text-content">{task.id}: {task.title}</span>
                         {task.description && (
-                          <div className="text-[11px] text-neutral-content-subtle mt-0.5">{task.description}</div>
+                          <div className="text-[11px] text-content-subtle mt-0.5">{task.description}</div>
                         )}
                         {task.dependencies && task.dependencies.length > 0 && (
-                          <div className="text-[10px] text-neutral-content-subtle mt-1 flex flex-wrap gap-1 items-center">
+                          <div className="text-[10px] text-content-subtle mt-1 flex flex-wrap gap-1 items-center">
                             <span>Requires:</span>
                             {task.dependencies.map((depId: string) => (
                               <span key={depId} className="px-1 rounded bg-white/5 border border-white/10 font-mono text-[9px]">{depId}</span>
@@ -154,15 +154,15 @@ export function CopilotPlanStatus() {
                   </div>
                   {/* Render Subtasks */}
                   {subtasks.length > 0 && (
-                    <div className="ml-6 border-l border-neutral-border pl-3 flex flex-col gap-2">
+                    <div className="ml-6 border-l border-border pl-3 flex flex-col gap-2">
                       {subtasks.map((sub: any) => (
                         <div key={sub.id} className="flex items-start justify-between gap-3 text-[11px]">
                           <div className="flex items-start gap-2">
                             <span className="mt-0.5 flex-shrink-0">{getStatusIcon(sub.status)}</span>
                             <div>
-                              <span className="font-medium text-neutral-content">{sub.id}: {sub.title}</span>
+                              <span className="font-medium text-content">{sub.id}: {sub.title}</span>
                               {sub.description && (
-                                <div className="text-[10px] text-neutral-content-subtle">{sub.description}</div>
+                                <div className="text-[10px] text-content-subtle">{sub.description}</div>
                               )}
                             </div>
                           </div>

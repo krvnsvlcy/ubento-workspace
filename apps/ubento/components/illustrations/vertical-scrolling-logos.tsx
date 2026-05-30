@@ -42,7 +42,7 @@ export function VerticalScrollingLogos() {
         {LOGOS.map((logo) => (
           <div
             key={`${logo}-1`}
-            className="flex items-center justify-center bg-neutral-surface border border-neutral-border rounded-xl h-14 w-14 shrink-0 transition-all duration-200 hover:scale-[1.05] hover:border-neutral-border-hover"
+            className="flex items-center justify-center bg-surface border border-border rounded-xl h-14 w-14 shrink-0 transition-all duration-200 hover:scale-[1.05] hover:border-border-hover"
           >
             <img
               src={`/logos/${logo}.webp`}
@@ -55,7 +55,7 @@ export function VerticalScrollingLogos() {
         {LOGOS.map((logo) => (
           <div
             key={`${logo}-2`}
-            className="flex items-center justify-center bg-neutral-surface border border-neutral-border rounded-xl h-14 w-14 shrink-0 transition-all duration-200 hover:scale-[1.05] hover:border-neutral-border-hover"
+            className="flex items-center justify-center bg-surface border border-border rounded-xl h-14 w-14 shrink-0 transition-all duration-200 hover:scale-[1.05] hover:border-border-hover"
           >
             <img
               src={`/logos/${logo}.webp`}

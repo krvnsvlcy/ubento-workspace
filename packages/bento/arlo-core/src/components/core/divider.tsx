@@ -16,7 +16,7 @@ const Divider = React.forwardRef<HTMLDivElement, DividerProps>(
         // base
         "mx-auto  flex w-full items-center justify-between gap-3 text-sm",
         // text color
-        "text-tone-content-muted",
+        "text-content-muted",
         {
           "my-6": !noMargin,
         },
@@ -31,7 +31,7 @@ const Divider = React.forwardRef<HTMLDivElement, DividerProps>(
               // base
               "h-[1px] w-full",
               // background color
-              "bg-tone-border",
+              "bg-border",
             )}
           />
           <div className="whitespace-nowrap text-inherit">{children}</div>
@@ -40,7 +40,7 @@ const Divider = React.forwardRef<HTMLDivElement, DividerProps>(
               // base
               "h-[1px] w-full",
               // background color
-              "bg-tone-border",
+              "bg-border",
             )}
           />
         </>
@@ -50,7 +50,7 @@ const Divider = React.forwardRef<HTMLDivElement, DividerProps>(
             // base
             "h-[1px] w-full",
             // background color
-            "bg-tone-border",
+            "bg-border",
           )}
         />
       )}

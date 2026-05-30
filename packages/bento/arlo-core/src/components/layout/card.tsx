@@ -6,10 +6,10 @@ import { Tone } from "../../tone";
 const cardVariants = cva("relative w-full rounded-2xl text-left", {
   variants: {
     variant: {
-      outline: "bg-background border border-tone-border",
-      surface: "bg-tone-surface border border-tone-border",
+      outline: "bg-background border border-border",
+      surface: "bg-surface border border-border",
       "surface-interactive":
-        "bg-tone-surface border border-tone-border hover:border-tone-border-hover hover:bg-tone-surface-hover transition-colors cursor-pointer",
+        "bg-surface border border-border hover:border-border-hover hover:bg-surface-hover transition-colors cursor-pointer",
       ghost: "border-transparent bg-transparent",
     },
     padding: {

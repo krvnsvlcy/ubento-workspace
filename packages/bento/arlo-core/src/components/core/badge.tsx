@@ -1,3 +1,4 @@
+import { Tone } from "@/tone";
 import { HTMLAttributes, forwardRef } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 
@@ -6,17 +7,17 @@ export const badgeVariants = cva(
   {
     variants: {
       variant: {
-        default: "border-transparent bg-accent text-accent-contrast hover:bg-accent-hover",
-        secondary: "border-transparent bg-neutral-surface text-neutral-content hover:bg-neutral-surface-hover",
-        destructive: "border-transparent bg-destructive text-destructive-contrast hover:bg-destructive-hover",
-        outline: "text-neutral-content border-neutral-border",
+        default: "border-transparent bg-base text-contrast hover:bg-hover",
+        secondary: "border-transparent bg-surface text-content hover:bg-surface-hover",
+        destructive: "border-transparent bg-base text-contrast hover:bg-hover",
+        outline: "text-content border-border",
         // Tremor variants
-        accent: "bg-accent-surface text-accent-content border-accent-border",
-        neutral: "bg-neutral-surface text-neutral-content border-neutral-border",
-        success: "bg-success-surface text-success-content border-success-border",
-        warning: "bg-warning-surface text-warning-content border-warning-border",
-        info: "bg-info-surface text-info-content border-info-border",
-        inverse: "bg-inverse-surface text-inverse-content border-inverse-border",
+        accent: "bg-surface text-content border-border",
+        neutral: "bg-surface text-content border-border",
+        success: "bg-surface text-content border-border",
+        warning: "bg-surface text-content border-border",
+        info: "bg-surface text-content border-border",
+        inverse: "bg-surface text-content border-border",
       },
     },
     defaultVariants: {
@@ -27,12 +28,29 @@ export const badgeVariants = cva(
 
 export interface BadgeProps
   extends HTMLAttributes<HTMLSpanElement>,
-    VariantProps<typeof badgeVariants> {}
+    VariantProps<typeof badgeVariants> {
+  tone?: Tone;
+}
 
 export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
-  ({ className, variant, ...props }, ref) => {
+  ({ className, variant, tone, ...props }, ref) => {
+    const resolvedTone = tone || (
+      variant === "default"
+        ? "accent"
+        : variant === "destructive"
+        ? "destructive"
+        : variant === "secondary" || variant === "outline"
+        ? "neutral"
+        : (variant as Tone)
+    );
+
     return (
-      <span ref={ref} className={badgeVariants({ variant, className })} {...props} />
+      <span
+        ref={ref}
+        className={badgeVariants({ variant, className })}
+        data-tone={resolvedTone}
+        {...props}
+      />
     );
   }
 );

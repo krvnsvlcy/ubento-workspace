@@ -143,12 +143,12 @@ function BoardTreeNode({
     <div style={{ paddingLeft: depth * 16 }}>
       {/* Row */}
       <div
-        className="group flex items-center gap-2 rounded-lg px-3 py-2 cursor-pointer hover:bg-neutral-surface transition-colors duration-150"
+        className="group flex items-center gap-2 rounded-lg px-3 py-2 cursor-pointer hover:bg-surface transition-colors duration-150"
         onClick={() => runtime.goToBoard(board.id)}
       >
         {/* Expand toggle */}
         <button
-          className={`shrink-0 text-neutral-content-muted transition-transform duration-200 ${
+          className={`shrink-0 text-content-muted transition-transform duration-200 ${
             hasChildren ? "opacity-100" : "opacity-0 pointer-events-none"
           } ${expanded ? "rotate-90" : ""}`}
           onClick={(e) => {
@@ -160,7 +160,7 @@ function BoardTreeNode({
         </button>
 
         {/* Icon */}
-        <div className="w-7 h-7 rounded-lg border border-neutral-border bg-background flex items-center justify-center text-neutral-content-muted group-hover:text-accent group-hover:border-accent/40 transition-colors shrink-0">
+        <div className="w-7 h-7 rounded-lg border border-border bg-background flex items-center justify-center text-content-muted group-hover:text-base group-hover:border-border/40 transition-colors shrink-0">
           <Layout size={13} />
         </div>
 
@@ -171,7 +171,7 @@ function BoardTreeNode({
 
         {/* Child count badge */}
         {hasChildren && (
-          <span className="text-[10px] font-medium text-neutral-content-subtle bg-neutral-surface border border-neutral-border rounded-full px-1.5 py-0.5 leading-none">
+          <span className="text-[10px] font-medium text-content-subtle bg-surface border border-border rounded-full px-1.5 py-0.5 leading-none">
             {children.length}
           </span>
         )}
@@ -179,7 +179,7 @@ function BoardTreeNode({
 
       {/* Children */}
       {expanded && hasChildren && (
-        <div className="border-l border-neutral-border/50 ml-[22px] mt-0.5 mb-1">
+        <div className="border-l border-border/50 ml-[22px] mt-0.5 mb-1">
           {children.map((childId: string) => (
             <BoardTreeNode
               key={childId}

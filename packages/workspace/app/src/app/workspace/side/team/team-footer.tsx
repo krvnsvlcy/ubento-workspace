@@ -25,8 +25,8 @@ export function TeamFooter() {
     <div className="p-3">
       <PopperProvider>
         <PopperTrigger>
-          <div className="p-1 rounded-xl bg-neutral-content/0 hover:bg-neutral-content/5 text-neutral-content-subtle hover:text-neutral-content transition-colors cursor-pointer flex gap-2 text-sm text-neutral-content min-w-0 items-center">
-            <div className="size-7 rounded-md bg-neutral-content/10 flex items-center justify-center shrink-0">
+          <div className="p-1 rounded-xl bg-content/0 hover:bg-content/5 text-content-subtle hover:text-content transition-colors cursor-pointer flex gap-2 text-sm text-content min-w-0 items-center">
+            <div className="size-7 rounded-md bg-content/10 flex items-center justify-center shrink-0">
               {session?.picture ? (
                 <img
                   src={session.picture}

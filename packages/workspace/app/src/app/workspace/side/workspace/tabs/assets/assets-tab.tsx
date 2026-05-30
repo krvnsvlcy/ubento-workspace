@@ -30,7 +30,7 @@ export function AssetItem({ module }: { module: any }) {
           },
         });
       }}
-      className={`group flex items-center gap-3 rounded-lg px-3 py-2 cursor-grab transition-colors hover:bg-neutral-surface-hover`}
+      className={`group flex items-center gap-3 rounded-lg px-3 py-2 cursor-grab transition-colors hover:bg-surface-hover`}
       onClick={() => {
         ubento.goToLocation({
           ...location,
@@ -39,14 +39,14 @@ export function AssetItem({ module }: { module: any }) {
         });
       }}
     >
-      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-neutral-surface border border-neutral-border text-neutral-content-muted group-hover:text-accent group-hover:border-accent/30 transition-colors">
+      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-surface border border-border text-content-muted group-hover:text-base group-hover:border-border/30 transition-colors">
         <Icon size={16} />
       </div>
       <div className="flex-1 min-w-0">
-        <div className="text-[13px] font-medium text-neutral-content truncate">
+        <div className="text-[13px] font-medium text-content truncate">
           {module.name}
         </div>
-        <div className="text-[10px] text-neutral-content-muted truncate">
+        <div className="text-[10px] text-content-muted truncate">
           {module.id.split("-")[0]}
         </div>
       </div>
@@ -70,13 +70,13 @@ export function AssetsTab() {
   return (
     <div className="flex h-full flex-col">
       <div className="px-2">
-        <div className="flex items-center gap-2 rounded-lg bg-neutral-surface-hover px-2.5 py-1.5 border border-neutral-border focus-within:border-accent/50 transition-colors">
-          <Search size={12} className="text-neutral-content-muted" />
+        <div className="flex items-center gap-2 rounded-lg bg-surface-hover px-2.5 py-1.5 border border-border focus-within:border-border/50 transition-colors">
+          <Search size={12} className="text-content-muted" />
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search components..."
-            className="w-full bg-transparent text-[11px] text-neutral-content outline-none placeholder:text-neutral-content-muted"
+            className="w-full bg-transparent text-[11px] text-content outline-none placeholder:text-content-muted"
           />
         </div>
       </div>

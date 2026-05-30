@@ -34,7 +34,7 @@ export const UsageTab: FC = () => {
 
   if (isFetching && usageItems.length === 0) {
     return (
-      <div className="py-12 text-center text-neutral-content-muted">
+      <div className="py-12 text-center text-content-muted">
         <p className="text-[13px]">Loading usage...</p>
       </div>
     );
@@ -42,7 +42,7 @@ export const UsageTab: FC = () => {
 
   if (!isFetching && usageItems.length === 0) {
     return (
-      <div className="py-12 text-center text-neutral-content-muted">
+      <div className="py-12 text-center text-content-muted">
         <p className="text-[13px]">No usage data available.</p>
       </div>
     );
@@ -53,25 +53,25 @@ export const UsageTab: FC = () => {
       {usageItems.map((item) => (
         <div
           key={item.label}
-          className="p-5 rounded-2xl bg-neutral-surface border border-neutral-border space-y-3"
+          className="p-5 rounded-2xl bg-surface border border-border space-y-3"
         >
           <div className="flex justify-between items-end">
             <div>
-              <h4 className="font-bold text-neutral-content">{item.label}</h4>
-              <p className="text-[10px] text-neutral-content-muted uppercase font-bold tracking-wider">
+              <h4 className="font-bold text-content">{item.label}</h4>
+              <p className="text-[10px] text-content-muted uppercase font-bold tracking-wider">
                 Usage this period
               </p>
             </div>
             <p className="text-sm font-bold">
               {item.used}{" "}
-              <span className="text-neutral-content-muted font-medium">
+              <span className="text-content-muted font-medium">
                 / {item.total === "inf" ? "Unlimited" : item.total} {item.unit}
               </span>
             </p>
           </div>
-          <div className="h-2 w-full bg-neutral-surface-active rounded-full overflow-hidden">
+          <div className="h-2 w-full bg-surface-active rounded-full overflow-hidden">
             <div
-              className="h-full bg-accent transition-all duration-1000"
+              className="h-full bg-base transition-all duration-1000"
               style={{
                 width:
                   item.total === "inf"

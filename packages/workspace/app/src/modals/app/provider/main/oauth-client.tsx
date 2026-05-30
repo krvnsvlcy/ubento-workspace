@@ -108,7 +108,7 @@ export function OAuthClientView() {
 
       <ContentBody className="space-y-4">
         {error && (
-          <div className="p-3 text-xs text-destructive bg-destructive/10 rounded-lg font-medium">
+          <div className="p-3 text-xs text-base bg-base/10 rounded-lg font-medium">
             {error}
           </div>
         )}

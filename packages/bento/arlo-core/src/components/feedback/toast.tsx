@@ -69,7 +69,7 @@ const Toast = React.forwardRef<
       case "success":
         Icon = (
           <CheckCircle
-            className="size-5 shrink-0 text-success"
+            className="size-5 shrink-0 text-base"
             aria-hidden="true"
           />
         );
@@ -77,7 +77,7 @@ const Toast = React.forwardRef<
       case "warning":
         Icon = (
           <AlertTriangle
-            className="size-5 shrink-0 text-warning"
+            className="size-5 shrink-0 text-base"
             aria-hidden="true"
           />
         );
@@ -85,7 +85,7 @@ const Toast = React.forwardRef<
       case "error":
         Icon = (
           <XCircle
-            className="size-5 shrink-0 text-destructive"
+            className="size-5 shrink-0 text-base"
             aria-hidden="true"
           />
         );
@@ -93,28 +93,38 @@ const Toast = React.forwardRef<
       case "loading":
         Icon = (
           <Loader2
-            className="size-5 shrink-0 animate-spin text-neutral-content-muted"
+            className="size-5 shrink-0 animate-spin text-content-muted"
             aria-hidden="true"
           />
         );
         break;
       default:
         Icon = (
-          <Info className="size-5 shrink-0 text-info" aria-hidden="true" />
+          <Info className="size-5 shrink-0 text-base" aria-hidden="true" />
         );
         break;
     }
 
+    const toneMap = {
+      success: "success",
+      warning: "warning",
+      error: "destructive",
+      info: "info",
+      loading: "neutral",
+    };
+    const tone = variant ? (toneMap[variant] || "neutral") : "neutral";
+
     return (
       <ToastPrimitives.Root
         ref={forwardedRef}
+        data-tone={tone}
         className={cx(
           // base
           "flex h-fit min-h-16 w-full overflow-hidden rounded-md border shadow-lg shadow-black/5",
           // background color
-          "bg-neutral-surface",
+          "bg-surface",
           // border color
-          "border-neutral-border",
+          "border-border",
           // swipe
           "data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none",
           // transition
@@ -129,18 +139,18 @@ const Toast = React.forwardRef<
             // base
             "flex flex-1 items-start gap-3 p-4",
             // border
-            !disableDismiss || action ? "border-r border-neutral-border" : "",
+            !disableDismiss || action ? "border-r border-border" : "",
           )}
         >
           {Icon}
           <div className="flex flex-col gap-1">
             {title && (
-              <ToastPrimitives.Title className="text-sm font-semibold text-neutral-content">
+              <ToastPrimitives.Title className="text-sm font-semibold text-content">
                 {title}
               </ToastPrimitives.Title>
             )}
             {description && (
-              <ToastPrimitives.Description className="text-sm text-neutral-content-subtle">
+              <ToastPrimitives.Description className="text-sm text-content-subtle">
                 {description}
               </ToastPrimitives.Description>
             )}
@@ -155,13 +165,13 @@ const Toast = React.forwardRef<
                   // base
                   "flex flex-1 items-center justify-center px-6 text-sm font-semibold transition-colors",
                   // hover
-                  "hover:bg-neutral-surface-hover",
+                  "hover:bg-surface-hover",
                   // text color
-                  "text-neutral-content",
+                  "text-content",
                   // active
-                  "active:bg-neutral-surface-active",
+                  "active:bg-surface-active",
                   {
-                    "text-destructive": variant === "error",
+                    "text-base": variant === "error",
                   },
                 )}
                 onClick={(event) => {
@@ -172,7 +182,7 @@ const Toast = React.forwardRef<
               >
                 {action.label}
               </ToastPrimitives.Action>
-              <div className="h-px w-full bg-neutral-border" />
+              <div className="h-px w-full bg-border" />
             </>
           )}
           {!disableDismiss && (
@@ -181,11 +191,11 @@ const Toast = React.forwardRef<
                 // base
                 "flex flex-1 items-center justify-center px-6 text-sm transition-colors",
                 // text color
-                "text-neutral-content-muted",
+                "text-content-muted",
                 // hover
-                "hover:bg-neutral-surface-hover",
+                "hover:bg-surface-hover",
                 // active
-                "active:bg-neutral-surface-active",
+                "active:bg-surface-active",
                 action ? "h-1/2" : "h-full",
               )}
               aria-label="Close"

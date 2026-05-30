@@ -23,7 +23,7 @@ const InputGroupInput = React.forwardRef<
     <input
       ref={ref}
       className={cx(
-        "flex-1 rounded-md border border-neutral-border px-3 py-2 text-sm bg-neutral-surface text-neutral-content",
+        "flex-1 rounded-md border border-border px-3 py-2 text-sm bg-surface text-content",
         className,
       )}
       {...props}
@@ -69,7 +69,7 @@ const InputGroupButton = React.forwardRef<
     <div
       ref={ref as any}
       className={cx(
-        "text-neutral-content-muted hover:text-neutral-content flex items-center justify-center",
+        "text-content-muted hover:text-content flex items-center justify-center",
         className,
       )}
     >

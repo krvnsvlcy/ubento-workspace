@@ -9,13 +9,13 @@ const calloutVariants = tv({
   base: "flex flex-col overflow-hidden rounded-md p-4 text-sm",
   variants: {
     variant: {
-      accent: ["text-accent-content", "bg-accent-surface"],
-      success: ["text-success-content", "bg-success-surface"],
-      destructive: ["text-destructive-content", "bg-destructive-surface"],
-      warning: ["text-warning-content", "bg-warning-surface"],
-      neutral: ["text-neutral-content", "bg-neutral-surface"],
-      info: ["text-info-content", "bg-info-surface"],
-      inverse: ["text-inverse-content", "bg-inverse-surface"],
+      accent: ["text-content", "bg-surface"],
+      success: ["text-content", "bg-surface"],
+      destructive: ["text-content", "bg-surface"],
+      warning: ["text-content", "bg-surface"],
+      neutral: ["text-content", "bg-surface"],
+      info: ["text-content", "bg-surface"],
+      inverse: ["text-content", "bg-surface"],
     },
   },
   defaultVariants: {
@@ -40,6 +40,7 @@ const Callout = React.forwardRef<HTMLDivElement, CalloutProps>(
       <div
         ref={forwardedRef}
         className={cx(calloutVariants({ variant }), className)}
+        data-tone={variant || "accent"}
         {...props}
       >
         <div className={cx("flex items-start")}>
