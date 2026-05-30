@@ -1,0 +1,121 @@
+:root {
+  --color-background: #ffffff;
+  --color-foreground: #141414;
+
+  /* Base */
+  --color-base: #000000;
+  --color-highlight: #303030;
+  --color-contrast: #ffffff;
+
+  /* =========================================
+     Fonts
+     ========================================= */
+  --font-heading: "Inter", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
+/* 1. The Logic Layer: Calculate derivations for ANY defined tone */
+[data-tone] {
+  /* Interaction */
+  --color-hover: color-mix(
+    in srgb,
+    var(--color-highlight) 50%,
+    var(--color-base) 50%
+  );
+  --color-active: color-mix(
+    in srgb,
+    var(--color-highlight) 100%,
+    var(--color-base) 0%
+  );
+
+  /* Surface */
+  --color-surface: color-mix(
+    in srgb,
+    var(--color-base) calc(var(--tone-strength, 1) * 3%),
+    transparent
+  );
+  --color-surface-hover: color-mix(
+    in srgb,
+    var(--color-base) calc(var(--tone-strength, 1) * 6%),
+    transparent
+  );
+  --color-surface-active: color-mix(
+    in srgb,
+    var(--color-base) calc(var(--tone-strength, 1) * 9%),
+    transparent
+  );
+
+  /* Border */
+  --color-border: color-mix(in srgb, var(--color-base) 10%, transparent 90%);
+  --color-border-hover: color-mix(
+    in srgb,
+    var(--color-base) 15%,
+    transparent 85%
+  );
+  --color-border-active: color-mix(
+    in srgb,
+    var(--color-base) 20%,
+    transparent 80%
+  );
+
+  /* Content */
+  --color-content: color-mix(
+    in srgb,
+    var(--color-foreground) 50%,
+    var(--color-base) 50%
+  );
+  --color-content-subtle: color-mix(
+    in srgb,
+    var(--color-content) 75%,
+    transparent 25%
+  );
+  --color-content-muted: color-mix(
+    in srgb,
+    var(--color-content) 50%,
+    transparent 50%
+  );
+}
+
+/* 2. The Data Layer: Inject the base values per tone */
+[data-tone="neutral"] {
+  --color-base: var(--color-foreground);
+  --color-highlight: #303030;
+  --color-contrast: #ffffff;
+  --tone-strength: 1.3;
+}
+
+[data-tone="accent"] {
+  --color-base: #b300ff;
+  --color-highlight: #b300ff;
+  --color-contrast: #ffffff;
+  --tone-strength: 2;
+}
+
+[data-tone="success"] {
+  --color-base: #009362;
+  --color-highlight: #00aa58;
+  --color-contrast: #ffffff;
+  --tone-strength: 1.8;
+}
+
+[data-tone="warning"] {
+  --color-base: #ff9900;
+  --color-highlight: #ffb824;
+  --color-contrast: #ffffff;
+  --tone-strength: 2;
+}
+
+[data-tone="info"] {
+  --color-base: #0088ff;
+  --color-highlight: #00b3ff;
+  --color-contrast: #ffffff;
+  --tone-strength: 1.6;
+}
+
+[data-tone="destructive"] {
+  --color-base: #ff0021;
+  --color-highlight: #ff3c2e;
+  --color-contrast: #ffffff;
+  --tone-strength: 1.6;
+}

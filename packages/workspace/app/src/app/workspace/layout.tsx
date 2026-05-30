@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { useUbentoEngine } from "@/hooks/app-engine";
+import { useState } from "react";
 import { Main } from "./main/main";
 import { SideSplitView } from "./main/workspace/components/split-view";
 import { Side } from "./side/side";
@@ -26,7 +26,6 @@ export function Layout() {
           style={{
             width: leftPanelWidth,
             transform: isHovered ? "translateX(0)" : "translateX(-100%)",
-            // boxShadow: isHovered ? "12px 0 40px rgba(0,0,0,0.15)" : "none",
             pointerEvents: isHovered ? "auto" : "none",
           }}
           onMouseEnter={() => setIsHovered(true)}
@@ -45,7 +44,7 @@ export function Layout() {
       <SideSplitView
         left={{
           content: leftPanelPinned ? (
-            <div className="h-full">
+            <div className="h-full bg-neutral-surface/60 border-r">
               <Side />
             </div>
           ) : null,

@@ -1,0 +1,62 @@
+/* =========================================
+   Dark Theme Overrides
+   ========================================= */
+
+.dark {
+  /* Deep, monastic black background with crisp off-white text */
+  --color-background: #25272c;
+  --color-foreground: #e7ecf0;
+
+  /* Base root fallback */
+  --color-base: #ffffff;
+  --color-highlight: #a0a0a0;
+  --color-contrast: #000000;
+}
+
+/* Data Layer Updates 
+  Adjusting luminance for optical balance against #0a0a0a
+*/
+
+.dark [data-tone="neutral"] {
+  --color-base: var(--color-foreground);
+  --color-highlight: #8a8a8a;
+  /* Contrast flips so text sitting on a solid neutral surface remains readable */
+  --color-contrast: #000000;
+  --tone-strength: 1.5; /* Bumped slightly so dark-on-dark surfaces pop */
+}
+
+.dark [data-tone="accent"] {
+  --color-base: #c233ff; /* Brightened slightly from #b300ff to prevent bleeding */
+  --color-highlight: #d466ff;
+  --color-contrast: #ffffff;
+  --tone-strength: 2;
+}
+
+.dark [data-tone="success"] {
+  --color-base: #00b87a;
+  --color-highlight: #00cc88;
+  --color-contrast: #ffffff;
+  --tone-strength: 1.8;
+}
+
+.dark [data-tone="warning"] {
+  --color-base: #ffaa33;
+  --color-highlight: #ffbf4d;
+  /* Dark text on bright warning yellow is sharper in dark mode */
+  --color-contrast: #0a0a0a;
+  --tone-strength: 2;
+}
+
+.dark [data-tone="info"] {
+  --color-base: #33aaff;
+  --color-highlight: #66c2ff;
+  --color-contrast: #ffffff;
+  --tone-strength: 1.6;
+}
+
+.dark [data-tone="destructive"] {
+  --color-base: #ff334d;
+  --color-highlight: #ff667a;
+  --color-contrast: #ffffff;
+  --tone-strength: 1.6;
+}

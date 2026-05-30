@@ -9,6 +9,7 @@ import { ProvidersModal } from "./providers/providers_modal";
 import { routeMatch } from "./routes";
 import { ServicesModal } from "./services/services";
 import { TeamModal } from "./team/team_modal";
+import { WorkspaceModal } from "./workspace/workspace_modal.js";
 
 export function AppModal() {
   const { path } = useAppModal();
@@ -32,6 +33,9 @@ export function AppModal() {
         </Case>
         <Case condition={routeMatch(path, "/account")}>
           <AccountModal />
+        </Case>
+        <Case condition={routeMatch(path, "/workspace")}>
+          <WorkspaceModal />
         </Case>
         <Case condition={routeMatch(path, "/provider")}>
           <ProviderModal />

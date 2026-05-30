@@ -4,44 +4,84 @@ import * as React from "react";
 
 /* ---------- Heading ---------- */
 
-const heading = cva("font-medium leading-tight tracking-tight", {
+const heading = cva("font-heading font-medium leading-tight tracking-tight", {
   variants: {
     level: {
-      display: "text-3xl",
-      h1: "text-xl font-semibold",
-      h2: "text-lg font-semibold",
-      h3: "text-md font-semibold",
-      h4: "text-sm font-semibold",
+      h1: "text-4xl font-semibold",
+      h2: "text-3xl font-semibold",
+      h3: "text-2xl font-semibold",
+      h4: "text-xl font-semibold",
     },
     shade: {
-      default: "text-current",
-      subtle: "text-current/75",
-      muted: "text-current/50",
+      default: "text-content",
+      subtle: "text-content-subtle",
+      muted: "text-content-muted",
     },
   },
   defaultVariants: {
-    level: "h2",
+    level: "h1",
     shade: "default",
   },
 });
 
-type HeadingProps = React.ComponentProps<"h1"> &
-  VariantProps<typeof heading> & {
-    as?: "h1" | "h2" | "h3" | "h4" | "div";
-    tone?: Tone;
-  };
-
 export function Heading({
-  as: Tag = "h2",
   level,
   shade,
   tone,
   className,
   ...props
-}: HeadingProps) {
+}: React.ComponentProps<"h1"> &
+  VariantProps<typeof heading> & {
+    tone?: Tone;
+  }) {
+  const Tag = level as React.ElementType;
+
   return (
     <Tag
       className={cx(heading({ level, shade }), className)}
+      {...props}
+      data-tone={tone}
+    />
+  );
+}
+
+/* ---------- Overline ---------- */
+
+const overline = cva("uppercase tracking-wide font-semibold", {
+  variants: {
+    size: {
+      sm: "text-[10px] leading-none",
+      md: "text-xs leading-none",
+    },
+    shade: {
+      default: "text-current",
+      subtle: "text-content-subtle",
+      muted: "text-content-muted",
+    },
+  },
+  defaultVariants: {
+    size: "md",
+    shade: "subtle",
+  },
+});
+
+type OverlineProps = React.ComponentProps<"span"> &
+  VariantProps<typeof overline> & {
+    as?: React.ElementType;
+    tone?: Tone;
+  };
+
+export function Overline({
+  as: Tag = "span",
+  size,
+  shade,
+  tone,
+  className,
+  ...props
+}: OverlineProps) {
+  return (
+    <Tag
+      className={cx(overline({ size, shade }), className)}
       {...props}
       data-tone={tone}
     />
@@ -64,9 +104,9 @@ const text = cva("leading-normal", {
       semibold: "font-semibold",
     },
     shade: {
-      default: "text-tone-content",
-      muted: "text-tone-content-muted",
-      subtle: "text-tone-content-subtle",
+      default: "text-content",
+      subtle: "text-content-subtle",
+      muted: "text-content-muted",
     },
   },
   defaultVariants: {
@@ -106,7 +146,7 @@ export function Code({ className, ...props }: React.ComponentProps<"pre">) {
   return (
     <pre
       className={cx(
-        "text-xs leading-snug rounded-md p-3 bg-muted overflow-auto",
+        "text-xs leading-snug rounded-lg p-3 bg-surface overflow-auto",
         className,
       )}
       {...props}
@@ -121,7 +161,7 @@ export function InlineCode({
   return (
     <code
       className={cx(
-        "text-xs font-medium leading-snug rounded-sm px-1 py-0.5 bg-muted",
+        "text-xs font-medium leading-snug rounded-md px-1 py-0.5 bg-content/7",
         className,
       )}
       {...props}

@@ -6,30 +6,7 @@ import {
 } from "unocss";
 
 function colorTheme(theme: string) {
-  return {
-    // for active element (draws attention)
-    DEFAULT: `var(--color-${theme})`,
-    hover: `var(--color-${theme}-hover)`,
-    active: `var(--color-${theme}-active)`,
-    contrast: `var(--color-${theme}-contrast)`,
-
-    // for passive element (less prominent)
-
-    // surface (highlight, card, input, etc)
-    surface: `var(--color-${theme}-surface)`,
-    "surface-hover": `var(--color-${theme}-surface-hover)`,
-    "surface-active": `var(--color-${theme}-surface-active)`,
-
-    // border (divider, input border, card border, etc.)
-    border: `var(--color-${theme}-border)`,
-    "border-hover": `var(--color-${theme}-border-hover)`,
-    "border-active": `var(--color-${theme}-border-active)`,
-
-    // content (text, icon, etc.)
-    content: `var(--color-${theme}-content)`,
-    "content-subtle": `var(--color-${theme}-content-subtle)`,
-    "content-muted": `var(--color-${theme}-content-muted)`,
-  };
+  return {};
 }
 
 export default defineConfig({
@@ -65,20 +42,35 @@ export default defineConfig({
   ],
   theme: {
     colors: {
-      background: "var(--color-background)",
       transparent: "transparent",
 
-      // themes
-      accent: colorTheme("accent"),
-      neutral: colorTheme("neutral"),
-      inverse: colorTheme("inverse"),
-      success: colorTheme("success"),
-      warning: colorTheme("warning"),
-      info: colorTheme("info"),
-      destructive: colorTheme("destructive"),
+      // Main colors
+      background: "var(--color-background)",
+      foreground: "var(--color-foreground)",
 
-      // tone
-      tone: colorTheme("tone"),
+      // Base colors
+      base: `var(--color-base)`,
+      highlight: `var(--color-highlight)`,
+      contrast: `var(--color-contrast)`,
+
+      // Interaction
+      hover: `var(--color-hover)`,
+      active: `var(--color-active)`,
+
+      // surface (highlight, card, input, etc)
+      surface: `var(--color-surface)`,
+      "surface-hover": `var(--color-surface-hover)`,
+      "surface-active": `var(--color-surface-active)`,
+
+      // border (divider, input border, card border, etc.)
+      border: `var(--color-border)`,
+      "border-hover": `var(--color-border-hover)`,
+      "border-active": `var(--color-border-active)`,
+
+      // content (text, icon, etc.)
+      content: `var(--color-content)`,
+      "content-subtle": `var(--color-content-subtle)`,
+      "content-muted": `var(--color-content-muted)`,
     },
     font: {
       heading: "var(--font-heading)",

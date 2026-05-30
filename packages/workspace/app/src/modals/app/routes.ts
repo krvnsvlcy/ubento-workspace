@@ -10,6 +10,10 @@ export const appModalRoutes = {
     root: "/account/general",
     general: "/account/general",
   },
+  workspace: {
+    root: "/workspace/general",
+    general: "/workspace/general",
+  },
   providers: {
     providers: "/providers",
     create: "/providers/create",

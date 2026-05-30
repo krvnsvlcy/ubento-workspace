@@ -90,16 +90,20 @@ export function TreeEntry({
         "group h-8 text-sm cursor-pointer flex items-center rounded-xl px-1",
         className,
         {
-          "text-neutral-content-subtle hover:bg-current/7": !active,
-          "bg-accent text-accent-contrast hover:bg-accent-hover font-medium":
-            active,
+          "text-neutral-content hover:bg-current/7": !active,
+          "bg-accent text-accent-contrast hover:bg-accent-hover": active,
         },
       )}
       {...props}
     >
-      {depth ? <div style={{ width: depth * 12 }} /> : <></>}
+      {depth ? <div style={{ width: depth * 12, flexShrink: 0 }} /> : <></>}
       {icon ? (
-        <div className="pl-1 flex items-center justify-center">{iconNode}</div>
+        <div
+          className="flex items-center justify-center"
+          style={{ flexShrink: 0 }}
+        >
+          {iconNode}
+        </div>
       ) : (
         <></>
       )}

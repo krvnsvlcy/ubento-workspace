@@ -1,5 +1,5 @@
-@import "./themes/default.css";
-@import "./themes/tones.css";
+@import "./themes/light.css";
+@import "./themes/dark.css";
 @import "./animation.css";
 @import "./scrollbar.css";
 
@@ -9,13 +9,14 @@
 ::backdrop,
 ::file-selector-button {
   /* scrollbar-width: none; */
-  border-color: var(--color-neutral-border);
+  border-color: var(--color-border);
   /* corner-shape: squircle; */
 }
 
 body {
   font-family: var(--font-body);
-  color: var(--color-neutral-content);
+  background: var(--color-background);
+  color: var(--color-content);
 }
 
 input::placeholder,

@@ -1,10 +1,15 @@
+import { useUbentoEngine } from "@/hooks/app-engine";
 import { useAppModal } from "@/modals/app/hook";
 import { appModalRoutes } from "@/modals/app/routes";
-import { Popper, PopperMenu, PopperProvider, PopperTrigger } from "@ubento/bento.arlo-core";
-import { LogOut, Settings, User } from "lucide-react";
-import { useUbentoEngine } from "@/hooks/app-engine";
+import {
+  Popper,
+  PopperMenu,
+  PopperProvider,
+  PopperTrigger,
+} from "@ubento/bento.arlo-core";
+import { ChevronsUpDown, LogOut, Settings, User } from "lucide-react";
 
-export function WorkspaceFooter() {
+export function TeamFooter() {
   const { push: open } = useAppModal();
   const engine = useUbentoEngine();
   const session = engine.useState((s) => s.session);
@@ -17,25 +22,26 @@ export function WorkspaceFooter() {
   };
 
   return (
-    <div className="px-3 flex gap-1">
+    <div className="p-3">
       <PopperProvider>
         <PopperTrigger>
-          <div className="p-1 grow rounded-lg hover:bg-neutral-surface-hover transition-colors cursor-pointer flex gap-2 text-sm text-neutral-content min-w-0">
-            <div className="w-6 h-6 rounded-md bg-neutral-content/10 flex items-center justify-center shrink-0">
+          <div className="p-1 rounded-xl bg-neutral-content/0 hover:bg-neutral-content/5 text-neutral-content-subtle hover:text-neutral-content transition-colors cursor-pointer flex gap-2 text-sm text-neutral-content min-w-0 items-center">
+            <div className="size-7 rounded-md bg-neutral-content/10 flex items-center justify-center shrink-0">
               {session?.picture ? (
                 <img
                   src={session.picture}
                   alt={session.name}
-                  className="h-full w-full object-cover rounded-md"
+                  className="h-full w-full object-cover rounded-lg"
                 />
               ) : (
                 <User size={14} />
               )}
             </div>
-            <div className="flex flex-col min-w-0">
-              <span className="truncate text-sm font-medium">
-                {session?.name}
-              </span>
+            <span className="truncate text-sm font-medium grow overflow-hidden">
+              {session?.name}
+            </span>
+            <div className="px-1">
+              <ChevronsUpDown size={16} />
             </div>
           </div>
         </PopperTrigger>
@@ -46,7 +52,7 @@ export function WorkspaceFooter() {
           filled
           border
           shadow
-          offset={4}
+          offset={12}
         >
           <div className="w-56">
             <PopperMenu

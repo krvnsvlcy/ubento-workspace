@@ -1,8 +1,16 @@
-import { Button } from "@ubento/bento.arlo-core";
-import { Box, Building2, Home, Sidebar } from "lucide-react";
 import { useUbentoEngine } from "@/hooks/app-engine";
+import { Button } from "@ubento/bento.arlo-core";
+import { Home, Sidebar } from "lucide-react";
 
-export function WorkspaceHeader() {
+export function WorkspaceHeader({
+  icon,
+  title,
+  onTitleClick,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  onTitleClick: () => void;
+}) {
   const engine = useUbentoEngine();
   const location = engine.useState((s) => s.location);
   const slug = location.workspace;
@@ -12,11 +20,6 @@ export function WorkspaceHeader() {
     { enabled: !!slug },
   );
 
-  const session = engine.useState((s) => s.session);
-  const { data: team } = engine.ubento.iam.useTeam(session?.teamId || "", {
-    enabled: !!session?.teamId,
-  });
-
   function handleSidebarClick() {
     engine.setState((state) => ({
       ...state,
@@ -25,17 +28,16 @@ export function WorkspaceHeader() {
   }
 
   return (
-    <div className="flex gap-1">
-      <div className="p-1 grow rounded-lg flex gap-2 text-sm text-neutral-content min-w-0 items-center">
-        <div className="w-6 h-6 rounded-md bg-neutral-content/10 flex items-center justify-center shrink-0">
-          {workspace ? <Box size={14} /> : <Building2 size={14} />}
-        </div>
-        <div className="flex flex-col min-w-0">
-          <span className="truncate text-sm font-medium">
-            {workspace?.name || team?.name}
-          </span>
-        </div>
-      </div>
+    <div className="flex gap-1 p-3">
+      <Button
+        variant="ghost"
+        style={{ padding: "0 8px", flexGrow: 1 }}
+        align="start"
+        onClick={onTitleClick}
+      >
+        {icon}
+        <span className="truncate text-sm font-medium">{title}</span>
+      </Button>
       <Button
         size="icon"
         onClick={() =>

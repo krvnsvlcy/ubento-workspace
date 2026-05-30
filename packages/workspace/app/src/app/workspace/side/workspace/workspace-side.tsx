@@ -1,11 +1,13 @@
 import { Icon } from "@/components/icon/icon";
-import { Button, useStoreState } from "@ubento/bento.arlo-core";
-import clsx from "clsx";
-import { useEffect, useMemo } from "react";
 import { useUbentoEngine } from "@/hooks/app-engine";
+import { useAppModal } from "@/modals/app/hook";
+import { appModalRoutes } from "@/modals/app/routes";
+import { Button, ScrollArea, useStoreState } from "@ubento/bento.arlo-core";
+import clsx from "clsx";
+import { Box } from "lucide-react";
+import { useEffect, useMemo } from "react";
+import { TeamSideLayout } from "../team/team-layout";
 import { TabDefinition } from "../types";
-import { WorkspaceFooter } from "./footer";
-import { WorkspaceHeader } from "./header";
 import { homeTab } from "./tabs/home/home";
 import { workspaceTab } from "./tabs/workspace/workspace";
 import { WorkspaceTabDefinition } from "./types";
@@ -39,10 +41,17 @@ function TabButton({
 
 export function WorkspaceSide() {
   const engine = useUbentoEngine();
+  const { push } = useAppModal();
   const location = engine.useState((s) => s.location);
   const workspace = engine.useState((s) => s.workspace);
   const workspaceMode = useStoreState(workspace?.store, (s) => s.mode);
   const activeTabId = location.workspaceTab || tabs[0].id;
+
+  const slug = location.workspace;
+  const { data: workspaceData } = engine.ubento.workspace.useWorkspaceBySlug(
+    { slug: slug! },
+    { enabled: !!slug },
+  );
 
   const enabledTabs = useMemo(() => {
     return tabs.filter(
@@ -69,10 +78,13 @@ export function WorkspaceSide() {
   const ActiveComponent = activeTab?.component;
 
   return (
-    <div className="h-full w-full flex flex-col p-3 gap-3">
-      <WorkspaceHeader />
-      {enabledTabs.length > 1 && (
-        <div className="flex gap-1">
+    <TeamSideLayout
+      icon={<Box size={14} />}
+      title={workspaceData?.name || ""}
+      onTitleClick={() => push(appModalRoutes.workspace.general)}
+    >
+      <div className="h-full w-full flex flex-col gap-4">
+        <div className="flex gap-1 px-3 shrink-0">
           {enabledTabs.map((tab) => (
             <TabButton
               key={tab.id}
@@ -87,11 +99,14 @@ export function WorkspaceSide() {
             />
           ))}
         </div>
-      )}
-      <div className="flex-1 overflow-auto">
-        {ActiveComponent ? <ActiveComponent key={activeTabId} /> : null}
+        <div className="grow overflow-hidden">
+          <ScrollArea className="h-full w-full">
+            <div className="px-3 space-y-4">
+              {ActiveComponent ? <ActiveComponent key={activeTabId} /> : null}
+            </div>
+          </ScrollArea>
+        </div>
       </div>
-      <WorkspaceFooter />
-    </div>
+    </TeamSideLayout>
   );
 }

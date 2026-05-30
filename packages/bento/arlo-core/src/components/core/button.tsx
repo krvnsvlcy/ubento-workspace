@@ -15,17 +15,13 @@ const buttonVariants = cva(
         end: "justify-end",
       },
       variant: {
-        primary: "bg-tone text-tone-contrast hover:bg-tone-hover",
-        secondary: "bg-current/8 hover:bg-current/15",
+        primary: "bg-base text-contrast hover:bg-hover",
+        secondary: "bg-content/8 hover:bg-content/15",
         outline:
           "border border-tone-border bg-transparent hover:bg-tone-surface text-tone-content",
-        ghost: "hover:bg-current/15 hover:text-current",
-        link: "text-current/80 hover:text-current",
-
-        "secondary-destructive":
-          "bg-current/8 hover:bg-destructive hover:text-destructive-contrast",
-        destructive:
-          "text-destructive-contrast border-transparent bg-destructive hover:bg-destructive-hover disabled:bg-destructive-surface disabled:text-destructive-content-muted",
+        ghost: "hover:bg-content/15 hover:text-content",
+        link: "text-content/80 hover:text-content",
+        "secondary-primary": "bg-content/8 hover:bg-content hover:text-content",
       },
       size: {
         sm: "text-xs",

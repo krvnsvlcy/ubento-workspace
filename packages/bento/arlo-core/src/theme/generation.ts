@@ -1,19 +1,11 @@
 import chroma from "chroma-js";
 
 export type ColorPalette = {
-  default: string;
-  hover: string;
-  active: string;
-  contrast: string;
+  base: string;
   surface: string;
-  surfaceHover: string;
-  surfaceActive: string;
+  contrast: string;
   border: string;
-  borderHover: string;
-  borderActive: string;
   content: string;
-  contentSubtle: string;
-  contentMuted: string;
 };
 
 export type Theme = {
@@ -105,7 +97,7 @@ export function generateColorPalette(
   const highContrastAnchor = isDarkBg ? chroma("#FFFFFF") : chroma("#000000");
 
   const contentColor = toOklchString(
-    chroma.mix(highContrastAnchor, base, 0.1, "oklab"),
+    chroma.mix(highContrastAnchor, base, 0.8, "oklab"),
   );
   const contentSubtleColor = toOklchString(
     chroma.mix(highContrastAnchor, base, 0.3, "oklab"),
