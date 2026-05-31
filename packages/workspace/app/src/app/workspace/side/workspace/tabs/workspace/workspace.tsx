@@ -38,6 +38,7 @@ export function WorkspaceTab() {
         onClick={() => {
           updateSettings({
             board: undefined,
+            mode: "live",
           });
         }}
         active={!activeBoardId}

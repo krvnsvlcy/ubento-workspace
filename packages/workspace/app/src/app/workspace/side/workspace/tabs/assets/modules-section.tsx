@@ -1,12 +1,11 @@
 import { SideSection } from "@/components/side/section";
 import { TreeEntry } from "@/components/tree/tree-entry";
 import { useWorkspaceEngine } from "@/contexts/workspace";
-import { useUbentoEngine } from "@/hooks/app-engine";
-import { ModuleRef } from "@ubento/bento.runtime";
-import React from "react";
 import { useAppModal } from "@/modals/app/hook.js";
 import { appModalRoutes } from "@/modals/app/routes.js";
+import { ModuleRef } from "@ubento/bento.runtime";
 import { Plus } from "lucide-react";
+import React from "react";
 
 interface ModuleEntryProps {
   name: string;
@@ -152,7 +151,8 @@ export function ModulesSection() {
             refData={refData}
             onOpen={() =>
               updateSettings({
-                module: refData.id,
+                editingModule: refData,
+                mode: "edit",
               })
             }
             onRename={(newName) => handleRename(name, newName)}

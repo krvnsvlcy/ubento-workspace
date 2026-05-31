@@ -1,13 +1,17 @@
-import { BentoRuntimeView, createBentoRuntime } from "@ubento/bento.runtime";
-import "@ubento/bento.style/css/fonts.css";
-import "@ubento/bento.style/css/themes.css";
+import {
+  BentoRuntimeView,
+  createBentoRuntime,
+  injectWorkspaceImportMap,
+  ModuleManager,
+  runServiceWorker,
+} from "@ubento/bento.runtime";
 import "@ubento/bento.style/dist/uno.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { ModuleManager } from "../../../packages/bento/runtime/build/module/manager.js";
-import { injectWorkspaceImportMap } from "./modules.js";
 import { rpc } from "./rpc.js";
-import { runServiceWorker } from "./sw.js";
+
+import "@ubento/bento.style/css/fonts.css";
+import "@ubento/bento.style/css/themes.css";
 
 rpc.run();
 
@@ -28,7 +32,7 @@ while (!connected) {
       ? initialState.workspace.spec.data
       : undefined;
 
-    injectWorkspaceImportMap(spec?.components, spec?.libraries);
+    injectWorkspaceImportMap(spec?.components, spec?.modules);
     await runServiceWorker({
       rpc,
       registryModuleUrlTemplate,

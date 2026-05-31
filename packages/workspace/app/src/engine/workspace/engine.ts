@@ -19,6 +19,8 @@ import { createDuplexRpc, createWindowPort, DuplexRpc } from "@ubento/rpc";
 import { ubentoAuth } from "@ubento/services.primitives";
 import { vertexClient, workspaceClient } from "@ubento/services.sdk";
 import { serviceSpecV1Schema } from "@ubento/vertex.core";
+import { TsService } from "@/services/ts/ts-service";
+import { MonacoService } from "@/services/monaco/monaco-service";
 import { registerStore, unregisterStore } from "@ubento/zustand-devtool";
 import { dequal } from "dequal/lite";
 import debounce from "lodash.debounce";
@@ -57,6 +59,14 @@ function parseSpecData<S extends z.ZodTypeAny>(
   }
 }
 
+export type TsServiceStatus = {
+  status: "idle" | "initializing" | "loading-libs" | "loading-modules" | "loading-packages" | "ready" | "error";
+  message?: string;
+  loadedPackagesCount: number;
+  totalPackagesCount: number;
+  packageStatuses?: Record<string, "pending" | "success" | "error">;
+};
+
 export type WorkspaceState = {
   // status
   status: "pending" | "connected" | "ready" | "error";
@@ -74,6 +84,9 @@ export type WorkspaceState = {
 
   // watched context nodes
   watchedContextNodes: Record<string, any>;
+
+  // ts service background status
+  tsServiceStatus?: TsServiceStatus;
 };
 
 export function createWorkspaceEngine({
@@ -92,6 +105,8 @@ export function createWorkspaceEngine({
     BentoEngineRuntimeRpcInterface
   > | null = null;
   let cleanupTargetListeners: (() => void) | null = null;
+  let tsService: TsService | null = null;
+  let monacoService: MonacoService | null = null;
   const workspaceService = appEngine.ubento.workspace;
   const logger = appEngine.logger.child({ module: "workspace_engine" });
 
@@ -132,6 +147,12 @@ export function createWorkspaceEngine({
       spec: parsedWorkspaceSpec,
     },
     watchedContextNodes: {},
+    tsServiceStatus: {
+      status: "idle",
+      loadedPackagesCount: 0,
+      totalPackagesCount: 0,
+      packageStatuses: {},
+    },
   }));
 
   const controller = createZustandStateController(store);
@@ -755,9 +776,86 @@ export function createWorkspaceEngine({
     }
   });
 
-  handleLocationChange();
+  function getModuleReferences({
+    id,
+    versionId,
+  }: {
+    id: string;
+    versionId: string;
+  }) {
+    const wsSpec = readWorkspaceSpec();
+    const refs: { source: "board" | "module" | "component"; name: string }[] =
+      [];
+    if (!wsSpec) return refs;
 
-  return {
+    if (wsSpec.boards) {
+      for (const board of Object.values(wsSpec.boards)) {
+        if (board.module?.id === id && board.module?.versionId === versionId) {
+          refs.push({ source: "board", name: board.title });
+        }
+      }
+    }
+
+    if (wsSpec.modules) {
+      for (const [name, mod] of Object.entries(wsSpec.modules)) {
+        if (mod.id === id && mod.versionId === versionId) {
+          refs.push({ source: "module", name });
+        }
+      }
+    }
+
+    if (wsSpec.components) {
+      for (const [name, comp] of Object.entries(wsSpec.components)) {
+        if (comp.id === id && comp.versionId === versionId) {
+          refs.push({ source: "component", name });
+        }
+      }
+    }
+
+    return refs;
+  }
+
+  async function updateModuleReferences({
+    refs,
+    module,
+  }: {
+    refs: { source: "board" | "module" | "component"; name: string }[];
+    module: { id: string; versionId: string };
+  }) {
+    const wsSpec = readWorkspaceSpec();
+    if (!wsSpec) return;
+
+    const boards = wsSpec.boards ? { ...wsSpec.boards } : {};
+    const modules = wsSpec.modules ? { ...wsSpec.modules } : {};
+    const components = wsSpec.components ? { ...wsSpec.components } : {};
+
+    for (const ref of refs) {
+      if (ref.source === "board") {
+        for (const [boardId, board] of Object.entries(boards)) {
+          if (board.title === ref.name) {
+            boards[boardId] = {
+              ...board,
+              module,
+            };
+          }
+        }
+      } else if (ref.source === "module") {
+        modules[ref.name] = module;
+      } else if (ref.source === "component") {
+        components[ref.name] = module;
+      }
+    }
+
+    updateWorkspaceSpec({
+      spec: {
+        boards,
+        modules,
+        components,
+      },
+    });
+  }
+
+  const engine = {
     id: workspace.id,
     appEngine,
     logger,
@@ -770,6 +868,7 @@ export function createWorkspaceEngine({
     connect,
     ready,
     goTo,
+    runServiceOperation,
     updateWorkspace,
     installService,
     updateBoard,
@@ -779,6 +878,8 @@ export function createWorkspaceEngine({
     listComponents,
     describeComponents,
     getCatalog,
+    getModuleReferences,
+    updateModuleReferences,
     select: async (selection: string[]) => {
       // stubbed
     },
@@ -896,11 +997,11 @@ export function createWorkspaceEngine({
                       if (isEditing) {
                         userSetting.update({
                           mode: "live",
-                          module: undefined,
+                          editingModule: undefined,
                         });
                       } else {
                         userSetting.update({
-                          module: activeBoardDetails.module.id,
+                          editingModule: activeBoardDetails.module,
                           mode: "edit",
                         });
                       }
@@ -936,7 +1037,23 @@ export function createWorkspaceEngine({
       };
     },
 
+    getTsService: () => {
+      if (!tsService) {
+        tsService = new TsService(engine as any);
+      }
+      return tsService;
+    },
+
+    getMonacoService: () => {
+      if (!monacoService) {
+        monacoService = new MonacoService(engine as any);
+      }
+      return monacoService;
+    },
+
     destroy: () => {
+      tsService?.dispose();
+      monacoService?.dispose();
       rpc?.dispose();
       cleanupTargetListeners?.();
       unsubscribeEngine();
@@ -946,6 +1063,8 @@ export function createWorkspaceEngine({
       unsubscribeWorkspaceCopilot();
     },
   };
+
+  return engine;
 }
 
 export type WorkspaceEngine = ReturnType<typeof createWorkspaceEngine>;

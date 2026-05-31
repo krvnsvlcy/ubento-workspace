@@ -22,7 +22,7 @@ export function createUbentoService({
     logger,
     sdk: ubentoSdk,
     iam: createUbentoIamService({ ubentoSdk }),
-    module: createUbentoModuleService({ ubentoSdk }),
+    module: createUbentoModuleService({ ubentoSdk, queryClient }),
     workspace: createUbentoWorkspaceService({ ubentoSdk }),
     intelligence: createUbentoIntelligenceService({ ubentoSdk }),
     billing: createUbentoBillingService({ ubentoSdk }),

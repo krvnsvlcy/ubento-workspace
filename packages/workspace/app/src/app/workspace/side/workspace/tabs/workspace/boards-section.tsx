@@ -14,7 +14,7 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
-import { WorkspaceBoardSpec } from "@ubento/bento.runtime";
+import { ModuleRef, WorkspaceBoardSpec } from "@ubento/bento.runtime";
 import clsx from "clsx";
 import React, { useCallback, useState } from "react";
 
@@ -110,7 +110,7 @@ interface BoardNodeProps {
   allBoards: Record<string, any>;
   activeBoardId: string | undefined;
   depth: number;
-  onSelect: (boardId: string) => void;
+  onSelect: (boardId: string, module: ModuleRef) => void;
   onRename: (boardId: string, newName: string) => Promise<void>;
   onDelete: (boardId: string, boardName: string) => Promise<void>;
   onCreateChild: (parentId: string) => Promise<void>;
@@ -223,7 +223,7 @@ function BoardNode({
               },
             },
           ]}
-          onClick={() => onSelect(board.id)}
+          onClick={() => onSelect(board.id, board.module)}
         >
           <span className="truncate">{board.title}</span>
         </TreeEntry>
@@ -302,12 +302,13 @@ export function BoardsSection() {
     });
   };
 
-  const handleSelect = (boardId: string) => {
+  const handleSelect = (boardId: string, module: ModuleRef) => {
     updateSettings({
       board: {
         id: boardId,
         params: {},
       },
+      editingModule: module,
     });
   };
 

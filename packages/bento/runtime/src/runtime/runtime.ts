@@ -70,9 +70,6 @@ export function createBentoRuntime({
     setLocation: async ({ location }) => {
       controller.setState({ location });
     },
-    setInteractionMode: async ({ mode }) => {
-      controller.setState({ mode });
-    },
     workspaceUpdated: async ({ data }) => {
       controller.setState({ workspace: data });
     },

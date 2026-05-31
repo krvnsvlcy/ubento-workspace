@@ -79,6 +79,7 @@ export * from "./overlay/toaster.js";
 export * from "./overlay/tooltip.js";
 
 // Data components
+export * from "./data/breadcrumb.js";
 export * from "./data/codeblock.js";
 export * from "./data/command.js";
 export * from "./data/list-view.js";

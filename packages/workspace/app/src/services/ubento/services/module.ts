@@ -1,3 +1,4 @@
+import { QueryClient } from "@tanstack/react-query";
 import {
   createStore,
   useMutation,
@@ -13,8 +14,10 @@ import { UbentoApiPage, ubentoToFabricPagedResponse } from "../libs/pagination";
 
 export function createUbentoModuleService({
   ubentoSdk,
+  queryClient,
 }: {
   ubentoSdk: UbentoSDK;
+  queryClient: QueryClient;
 }) {
   // --- Stores ---
 
@@ -194,12 +197,17 @@ export function createUbentoModuleService({
 
       return { data, loading };
     },
-    useReadModuleVersionFile: (
-      moduleId: string,
-      versionId: string,
-      filename: string,
-      options?: UseStoreOptions,
-    ) => {
+    useModuleVersionFileContent: ({
+      moduleId,
+      versionId,
+      filename,
+      options,
+    }: {
+      moduleId: string;
+      versionId: string;
+      filename: string;
+      options?: UseStoreOptions;
+    }) => {
       return useQuery({
         queryKey: ["moduleVersionFile", moduleId, versionId, filename],
         queryFn: async () => {
@@ -273,7 +281,7 @@ export function createUbentoModuleService({
       moduleStore.push(mod);
       return mod;
     },
-    saveModuleVersion: async (moduleId: string, content: string) => {
+    updateModuleVersion: async (moduleId: string, content: string) => {
       const mod = await ubentoSdk.module.saveModuleVersion(moduleId, content);
       moduleStore.push(mod);
       return mod;
@@ -288,11 +296,16 @@ export function createUbentoModuleService({
       versionId: string,
       filename: string,
     ) => {
-      return await ubentoSdk.module.readModuleVersionFile(
-        moduleId,
-        versionId,
-        filename,
-      );
+      return queryClient.fetchQuery({
+        queryKey: ["moduleVersionFile", moduleId, versionId, filename],
+        queryFn: async () => {
+          return await ubentoSdk.module.readModuleVersionFile(
+            moduleId,
+            versionId,
+            filename,
+          );
+        },
+      });
     },
   };
 

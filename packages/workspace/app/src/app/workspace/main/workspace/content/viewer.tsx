@@ -88,7 +88,7 @@ function InvalidSpecOverlay({ engine }: { engine: WorkspaceEngine }) {
   );
 }
 
-export function Viewer({ reloadCounter }: { reloadCounter: number }) {
+export function Viewer() {
   const appEngine = useUbentoEngine();
   const workspaceEngine = useWorkspaceEngine();
 
@@ -97,7 +97,7 @@ export function Viewer({ reloadCounter }: { reloadCounter: number }) {
       <div className="flex-1 relative">
         <iframe
           src={appEngine.workspaceRuntimeUrl}
-          key={`${workspaceEngine.id}-${reloadCounter}`}
+          key={workspaceEngine.id}
           onLoad={(e) => {
             if (e.currentTarget.contentWindow) {
               workspaceEngine.init(e.currentTarget.contentWindow);

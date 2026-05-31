@@ -1,4 +1,5 @@
 import { useSession } from "@/contexts/session";
+import { useWorkspaceEngine } from "@/contexts/workspace";
 import { WorkspaceEngine } from "@/engine/workspace/engine";
 import { useUbento, useUbentoEngine } from "@/hooks/app-engine";
 import { useQuery } from "@tanstack/react-query";
@@ -69,4 +70,35 @@ export function useServiceWorkspaceState(
     isPending: isPendingProvider || isPendingConnections,
     isError: isErrorProvider || isErrorConnections,
   };
+}
+
+export function useWorkspaceSpec() {
+  const workspaceEngine = useWorkspaceEngine();
+  const spec = workspaceEngine.useState((s) => s.workspace.spec);
+  return spec;
+}
+export function useValidWorkspaceSpec() {
+  const spec = useWorkspaceSpec();
+  return spec?.isValid ? spec.data : undefined;
+}
+export function useWorkspaceLocation() {
+  const workspaceEngine = useWorkspaceEngine();
+  const location = workspaceEngine.userSetting.useState((s) => s.data.board);
+  return location;
+}
+export function useActiveBoard() {
+  const spec = useValidWorkspaceSpec();
+  const location = useWorkspaceLocation();
+  return location ? spec?.boards?.[location.id] : undefined;
+}
+export function useEditingModule() {
+  const workspaceEngine = useWorkspaceEngine();
+  const editingModule = workspaceEngine.userSetting.useState(
+    (s) => s.data.editingModule,
+  );
+  return editingModule;
+}
+export function useEditingModuleId() {
+  const editingModule = useEditingModule();
+  return editingModule?.id;
 }

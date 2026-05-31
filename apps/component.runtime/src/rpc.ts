@@ -14,7 +14,7 @@ export const rpc = createDuplexRpc<
 });
 
 // Intercept console logs
-const originalConsole = {
+const originalConsole: Record<"log" | "error" | "warn" | "info", (...args: any[]) => void> = {
   log: console.log,
   error: console.error,
   warn: console.warn,
@@ -25,11 +25,13 @@ const createIntercept = (type: "log" | "error" | "warn" | "info") => {
   return (...args: any[]) => {
     if (!logging) {
       logging = true;
-      rpc.egress.log({ type, args });
-      logging = false;
-    } else {
-      // originalConsole[type].apply(console, args);
+      try {
+        rpc.egress.log({ type, args });
+      } finally {
+        logging = false;
+      }
     }
+    originalConsole[type](...args);
   };
 };
 

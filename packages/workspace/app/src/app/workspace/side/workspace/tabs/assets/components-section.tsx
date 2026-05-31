@@ -273,7 +273,8 @@ export function ComponentsSection() {
             refData={refData}
             onOpen={() =>
               updateSettings({
-                module: refData.id,
+                editingModule: refData,
+                mode: "edit",
               })
             }
             onRename={(newName) => handleRename(name, newName)}

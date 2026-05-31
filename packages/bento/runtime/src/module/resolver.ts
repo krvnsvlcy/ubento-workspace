@@ -1,39 +1,33 @@
-/**
- * @fileoverview
- * Exposes core Bento runtime hooks and React bindings to board modules.
- * This includes data-fetching/mutation hooks (useQuery, useAction) as well as
- * board navigation and routing hooks (useParams, useLocation, useNavigation).
- */
-import {
-  useAction,
-  useLocation,
-  useNavigation,
-  useParams,
-  useQuery,
-  useInfiniteQuery,
-  type ModuleRef,
-} from "@ubento/bento.runtime";
+import type { DuplexRpc } from "@ubento/rpc";
 import * as LucideReact from "lucide-react";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as ReactDOMClient from "react-dom/client";
 import * as ReactJsxRuntime from "react/jsx-runtime";
+import { useLocation, useNavigation, useParams } from "../hooks/navigation.js";
+import { useAction, useInfiniteQuery, useQuery } from "../hooks/service.js";
+import type { ModuleRef } from "../spec.js";
 
 // The path that your Service Worker is actively listening for
-const MODULE_BASE_PATH = "/__ubento_modules/";
+export const MODULE_BASE_PATH = "/__ubento_modules/";
 
 /**
  * Creates a proxy module that re-exports everything from a window object
  */
-function createModuleProxy(
+export function createModuleProxy(
   module: any,
   proxyName: string,
   defaultExport?: boolean,
 ): string {
-  if (!(window as any).__elementa_module_proxies__) {
+  if (
+    typeof window !== "undefined" &&
+    !(window as any).__elementa_module_proxies__
+  ) {
     (window as any).__elementa_module_proxies__ = {};
   }
-  (window as any).__elementa_module_proxies__[proxyName] = module;
+  if (typeof window !== "undefined") {
+    (window as any).__elementa_module_proxies__[proxyName] = module;
+  }
 
   const keys = Object.keys(module).filter((key) => {
     return key !== "default" && /^[a-zA-Z_$][a-zA-Z_$0-9]*$/.test(key);
@@ -55,8 +49,7 @@ function createModuleProxy(
 /**
  * Creates proxy modules for React, ReactDOM, and Ubento runtime with their blob URLs
  */
-function createProxyModules(): Record<string, string> {
-  // 1. Generate Proxy Strings
+export function createProxyModules(): Record<string, string> {
   const reactScript = createModuleProxy(React, "React", true);
   const reactJsxRuntimeScript = createModuleProxy(
     ReactJsxRuntime,
@@ -71,20 +64,19 @@ function createProxyModules(): Record<string, string> {
   );
   const lucideReactScript = createModuleProxy(LucideReact, "LucideReact", true);
 
-  // Bundle the runtime hooks into an object for the proxy.
-  // The BentoRuntime proxy exposes:
-  // - useAction: Mutate service data and trigger service actions.
-  // - useQuery: Query/fetch service endpoint data (cached via TanStack Query).
-  // - useParams: Hook returning route parameters for the active board.
-  // - useLocation: Hook returning the current active BentoLocation (boardId and params).
-  // - useNavigation: Hook providing goToBoard(boardId, params) and goHome() routing controls.
   const bentoRuntimeScript = createModuleProxy(
-    { useAction, useQuery, useInfiniteQuery, useParams, useLocation, useNavigation },
+    {
+      useAction,
+      useQuery,
+      useInfiniteQuery,
+      useParams,
+      useLocation,
+      useNavigation,
+    },
     "BentoRuntime",
     false,
   );
 
-  // 2. Convert to Blob URLs and map to specifiers
   return {
     react: URL.createObjectURL(
       new Blob([reactScript], { type: "application/javascript" }),
@@ -110,7 +102,9 @@ function createProxyModules(): Record<string, string> {
 /**
  * Merge or create an import map in the document, injecting/overriding specifiers.
  */
-function updateImportMap(overrides: Record<string, string>) {
+export function updateImportMap(overrides: Record<string, string>) {
+  if (typeof document === "undefined") return;
+
   const existing = document.querySelector('script[type="importmap"]');
   let current: { imports: Record<string, string>; scopes?: any } = {
     imports: {},
@@ -155,15 +149,15 @@ export function injectWorkspaceImportMap(
   // 2. Generate Service Worker routes with strict namespaces
   const remoteMappings: Record<string, string> = {};
 
-  // Map components to the @/component/ namespace
+  // Map components to the @/components/ namespace
   Object.entries(components).forEach(([name, ref]) => {
-    const alias = `@/component/${name}`;
+    const alias = `@/components/${name}`;
     remoteMappings[alias] = `${MODULE_BASE_PATH}${ref.id}@${ref.versionId}.js`;
   });
 
-  // Map libraries to the @/libs/ namespace
+  // Map libraries to the @/modules/ namespace
   Object.entries(libraries).forEach(([name, ref]) => {
-    const alias = `@/libs/${name}`;
+    const alias = `@/modules/${name}`;
     remoteMappings[alias] = `${MODULE_BASE_PATH}${ref.id}@${ref.versionId}.js`;
   });
 
@@ -179,4 +173,67 @@ export function injectWorkspaceImportMap(
     ...baseProxies,
     ...remoteMappings,
   });
+}
+
+export async function runServiceWorker({
+  swUrl = "/sw.js",
+  registryModuleUrlTemplate,
+  rpc,
+}: {
+  swUrl?: string;
+  registryModuleUrlTemplate: string;
+  rpc: DuplexRpc<any, any>;
+}): Promise<void> {
+  if (typeof navigator === "undefined" || !("serviceWorker" in navigator)) {
+    console.error("Service Workers are not supported in this browser.");
+    return;
+  }
+
+  try {
+    // 1. Register the Service Worker
+    const registration = await navigator.serviceWorker.register(swUrl, {
+      scope: "/",
+    });
+
+    console.log(
+      "Ubento Module Service Worker registered successfully.",
+      registration.scope,
+    );
+
+    // 2. Listen for direct requests from the active Service Worker
+    navigator.serviceWorker.addEventListener("message", async (event) => {
+      if (event.data && event.data.type === "REQUEST_TOKEN") {
+        const replyPort = event.ports[0];
+
+        if (!replyPort) {
+          console.error(
+            "Service Worker requested a token but did not provide a MessageChannel port.",
+          );
+          return;
+        }
+
+        try {
+          const token = await rpc.egress.getModuleRegistryAccessToken({});
+
+          replyPort.postMessage({
+            registryModuleUrlTemplate,
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+        } catch (error) {
+          console.error(
+            "Failed to retrieve token from Main Thread via RPC:",
+            error,
+          );
+          replyPort.postMessage({ moduleUrlTemplate: "", headers: {} });
+        }
+      }
+    });
+  } catch (error) {
+    console.error("Ubento Module Service Worker registration failed:", error);
+  }
+
+  await navigator.serviceWorker.ready;
+  console.log("Module Service Worker ready!");
 }

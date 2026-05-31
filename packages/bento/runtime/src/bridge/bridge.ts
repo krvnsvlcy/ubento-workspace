@@ -1,5 +1,6 @@
 import { BentoLocation, BentoRuntimeState } from "../runtime/runtime";
 import { BentoWorkspaceData } from "../runtime/types";
+import { WorkspaceSpec } from "../spec.js";
 
 export type BentoEngineHostRpcInterface = {
   connect: () => {
@@ -39,7 +40,6 @@ export type BentoEngineHostRpcInterface = {
 
 export type BentoEngineRuntimeRpcInterface = {
   setLocation: ({ location }: { location?: BentoLocation }) => Promise<void>;
-  setInteractionMode: ({ mode }: { mode: "edit" | "live" }) => Promise<void>;
 
   // sync
   workspaceUpdated: ({ data }: { data: BentoWorkspaceData }) => Promise<void>;
@@ -86,3 +86,25 @@ export class ServiceOperationError extends Error {
     this.isIdempotent = data.isIdempotent;
   }
 }
+
+export type ComponentEngineRuntimeRpcInterface = {
+  init: (args: { code: string; props: any }) => void;
+  updateCode: (args: { code: string }) => void;
+  updateProps: (args: { props: any }) => void;
+};
+
+export type ComponentEngineRuntimeHostRpcInterface = {
+  connect: (args: {}) => {
+    workspaceSpec?: WorkspaceSpec;
+    registryModuleUrlTemplate?: string;
+  };
+  ready: (args: {}) => Promise<void> | void;
+  log: (args: { type: "log" | "error" | "warn" | "info"; args: any[] }) => void;
+  getModuleRegistryAccessToken: (args: {}) => Promise<string> | string;
+  runServiceOperation: (args: {
+    service: string;
+    type: "query" | "action";
+    name: string;
+    args?: Record<string, unknown>;
+  }) => Promise<ServiceOperationResult>;
+};

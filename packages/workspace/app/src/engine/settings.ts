@@ -19,7 +19,12 @@ export const userWorkspaceSettingsSchema = z.object({
       params: z.record(z.string(), z.string()).default({}),
     })
     .optional(),
-  module: z.string().optional(),
+  editingModule: z
+    .object({
+      id: z.string(),
+      versionId: z.string(),
+    })
+    .optional(),
   boardExplorer: z
     .object({
       expandedStates: z.record(z.string(), z.boolean()).default({}),

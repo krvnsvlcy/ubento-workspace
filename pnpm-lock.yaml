@@ -1261,6 +1261,9 @@ importers:
       react-if:
         specifier: ^4.1.6
         version: 4.1.6(react@19.2.6)
+      react-input-autosize:
+        specifier: ^3.0.0
+        version: 3.0.0(react@19.2.6)
       react-textarea-autosize:
         specifier: ^8.5.9
         version: 8.5.9(@types/react@19.2.15)(react@19.2.6)
@@ -1292,6 +1295,9 @@ importers:
       '@types/react-dom':
         specifier: ^19.0.0
         version: 19.2.3(@types/react@19.2.15)
+      '@types/react-input-autosize':
+        specifier: ^2.2.4
+        version: 2.2.4
       typescript:
         specifier: ^5.0.0
         version: 5.9.3
@@ -4798,6 +4804,9 @@ packages:
     resolution: {integrity: sha512-jp2L/eY6fn+KgVVQAOqYItbF0VY/YApe5Mz2F0aykSO8gx31bYCZyvSeYxCHKvzHG5eZjc+zyaS5BrBWya2+kQ==}
     peerDependencies:
       '@types/react': ^19.2.0
+
+  '@types/react-input-autosize@2.2.4':
+    resolution: {integrity: sha512-7O028jRZHZo3mj63h3HSvB0WpvPXNWN86sajHTi0+CtjA4Ym+DFzO9RzrSbfFURe5ZWsq6P72xk7MInI6aGWJA==}
 
   '@types/react@19.2.15':
     resolution: {integrity: sha512-eRwcGNHve+E8qtEQSSRl6urh+rFop4v8gm6O8rGv25CodbvFdLjA1vVQ1KkiFE0w0UPOnb8tDiFKL5lp0rtY5Q==}
@@ -9075,6 +9084,11 @@ packages:
     engines: {node: '>=12'}
     peerDependencies:
       react: ^16.x || ^17.x || ^18.x || ^19.x
+
+  react-input-autosize@3.0.0:
+    resolution: {integrity: sha512-nL9uS7jEs/zu8sqwFE5MAPx6pPkNAriACQ2rGLlqmKr2sPGtN7TXTyDdQt4lbNXVx7Uzadb40x8qotIuru6Rhg==}
+    peerDependencies:
+      react: ^16.3.0 || ^17.0.0
 
   react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
@@ -13495,6 +13509,10 @@ snapshots:
   '@types/range-parser@1.2.7': {}
 
   '@types/react-dom@19.2.3(@types/react@19.2.15)':
+    dependencies:
+      '@types/react': 19.2.15
+
+  '@types/react-input-autosize@2.2.4':
     dependencies:
       '@types/react': 19.2.15
 
@@ -18614,6 +18632,11 @@ snapshots:
 
   react-if@4.1.6(react@19.2.6):
     dependencies:
+      react: 19.2.6
+
+  react-input-autosize@3.0.0(react@19.2.6):
+    dependencies:
+      prop-types: 15.8.1
       react: 19.2.6
 
   react-is@16.13.1: {}
