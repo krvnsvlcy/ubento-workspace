@@ -57,7 +57,7 @@ export * from "./layout/tab-switch.js";
 export * from "./layout/tab.js";
 
 // Overlay components
-export * from "./overlay/context_menu.js";
+export * from "./data/menu.js";
 export * from "./overlay/dialog.js";
 export * from "./overlay/drawer.js";
 export * from "./overlay/dropdown-menu.js";

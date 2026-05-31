@@ -38,6 +38,17 @@ while (!connected) {
       initialState,
       moduleManager,
     });
+
+    window.addEventListener("contextmenu", (event) => {
+      event.preventDefault();
+      rpc.egress.onContextMenu({
+        position: {
+          x: event.clientX,
+          y: event.clientY,
+        },
+      });
+    });
+
     createRoot(document.getElementById("root")!).render(
       <StrictMode>
         <BentoRuntimeView runtime={runtime} />

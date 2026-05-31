@@ -31,6 +31,10 @@ export type BentoEngineHostRpcInterface = {
     name: string;
     args?: Record<string, unknown>;
   }) => Promise<ServiceOperationResult>; // Updated here
+
+  onContextMenu: (args: {
+    position: { x: number; y: number };
+  }) => Promise<void>;
 };
 
 export type BentoEngineRuntimeRpcInterface = {

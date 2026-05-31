@@ -1,8 +1,9 @@
 import { useUbentoEngine } from "@/hooks/app-engine";
+import { memo } from "react";
 import { TeamSide } from "./team/team-side";
 import { WorkspaceSide } from "./workspace/workspace-side";
 
-export function Side() {
+export const Side = memo(() => {
   const engine = useUbentoEngine();
   const location = engine.useState((s) => s.location);
 
@@ -11,4 +12,4 @@ export function Side() {
     return <WorkspaceSide />;
   }
   return <TeamSide />;
-}
+});

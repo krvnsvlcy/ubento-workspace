@@ -142,7 +142,7 @@ export function SideSplitView({
           flex: 1,
           position: "relative",
           overflow: "hidden",
-          pointerEvents: isDragging ? "none" : "auto",
+          pointerEvents: isDragging ? "none" : undefined,
         }}
       >
         {children}

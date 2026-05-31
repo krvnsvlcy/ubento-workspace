@@ -4,11 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import { WorkspaceEngine } from "../../../../../engine/workspace/engine.js";
 
 export function Console({ controller }: { controller: WorkspaceEngine }) {
-  const snap = controller.useState();
+  const userSettings = controller.userSetting.useState((s) => s.data);
+  const mode = userSettings?.mode;
   const [input, setInput] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-
-  const mode = snap.mode;
 
   useEffect(() => {
     if (textareaRef.current) {

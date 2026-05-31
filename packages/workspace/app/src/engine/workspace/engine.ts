@@ -24,6 +24,7 @@ import { dequal } from "dequal/lite";
 import debounce from "lodash.debounce";
 import z from "zod";
 import { createStore as createZustandStore } from "zustand/vanilla";
+import { ContextMenuContentItem } from "../app/context_menu";
 import { UbentoSession } from "../app/session";
 import { createUbentoCopilot } from "../copilot/copilot";
 import {
@@ -90,6 +91,7 @@ export function createWorkspaceEngine({
     BentoEngineHostRpcInterface,
     BentoEngineRuntimeRpcInterface
   > | null = null;
+  let cleanupTargetListeners: (() => void) | null = null;
   const workspaceService = appEngine.ubento.workspace;
   const logger = appEngine.logger.child({ module: "workspace_engine" });
 
@@ -120,12 +122,6 @@ export function createWorkspaceEngine({
   );
   const store = createZustandStore<WorkspaceState>()(() => ({
     status: "pending",
-    mode: initialSettings?.mode || "live",
-    location: {
-      boardId: initialSettings?.board?.id || "",
-      params: initialSettings?.board?.params || {},
-    },
-    boards: deriveBoardsFromSpec(parsedWorkspaceSpec),
     selection: [],
     hover: undefined,
     leftPanelOpen: true,
@@ -211,6 +207,9 @@ export function createWorkspaceEngine({
     init: {
       activeTab: "workspace",
       mode: "live",
+      boardExplorer: {
+        expandedStates: {},
+      },
     },
   });
   const teamSetting = createSettingState({
@@ -755,9 +754,11 @@ export function createWorkspaceEngine({
       handleLocationChange();
     }
   });
+
   handleLocationChange();
 
   return {
+    id: workspace.id,
     appEngine,
     logger,
     copilot,
@@ -835,6 +836,82 @@ export function createWorkspaceEngine({
               ]);
             return token;
           },
+          onContextMenu: async ({ position }) => {
+            const iframe = Array.from(document.querySelectorAll("iframe")).find(
+              (el) => el.contentWindow === target,
+            );
+            let x = position.x;
+            let y = position.y;
+            if (iframe) {
+              const rect = iframe.getBoundingClientRect();
+              x += rect.left;
+              y += rect.top;
+            }
+
+            const activeBoard = userSetting.getState().data.board;
+            const wsSpec = readWorkspaceSpec();
+            const activeBoardDetails =
+              activeBoard && wsSpec?.boards
+                ? wsSpec.boards[activeBoard.id]
+                : null;
+
+            const content: ContextMenuContentItem[] = [
+              {
+                items: [
+                  {
+                    id: "create-board",
+                    label: "Create New Board",
+                    action: () => {
+                      const title = prompt("Enter board title:") || "New Board";
+                      createBoard({ title });
+                    },
+                  },
+                  {
+                    id: "reload",
+                    label: "Reload Workspace",
+                    action: () => {
+                      appEngine.reloadWorkspace();
+                    },
+                  },
+                  {
+                    id: "go-home",
+                    label: "Go to Home",
+                    action: () => {
+                      goTo({ location: undefined });
+                    },
+                  },
+                ],
+              },
+            ];
+
+            if (activeBoardDetails?.module?.id) {
+              const currentMode = userSetting.getState().data.mode;
+              const isEditing = currentMode === "edit";
+              content.push({
+                items: [
+                  {
+                    id: "edit-board",
+                    label: isEditing ? "Exit edit mode" : "Edit this board",
+                    action: () => {
+                      if (isEditing) {
+                        userSetting.update({
+                          mode: "live",
+                          module: undefined,
+                        });
+                      } else {
+                        userSetting.update({
+                          module: activeBoardDetails.module.id,
+                          mode: "edit",
+                        });
+                      }
+                    },
+                  },
+                ],
+              });
+            }
+
+            appEngine.showContextMenu({ x, y }, content);
+          },
         },
       });
 
@@ -843,10 +920,25 @@ export function createWorkspaceEngine({
       });
 
       rpc.run();
+
+      const handleCloseMenu = () => {
+        appEngine.closeContextMenu();
+      };
+      target.addEventListener("mousedown", handleCloseMenu);
+      target.addEventListener("pointerdown", handleCloseMenu);
+      cleanupTargetListeners = () => {
+        try {
+          target.removeEventListener("mousedown", handleCloseMenu);
+          target.removeEventListener("pointerdown", handleCloseMenu);
+        } catch (e) {
+          // target window might have been unloaded/destroyed
+        }
+      };
     },
 
     destroy: () => {
       rpc?.dispose();
+      cleanupTargetListeners?.();
       unsubscribeEngine();
       unregisterStore("workspaceEngine");
       unsubscribeBoards();

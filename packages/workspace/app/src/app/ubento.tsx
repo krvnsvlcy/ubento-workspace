@@ -1,3 +1,4 @@
+import { ContextMenuRenderer } from "@/components/context-menu/renderer";
 import { ModalRenderer } from "@/components/modal/renderer";
 import { UbentoEngineContext } from "@/contexts/app_engine";
 import { UbentoEngine } from "@/engine/app/engine";
@@ -15,6 +16,7 @@ export function Ubento({ engine }: { engine: UbentoEngine }) {
         <SessionProvider>
           <Layout />
           <ModalRenderer />
+          <ContextMenuRenderer />
           <Toaster
             position="top-right"
             style={

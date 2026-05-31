@@ -14,6 +14,7 @@ const cardVariants = cva("relative w-full rounded-2xl text-left", {
     },
     padding: {
       none: "p-0",
+      xs: "p-2",
       sm: "p-4",
       md: "p-6", // Your original 24px default
       lg: "p-8",

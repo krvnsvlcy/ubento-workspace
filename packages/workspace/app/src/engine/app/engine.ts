@@ -21,9 +21,13 @@ import {
   userAppSettingsSchema,
 } from "../settings";
 import { makeLocationString } from "./app_modal";
+import {
+  ContextMenuItem,
+  ContextMenuItemGroup,
+  ContextMenuInstance,
+} from "./context_menu";
 import { parseLocation, stringifyLocation, UbentoLocation } from "./location";
 import { UbentoSession } from "./session";
-const workspaceSettingsKey = "ubento-workspace";
 
 export interface ModalInstance {
   id: string;
@@ -51,6 +55,9 @@ export type UbentoEngineState = {
   // modal
   appModalHistory: string[];
   modalQueue: ModalInstance[];
+
+  // context menu
+  contextMenu: ContextMenuInstance | null;
 };
 
 export type UbentoEngine = StateController<UbentoEngineState> & {
@@ -91,6 +98,16 @@ export type UbentoEngine = StateController<UbentoEngineState> & {
     props?: T,
   ) => Promise<R>;
   closeModal: (id: string, result?: any) => void;
+
+  openContextMenu: (
+    position: { x: number; y: number },
+    content: (ContextMenuItem | ContextMenuItemGroup | React.ReactNode)[]
+  ) => void;
+  showContextMenu: (
+    position: { x: number; y: number },
+    content: (ContextMenuItem | ContextMenuItemGroup | React.ReactNode)[]
+  ) => void;
+  closeContextMenu: () => void;
 };
 
 export function createUbentoEngine({
@@ -126,6 +143,7 @@ export function createUbentoEngine({
     workspaceStatus: "inactive",
     appModalHistory: [],
     modalQueue: [],
+    contextMenu: null,
   }));
   registerStore("ubentoEngine", store);
   const stateController = createZustandStateController(store);
@@ -391,6 +409,25 @@ export function createUbentoEngine({
         setAppModalHistory([location]);
         openModal(AppModal, { params }, ["app-modal"]);
       }
+    },
+
+    openContextMenu(position, content) {
+      stateController.setState((state) => ({
+        ...state,
+        contextMenu: { position, content },
+      }));
+    },
+    showContextMenu(position, content) {
+      stateController.setState((state) => ({
+        ...state,
+        contextMenu: { position, content },
+      }));
+    },
+    closeContextMenu() {
+      stateController.setState((state) => ({
+        ...state,
+        contextMenu: null,
+      }));
     },
 
     notify(options) {

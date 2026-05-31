@@ -4,7 +4,7 @@ import {
 } from "@/contexts/workspace";
 import { useUbentoEngine } from "@/hooks/app-engine";
 import { SideSplitView } from "./components/split-view";
-import { WorkspaceContent } from "./content";
+import { WorkspaceContent } from "./content/content";
 import { WorkspaceControl } from "./control/control";
 import { ControlPanel } from "./control/panel/control-panel";
 
@@ -28,10 +28,12 @@ function WorkspaceInner() {
       right={{
         content:
           rightPanelPinned && showControls ? (
-            <ControlPanel
-              controller={workspaceEngine}
-              onClose={() => appEngine.setShowControls(false)}
-            />
+            <div className="w-full h-full border-l">
+              <ControlPanel
+                controller={workspaceEngine}
+                onClose={() => appEngine.setShowControls(false)}
+              />
+            </div>
           ) : null,
         size: rightPanelPinned && showControls ? rightPanelWidth : 0,
         onSizeChange: (size) => {
