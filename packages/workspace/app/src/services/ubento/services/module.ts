@@ -48,6 +48,32 @@ export function createUbentoModuleService({
     },
   });
 
+  const moduleCollectionStore = createStore<
+    moduleClient.ModuleCollection,
+    { team_id?: string; scope?: "public" | "private" },
+    UbentoApiPage
+  >({
+    namespace: ubentoEntities.moduleCollection.name,
+    getKey: (c) => c.id,
+    fetchOne: async (key) => {
+      return await ubentoSdk.module.getModuleCollection(key);
+    },
+    fetchMany: async ({ params }) => {
+      return ubentoToFabricPagedResponse(
+        await ubentoSdk.module.listModuleCollections(params as any),
+      );
+    },
+    project: (entities, params) => {
+      return [...entities]
+        .filter((c) => {
+          if (params?.team_id && c.team_id !== params.team_id) return false;
+          if (params?.scope && c.scope !== params.scope) return false;
+          return true;
+        })
+        .sort((a, b) => a.name.localeCompare(b.name));
+    },
+  });
+
   const moduleVersionStore = createStore<
     moduleClient.ModuleVersion,
     { module_id: string },
@@ -221,6 +247,84 @@ export function createUbentoModuleService({
         ...options,
       });
     },
+    // Collections
+    useModuleCollection: (collectionId: string, options?: UseStoreOptions) => {
+      return useStoreEntity(moduleCollectionStore, collectionId, options);
+    },
+    useModuleCollections: (
+      params?: {
+        team_id?: string;
+        scope?: "public" | "private";
+        limit?: number;
+        cursor?: string;
+      },
+      options?: UseStoreOptions,
+    ) => {
+      return useStoreEntities(moduleCollectionStore, params, options);
+    },
+    useCreateModuleCollection: () => {
+      return useMutation({
+        mutationFn: async (data: {
+          team_id: string;
+          name: string;
+          summary?: string;
+          scope?: "public" | "private";
+          module_ids?: string[];
+        }) => {
+          return await ubentoSdk.module.createModuleCollection(data);
+        },
+        onSuccess: (collection) => {
+          moduleCollectionStore.push(collection);
+        },
+      });
+    },
+    useUpdateModuleCollection: () => {
+      return useMutation({
+        mutationFn: async ({
+          collectionId,
+          data,
+        }: {
+          collectionId: string;
+          data: {
+            name?: string;
+            summary?: string | null;
+            scope?: "public" | "private";
+            module_ids?: string[];
+          };
+        }) => {
+          return await ubentoSdk.module.updateModuleCollection(collectionId, data);
+        },
+        onSuccess: (collection) => {
+          moduleCollectionStore.push(collection);
+        },
+      });
+    },
+    useDeleteModuleCollection: () => {
+      return useMutation({
+        mutationFn: async (collectionId: string) => {
+          return await ubentoSdk.module.deleteModuleCollection(collectionId);
+        },
+        onSuccess: (_, collectionId) => {
+          moduleCollectionStore.remove(collectionId);
+        },
+      });
+    },
+    useUploadCollectionCoverImage: () => {
+      return useMutation({
+        mutationFn: async ({
+          collectionId,
+          file,
+        }: {
+          collectionId: string;
+          file: File | Blob;
+        }) => {
+          return await ubentoSdk.module.uploadCollectionCoverImage(collectionId, file);
+        },
+        onSuccess: (collection) => {
+          moduleCollectionStore.push(collection);
+        },
+      });
+    },
   };
 
   // --- Imperatives ---
@@ -306,6 +410,58 @@ export function createUbentoModuleService({
           );
         },
       });
+    },
+    // Collections
+    getModuleCollection: async (collectionId: string) => {
+      const collection = await ubentoSdk.module.getModuleCollection(collectionId);
+      moduleCollectionStore.push(collection);
+      return collection;
+    },
+    getModuleCollections: async (
+      params: {
+        team_id?: string;
+        scope?: "public" | "private";
+        limit?: number;
+        cursor?: string;
+      } = {},
+    ) => {
+      const res = await ubentoSdk.module.listModuleCollections(params);
+      moduleCollectionStore.pushMany(res.data);
+      return res;
+    },
+    createModuleCollection: async (data: {
+      team_id: string;
+      name: string;
+      summary?: string;
+      scope?: "public" | "private";
+      module_ids?: string[];
+    }) => {
+      const collection = await ubentoSdk.module.createModuleCollection(data);
+      moduleCollectionStore.push(collection);
+      return collection;
+    },
+    updateModuleCollection: async (
+      collectionId: string,
+      data: {
+        name?: string;
+        summary?: string | null;
+        scope?: "public" | "private";
+        module_ids?: string[];
+      },
+    ) => {
+      const collection = await ubentoSdk.module.updateModuleCollection(collectionId, data);
+      moduleCollectionStore.push(collection);
+      return collection;
+    },
+    deleteModuleCollection: async (collectionId: string) => {
+      const res = await ubentoSdk.module.deleteModuleCollection(collectionId);
+      moduleCollectionStore.remove(collectionId);
+      return res;
+    },
+    uploadCollectionCoverImage: async (collectionId: string, file: File | Blob) => {
+      const collection = await ubentoSdk.module.uploadCollectionCoverImage(collectionId, file);
+      moduleCollectionStore.push(collection);
+      return collection;
     },
   };
 

@@ -283,6 +283,13 @@ export const ubentoEntities = {
     code: "mdv",
   },
   /**
+   * Represents a collection of modules.
+   */
+  moduleCollection: {
+    name: "module_collection",
+    code: "mcl",
+  },
+  /**
    * Represents a setting.
    */
   setting: {

@@ -1,4 +1,5 @@
 import { Storage } from "@google-cloud/storage";
+import { createHash } from "crypto";
 import mime from "mime-types";
 import { env } from "../env.js";
 import { ModuleArtifact } from "./builder/builder.js";
@@ -88,3 +89,39 @@ export async function persistModuleArtifact(artifact: ModuleArtifact) {
     }),
   );
 }
+
+const userContentBucket = storage.bucket(env.GCS_USER_CONTENT_BUCKET);
+
+/** SHA-256 hash a buffer and return the hex digest. */
+export function hashBuffer(buffer: Buffer): string {
+  return createHash("sha256").update(buffer).digest("hex");
+}
+
+/**
+ * Upload an image buffer to the user-content bucket at /images/{hash}.
+ * Returns the hash so callers can persist it.
+ */
+export async function uploadImage(
+  buffer: Buffer,
+  contentType: string,
+): Promise<string> {
+  const hash = hashBuffer(buffer);
+  const file = userContentBucket.file(`images/${hash}`);
+  await file.save(buffer, {
+    contentType,
+    resumable: false,
+    metadata: { cacheControl: "public, max-age=31536000, immutable" },
+  });
+  try {
+    await file.makePublic();
+  } catch (err) {
+    console.warn(`[storage] Could not make file public:`, err);
+  }
+  return hash;
+}
+
+/** Resolve a stored hash to a full public URL. */
+export function resolveImageUrl(hash: string): string {
+  return `${env.USER_CONTENT_BASE_URL}/images/${hash}`;
+}
+

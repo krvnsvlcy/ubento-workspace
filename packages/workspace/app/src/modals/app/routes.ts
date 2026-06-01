@@ -5,6 +5,9 @@ export const appModalRoutes = {
     general: "/team/general",
     billing: "/team/billing",
     connections: "/team/connections",
+    modules: "/team/modules",
+    createCollection: "/team/modules/create-collection",
+    collectionDetails: "/team/modules/collection-details",
   },
   account: {
     root: "/account/general",

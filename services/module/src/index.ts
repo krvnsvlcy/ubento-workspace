@@ -1,6 +1,7 @@
 import { auth, createService } from "@ubento/services.toolkit";
 import { json, urlencoded } from "express";
 import { env } from "./env.js";
+import collectionsRouter from "./routes/collections.js";
 import modulesRouter from "./routes/modules.js";
 import registryRouter, { registryFilesRouter } from "./routes/registry.js";
 import uploadRouter from "./routes/upload.js";
@@ -22,6 +23,7 @@ service.app.use("/modules/upload", uploadRouter);
 service.app.use(json());
 service.app.use(urlencoded({ extended: true }));
 service.app.use("/modules/registry", registryRouter);
+service.app.use("/modules/collections", collectionsRouter);
 service.app.use("/modules", modulesRouter);
 
 service.start();

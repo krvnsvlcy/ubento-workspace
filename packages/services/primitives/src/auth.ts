@@ -94,6 +94,13 @@ export const ubentoAuth = {
         update: "module:source:update",
       },
     },
+    moduleCollection: {
+      read: "module_collection:read",
+      list: "module_collection:list",
+      create: "module_collection:create",
+      update: "module_collection:update",
+      delete: "module_collection:delete",
+    },
     vertex: {
       query: "vertex:query",
       mutate: "vertex:mutate",

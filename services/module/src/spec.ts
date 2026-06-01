@@ -9,6 +9,188 @@ export const spec: OpenAPIV3.Document = {
     version: "1.0.0",
   },
   paths: {
+    "/modules/collections": {
+      get: {
+        summary: "List Module Collections",
+        parameters: [
+          { name: "team_id", in: "query", schema: { type: "string" } },
+          {
+            name: "scope",
+            in: "query",
+            schema: { type: "string", enum: ["private", "public"] },
+          },
+          { name: "limit", in: "query", schema: { type: "integer" } },
+          { name: "cursor", in: "query", schema: { type: "string" } },
+        ],
+        responses: {
+          "200": {
+            description: "A list of module collections",
+            content: {
+              "application/json": {
+                schema: makeCursorPageResponseSchema({
+                  $ref: "#/components/schemas/ModuleCollection",
+                }),
+              },
+            },
+          },
+        },
+      },
+      post: {
+        summary: "Create Module Collection",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  name: { type: "string" },
+                  team_id: { type: "string" },
+                  summary: { type: "string" },
+                  scope: { type: "string", enum: ["private", "public"] },
+                  module_ids: { type: "array", items: { type: "string" } },
+                },
+                required: ["name", "team_id"],
+              },
+            },
+          },
+        },
+        responses: {
+          "201": {
+            description: "Module collection created",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ModuleCollection" },
+              },
+            },
+          },
+        },
+      },
+    },
+    "/modules/collections/{collection_id}": {
+      get: {
+        summary: "Get Module Collection",
+        parameters: [
+          {
+            name: "collection_id",
+            in: "path",
+            required: true,
+            schema: { type: "string" },
+          },
+        ],
+        responses: {
+          "200": {
+            description: "Module collection metadata",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ModuleCollection" },
+              },
+            },
+          },
+        },
+      },
+      patch: {
+        summary: "Update Module Collection",
+        parameters: [
+          {
+            name: "collection_id",
+            in: "path",
+            required: true,
+            schema: { type: "string" },
+          },
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  name: { type: "string" },
+                  summary: { type: "string", nullable: true },
+                  scope: { type: "string", enum: ["private", "public"] },
+                  module_ids: { type: "array", items: { type: "string" } },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          "200": {
+            description: "Module collection updated",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ModuleCollection" },
+              },
+            },
+          },
+        },
+      },
+      delete: {
+        summary: "Delete Module Collection",
+        parameters: [
+          {
+            name: "collection_id",
+            in: "path",
+            required: true,
+            schema: { type: "string" },
+          },
+        ],
+        responses: {
+          "200": {
+            description: "Module collection deleted",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: { success: { type: "boolean" } },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    "/modules/collections/{collection_id}/image": {
+      post: {
+        summary: "Upload Cover Image",
+        parameters: [
+          {
+            name: "collection_id",
+            in: "path",
+            required: true,
+            schema: { type: "string" },
+          },
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            "multipart/form-data": {
+              schema: {
+                type: "object",
+                properties: {
+                  image: {
+                    type: "string",
+                    format: "binary",
+                  },
+                },
+                required: ["image"],
+              },
+            },
+          },
+        },
+        responses: {
+          "200": {
+            description: "Cover image uploaded",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ModuleCollection" },
+              },
+            },
+          },
+        },
+      },
+    },
     "/modules": {
       get: {
         summary: "List Modules",
@@ -463,6 +645,7 @@ export const spec: OpenAPIV3.Document = {
     schemas: {
       Module: moduleSchemas.definitions.Module as any,
       ModuleVersion: moduleSchemas.definitions.ModuleVersion as any,
+      ModuleCollection: moduleSchemas.definitions.ModuleCollection as any,
       Error: {
         type: "object",
         properties: {

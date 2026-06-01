@@ -14,6 +14,8 @@ export const roles = {
     permissions: [
       ubentoAuth.actions.module.list,
       ubentoAuth.actions.module.read,
+      ubentoAuth.actions.moduleCollection.list,
+      ubentoAuth.actions.moduleCollection.read,
     ],
   },
   // Team level
@@ -32,6 +34,12 @@ export const roles = {
       ubentoAuth.actions.module.delete,
       ubentoAuth.actions.module.read,
       ubentoAuth.actions.module.update,
+      // module collections
+      ubentoAuth.actions.moduleCollection.list,
+      ubentoAuth.actions.moduleCollection.read,
+      ubentoAuth.actions.moduleCollection.create,
+      ubentoAuth.actions.moduleCollection.update,
+      ubentoAuth.actions.moduleCollection.delete,
     ],
     roles: [ubentoAuth.roles.workspace.viewer],
   },

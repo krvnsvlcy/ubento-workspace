@@ -82,3 +82,30 @@ model ModuleVersion {
     @@index([module_id])
     @@map("module_versions")
 }
+
+enum ModuleCollectionScope {
+    public
+    private
+}
+
+model ModuleCollection {
+    id          String                @id @map("_id")
+    entity      String                @default("module_collection")
+    team_id     String
+
+    name        String
+    summary     String?
+    cover_hash  String?
+    scope       ModuleCollectionScope @default(private)
+    module_ids  String[]              @default([])
+
+    version    Int                    @default(1)
+    created_at DateTime               @default(now())
+    updated_at DateTime               @updatedAt
+    deleted_at DateTime?
+
+    @@index([team_id])
+    @@index([scope])
+    @@map("module_collections")
+}
+

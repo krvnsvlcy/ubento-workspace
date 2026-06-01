@@ -1,11 +1,12 @@
 import { Button, Content, ContentBody, ContentHeader, Heading, RailLayout, RailLayoutMain, RailLayoutSide, Text } from "@ubento/bento.arlo-core";
-import { CreditCard, Link as LinkIcon, Settings } from "lucide-react";
+import { CreditCard, Link as LinkIcon, Settings, Box } from "lucide-react";
 import { Case, Switch } from "react-if";
 import { useAppModal } from "../hook.js";
 import { appModalRoutes, routeMatch } from "../routes.js";
 import { BillingTab } from "./tabs/billing/billing.js";
 import { GeneralTab } from "./tabs/general.js";
 import { TeamConnectionsTab } from "./tabs/connections/connections.js";
+import { TeamModulesTab } from "./tabs/modules/modules.js";
 
 const tabs = [
   {
@@ -25,6 +26,12 @@ const tabs = [
     label: "Connections",
     icon: LinkIcon,
     path: appModalRoutes.team.connections,
+  },
+  {
+    key: "modules",
+    label: "Modules",
+    icon: Box,
+    path: appModalRoutes.team.modules,
   },
 ];
 
@@ -72,6 +79,11 @@ export function TeamModal() {
             condition={routeMatch(location, appModalRoutes.team.connections)}
           >
             <TeamConnectionsTab />
+          </Case>
+          <Case
+            condition={routeMatch(location, appModalRoutes.team.modules)}
+          >
+            <TeamModulesTab />
           </Case>
         </Switch>
       </RailLayoutMain>

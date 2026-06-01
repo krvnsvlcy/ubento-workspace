@@ -130,6 +130,75 @@
         "files",
         "updated_at"
       ]
+    },
+    "ModuleCollection": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "entity": {
+          "type": "string",
+          "default": "module_collection"
+        },
+        "team_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "summary": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "cover_hash": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "scope": {
+          "type": "string",
+          "default": "private",
+          "enum": [
+            "public",
+            "private"
+          ]
+        },
+        "module_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "version": {
+          "type": "integer",
+          "default": 1
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "deleted_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "team_id",
+        "name",
+        "updated_at"
+      ]
     }
   },
   "type": "object",
@@ -139,6 +208,9 @@
     },
     "moduleVersion": {
       "$ref": "#/definitions/ModuleVersion"
+    },
+    "moduleCollection": {
+      "$ref": "#/definitions/ModuleCollection"
     }
   }
 }

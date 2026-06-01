@@ -2,6 +2,7 @@ import {
   createModuleServiceClient,
   Module,
   ModuleVersion,
+  ModuleCollection,
 } from "~/clients/module/client.js";
 import { extractResponseData } from "~/lib/client.js";
 import { TokenManager } from "~/lib/token_manager.js";
@@ -182,5 +183,93 @@ export class ModuleService {
       body: { teamIds },
     });
     return extractResponseData(result, true) as { token: string };
+  }
+
+  // ===== Collections =====
+  async listModuleCollections(query: {
+    team_id?: string;
+    scope?: "public" | "private";
+    limit?: number;
+    cursor?: string;
+  } = {}) {
+    const result = await this.moduleClient.get("/modules/collections", {
+      params: {
+        query,
+      },
+    });
+    return extractResponseData(result, true);
+  }
+
+  async getModuleCollection(collectionId: string) {
+    const result = await this.moduleClient.get(
+      "/modules/collections/{collection_id}",
+      {
+        params: {
+          path: { collection_id: collectionId },
+        },
+      },
+    );
+    return extractResponseData(result, true) as ModuleCollection;
+  }
+
+  async createModuleCollection(data: {
+    team_id: string;
+    name: string;
+    summary?: string;
+    scope?: "public" | "private";
+    module_ids?: string[];
+  }) {
+    const result = await this.moduleClient.post("/modules/collections", {
+      body: data as any,
+    });
+    return extractResponseData(result, true) as ModuleCollection;
+  }
+
+  async updateModuleCollection(
+    collectionId: string,
+    data: {
+      name?: string;
+      summary?: string | null;
+      scope?: "public" | "private";
+      module_ids?: string[];
+    },
+  ) {
+    const result = await this.moduleClient.patch(
+      "/modules/collections/{collection_id}",
+      {
+        params: {
+          path: { collection_id: collectionId },
+        },
+        body: data as any,
+      },
+    );
+    return extractResponseData(result, true) as ModuleCollection;
+  }
+
+  async deleteModuleCollection(collectionId: string) {
+    const result = await this.moduleClient.delete(
+      "/modules/collections/{collection_id}",
+      {
+        params: {
+          path: { collection_id: collectionId },
+        },
+      },
+    );
+    return extractResponseData(result, true);
+  }
+
+  async uploadCollectionCoverImage(collectionId: string, file: File | Blob) {
+    const formData = new FormData();
+    formData.append("image", file);
+    const result = await this.moduleClient.post(
+      "/modules/collections/{collection_id}/image",
+      {
+        params: {
+          path: { collection_id: collectionId },
+        },
+        body: formData as any,
+      },
+    );
+    return extractResponseData(result, true) as ModuleCollection;
   }
 }

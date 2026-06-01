@@ -23,4 +23,8 @@ export const env = defineEnv({
     required: true,
     default: "ubento-prod-user-content",
   },
+  USER_CONTENT_BASE_URL: {
+    type: "string",
+    default: "https://storage.googleapis.com/ubento-prod-user-content",
+  },
 });
