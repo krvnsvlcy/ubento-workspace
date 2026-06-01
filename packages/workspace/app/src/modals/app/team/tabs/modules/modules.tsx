@@ -2,7 +2,6 @@ import { useSession } from "@/contexts/session";
 import { useUbento } from "@/hooks/app-engine";
 import { useAppModal } from "@/modals/app/hook.js";
 import { appModalRoutes, routeMatch } from "@/modals/app/routes.js";
-import { useModal } from "@/utils/modal-store.js";
 import {
   Button,
   Content,
@@ -16,10 +15,10 @@ import {
   Text,
 } from "@ubento/bento.arlo-core";
 import { Box, FolderOpen, Globe, Lock, Plus, Settings } from "lucide-react";
-import React, { FC, useState } from "react";
+import { FC, useState } from "react";
 import { Case, Switch } from "react-if";
-import { CreateCollectionModal, CreateCollectionPage } from "./create-collection-modal.js";
-import { CollectionDetailsModal, CollectionDetailsPage } from "./collection-details-modal.js";
+import { CollectionDetailsPage } from "./collection-details-modal.js";
+import { CreateCollectionPage } from "./create-collection-modal.js";
 
 type SubTab = "modules" | "collections";
 
@@ -48,7 +47,9 @@ export const TeamModulesTab: FC = () => {
           <ContentHeader className="space-y-4 shrink-0">
             <div className="space-y-1">
               <Heading>Modules & Collections</Heading>
-              <Text shade="subtle">Manage team-level modules and group them into collections.</Text>
+              <Text shade="subtle">
+                Manage team-level modules and group them into collections.
+              </Text>
             </div>
             <TabSwitch
               options={tabOptions}
@@ -124,7 +125,9 @@ const ModulesTabContent: FC<ModulesTabContentProps> = ({ teamId }) => {
           {!isFetching && filteredModules.length === 0 && (
             <div className="py-12 text-center text-content-muted">
               <p className="text-[13px]">
-                {searchQuery ? "No modules match search query." : "No team modules created yet."}
+                {searchQuery
+                  ? "No modules match search query."
+                  : "No team modules created yet."}
               </p>
             </div>
           )}
@@ -241,7 +244,9 @@ const CollectionsTabContent: FC<CollectionsTabContentProps> = ({ teamId }) => {
         {!isFetching && filteredCollections.length === 0 && (
           <div className="py-12 text-center text-content-muted">
             <p className="text-[13px]">
-              {searchQuery ? "No collections match search query." : "No collections created yet."}
+              {searchQuery
+                ? "No collections match search query."
+                : "No collections created yet."}
             </p>
           </div>
         )}

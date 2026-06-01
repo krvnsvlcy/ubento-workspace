@@ -82,8 +82,6 @@ export * from "./overlay/tooltip.js";
 export * from "./data/breadcrumb.js";
 export * from "./data/codeblock.js";
 export * from "./data/command.js";
-export * from "./data/list-view.js";
-export * from "./data/match_view.js";
 export * from "./data/pagination.js";
 export * from "./data/table.js";
 export * from "./data/tree/tree_entry.js";

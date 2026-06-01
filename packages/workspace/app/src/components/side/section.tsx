@@ -17,26 +17,31 @@ export function SideSection({
   const [open, setOpen] = useState(true);
   return (
     <div className="flex flex-col gap-0.5">
-      <TreeEntry
-        onClick={() => setOpen((s) => !s)}
-        className="text-[11px] uppercase tracking-wider"
-        actionMode={actionMode}
-        actions={actions}
+      <div
+        style={{ position: "sticky", top: 0, zIndex: 10 }}
+        className="bg-background"
       >
-        <div className="flex items-center gap-1">
-          {title}
-          <ChevronRight
-            size={14}
-            style={{
-              position: "relative",
-              top: -1,
-              transition: "transform 0.2s",
-              transform: open ? "rotate(90deg)" : "rotate(0deg)",
-            }}
-            strokeWidth={1.5}
-          />
-        </div>
-      </TreeEntry>
+        <TreeEntry
+          onClick={() => setOpen((s) => !s)}
+          className="text-[11px] uppercase tracking-wider"
+          actionMode={actionMode}
+          actions={actions}
+        >
+          <div className="flex items-center gap-1">
+            {title}
+            <ChevronRight
+              size={14}
+              style={{
+                position: "relative",
+                top: -1,
+                transition: "transform 0.2s",
+                transform: open ? "rotate(90deg)" : "rotate(0deg)",
+              }}
+              strokeWidth={1.5}
+            />
+          </div>
+        </TreeEntry>
+      </div>
       {open && children}
     </div>
   );

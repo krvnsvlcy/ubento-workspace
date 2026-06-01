@@ -75,6 +75,9 @@ export function buildModule({
   if (type === "board") {
     return buildComponentModule({ source });
   }
+  if (type === "module") {
+    return buildComponentModule({ source });
+  }
   if (type === "service") {
     return buildServiceModule({ source });
   }

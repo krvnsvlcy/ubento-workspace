@@ -1,6 +1,8 @@
 import { UbentoEngine } from "@/engine/app/engine";
 import { appModalRoutes } from "@/modals/app/routes";
 import { ConfirmMutationModal } from "@/modals/confirm_mutation/confirm_mutation";
+import { MonacoService } from "@/services/monaco/monaco-service";
+import { TsService } from "@/services/ts/ts-service";
 import { createZustandStateController } from "@ubento/bento.arlo-core";
 import {
   BentoEngineHostRpcInterface,
@@ -19,8 +21,6 @@ import { createDuplexRpc, createWindowPort, DuplexRpc } from "@ubento/rpc";
 import { ubentoAuth } from "@ubento/services.primitives";
 import { vertexClient, workspaceClient } from "@ubento/services.sdk";
 import { serviceSpecV1Schema } from "@ubento/vertex.core";
-import { TsService } from "@/services/ts/ts-service";
-import { MonacoService } from "@/services/monaco/monaco-service";
 import { registerStore, unregisterStore } from "@ubento/zustand-devtool";
 import { dequal } from "dequal/lite";
 import debounce from "lodash.debounce";
@@ -60,7 +60,14 @@ function parseSpecData<S extends z.ZodTypeAny>(
 }
 
 export type TsServiceStatus = {
-  status: "idle" | "initializing" | "loading-libs" | "loading-modules" | "loading-packages" | "ready" | "error";
+  status:
+    | "idle"
+    | "initializing"
+    | "loading-libs"
+    | "loading-modules"
+    | "loading-packages"
+    | "ready"
+    | "error";
   message?: string;
   loadedPackagesCount: number;
   totalPackagesCount: number;
@@ -985,31 +992,39 @@ export function createWorkspaceEngine({
               },
             ];
 
-            if (activeBoardDetails?.module?.id) {
-              const currentMode = userSetting.getState().data.mode;
-              const isEditing = currentMode === "edit";
-              content.push({
-                items: [
-                  {
-                    id: "edit-board",
-                    label: isEditing ? "Exit edit mode" : "Edit this board",
-                    action: () => {
-                      if (isEditing) {
-                        userSetting.update({
-                          mode: "live",
-                          editingModule: undefined,
-                        });
-                      } else {
+            const currentMode = userSetting.getState().data.mode;
+            const isEditing = currentMode === "edit";
+            content.push({
+              items: [
+                {
+                  id: "edit-board",
+                  label: isEditing
+                    ? "Exit edit mode"
+                    : activeBoardDetails?.module
+                      ? "Edit this board"
+                      : "Switch to edit mode",
+                  action: () => {
+                    if (isEditing) {
+                      userSetting.update({
+                        mode: "live",
+                        editingModule: undefined,
+                      });
+                    } else {
+                      if (activeBoardDetails) {
                         userSetting.update({
                           editingModule: activeBoardDetails.module,
                           mode: "edit",
                         });
+                      } else {
+                        userSetting.update({
+                          mode: "edit",
+                        });
                       }
-                    },
+                    }
                   },
-                ],
-              });
-            }
+                },
+              ],
+            });
 
             appEngine.showContextMenu({ x, y }, content);
           },

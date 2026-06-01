@@ -1,10 +1,10 @@
 import { useSession } from "@/contexts/session";
 import { useUbento } from "@/hooks/app-engine";
-import { useModalInstance } from "@/utils/modal-store.js";
 import { useAppModal } from "@/modals/app/hook.js";
 import {
-  AlertModalContainer,
   Button,
+  Content,
+  ContentHeader,
   Field,
   FieldError,
   FieldLabel,
@@ -22,7 +22,10 @@ interface CreateCollectionFormProps {
   isRouted?: boolean;
 }
 
-export function CreateCollectionForm({ onClose, onComplete, isRouted = false }: CreateCollectionFormProps) {
+export function CreateCollectionForm({
+  onClose,
+  onComplete,
+}: CreateCollectionFormProps) {
   const session = useSession();
   const teamId = session.teamId;
   const ubento = useUbento();
@@ -40,15 +43,18 @@ export function CreateCollectionForm({ onClose, onComplete, isRouted = false }: 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Fetch all modules in this team to associate
-  const { data: modulesData, isFetching: isFetchingModules } = ubento.module.useModules({
-    team_id: teamId,
-  });
+  const { data: modulesData, isFetching: isFetchingModules } =
+    ubento.module.useModules({
+      team_id: teamId,
+    });
 
   const modules = modulesData ?? [];
 
   // Mutations
-  const { mutateAsync: createCollection } = ubento.module.useCreateModuleCollection();
-  const { mutateAsync: uploadCoverImage } = ubento.module.useUploadCollectionCoverImage();
+  const { mutateAsync: createCollection } =
+    ubento.module.useCreateModuleCollection();
+  const { mutateAsync: uploadCoverImage } =
+    ubento.module.useUploadCollectionCoverImage();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -64,8 +70,7 @@ export function CreateCollectionForm({ onClose, onComplete, isRouted = false }: 
     );
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     if (!name.trim()) {
       setError("Name is required.");
       return;
@@ -102,19 +107,18 @@ export function CreateCollectionForm({ onClose, onComplete, isRouted = false }: 
     }
   };
 
-  const formContent = (
-    <>
-      {/* Header */}
-      <div className="px-8 py-6 border-b border-border/30 shrink-0">
+  return (
+    <Content>
+      <ContentHeader>
         <Heading>Create Module Collection</Heading>
         <p className="text-xs text-content-muted mt-1">
           Group modules into a collection with custom cover art and metadata.
         </p>
-      </div>
+      </ContentHeader>
 
-      <form onSubmit={handleSubmit} className="flex-1 min-h-0 flex flex-col">
-        <ScrollArea className="flex-1">
-          <div className="px-8 py-6 space-y-5">
+      <div className="grow overflow-hidden">
+        <ScrollArea>
+          <div className="space-y-5 px-6 py-5">
             {error && <FieldError>{error}</FieldError>}
 
             {/* Cover Image Upload */}
@@ -136,7 +140,9 @@ export function CreateCollectionForm({ onClose, onComplete, isRouted = false }: 
                   )}
                   {!isSubmitting && (
                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                      <span className="text-xs text-white font-medium">Upload</span>
+                      <span className="text-xs text-white font-medium">
+                        Upload
+                      </span>
                     </div>
                   )}
                 </div>
@@ -188,7 +194,9 @@ export function CreateCollectionForm({ onClose, onComplete, isRouted = false }: 
               <FieldLabel>Visibility</FieldLabel>
               <select
                 value={scope}
-                onChange={(e) => setScope(e.target.value as "public" | "private")}
+                onChange={(e) =>
+                  setScope(e.target.value as "public" | "private")
+                }
                 className="w-full bg-surface/50 border border-border/30 rounded-lg px-2.5 py-1.5 text-sm text-content focus:outline-none focus:ring-1 focus:ring-accent cursor-pointer"
                 disabled={isSubmitting}
               >
@@ -220,11 +228,15 @@ export function CreateCollectionForm({ onClose, onComplete, isRouted = false }: 
                         return (
                           <div
                             key={mod.id}
-                            onClick={() => !isSubmitting && toggleModule(mod.id)}
+                            onClick={() =>
+                              !isSubmitting && toggleModule(mod.id)
+                            }
                             className="flex items-center justify-between px-4 py-3 hover:bg-surface-hover/30 cursor-pointer transition-colors select-none"
                           >
                             <div>
-                              <p className="text-xs font-bold text-content">{mod.name}</p>
+                              <p className="text-xs font-bold text-content">
+                                {mod.name}
+                              </p>
                               <p className="text-[10px] text-content-muted">
                                 {mod.type || "module"} • {mod.scope}
                               </p>
@@ -247,50 +259,32 @@ export function CreateCollectionForm({ onClose, onComplete, isRouted = false }: 
               </div>
             </div>
           </div>
+
+          {/* Footer */}
         </ScrollArea>
-
-        {/* Footer */}
-        <div className="px-8 py-5 border-t border-border/30 flex justify-end gap-2 bg-surface/20 shrink-0">
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={onClose}
-            disabled={isSubmitting}
-          >
-            Cancel
-          </Button>
-          <Button
-            type="submit"
-            variant="primary"
-            isLoading={isSubmitting}
-            loadingText="Creating..."
-            disabled={isSubmitting || !name.trim()}
-          >
-            Create
-          </Button>
-        </div>
-      </form>
-    </>
+      </div>
+      <div className="px-8 py-5 border-t border-border/30 flex justify-end gap-2 bg-surface/20 shrink-0">
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={onClose}
+          disabled={isSubmitting}
+        >
+          Cancel
+        </Button>
+        <Button
+          type="button"
+          variant="primary"
+          isLoading={isSubmitting}
+          loadingText="Creating..."
+          disabled={isSubmitting || !name.trim()}
+          onClick={handleSubmit}
+        >
+          Create
+        </Button>
+      </div>
+    </Content>
   );
-
-  if (isRouted) {
-    return <div className="flex flex-col h-full flex-1 min-h-0 bg-background">{formContent}</div>;
-  }
-
-  return (
-    <AlertModalContainer className="flex flex-col w-[580px] max-h-[85vh]">
-      {formContent}
-    </AlertModalContainer>
-  );
-}
-
-interface CreateCollectionModalProps {
-  onComplete?: () => void;
-}
-
-export function CreateCollectionModal({ onComplete }: CreateCollectionModalProps) {
-  const { close } = useModalInstance();
-  return <CreateCollectionForm onClose={close} onComplete={onComplete} isRouted={false} />;
 }
 
 export function CreateCollectionPage() {

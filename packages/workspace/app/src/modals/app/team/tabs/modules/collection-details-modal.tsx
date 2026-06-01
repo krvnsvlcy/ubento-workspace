@@ -87,8 +87,7 @@ export function CollectionDetailsForm({
     );
   };
 
-  const handleUpdate = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleUpdate = async () => {
     if (!name.trim()) {
       setError("Name is required.");
       return;
@@ -219,7 +218,7 @@ export function CollectionDetailsForm({
 
       {isEditing ? (
         /* EDIT MODE FORM */
-        <form onSubmit={handleUpdate} className="flex-1 min-h-0 flex flex-col">
+        <div className="flex-1 min-h-0 flex flex-col">
           <ScrollArea className="flex-1">
             <div className="px-8 py-6 space-y-5">
               {error && <FieldError>{error}</FieldError>}
@@ -379,17 +378,18 @@ export function CollectionDetailsForm({
                 Cancel
               </Button>
               <Button
-                type="submit"
+                type="button"
                 variant="primary"
                 isLoading={isSubmitting}
                 loadingText="Updating..."
                 disabled={isSubmitting || !name.trim()}
+                onClick={handleUpdate}
               >
                 Update
               </Button>
             </div>
           </div>
-        </form>
+        </div>
       ) : (
         /* READ-ONLY MODE VIEW */
         <div className="flex-1 min-h-0 flex flex-col">
