@@ -28,11 +28,17 @@ while (!connected) {
     connected = true;
     console.log("[bento.runtime] connected");
 
+    if (initialState.theme?.isDark) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+
     const spec = initialState.workspace.spec.isValid
       ? initialState.workspace.spec.data
       : undefined;
 
-    injectWorkspaceImportMap(spec?.components, spec?.modules);
+    injectWorkspaceImportMap(undefined, spec?.modules);
     await runServiceWorker({
       rpc,
       registryModuleUrlTemplate,

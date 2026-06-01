@@ -30,6 +30,11 @@ export const userWorkspaceSettingsSchema = z.object({
       expandedStates: z.record(z.string(), z.boolean()).default({}),
     })
     .default({ expandedStates: {} }),
+  moduleExplorer: z
+    .object({
+      expandedStates: z.record(z.string(), z.boolean()).default({}),
+    })
+    .default({ expandedStates: {} }),
 });
 
 // Helper debounce function

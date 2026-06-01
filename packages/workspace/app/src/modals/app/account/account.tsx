@@ -1,9 +1,10 @@
 import { Button, Content, ContentBody, ContentHeader, Heading, RailLayout, RailLayoutMain, RailLayoutSide, Text } from "@ubento/bento.arlo-core";
-import { User } from "lucide-react";
+import { Palette, User } from "lucide-react";
 import { Case, Switch } from "react-if";
 import { useAppModal } from "../hook.js";
 import { appModalRoutes, routeMatch } from "../routes.js";
 import { GeneralTab } from "./tabs/general.js";
+import { AppearanceTab } from "./tabs/appearance.js";
 
 export function AccountModal() {
   const { path, push: navigate } = useAppModal();
@@ -14,6 +15,12 @@ export function AccountModal() {
       label: "General",
       icon: User,
       path: appModalRoutes.account.general,
+    },
+    {
+      key: "appearance",
+      label: "Appearance",
+      icon: Palette,
+      path: appModalRoutes.account.appearance,
     },
   ];
 
@@ -50,6 +57,9 @@ export function AccountModal() {
         <Switch>
           <Case condition={routeMatch(path, appModalRoutes.account.general)}>
             <GeneralTab />
+          </Case>
+          <Case condition={routeMatch(path, appModalRoutes.account.appearance)}>
+            <AppearanceTab />
           </Case>
         </Switch>
       </RailLayoutMain>

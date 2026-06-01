@@ -41,8 +41,9 @@ export function CreateWorkspaceModal({
       const data: Omit<WorkspaceSpec, "title" | "id"> = {
         version: 1,
         services: {},
-        components: {},
         modules: {},
+        moduleGroups: {},
+        rootModuleGroups: [],
         packages: {},
         boards: {},
         roots: [],

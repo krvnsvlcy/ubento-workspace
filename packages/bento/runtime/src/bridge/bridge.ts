@@ -43,6 +43,7 @@ export type BentoEngineRuntimeRpcInterface = {
 
   // sync
   workspaceUpdated: ({ data }: { data: BentoWorkspaceData }) => Promise<void>;
+  setTheme: (args: { isDark: boolean }) => Promise<void>;
 
   // inspection and interaction
   readNode: (args: { selector: string }) => Promise<string>;
@@ -91,12 +92,14 @@ export type ComponentEngineRuntimeRpcInterface = {
   init: (args: { code: string; props: any }) => void;
   updateCode: (args: { code: string }) => void;
   updateProps: (args: { props: any }) => void;
+  setTheme: (args: { isDark: boolean }) => Promise<void> | void;
 };
 
 export type ComponentEngineRuntimeHostRpcInterface = {
   connect: (args: {}) => {
     workspaceSpec?: WorkspaceSpec;
     registryModuleUrlTemplate?: string;
+    theme?: { isDark: boolean };
   };
   ready: (args: {}) => Promise<void> | void;
   log: (args: { type: "log" | "error" | "warn" | "info"; args: any[] }) => void;

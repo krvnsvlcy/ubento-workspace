@@ -7,6 +7,7 @@ import {
 } from "@ubento/bento.runtime";
 import clsx from "clsx";
 import { useEffect, useRef } from "react";
+import { useTheme } from "@/contexts/theme.js";
 
 interface PreviewPanelProps {
   value?: string;
@@ -47,6 +48,9 @@ export function PreviewPanel({ value = "", className }: PreviewPanelProps) {
           return {
             workspaceSpec,
             registryModuleUrlTemplate: appEngine.registryModuleUrlTemplate,
+            theme: {
+              isDark: document.documentElement.classList.contains("dark"),
+            },
           };
         },
         ready: () => {
@@ -85,6 +89,15 @@ export function PreviewPanel({ value = "", className }: PreviewPanelProps) {
       rpcInstance.egress.updateCode({ code: value });
     }
   }, [value]);
+
+  const { isDark } = useTheme();
+
+  useEffect(() => {
+    const rpcInstance = rpcRef.current;
+    if (rpcInstance) {
+      rpcInstance.egress.setTheme({ isDark });
+    }
+  }, [isDark]);
 
   useEffect(() => {
     return () => {

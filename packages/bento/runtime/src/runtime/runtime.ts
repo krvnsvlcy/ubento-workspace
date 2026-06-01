@@ -17,7 +17,7 @@ export type BentoRuntimeState = {
   workspace: BentoWorkspaceData;
   user: BentoUserData;
   location?: BentoLocation;
-  theme?: { css: string };
+  theme?: { css: string; isDark?: boolean };
   mode?: "edit" | "live";
 };
 
@@ -72,6 +72,13 @@ export function createBentoRuntime({
     },
     workspaceUpdated: async ({ data }) => {
       controller.setState({ workspace: data });
+    },
+    setTheme: async ({ isDark }) => {
+      if (isDark) {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
     },
     readNode: async ({ selector }) => {
       const element = document.querySelector(selector);

@@ -33,11 +33,26 @@ export const workspaceBoardSpecSchema = z.object({
 });
 export type WorkspaceBoardSpec = z.infer<typeof workspaceBoardSpecSchema>;
 
+export const moduleGroupSpecSchema = z.object({
+  name: z.string(),
+  entries: z
+    .array(
+      z.object({
+        type: z.enum(["group", "module"]),
+        id: z.string(),
+      }),
+    )
+    .default([]),
+  metadata: z.record(z.string(), z.any()).optional(),
+});
+export type ModuleGroupSpec = z.infer<typeof moduleGroupSpecSchema>;
+
 export const workspaceSpecSchema = z.object({
   version: z.literal(1).default(1),
   services: z.record(z.string(), serviceDataSchema).default({}),
-  components: z.record(z.string(), moduleRef).default({}),
   modules: z.record(z.string(), moduleRef).default({}),
+  moduleGroups: z.record(z.string(), moduleGroupSpecSchema).default({}),
+  rootModuleGroups: z.array(z.string()).default([]),
   packages: z.record(z.string(), z.string()).default({}),
   boards: z.record(z.string(), workspaceBoardSpecSchema).default({}),
   roots: z.array(z.string()).default([]),

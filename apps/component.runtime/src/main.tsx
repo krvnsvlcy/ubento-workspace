@@ -34,6 +34,13 @@ rpc.setHandlers({
   updateProps: ({ props }) => {
     useComponentStore.getState().updateProps(props);
   },
+  setTheme: ({ isDark }) => {
+    if (isDark) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  },
 });
 
 const ComponentRuntimeWrapper = ({ runtime }: { runtime: any }) => {
@@ -45,12 +52,18 @@ let connected = false;
 while (!connected) {
   try {
     console.log("[component.runtime] connecting...");
-    const { workspaceSpec, registryModuleUrlTemplate } =
+    const { workspaceSpec, registryModuleUrlTemplate, theme } =
       await rpc.egress.connect({}, { timeout: 1000 });
     connected = true;
     console.log("[component.runtime] connected");
 
-    injectWorkspaceImportMap(workspaceSpec?.components, workspaceSpec?.modules);
+    if (theme?.isDark) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+
+    injectWorkspaceImportMap(undefined, workspaceSpec?.modules);
 
     if (registryModuleUrlTemplate) {
       await runServiceWorker({
@@ -75,6 +88,7 @@ while (!connected) {
             : { isValid: false, data: undefined, issues: [] }) as any,
         },
         user: { name: "", email: "" },
+        theme: theme ? { css: "", isDark: theme.isDark } : undefined,
       },
       moduleManager,
     });

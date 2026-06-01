@@ -28,7 +28,7 @@ export function Layout() {
       {/* Floating Left Panel */}
       {!sidePanelPinned && (
         <div
-          className="fixed top-0 left-0 bottom-0 z-[100] transition-all duration-300 ease-in-out bg-background/60 backdrop-blur-xl border-r border-border"
+          className="fixed top-0 left-0 bottom-0 z-[100] transition-all duration-300 ease-in-out bg-background border-r border-border"
           style={{
             width: sidePanelWidth,
             transform: isHovered ? "translateX(0)" : "translateX(-100%)",

@@ -1,56 +1,56 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { generateTheme, themeToCss } from "@ubento/bento.arlo-core";
+
+export type ThemeMode = "light" | "dark" | "system";
 
 interface ThemeContextType {
-  currentTheme: string;
-  isThemeOpen: boolean;
-  setIsThemeOpen: (open: boolean) => void;
-  changeTheme: (themeId: string) => void;
+  themeMode: ThemeMode;
+  setThemeMode: (mode: ThemeMode) => void;
+  isDark: boolean;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [currentTheme, setCurrentTheme] = useState("sky");
-  const [isThemeOpen, setIsThemeOpen] = useState(false);
+  const [themeMode, setThemeModeState] = useState<ThemeMode>(() => {
+    if (typeof window !== "undefined") {
+      return (localStorage.getItem("ubento-theme-mode") as ThemeMode) || "system";
+    }
+    return "system";
+  });
+
+  const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
-    // 1. Load legacy/preset theme
-    const savedTheme = localStorage.getItem("ubento-theme") || "sky";
-    setCurrentTheme(savedTheme);
-    document.documentElement.setAttribute("data-theme", savedTheme);
+    const root = document.documentElement;
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
 
-    // 2. Load dynamic HSL theme if exists
-    const savedThemeRoot = localStorage.getItem("themeRoot");
-    if (savedThemeRoot) {
-      try {
-        const themeRoot = JSON.parse(savedThemeRoot);
-        const theme = generateTheme(themeRoot);
-        const css = themeToCss(theme);
-        
-        let styleTag = document.getElementById("theme-variables");
-        if (!styleTag) {
-          styleTag = document.createElement("style");
-          styleTag.id = "theme-variables";
-          document.head.appendChild(styleTag);
-        }
-        styleTag.innerHTML = css;
-      } catch (e) {
-        console.error("Failed to load dynamic theme", e);
+    const updateTheme = () => {
+      const activeDark =
+        themeMode === "dark" ||
+        (themeMode === "system" && mediaQuery.matches);
+      
+      setIsDark(activeDark);
+
+      if (activeDark) {
+        root.classList.add("dark");
+      } else {
+        root.classList.remove("dark");
       }
-    }
-  }, []);
+    };
 
-  const changeTheme = (themeId: string) => {
-    setCurrentTheme(themeId);
-    localStorage.setItem("ubento-theme", themeId);
-    document.documentElement.setAttribute("data-theme", themeId);
+    updateTheme();
+
+    mediaQuery.addEventListener("change", updateTheme);
+    return () => mediaQuery.removeEventListener("change", updateTheme);
+  }, [themeMode]);
+
+  const setThemeMode = (mode: ThemeMode) => {
+    setThemeModeState(mode);
+    localStorage.setItem("ubento-theme-mode", mode);
   };
 
   return (
-    <ThemeContext.Provider
-      value={{ currentTheme, isThemeOpen, setIsThemeOpen, changeTheme }}
-    >
+    <ThemeContext.Provider value={{ themeMode, setThemeMode, isDark }}>
       {children}
     </ThemeContext.Provider>
   );

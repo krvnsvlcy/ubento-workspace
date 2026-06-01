@@ -12,6 +12,7 @@ export const appModalRoutes = {
   account: {
     root: "/account/general",
     general: "/account/general",
+    appearance: "/account/appearance",
   },
   workspace: {
     root: "/workspace/general",

@@ -55,8 +55,9 @@ export function WorkspaceTab({ controller }: { controller: WorkspaceEngine }) {
               getSpecOrDefault(workspace.spec, {
                 version: 1,
                 services: {},
-                components: {},
                 modules: {},
+                moduleGroups: {},
+                rootModuleGroups: [],
                 packages: {},
                 boards: {},
                 roots: [],

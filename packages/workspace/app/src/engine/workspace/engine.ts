@@ -191,7 +191,10 @@ export function createWorkspaceEngine({
           name: session.name,
           email: session.email,
         },
-        theme: { css: themeCss },
+        theme: {
+          css: themeCss,
+          isDark: document.documentElement.classList.contains("dark"),
+        },
       },
       registryModuleUrlTemplate: appEngine.registryModuleUrlTemplate,
     };
@@ -236,6 +239,9 @@ export function createWorkspaceEngine({
       activeTab: "workspace",
       mode: "live",
       boardExplorer: {
+        expandedStates: {},
+      },
+      moduleExplorer: {
         expandedStates: {},
       },
     },
@@ -754,8 +760,9 @@ export function createWorkspaceEngine({
       const spec = getSpecOrDefault(store.getState().workspace.spec, {
         version: 1,
         services: {},
-        components: {},
         modules: {},
+        moduleGroups: {},
+        rootModuleGroups: [],
         packages: {},
         boards: {},
         roots: [],
@@ -811,14 +818,6 @@ export function createWorkspaceEngine({
       }
     }
 
-    if (wsSpec.components) {
-      for (const [name, comp] of Object.entries(wsSpec.components)) {
-        if (comp.id === id && comp.versionId === versionId) {
-          refs.push({ source: "component", name });
-        }
-      }
-    }
-
     return refs;
   }
 
@@ -834,7 +833,6 @@ export function createWorkspaceEngine({
 
     const boards = wsSpec.boards ? { ...wsSpec.boards } : {};
     const modules = wsSpec.modules ? { ...wsSpec.modules } : {};
-    const components = wsSpec.components ? { ...wsSpec.components } : {};
 
     for (const ref of refs) {
       if (ref.source === "board") {
@@ -848,8 +846,6 @@ export function createWorkspaceEngine({
         }
       } else if (ref.source === "module") {
         modules[ref.name] = module;
-      } else if (ref.source === "component") {
-        components[ref.name] = module;
       }
     }
 
@@ -857,7 +853,6 @@ export function createWorkspaceEngine({
       spec: {
         boards,
         modules,
-        components,
       },
     });
   }
@@ -887,6 +882,15 @@ export function createWorkspaceEngine({
     getCatalog,
     getModuleReferences,
     updateModuleReferences,
+    setTheme: async (isDark: boolean) => {
+      if (rpc) {
+        try {
+          await rpc.egress.setTheme({ isDark });
+        } catch (err) {
+          logger.error("Failed to propagate theme change to workspace runtime", err as any);
+        }
+      }
+    },
     select: async (selection: string[]) => {
       // stubbed
     },

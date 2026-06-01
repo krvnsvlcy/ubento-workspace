@@ -3,6 +3,8 @@ import { useWorkspaceEngine } from "@/contexts/workspace.js";
 import { useUbentoEngine } from "@/hooks/app-engine";
 import { PendingView } from "@ubento/bento.arlo-core";
 import { WorkspaceEngine } from "../../../../../engine/workspace/engine.js";
+import { useTheme } from "@/contexts/theme.js";
+import { useEffect } from "react";
 
 function WorkspaceOverlay({ engine }: { engine: WorkspaceEngine }) {
   const workspaceName = engine.useState((state) => state.workspace.title);
@@ -91,6 +93,11 @@ function InvalidSpecOverlay({ engine }: { engine: WorkspaceEngine }) {
 export function Viewer() {
   const appEngine = useUbentoEngine();
   const workspaceEngine = useWorkspaceEngine();
+  const { isDark } = useTheme();
+
+  useEffect(() => {
+    workspaceEngine.setTheme(isDark);
+  }, [isDark, workspaceEngine]);
 
   return (
     <div className="h-full w-full relative overflow-hidden flex flex-col">
