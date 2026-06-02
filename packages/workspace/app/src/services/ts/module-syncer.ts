@@ -1,4 +1,5 @@
-import { makeTsPath } from "@/utils/uri";
+import { makeTsPath, tsPathToMonacoUri } from "@/utils/uri";
+import { MonacoService } from "../monaco/monaco-service";
 import { UbentoService } from "../ubento/ubento";
 import { TsService } from "./ts-service";
 
@@ -15,22 +16,27 @@ export type ModuleStatus = ModuleData & {
 
 export class ModuleSyncer {
   readonly workspaceId: string;
+
+  private monaco: MonacoService;
   private tsService: TsService;
   private ubentoService: UbentoService;
   private onStatusChange: (status: ModuleStatus[]) => void;
   private modules: Map<string, ModuleStatus> = new Map();
 
   constructor({
+    monaco,
     workspaceId,
     tsService,
     ubentoService,
     onStatusChange,
   }: {
+    monaco: MonacoService;
     workspaceId: string;
     tsService: TsService;
     ubentoService: UbentoService;
     onStatusChange: (status: ModuleStatus[]) => void;
   }) {
+    this.monaco = monaco;
     this.workspaceId = workspaceId;
     this.tsService = tsService;
     this.ubentoService = ubentoService;
@@ -73,6 +79,25 @@ export class ModuleSyncer {
     }
   }
 
+  /**
+   * Translates a synthetic proxy path (e.g., /modules/badge.tsx)
+   * to its underlying concrete version path.
+   * If the path is not a recognized synthetic path, it returns the original.
+   */
+  public getConcretePath(path: string): string {
+    for (const module of this.modules.values()) {
+      const syntheticPath = this.getModuleSyntheticPath(module);
+      if (
+        path === syntheticPath ||
+        path === syntheticPath.replace(/\.tsx?$/, "")
+      ) {
+        return this.getModuleVersionPath(module);
+      }
+    }
+
+    return path;
+  }
+
   private notify() {
     this.onStatusChange(Array.from(this.modules.values()));
   }
@@ -82,7 +107,7 @@ export class ModuleSyncer {
     const syncTasks: Promise<void>[] = [];
     let stateChanged = false;
 
-    // 1. Process Removals: Find modules that exist in state but not in the new array
+    // 1. Process Removals
     for (const [id, existing] of this.modules) {
       if (!nextMap.has(id)) {
         this.modules.set(id, { ...existing, status: "unloading" });
@@ -119,12 +144,10 @@ export class ModuleSyncer {
 
         const updateTask = async () => {
           try {
-            // If the user renamed the module or changed its type, clean up the old proxy path
             if (existing && isPathUpdate) {
               await this.removeTsFile(this.getModuleSyntheticPath(existing));
             }
 
-            // Fetch real code
             const content = await this.fetchModuleVersionContent(
               next.moduleId,
               next.versionId,
@@ -132,8 +155,6 @@ export class ModuleSyncer {
             const versionPath = this.getModuleVersionPath(next);
             await this.writeTsFile(versionPath, content);
 
-            // Construct the synthetic proxy file to keep imports clean and TS Server fast.
-            // Note: Stripping the .tsx extension for standard TypeScript import resolution.
             const importPath = versionPath.replace(/\.tsx?$/, "");
             const proxyContent = `export * from "${importPath}";\nexport { default } from "${importPath}";`;
             await this.writeTsFile(
@@ -153,12 +174,24 @@ export class ModuleSyncer {
       }
     }
 
-    // Emit initial loading/unloading states immediately before awaiting tasks
     if (stateChanged) {
       this.notify();
     }
 
-    // Run all file I/O and TS server updates concurrently for maximum speed
     await Promise.all(syncTasks);
+  }
+
+  async getOrCreateMonacoModel(path: string) {
+    const monaco = await this.monaco.getMonaco();
+    const concretPath = this.getConcretePath(path);
+    const uri = monaco.Uri.parse(tsPathToMonacoUri(concretPath));
+    let model = monaco.editor.getModel(uri);
+    if (model) {
+      return model;
+    }
+
+    const content = await this.tsService.readFile(concretPath);
+    model = monaco.editor.createModel(content, "ubento-tsx", uri);
+    return model;
   }
 }

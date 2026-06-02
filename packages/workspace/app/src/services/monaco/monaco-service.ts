@@ -1,4 +1,8 @@
-import { monacoUriToTsPath, parseTsPath, tsPathToMonacoUri } from "@/utils/uri.js";
+import {
+  monacoUriToTsPath,
+  parseTsPath,
+  tsPathToMonacoUri,
+} from "@/utils/uri.js";
 import loader from "@monaco-editor/loader";
 import type * as monaco from "monaco-editor";
 import { TsService } from "../ts/ts-service.js";
@@ -17,13 +21,30 @@ export class MonacoService {
     if (this.initPromise) return this.initPromise;
 
     this.initPromise = (async () => {
-      const monacoInstance = await loader.init();
+      const monacoInstance: Monaco = await loader.init();
       this.monaco = monacoInstance;
       setupTsLanguage({
         // Route language features dynamically based on the model's URI
         getTsServiceForUri: (uri: string) => this.getTsServiceForUri(uri),
         monaco: monacoInstance,
       });
+      monacoInstance.editor.registerEditorOpener({
+        openCodeEditor: (_, resource, selectionOrPosition) => {
+          const uri = resource.toString();
+          const { workspaceId, moduleId, versionId } = parseTsPath(
+            monacoUriToTsPath(uri),
+          );
+          if (moduleId && versionId) {
+            const tsService = this.activeWorkspaces.get(workspaceId);
+            if (tsService) {
+              tsService.onOpenEditor?.(moduleId, versionId);
+            }
+          }
+
+          return false;
+        },
+      });
+
       return monacoInstance;
     })();
 

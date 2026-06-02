@@ -1,7 +1,7 @@
+import { monacoUriToTsPath } from "@/utils/uri.js";
 import type * as monaco from "monaco-editor";
 import { TsService } from "../ts/ts-service.js";
 import { Monaco } from "./monaco-service.js";
-import { monacoUriToTsPath, tsPathToMonacoUri } from "@/utils/uri.js";
 
 // --- CONSTANTS ---
 
@@ -470,7 +470,10 @@ export function setupTsLanguage({
     const handleContentChange = async () => {
       const uri = model.uri.toString();
       try {
-        await getTsServiceForUri(uri).writeFile(monacoUriToTsPath(uri), model.getValue());
+        await getTsServiceForUri(uri).writeFile(
+          monacoUriToTsPath(uri),
+          model.getValue(),
+        );
       } catch (e) {
         console.warn("[TS Language] Failed to write file to worker", e);
       }
@@ -611,7 +614,8 @@ export function setupTsLanguage({
       provideDefinition: async (model: any, position: any) => {
         try {
           const uri = model.uri.toString();
-          const rpc = getTsServiceForUri(uri).getRpc();
+          const ts = getTsServiceForUri(uri);
+          const rpc = ts.getRpc();
           const offset = model.getOffsetAt(position);
 
           const defs = await rpc.call("getDefinition", {
@@ -620,15 +624,17 @@ export function setupTsLanguage({
           });
           if (!defs) return null;
 
-          return defs.map((def: any) => ({
-            uri: monaco.Uri.parse(tsPathToMonacoUri(def.uri)),
-            range: {
-              startLineNumber: def.range.start.line + 1,
-              startColumn: def.range.start.character + 1,
-              endLineNumber: def.range.end.line + 1,
-              endColumn: def.range.end.character + 1,
-            },
-          }));
+          return await Promise.all(
+            defs.map(async (def: any) => ({
+              uri: (await ts.moduleSyncer.getOrCreateMonacoModel(def.uri)).uri,
+              range: {
+                startLineNumber: def.range.start.line + 1,
+                startColumn: def.range.start.character + 1,
+                endLineNumber: def.range.end.line + 1,
+                endColumn: def.range.end.character + 1,
+              },
+            })),
+          );
         } catch (e) {
           return null;
         }

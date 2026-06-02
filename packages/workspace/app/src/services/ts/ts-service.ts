@@ -2,6 +2,8 @@ import { createDuplexRpc, createWorkerPort, DuplexRpc } from "@ubento/rpc";
 import { Logger } from "@ubento/telemetry";
 import { Subscription } from "rxjs";
 import { MonacoService } from "../monaco/monaco-service";
+import { UbentoService } from "../ubento/ubento";
+import { ModuleStatus, ModuleSyncer } from "./module-syncer";
 import {
   PackageData,
   PackageInstallStatus,
@@ -9,6 +11,8 @@ import {
 } from "./package_manager/package_manager";
 import { createJsdelivrRegistry } from "./package_manager/registry";
 import { TypeDefStore } from "./package_manager/typedef_store";
+import { ubentoDeclaration } from "./package_manager/ubento-declaration";
+import { generateServiceDeclarations } from "./package_manager/service-declaration-generator.js";
 import { MainToTsWorkerRpcDef, TsWorkerToMainRpcDef } from "./rpc";
 
 export type TsServiceStatus = {
@@ -24,33 +28,41 @@ export class TsService {
   private worker: Worker | null = null;
   private rpc: DuplexRpc<TsWorkerToMainRpcDef, MainToTsWorkerRpcDef> | null =
     null;
+  onOpenEditor?: (moduleId: string, versionId: string) => void;
   private initPromise: Promise<void> | null = null;
 
   private onStatusChange?: (status: TsServiceStatus) => void;
   private typeDefStore: TypeDefStore;
   private packageManager: TsPackageManager;
   private packageStatusesSubscription: Subscription | null = null;
+  readonly moduleSyncer: ModuleSyncer;
 
   constructor({
     workspaceId,
     logger,
     monacoService,
+    ubentoService,
     onStatusChange,
     onPackageStatusesChange,
+    onModuleStatusesChange,
+    onOpenEditor,
   }: {
     workspaceId: string;
     logger: Logger;
     monacoService: MonacoService;
+    ubentoService: UbentoService;
     onStatusChange?: (status: TsServiceStatus) => void;
     onPackageStatusesChange?: (
       statuses: Record<string, PackageInstallStatus>,
     ) => void;
+    onModuleStatusesChange?: (statuses: ModuleStatus[]) => void;
+    onOpenEditor?: (moduleId: string, versionId: string) => void;
   }) {
     this.workspaceId = workspaceId;
     this.logger = logger;
     this.monacoService = monacoService;
     this.onStatusChange = onStatusChange;
-
+    this.onOpenEditor = onOpenEditor;
     this.typeDefStore = new TypeDefStore({
       registries: {
         [TypeDefStore.defaultRegistryName]: createJsdelivrRegistry(),
@@ -70,6 +82,15 @@ export class TsService {
         module: "package-manager",
       }),
       onStatusesChange: onPackageStatusesChange,
+    });
+    this.moduleSyncer = new ModuleSyncer({
+      workspaceId: this.workspaceId,
+      tsService: this,
+      monaco: this.monacoService,
+      ubentoService,
+      onStatusChange: (statuses) => {
+        onModuleStatusesChange?.(statuses);
+      },
     });
   }
 
@@ -118,13 +139,14 @@ export class TsService {
         await this.rpc.egress.setCompilerOptions({
           target: "ES2022",
           module: "ESNext",
-          moduleResolution: "Bundler", // Crucial for virtual file systems & modern CDN imports
           jsx: "react-jsx", // Supports modern React 17+ (no need to import React)
           strict: true,
           esModuleInterop: true,
           allowSyntheticDefaultImports: true,
           skipLibCheck: true, // Massive performance boost in the web worker
           isolatedModules: true, // Ensures compatibility with fast transpilers like esbuild
+          allowImportingTsExtensions: true,
+          allowArbitraryExtensions: true,
           baseUrl: "/",
           paths: {
             "@/modules/*": [`modules/*`],
@@ -137,6 +159,8 @@ export class TsService {
         for (const [path, content] of Object.entries(defaultLibs)) {
           files[`/lib/${path}`] = content;
         }
+        files["/lib/ubento.d.ts"] = ubentoDeclaration;
+
         if (Object.keys(files).length > 0) {
           await this.getRpc().call("writeFiles", { files });
         }
@@ -164,6 +188,11 @@ export class TsService {
     return this.rpc;
   }
 
+  async readFile(path: string): Promise<string> {
+    await this.initialize();
+    const res = await this.getRpc().egress.readFile(path);
+    return res?.text || "";
+  }
   async writeFile(path: string, content: string): Promise<void> {
     await this.initialize();
     await this.getRpc().egress.writeFiles({
@@ -177,6 +206,10 @@ export class TsService {
     await this.getRpc().egress.removeFiles({
       uris: [path],
     });
+  }
+  async updateServiceSpecs(specs: Record<string, any>): Promise<void> {
+    const declaration = generateServiceDeclarations(specs);
+    await this.writeFile("/lib/services.d.ts", declaration);
   }
   async listFiles(): Promise<string[]> {
     await this.initialize();

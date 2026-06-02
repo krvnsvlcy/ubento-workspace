@@ -1,11 +1,7 @@
 import { UbentoEngine } from "@/engine/app/engine";
 import { appModalRoutes } from "@/modals/app/routes";
 import { ConfirmMutationModal } from "@/modals/confirm_mutation/confirm_mutation";
-import {
-  ModuleData,
-  ModuleStatus,
-  ModuleSyncer,
-} from "@/services/ts/module-syncer";
+import { ModuleData, ModuleStatus } from "@/services/ts/module-syncer";
 import { PackageInstallStatus } from "@/services/ts/package_manager/package_manager";
 import { TsService, TsServiceStatus } from "@/services/ts/ts-service";
 import { createZustandStateController } from "@ubento/bento.arlo-core";
@@ -1047,14 +1043,59 @@ export function createWorkspaceEngine({
           workspaceId: workspace.id,
           logger: logger,
           monacoService: appEngine.getMonacoService(),
+          ubentoService: appEngine.ubento,
           onStatusChange: (status) => {
             store.setState({ tsServiceStatus: status });
           },
           onPackageStatusesChange: (statuses) => {
             store.setState({ packageStatuses: statuses });
           },
+          onModuleStatusesChange: (statuses) => {
+            store.setState({ moduleStatuses: statuses });
+          },
+          onOpenEditor: (moduleId, versionId) => {
+            userSetting.update({
+              editingModule: { id: moduleId, versionId: versionId },
+              mode: "edit",
+            });
+          },
         });
         const workspaceSpec = store.getState().workspace.spec;
+        // service spec syncer
+        async function syncServiceSpecs(services: Record<string, any>) {
+          const specs: Record<string, any> = {};
+          await Promise.all(
+            Object.entries(services).map(async ([name, serviceData]) => {
+              try {
+                const spec = await getServiceSpec((serviceData as any).channelId);
+                if (spec.isValid) {
+                  specs[name] = spec.data;
+                }
+              } catch (err) {
+                logger.error(`Failed to fetch service spec for ${name}`, {
+                  event: "ts.service.spec.fetch.failure",
+                  error: String(err),
+                });
+              }
+            }),
+          );
+          if (tsService) {
+            await tsService.updateServiceSpecs(specs);
+          }
+        }
+        if (workspaceSpec.isValid) {
+          syncServiceSpecs(workspaceSpec.data.services || {});
+        }
+        store.subscribe((state, prev) => {
+          if (state.workspace.spec.isValid) {
+            const services = state.workspace.spec.data.services || {};
+            const prevServices =
+              (prev.workspace.spec.data as any)?.services || {};
+            if (dequal(services, prevServices)) return;
+            syncServiceSpecs(services);
+          }
+        });
+
         // package syncer
         if (workspaceSpec.isValid) {
           tsService.updatePackages(
@@ -1101,16 +1142,10 @@ export function createWorkspaceEngine({
             })),
           ] as ModuleData[];
         }
-        const moduleSyncer = new ModuleSyncer({
-          tsService: tsService,
-          ubentoService: appEngine.ubento,
-          workspaceId: workspace.id,
-          onStatusChange: (statuses) => {
-            store.setState({ moduleStatuses: statuses });
-          },
-        });
         if (workspaceSpec.isValid) {
-          moduleSyncer.updateModules(getModuleData(workspaceSpec.data));
+          tsService.moduleSyncer.updateModules(
+            getModuleData(workspaceSpec.data),
+          );
         }
         store.subscribe((state, prev) => {
           const workspaceSpec = state.workspace.spec;
@@ -1122,7 +1157,7 @@ export function createWorkspaceEngine({
             ? getModuleData(prevWorkspaceSpec.data)
             : [];
           if (dequal(data, prevData)) return;
-          moduleSyncer.updateModules(data);
+          tsService?.moduleSyncer.updateModules(data);
         });
       }
       return tsService;

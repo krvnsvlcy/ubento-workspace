@@ -73,7 +73,7 @@ export function createProxyModules(): Record<string, string> {
       useLocation,
       useNavigation,
     },
-    "BentoRuntime",
+    "Ubento",
     false,
   );
 
