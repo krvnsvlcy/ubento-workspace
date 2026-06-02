@@ -29,10 +29,9 @@ model Workspace {
     entity  String @default("workspace")
     team_id String
 
-    name        String
-    slug        String  @unique
-    description String?
-    data        Json
+    title    String
+    metadata Json
+    data     Json
 
     version    Int       @default(1)
     created_at DateTime  @default(now())
@@ -42,25 +41,6 @@ model Workspace {
     @@map("workspaces")
 }
 
-model Board {
-    id           String @id @map("_id")
-    entity       String @default("board")
-    workspace_id String
-
-    parent_id String?
-    index     String?
-
-    name String
-    data Json
-
-    version    Int       @default(1)
-    created_at DateTime  @default(now())
-    updated_at DateTime  @updatedAt
-    deleted_at DateTime?
-
-    @@index([workspace_id, parent_id, index])
-    @@map("boards")
-}
 
 model WorkspaceMembership {
     id           String @id @map("_id")

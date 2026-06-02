@@ -191,7 +191,7 @@ function BoardNode({
         )}
       >
         <TreeEntry
-          icon="board"
+          icon="panels-top-left"
           isContainer={hasChildren}
           active={activeBoardId === board.id}
           isOpen={isExpanded}

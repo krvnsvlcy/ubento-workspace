@@ -49,12 +49,13 @@ export function CreateWorkspaceModal({
         roots: [],
       };
       const ws = await createWorkspace({
-        name: workspaceName.trim(),
+        title: workspaceName.trim(),
         team_id: session?.teamId!,
+        metadata: {},
         data,
       });
       if (ws) {
-        engine.openWorkspace(ws.slug);
+        engine.openWorkspace(ws.id);
       }
       onComplete?.();
       close();
@@ -70,7 +71,7 @@ export function CreateWorkspaceModal({
     <AlertModalContainer className="flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between px-8 py-6">
-        <Heading>Create New Workspace</Heading>
+        <Heading level="h4">Create New Workspace</Heading>
       </div>
 
       {/* Content */}

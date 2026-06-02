@@ -54,7 +54,7 @@ export function WorkspaceTab() {
 export const workspaceTab: TabDefinition = {
   id: "workspace",
   name: "Workspace",
-  icon: "workspace",
+  icon: "layout-grid",
   component: WorkspaceTab,
   enabled: ({ location }) => location.view === "workspace",
 };

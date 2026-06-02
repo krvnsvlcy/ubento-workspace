@@ -7,7 +7,6 @@ export type BentoWorkspaceAttachment = UserMessageAttachment<
   {
     id: string;
     title: string;
-    slug: string;
     services: string[];
   }
 >;
@@ -16,7 +15,7 @@ export const ubentoWorkspaceAttachmentType: AttachmentType<BentoWorkspaceAttachm
   {
     type: "bento-workspace",
     label: (data) => {
-      return data.title || data.slug || data.id;
+      return data.title || data.id;
     },
     icon: (data) => {
       return <Briefcase />;

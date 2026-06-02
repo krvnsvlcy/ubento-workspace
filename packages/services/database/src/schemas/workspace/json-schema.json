@@ -14,15 +14,16 @@
         "team_id": {
           "type": "string"
         },
-        "name": {
+        "title": {
           "type": "string"
         },
-        "slug": {
-          "type": "string"
-        },
-        "description": {
+        "metadata": {
           "type": [
+            "number",
             "string",
+            "boolean",
+            "object",
+            "array",
             "null"
           ]
         },
@@ -59,74 +60,8 @@
       "required": [
         "id",
         "team_id",
-        "name",
-        "slug",
-        "data",
-        "updated_at"
-      ]
-    },
-    "Board": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
-        },
-        "entity": {
-          "type": "string",
-          "default": "board"
-        },
-        "workspace_id": {
-          "type": "string"
-        },
-        "parent_id": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "index": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "name": {
-          "type": "string"
-        },
-        "data": {
-          "type": [
-            "number",
-            "string",
-            "boolean",
-            "object",
-            "array",
-            "null"
-          ]
-        },
-        "version": {
-          "type": "integer",
-          "default": 1
-        },
-        "created_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "updated_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "deleted_at": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "format": "date-time"
-        }
-      },
-      "required": [
-        "id",
-        "workspace_id",
-        "name",
+        "title",
+        "metadata",
         "data",
         "updated_at"
       ]
@@ -267,9 +202,6 @@
   "properties": {
     "workspace": {
       "$ref": "#/definitions/Workspace"
-    },
-    "board": {
-      "$ref": "#/definitions/Board"
     },
     "workspaceMembership": {
       "$ref": "#/definitions/WorkspaceMembership"

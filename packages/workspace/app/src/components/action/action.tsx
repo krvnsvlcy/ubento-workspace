@@ -1,9 +1,9 @@
 import { Tooltip } from "@ubento/bento.arlo-core";
-import { Icon, IconKey } from "../icon/icon";
+import { Icon, IconName } from "../icon/icon";
 
 export type ActionProps = {
   title: string;
-  icon: IconKey | React.ReactNode;
+  icon: IconName | Exclude<React.ReactNode, string>;
   handler: (e: React.MouseEvent) => void;
   size?: number;
   iconSize?: number;
@@ -30,7 +30,7 @@ export function Action({
         }}
       >
         {typeof icon === "string" ? (
-          <Icon icon={icon as IconKey} size={iconSize * 4} />
+          <Icon icon={icon as IconName} size={iconSize * 4} />
         ) : (
           icon
         )}

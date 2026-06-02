@@ -1,4 +1,8 @@
+import { IconPicker } from "@/components/icon/icon-picker.js";
+import { Icon, IconName } from "@/components/icon/icon.js";
 import { useUbento, useUbentoEngine } from "@/hooks/app-engine.js";
+import { workspaceColorMap } from "@/utils/colors.js";
+import { useModal } from "@/utils/modal-store.js";
 import {
   Button,
   Content,
@@ -13,7 +17,6 @@ import {
 } from "@ubento/bento.arlo-core";
 import { Loader2 } from "lucide-react";
 import { FC, useEffect, useState } from "react";
-import { useModal } from "@/utils/modal-store.js";
 
 export const GeneralTab: FC = () => {
   const ubento = useUbento();
@@ -28,13 +31,17 @@ export const GeneralTab: FC = () => {
     { enabled: !!workspaceId },
   );
 
-  const [name, setName] = useState(workspace?.name || "");
-  const [description, setDescription] = useState(workspace?.description || "");
+  const [title, setTitle] = useState(workspace?.title || "");
+  const [icon, setIcon] = useState<IconName>(workspace?.metadata?.icon);
+  const [accentColor, setAccentColor] = useState<string>(
+    workspace?.metadata?.accentColor || "",
+  );
 
   useEffect(() => {
     if (workspace) {
-      setName(workspace.name || "");
-      setDescription(workspace.description || "");
+      setTitle(workspace.title || "");
+      setIcon(workspace.metadata?.icon || "workspace");
+      setAccentColor(workspace.metadata?.accentColor || "");
     }
   }, [workspace]);
 
@@ -45,9 +52,27 @@ export const GeneralTab: FC = () => {
 
   const handleSave = () => {
     if (!workspace?.id) return;
-    if (name === workspace.name && description === workspace.description) return;
+    if (title === workspace.title) return;
     updateWorkspace(
-      { name, description },
+      { title },
+      {
+        onSuccess: () => {
+          // Cache invalidation and update is done automatically via the fabric store hooks
+        },
+      },
+    );
+  };
+
+  const handleUpdateMetadata = (newIcon: string, newAccent: string) => {
+    if (!workspace?.id) return;
+    updateWorkspace(
+      {
+        metadata: {
+          ...workspace.metadata,
+          icon: newIcon || undefined,
+          accentColor: newAccent || undefined,
+        },
+      },
       {
         onSuccess: () => {
           // Cache invalidation and update is done automatically via the fabric store hooks
@@ -84,7 +109,9 @@ export const GeneralTab: FC = () => {
         <ContentHeader>
           <div className="space-y-1">
             <Heading>General</Heading>
-            <Text shade="subtle">Manage general details of your workspace.</Text>
+            <Text shade="subtle">
+              Manage general details of your workspace.
+            </Text>
           </div>
         </ContentHeader>
         <ContentBody className="flex items-center justify-center">
@@ -115,23 +142,68 @@ export const GeneralTab: FC = () => {
                   <FieldLabel>Workspace Name</FieldLabel>
                   <Input
                     type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
                     onBlur={handleSave}
                     onKeyDown={handleKeyDown}
                     placeholder="e.g. Stock Manager"
                   />
                 </Field>
+
                 <Field>
-                  <FieldLabel>Description</FieldLabel>
-                  <Input
-                    type="text"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    onBlur={handleSave}
-                    onKeyDown={handleKeyDown}
-                    placeholder="Manage your inventory and stock levels."
-                  />
+                  <FieldLabel>Workspace Icon</FieldLabel>
+                  <div className="pt-1">
+                    <IconPicker
+                      value={icon}
+                      onChange={(newIcon) => {
+                        setIcon(newIcon);
+                        handleUpdateMetadata(newIcon, accentColor);
+                      }}
+                    />
+                  </div>
+                </Field>
+
+                <Field>
+                  <FieldLabel>Accent Color</FieldLabel>
+                  <div className="flex flex-wrap gap-3 pt-1">
+                    {Object.entries(workspaceColorMap).map(
+                      ([colorName, colorHex]) => {
+                        const isSelected = accentColor === colorName;
+                        return (
+                          <button
+                            key={colorName}
+                            type="button"
+                            onClick={() => {
+                              setAccentColor(colorName);
+                              handleUpdateMetadata(icon, colorName);
+                            }}
+                            style={{ backgroundColor: colorHex }}
+                            className={`h-8 w-8 rounded-full border-2 transition-all cursor-pointer hover:scale-105 ${
+                              isSelected
+                                ? "border-content scale-110 shadow-md"
+                                : "border-transparent opacity-80 hover:opacity-100"
+                            }`}
+                            title={colorName}
+                          />
+                        );
+                      },
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAccentColor("");
+                        handleUpdateMetadata(icon, "");
+                      }}
+                      className={`h-8 w-8 rounded-full border border-dashed flex items-center justify-center transition-all cursor-pointer hover:scale-105 ${
+                        accentColor === ""
+                          ? "border-content bg-base/5 text-content scale-110 shadow-md"
+                          : "border-border text-content-muted hover:text-content"
+                      }`}
+                      title="Default"
+                    >
+                      <Icon icon="trash" size={14} />
+                    </button>
+                  </div>
                 </Field>
               </div>
 

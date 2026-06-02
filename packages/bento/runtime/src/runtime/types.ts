@@ -19,7 +19,6 @@ export type ParsedSpec<T> =
 export type BentoWorkspaceData = {
   id: string;
   title: string;
-  slug: string;
   spec: ParsedSpec<WorkspaceSpec>;
 };
 

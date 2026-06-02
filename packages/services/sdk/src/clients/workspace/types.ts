@@ -53,10 +53,9 @@ export interface paths {
             requestBody: {
                 content: {
                     "application/json": {
-                        name: string;
-                        slug?: string;
+                        title: string;
                         team_id: string;
-                        description?: string;
+                        metadata: Record<string, never>;
                     };
                 };
             };
@@ -73,45 +72,6 @@ export interface paths {
                 400: components["responses"]["ValidationError"];
             };
         };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/workspaces/slug/{slug}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Workspace by Slug */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    slug: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Workspace details */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Workspace"];
-                    };
-                };
-                404: components["responses"]["NotFound"];
-            };
-        };
-        put?: never;
-        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -192,9 +152,8 @@ export interface paths {
             requestBody?: {
                 content: {
                     "application/json": {
-                        name?: string;
-                        slug?: string;
-                        description?: string;
+                        title?: string;
+                        metadata?: Record<string, never>;
                     };
                 };
             };
@@ -206,184 +165,6 @@ export interface paths {
                     };
                     content: {
                         "application/json": components["schemas"]["Workspace"];
-                    };
-                };
-                404: components["responses"]["NotFound"];
-            };
-        };
-        trace?: never;
-    };
-    "/boards": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** List Boards */
-        get: {
-            parameters: {
-                query: {
-                    cursor?: components["parameters"]["queryCursor"];
-                    limit?: components["parameters"]["queryLimit"];
-                    workspace_id: string;
-                    parent_id?: string | null;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description A list of boards */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            data: components["schemas"]["Board"][];
-                            nextPage?: {
-                                cursor: string;
-                                limit: number;
-                            };
-                            previousPage?: {
-                                cursor: string;
-                                limit: number;
-                            };
-                        };
-                    };
-                };
-            };
-        };
-        put?: never;
-        /** Create Board */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": {
-                        workspace_id: string;
-                        parent_id?: string | null;
-                        name: string;
-                        data?: Record<string, unknown> | null;
-                        index?: string | null;
-                    };
-                };
-            };
-            responses: {
-                /** @description Board created */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Board"];
-                    };
-                };
-                400: components["responses"]["ValidationError"];
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/boards/{board_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Board */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    board_id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Board details */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Board"];
-                    };
-                };
-                404: components["responses"]["NotFound"];
-            };
-        };
-        put?: never;
-        post?: never;
-        /** Delete Board */
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    board_id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Board deleted */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            success?: boolean;
-                        };
-                    };
-                };
-                404: components["responses"]["NotFound"];
-            };
-        };
-        options?: never;
-        head?: never;
-        /** Update Board */
-        patch: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    board_id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: {
-                content: {
-                    "application/json": {
-                        name?: string;
-                        parent_id?: string | null;
-                        data?: Record<string, unknown> | null;
-                        index?: string | null;
-                    };
-                };
-            };
-            responses: {
-                /** @description Board updated */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Board"];
                     };
                 };
                 404: components["responses"]["NotFound"];
@@ -649,27 +430,8 @@ export interface components {
             /** @default workspace */
             entity: string;
             team_id: string;
-            name: string;
-            slug: string;
-            description?: string;
-            data: Record<string, never>;
-            /** @default 1 */
-            version: number;
-            /** Format: date-time */
-            created_at: string;
-            /** Format: date-time */
-            updated_at: string;
-            /** Format: date-time */
-            deleted_at?: string;
-        };
-        Board: {
-            id: string;
-            /** @default board */
-            entity: string;
-            workspace_id: string;
-            parent_id?: string | null;
-            index?: string | null;
-            name: string;
+            title: string;
+            metadata: Record<string, never>;
             data: Record<string, never>;
             /** @default 1 */
             version: number;

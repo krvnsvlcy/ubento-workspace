@@ -43,16 +43,11 @@ export const spec: OpenAPIV3.Document = {
               schema: {
                 type: "object",
                 properties: {
-                  name: { type: "string" },
-                  slug: {
-                    type: "string",
-                    minLength: 3,
-                    pattern: "^[a-z0-9-]+$",
-                  },
+                  title: { type: "string" },
                   team_id: { type: "string" },
-                  description: { type: "string" },
+                  metadata: { type: "object" },
                 },
-                required: ["name", "team_id"],
+                required: ["title", "team_id", "metadata"],
               },
             },
           },
@@ -67,34 +62,6 @@ export const spec: OpenAPIV3.Document = {
             },
           },
           "400": { $ref: "#/components/responses/ValidationError" },
-        },
-      },
-    },
-    "/workspaces/slug/{slug}": {
-      get: {
-        summary: "Get Workspace by Slug",
-        parameters: [
-          {
-            name: "slug",
-            in: "path",
-            required: true,
-            schema: {
-              type: "string",
-              minLength: 3,
-              pattern: "^[a-z0-9-]+$",
-            },
-          },
-        ],
-        responses: {
-          "200": {
-            description: "Workspace details",
-            content: {
-              "application/json": {
-                schema: { $ref: "#/components/schemas/Workspace" },
-              },
-            },
-          },
-          "404": { $ref: "#/components/responses/NotFound" },
         },
       },
     },
@@ -137,13 +104,8 @@ export const spec: OpenAPIV3.Document = {
               schema: {
                 type: "object",
                 properties: {
-                  name: { type: "string" },
-                  slug: {
-                    type: "string",
-                    minLength: 3,
-                    pattern: "^[a-z0-9-]+$",
-                  },
-                  description: { type: "string" },
+                  title: { type: "string" },
+                  metadata: { type: "object" },
                 },
               },
             },
@@ -187,156 +149,7 @@ export const spec: OpenAPIV3.Document = {
         },
       },
     },
-    "/boards": {
-      get: {
-        summary: "List Boards",
-        parameters: [
-          { $ref: "#/components/parameters/queryCursor" },
-          { $ref: "#/components/parameters/queryLimit" },
-          {
-            name: "workspace_id",
-            in: "query",
-            required: true,
-            schema: { type: "string" },
-          },
-          {
-            name: "parent_id",
-            in: "query",
-            schema: { type: "string" },
-          },
-        ],
-        responses: {
-          "200": {
-            description: "A list of boards",
-            content: {
-              "application/json": {
-                schema: makeCursorPageResponseSchema({
-                  $ref: "#/components/schemas/Board",
-                }),
-              },
-            },
-          },
-        },
-      },
-      post: {
-        summary: "Create Board",
-        requestBody: {
-          required: true,
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  workspace_id: { type: "string" },
-                  parent_id: { type: "string", nullable: true },
-                  name: { type: "string" },
-                  data: { type: "object" },
-                  index: { type: "string", nullable: true },
-                },
-                required: ["workspace_id", "name"],
-              },
-            },
-          },
-        },
-        responses: {
-          "201": {
-            description: "Board created",
-            content: {
-              "application/json": {
-                schema: { $ref: "#/components/schemas/Board" },
-              },
-            },
-          },
-          "400": { $ref: "#/components/responses/ValidationError" },
-        },
-      },
-    },
-    "/boards/{board_id}": {
-      get: {
-        summary: "Get Board",
-        parameters: [
-          {
-            name: "board_id",
-            in: "path",
-            required: true,
-            schema: { type: "string" },
-          },
-        ],
-        responses: {
-          "200": {
-            description: "Board details",
-            content: {
-              "application/json": {
-                schema: { $ref: "#/components/schemas/Board" },
-              },
-            },
-          },
-          "404": { $ref: "#/components/responses/NotFound" },
-        },
-      },
-      patch: {
-        summary: "Update Board",
-        parameters: [
-          {
-            name: "board_id",
-            in: "path",
-            required: true,
-            schema: { type: "string" },
-          },
-        ],
-        requestBody: {
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  name: { type: "string" },
-                  parent_id: { type: "string", nullable: true },
-                  data: { type: "object" },
-                  index: { type: "string", nullable: true },
-                },
-              },
-            },
-          },
-        },
-        responses: {
-          "200": {
-            description: "Board updated",
-            content: {
-              "application/json": {
-                schema: { $ref: "#/components/schemas/Board" },
-              },
-            },
-          },
-          "404": { $ref: "#/components/responses/NotFound" },
-        },
-      },
-      delete: {
-        summary: "Delete Board",
-        parameters: [
-          {
-            name: "board_id",
-            in: "path",
-            required: true,
-            schema: { type: "string" },
-          },
-        ],
-        responses: {
-          "200": {
-            description: "Board deleted",
-            content: {
-              "application/json": {
-                schema: {
-                  type: "object",
-                  properties: { success: { type: "boolean" } },
-                },
-              },
-            },
-          },
-          "404": { $ref: "#/components/responses/NotFound" },
-        },
-      },
-    },
+
     "/workspace-memberships": {
       get: {
         summary: "List Workspace Memberships",
@@ -568,7 +381,7 @@ export const spec: OpenAPIV3.Document = {
     },
     schemas: {
       Workspace: workspaceSchemas.definitions.Workspace as any,
-      Board: workspaceSchemas.definitions.Board as any,
+
       WorkspaceMembership: workspaceSchemas.definitions
         .WorkspaceMembership as any,
       WorkspaceInvite: workspaceSchemas.definitions.WorkspaceInvite as any,

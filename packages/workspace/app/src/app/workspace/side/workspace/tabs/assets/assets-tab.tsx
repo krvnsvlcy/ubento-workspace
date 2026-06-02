@@ -14,7 +14,7 @@ export function AssetsTab() {
 export const assetsTab: WorkspaceTabDefinition = {
   id: "assets",
   name: "Assets",
-  icon: "assets",
+  icon: "box",
   component: AssetsTab,
   enabled: ({ workspaceMode }) => workspaceMode === "edit",
 };

@@ -1,54 +1,28 @@
-import {
-  Bolt,
-  Box,
-  CircleX,
-  Component,
-  Edit2,
-  Home,
-  LayoutGrid,
-  PanelsTopLeft,
-  Plus,
-  Trash2,
-  Sparkles,
-  Info,
-} from "lucide-react";
+import { DynamicIcon, iconNames, type IconName } from "lucide-react/dynamic";
 
-type LucideIcon = React.ComponentType<React.ComponentProps<"svg">>;
-
-const iconMap = {
-  plus: Plus,
-  home: Home,
-  workspace: LayoutGrid,
-  board: PanelsTopLeft,
-  assets: Box,
-  service: Bolt,
-  component: Component,
-  edit: Edit2,
-  trash: Trash2,
-  sparkles: Sparkles,
-  info: Info,
-} satisfies Record<string, LucideIcon>;
-
-export type IconKey = keyof typeof iconMap;
+export { IconName, iconNames };
 
 export function Icon({
   icon,
   size = 16,
   className = "",
   strokeWidth = 1.25,
+  style,
 }: {
-  icon: IconKey;
+  icon: IconName;
   size?: number;
   className?: string;
   strokeWidth?: number;
+  style?: React.CSSProperties;
 }) {
-  const Icon = iconMap[icon] || CircleX;
   return (
-    <Icon
+    <DynamicIcon
+      name={icon as any}
       size={size}
       strokeWidth={strokeWidth}
       absoluteStrokeWidth
       className={className}
+      style={style}
     />
   );
 }

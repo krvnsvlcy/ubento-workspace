@@ -3,7 +3,7 @@ import clsx from "clsx";
 import { ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { Action, ActionProps } from "../action/action";
-import { Icon, IconKey } from "../icon/icon";
+import { Icon, IconName } from "../icon/icon";
 import { useTreeDepth } from "./tree-indent";
 
 export function TreeEntry({
@@ -23,7 +23,7 @@ export function TreeEntry({
   ...props
 }: {
   className?: string;
-  icon?: IconKey | React.ReactNode;
+  icon?: IconName | Exclude<React.ReactNode, string>;
   actions?: ActionProps[];
   actionMode?: "hidden" | "visible" | "hover";
   active?: boolean;
@@ -47,7 +47,7 @@ export function TreeEntry({
       {typeof icon === "string" ? (
         <Icon
           strokeWidth={active ? 1.5 : 1.25}
-          icon={icon as IconKey}
+          icon={icon as IconName}
           size={16}
         />
       ) : (

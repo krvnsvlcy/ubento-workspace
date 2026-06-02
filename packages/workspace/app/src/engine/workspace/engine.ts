@@ -103,7 +103,7 @@ export function createWorkspaceEngine({
         const b = board as any;
         result[id] = {
           id: b.id,
-          title: b.name,
+          title: b.title,
           spec: {
             isValid: true,
             data: {
@@ -128,8 +128,7 @@ export function createWorkspaceEngine({
     leftPanelOpen: true,
     workspace: {
       id: workspace.id,
-      title: workspace.name,
-      slug: workspace.slug,
+      title: workspace.title,
       spec: parsedWorkspaceSpec,
     },
     tsServiceStatus: {
@@ -563,7 +562,7 @@ export function createWorkspaceEngine({
 
   const persistWorkspace = debounce(async (data: BentoWorkspaceData) => {
     await workspaceService.updateWorkspace(data.id, {
-      name: data.title,
+      title: data.title,
       data: data.spec.data as any,
     });
   }, 1000);
@@ -714,7 +713,6 @@ export function createWorkspaceEngine({
         data: {
           id: ws.id,
           title: ws.title,
-          slug: ws.slug,
           services,
         },
       },

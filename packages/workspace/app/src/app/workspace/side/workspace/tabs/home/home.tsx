@@ -1,15 +1,18 @@
 import { Icon } from "@/components/icon/icon";
 import { SideSection } from "@/components/side/section";
 import { TreeEntry } from "@/components/tree/tree-entry";
-import { CreateWorkspaceModal } from "@/modals/create_workspace/create_workspace";
-import { useModal } from "@/utils/modal-store";
 import { useUbento, useUbentoEngine } from "@/hooks/app-engine";
+import { CreateWorkspaceModal } from "@/modals/create_workspace/create_workspace";
+import { workspaceColorMap } from "@/utils/colors.js";
+import { useModal } from "@/utils/modal-store";
 import { TabDefinition } from "../../../types";
 
 export function WorkspaceItem({ workspace }: { workspace: any }) {
   const engine = useUbentoEngine();
   const location = engine.useState((s) => s.location);
-  const isActive = location.view === "workspace" && location.params.workspaceId === workspace.id;
+  const isActive =
+    location.view === "workspace" &&
+    location.params.workspaceId === workspace.id;
 
   return (
     <button
@@ -20,8 +23,15 @@ export function WorkspaceItem({ workspace }: { workspace: any }) {
           : "text-content-subtle hover:bg-surface-hover hover:text-content"
       }`}
     >
-      <Icon icon="workspace" />
-      <span className="truncate">{workspace.name}</span>
+      <Icon
+        icon={workspace.metadata?.icon || "layout-grid"}
+        style={
+          workspace.metadata?.accentColor
+            ? { color: workspaceColorMap[workspace.metadata.accentColor] }
+            : undefined
+        }
+      />
+      <span className="truncate">{workspace.title}</span>
     </button>
   );
 }
@@ -52,16 +62,33 @@ export function HomeTab() {
         },
       ]}
     >
-      {(workspaces || []).map((workspace) => (
-        <TreeEntry
-          key={workspace.id}
-          icon="workspace"
-          active={location.view === "workspace" && location.params.workspaceId === workspace.id}
-          onClick={() => engine.openWorkspace(workspace.id)}
-        >
-          {workspace.name}
-        </TreeEntry>
-      ))}
+      {(workspaces || []).map((workspace) => {
+        const workspaceIcon = (workspace.metadata?.icon || "workspace") as any;
+        const accentColor = workspace.metadata?.accentColor;
+        const colorHex = accentColor
+          ? workspaceColorMap[accentColor]
+          : undefined;
+        const iconNode = (
+          <Icon
+            icon={workspaceIcon}
+            style={colorHex ? { color: colorHex } : undefined}
+          />
+        );
+
+        return (
+          <TreeEntry
+            key={workspace.id}
+            icon={iconNode}
+            active={
+              location.view === "workspace" &&
+              location.params.workspaceId === workspace.id
+            }
+            onClick={() => engine.openWorkspace(workspace.id)}
+          >
+            {workspace.title}
+          </TreeEntry>
+        );
+      })}
     </SideSection>
   );
 }

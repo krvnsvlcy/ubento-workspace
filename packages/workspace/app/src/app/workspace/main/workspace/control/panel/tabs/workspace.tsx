@@ -43,11 +43,6 @@ export function WorkspaceTab({ controller }: { controller: WorkspaceEngine }) {
             onChange={(v) => updateWorkspace({ title: v } as any)}
           />
         </PropertyRow>
-        <PropertyRow label="Slug">
-          <span className="font-mono text-[10px] text-content-subtle">
-            {workspace.slug}
-          </span>
-        </PropertyRow>
         <PropertyRow label="Home Board">
           <Select
             value={(workspace as any).homeBoardId || ""}

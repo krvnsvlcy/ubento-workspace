@@ -7,6 +7,8 @@ import { CreateWorkspaceModal } from "@/modals/create_workspace/create_workspace
 import { useModal } from "@/utils/modal-store";
 import { Building2 } from "lucide-react";
 import { TeamSideLayout } from "./team-layout";
+import { Icon } from "@/components/icon/icon.js";
+import { workspaceColorMap } from "@/utils/colors.js";
 
 export function TeamSide() {
   const engine = useUbentoEngine();
@@ -47,16 +49,28 @@ export function TeamSide() {
           ]}
           actionMode="visible"
         >
-          {(workspaces || []).map((workspace) => (
-            <TreeEntry
-              key={workspace.id}
-              icon="workspace"
-              active={location.view === "workspace" && location.params.workspaceId === workspace.id}
-              onClick={() => engine.openWorkspace(workspace.id)}
-            >
-              {workspace.name}
-            </TreeEntry>
-          ))}
+          {(workspaces || []).map((workspace) => {
+            const workspaceIcon = (workspace.metadata?.icon || "workspace") as any;
+            const accentColor = workspace.metadata?.accentColor;
+            const colorHex = accentColor ? workspaceColorMap[accentColor] : undefined;
+            const iconNode = (
+              <Icon
+                icon={workspaceIcon}
+                style={colorHex ? { color: colorHex } : undefined}
+              />
+            );
+
+            return (
+              <TreeEntry
+                key={workspace.id}
+                icon={iconNode}
+                active={location.view === "workspace" && location.params.workspaceId === workspace.id}
+                onClick={() => engine.openWorkspace(workspace.id)}
+              >
+                {workspace.title}
+              </TreeEntry>
+            );
+          })}
         </SideSection>
       </div>
     </TeamSideLayout>

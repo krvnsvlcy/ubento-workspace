@@ -56,23 +56,14 @@ export class WorkspaceService {
     return extractResponseData(result, true);
   }
 
-  async getWorkspaceBySlug(slug: string) {
-    const result = await this.workspaceClient.get("/workspaces/slug/{slug}", {
-      params: {
-        path: { slug },
-      },
-    });
-    return extractResponseData(result, true);
-  }
-
   async createWorkspace(data: {
-    name: string;
+    title: string;
     team_id: string;
-    description?: string;
+    metadata: Record<string, unknown>;
     data: Record<string, unknown>;
   }) {
     const result = await this.workspaceClient.post("/workspaces", {
-      body: data,
+      body: data as any,
     });
     return extractResponseData(result, true);
   }
@@ -80,8 +71,8 @@ export class WorkspaceService {
   async updateWorkspace(
     workspaceId: string,
     data: {
-      name?: string;
-      description?: string;
+      title?: string;
+      metadata?: Record<string, unknown>;
       data?: Record<string, unknown>;
     },
   ) {
@@ -91,7 +82,7 @@ export class WorkspaceService {
         params: {
           path: { workspace_id: workspaceId },
         },
-        body: data,
+        body: data as any,
       },
     );
     return extractResponseData(result, true);
@@ -106,81 +97,6 @@ export class WorkspaceService {
         },
       },
     );
-    return extractResponseData(result, true);
-  }
-
-  // ===== Boards =====
-
-  async listBoards({
-    workspace_id,
-    limit,
-    cursor,
-    parent_id,
-  }: {
-    workspace_id: string;
-    limit?: number;
-    cursor?: string;
-    parent_id?: string | null;
-  }) {
-    const result = await this.workspaceClient.get("/boards", {
-      params: {
-        query: {
-          workspace_id,
-          limit,
-          cursor,
-          parent_id,
-        } as any,
-      },
-    });
-    return extractResponseData(result, true);
-  }
-
-  async getBoard(boardId: string) {
-    const result = await this.workspaceClient.get("/boards/{board_id}", {
-      params: {
-        path: { board_id: boardId },
-      },
-    });
-    return extractResponseData(result, true);
-  }
-
-  async createBoard(data: {
-    workspace_id: string;
-    name: string;
-    parent_id?: string | null;
-    data: any;
-    index?: string | null;
-  }) {
-    const result = await this.workspaceClient.post("/boards", {
-      body: data as any,
-    });
-    return extractResponseData(result, true);
-  }
-
-  async updateBoard(
-    boardId: string,
-    data: {
-      name?: string;
-      parent_id?: string | null;
-      data?: any;
-      index?: string | null;
-    },
-  ) {
-    const result = await this.workspaceClient.patch("/boards/{board_id}", {
-      params: {
-        path: { board_id: boardId },
-      },
-      body: data as any,
-    });
-    return extractResponseData(result, true);
-  }
-
-  async deleteBoard(boardId: string) {
-    const result = await this.workspaceClient.delete("/boards/{board_id}", {
-      params: {
-        path: { board_id: boardId },
-      },
-    });
     return extractResponseData(result, true);
   }
 

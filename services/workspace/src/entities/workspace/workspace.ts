@@ -1,8 +1,6 @@
 import {
   generateBareId,
-  generateSlug,
   makeEntityId,
-  slugify,
   ubentoEntities,
 } from "@ubento/services.primitives";
 import { prismaListWithCursor } from "@ubento/services.toolkit";
@@ -14,42 +12,21 @@ export async function getWorkspace(id: string) {
   });
 }
 
-export async function getWorkspaceBySlug(slug: string) {
-  return await prisma.workspace.findUnique({
-    where: { slug },
-  });
-}
-
 export async function createWorkspace(data: {
-  name: string;
-  description?: string;
+  title: string;
   team_id: string;
+  metadata: any;
   data: any;
-  slug?: string;
 }) {
   const id = makeEntityId({
     code: ubentoEntities.workspace.code,
     bareId: generateBareId(),
   });
 
-  let slug = data.slug ? slugify(data.slug) : generateSlug(data.name);
-
-  // Ensure slug uniqueness
-  let attempts = 0;
-  while (attempts < 10) {
-    const existing = await prisma.workspace.findUnique({
-      where: { slug },
-    });
-    if (!existing) break;
-    slug = `${slug}-${Math.floor(Math.random() * 1000)}`;
-    attempts++;
-  }
-
   return await prisma.workspace.create({
     data: {
       id,
       ...data,
-      slug,
     },
   });
 }
@@ -57,19 +34,11 @@ export async function createWorkspace(data: {
 export async function updateWorkspace(
   id: string,
   data: Partial<{
-    name: string;
-    description: string;
+    title: string;
+    metadata: any;
     data: any;
-    slug: string;
   }>,
 ) {
-  if (data.slug) {
-    data.slug = slugify(data.slug);
-    if (data.slug!.length < 3) {
-      throw new Error("Slug must be at least 3 characters");
-    }
-  }
-
   return await prisma.workspace.update({
     where: { id },
     data,

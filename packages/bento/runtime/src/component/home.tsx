@@ -1,5 +1,5 @@
-import { Button, Heading, Input, Text } from "@ubento/bento.arlo-core";
-import { ChevronRight, Layout, Plus, Search } from "lucide-react";
+import { Button, Heading, Text } from "@ubento/bento.arlo-core";
+import { ChevronRight, Layout, Plus } from "lucide-react";
 import { useState } from "react";
 import { BentoRuntime } from "../runtime/runtime";
 import { WorkspaceBoardSpec } from "../spec";
@@ -11,7 +11,6 @@ type BoardMap = Record<string, WorkspaceBoardSpec>;
 export function BentoHomeView({ runtime }: { runtime: BentoRuntime }) {
   const workspace = runtime.useState((s) => s.workspace);
   const spec = runtime.useState((s) => s.workspace.spec);
-  const [search, setSearch] = useState("");
 
   const boards: BoardMap =
     (spec.isValid && (spec.data?.boards as BoardMap)) || {};
@@ -47,33 +46,16 @@ export function BentoHomeView({ runtime }: { runtime: BentoRuntime }) {
     );
   }
 
-  const lowerSearch = search.toLowerCase();
-  const matchesSearch = (b: WorkspaceBoardSpec) =>
-    !lowerSearch || b.title.toLowerCase().includes(lowerSearch);
+  const matchesSearch = (b: WorkspaceBoardSpec) => true;
 
   return (
-    <div className="h-full w-full flex flex-col items-center overflow-auto bg-background p-8 md:p-12 lg:p-16">
-      <div className="w-full max-w-2xl space-y-10 mt-8">
-        {/* Header */}
-        <div className="space-y-1">
-          <Heading level="display">{workspace.title}</Heading>
-        </div>
-
-        {/* Search + create */}
-        <div className="flex w-full gap-2">
-          <div className="grow">
-            <Input
-              value={search}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setSearch(e.target.value)
-              }
-              placeholder="Search boards…"
-              prefix={<Search size={16} />}
-            />
-          </div>
+    <div className="h-full flex flex-col items-center bg-background py-16 gap-8">
+      <div className="sticky top-0 w-full bg-background z-10 flex justify-center">
+        <div className="max-w-5xl w-full px-8 flex py-6 items-center justify-between gap-4 border-b">
+          <Heading level="h1">{workspace.title}</Heading>
           <Button
             variant="primary"
-            size="lg"
+            size="md"
             onClick={async () => {
               await runtime.createBoard();
               const spec = runtime.getState().workspace.spec;
@@ -87,8 +69,8 @@ export function BentoHomeView({ runtime }: { runtime: BentoRuntime }) {
             New Board
           </Button>
         </div>
-
-        {/* Tree */}
+      </div>
+      <div className="w-full max-w-5xl px-8">
         <div className="space-y-1">
           {roots.map((rootId) => (
             <BoardTreeNode
@@ -107,6 +89,77 @@ export function BentoHomeView({ runtime }: { runtime: BentoRuntime }) {
 }
 
 // ─── tree node ───────────────────────────────────────────────────────────────
+
+interface TreeEntryProps extends React.ComponentProps<"div"> {
+  icon?: React.ReactNode;
+  active?: boolean;
+  isContainer?: boolean;
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  depth: number;
+}
+
+function TreeEntry({
+  children,
+  icon,
+  active,
+  isContainer,
+  isOpen,
+  onOpenChange,
+  depth,
+  ...props
+}: TreeEntryProps) {
+  const [isHovered, setIsHovered] = useState(false);
+
+  const sizeClass = depth === 0 ? "w-9 h-9" : "w-8 h-8";
+  const iconSize = depth === 0 ? 16 : 14;
+
+  let iconNode = (
+    <div
+      className={`${sizeClass} rounded-xl border border-border bg-background flex items-center justify-center text-content-muted transition-colors shrink-0`}
+    >
+      {icon}
+    </div>
+  );
+
+  if (isContainer && isHovered) {
+    iconNode = (
+      <button
+        className={`${sizeClass} flex items-center justify-center text-content-muted hover:bg-surface-hover hover:text-content cursor-pointer rounded-xl border border-border bg-background transition-colors shrink-0`}
+        onClick={(e) => {
+          e.stopPropagation();
+          onOpenChange?.(!isOpen);
+        }}
+      >
+        <ChevronRight
+          size={iconSize}
+          className="transition-transform duration-150"
+          style={{
+            transform: isOpen ? "rotate(90deg)" : "rotate(0deg)",
+          }}
+        />
+      </button>
+    );
+  }
+
+  return (
+    <div
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className={`group flex items-center gap-3 rounded-xl px-4 py-3 cursor-pointer transition-colors duration-150 ${
+        active ? "bg-surface text-content" : "hover:bg-surface/50 text-content"
+      }`}
+      {...props}
+    >
+      <div className="flex items-center justify-center shrink-0">
+        {iconNode}
+      </div>
+      <div className="grow overflow-hidden truncate flex items-center justify-between">
+        {children}
+      </div>
+    </div>
+  );
+}
 
 function BoardTreeNode({
   boardId,
@@ -129,7 +182,6 @@ function BoardTreeNode({
   const children = board.children ?? [];
   const hasChildren = children.length > 0;
 
-  // If searching, only show nodes that match or have matching descendants
   const selfMatches = matchesSearch(board);
   const anyChildMatches = (id: string): boolean => {
     const b = boards[id];
@@ -140,46 +192,35 @@ function BoardTreeNode({
   if (!selfMatches && !children.some(anyChildMatches)) return null;
 
   return (
-    <div style={{ paddingLeft: depth * 16 }}>
-      {/* Row */}
-      <div
-        className="group flex items-center gap-2 rounded-lg px-3 py-2 cursor-pointer hover:bg-surface transition-colors duration-150"
+    <div style={{ paddingLeft: depth * 24 }}>
+      <TreeEntry
+        isContainer={hasChildren}
+        isOpen={expanded}
+        onOpenChange={(v) => setExpanded(v)}
+        depth={depth}
+        icon={<Layout size={depth === 0 ? 16 : 14} />}
         onClick={() => runtime.goToBoard(board.id)}
       >
-        {/* Expand toggle */}
-        <button
-          className={`shrink-0 text-content-muted transition-transform duration-200 ${
-            hasChildren ? "opacity-100" : "opacity-0 pointer-events-none"
-          } ${expanded ? "rotate-90" : ""}`}
-          onClick={(e) => {
-            e.stopPropagation();
-            setExpanded((v) => !v);
-          }}
-        >
-          <ChevronRight size={14} />
-        </button>
+        <div className="flex items-center justify-between w-full">
+          <Text
+            size={depth === 0 ? "xl" : "lg"}
+            weight={depth === 0 ? "semibold" : "medium"}
+            className="truncate flex-1"
+          >
+            {board.title || "Untitled"}
+          </Text>
 
-        {/* Icon */}
-        <div className="w-7 h-7 rounded-lg border border-border bg-background flex items-center justify-center text-content-muted group-hover:text-base group-hover:border-border/40 transition-colors shrink-0">
-          <Layout size={13} />
+          {hasChildren && (
+            <span className="text-[11px] font-medium text-content-subtle bg-surface border border-border rounded-full px-2 py-0.5 leading-none">
+              {children.length}
+            </span>
+          )}
         </div>
-
-        {/* Name */}
-        <Text weight="medium" className="truncate flex-1">
-          {board.title || "Untitled"}
-        </Text>
-
-        {/* Child count badge */}
-        {hasChildren && (
-          <span className="text-[10px] font-medium text-content-subtle bg-surface border border-border rounded-full px-1.5 py-0.5 leading-none">
-            {children.length}
-          </span>
-        )}
-      </div>
+      </TreeEntry>
 
       {/* Children */}
       {expanded && hasChildren && (
-        <div className="border-l border-border/50 ml-[22px] mt-0.5 mb-1">
+        <div className="border-l border-border/50 ml-[34px] mt-0.5 mb-1">
           {children.map((childId: string) => (
             <BoardTreeNode
               key={childId}

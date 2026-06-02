@@ -1,4 +1,4 @@
-import { IconKey } from "@/components/icon/icon";
+import { IconName } from "lucide-react/dynamic";
 import { UbentoLocation } from "../../../engine/app/location";
 
 export type TabDefinition<
@@ -6,7 +6,7 @@ export type TabDefinition<
 > = {
   id: string;
   name: string | ((location: UbentoLocation) => string);
-  icon: IconKey;
+  icon: IconName;
   component: React.ComponentType;
   enabled?: (context: C) => boolean;
 };

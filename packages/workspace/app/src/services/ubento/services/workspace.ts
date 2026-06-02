@@ -43,54 +43,11 @@ export function createUbentoWorkspaceService({
           if (params?.team_id && ws.team_id !== params.team_id) return false;
           return true;
         })
-        .sort((a, b) => a.name.localeCompare(b.name));
+        .sort((a, b) => a.title.localeCompare(b.title));
     },
   });
 
-  const boardStore = createStore<
-    workspaceClient.Board,
-    { workspace_id: string; parent_id?: string | null },
-    UbentoApiPage
-  >({
-    namespace: ubentoEntities.board.name,
-    getKey: (board) => board.id,
-    fetchOne: async (key) => {
-      return await ubentoSdk.workspace.getBoard(key);
-    },
-    fetchMany: async ({ page, params }) => {
-      if (!params?.workspace_id) {
-        throw new Error("workspace_id is required to list boards");
-      }
-      return ubentoToFabricPagedResponse(
-        await ubentoSdk.workspace.listBoards({
-          workspace_id: params.workspace_id,
-          parent_id: params?.parent_id,
-          cursor: page?.cursor,
-          limit: page?.limit,
-        }),
-      );
-    },
-    project: (entities, params) => {
-      return [...entities]
-        .filter((board) => {
-          if (
-            params?.workspace_id &&
-            board.workspace_id !== params.workspace_id
-          )
-            return false;
 
-          if (
-            params &&
-            "parent_id" in params &&
-            board.parent_id !== params.parent_id
-          )
-            return false;
-
-          return true;
-        })
-        .sort((a, b) => (a.index || "").localeCompare(b.index || "") || a.name.localeCompare(b.name));
-    },
-  });
 
   const workspaceMembershipStore = createStore<
     workspaceClient.WorkspaceMembership,
@@ -160,21 +117,7 @@ export function createUbentoWorkspaceService({
     useWorkspace: (workspaceId: string, options?: UseStoreOptions) => {
       return useStoreEntity(workspaceStore, workspaceId, options);
     },
-    useWorkspaceBySlug: (
-      { slug }: { slug: string },
-      options?: { enabled?: boolean },
-    ) => {
-      return useQuery({
-        // gcTime: 1000 * 60 * 60 * 24 * 7,
-        queryKey: ["workspace", "slug", slug],
-        queryFn: async () => {
-          const ws = await ubentoSdk.workspace.getWorkspaceBySlug(slug);
-          workspaceStore.push(ws);
-          return ws;
-        },
-        enabled: options?.enabled !== false && Boolean(slug),
-      });
-    },
+
     useWorkspaces: (
       params?: { team_id?: string },
       options?: UseStoreOptions,
@@ -184,9 +127,9 @@ export function createUbentoWorkspaceService({
     useCreateWorkspace: () => {
       return useMutation({
         mutationFn: async (data: {
-          name: string;
+          title: string;
           team_id: string;
-          description?: string;
+          metadata: Record<string, unknown>;
           data: Record<string, unknown>;
         }) => {
           return await ubentoSdk.workspace.createWorkspace(data);
@@ -199,8 +142,8 @@ export function createUbentoWorkspaceService({
     useUpdateWorkspace: (workspaceId: string) => {
       return useMutation({
         mutationFn: async (data: {
-          name?: string;
-          description?: string;
+          title?: string;
+          metadata?: Record<string, unknown>;
           data?: Record<string, unknown>;
         }) => {
           return await ubentoSdk.workspace.updateWorkspace(workspaceId, data);
@@ -221,57 +164,7 @@ export function createUbentoWorkspaceService({
       });
     },
 
-    // Boards
-    useBoard: (boardId: string, options?: UseStoreOptions) => {
-      return useStoreEntity(boardStore, boardId, options);
-    },
-    useBoards: (
-      params: { workspace_id: string; parent_id?: string | null },
-      options?: UseStoreOptions,
-    ) => {
-      return useStoreEntities(boardStore, params, options);
-    },
-    useCreateBoard: () => {
-      return useMutation({
-        mutationFn: async (data: {
-          workspace_id: string;
-          name: string;
-          data: any;
-          parent_id?: string | null;
-          index?: string | null;
-        }) => {
-          return await ubentoSdk.workspace.createBoard(data);
-        },
-        onSuccess: (board) => {
-          boardStore.push(board);
-        },
-      });
-    },
-    useUpdateBoard: (boardId: string) => {
-      return useMutation({
-        mutationFn: async (data: {
-          name?: string;
-          data?: any;
-          parent_id?: string | null;
-          index?: string | null;
-        }) => {
-          return await ubentoSdk.workspace.updateBoard(boardId, data);
-        },
-        onSuccess: (board) => {
-          boardStore.push(board);
-        },
-      });
-    },
-    useDeleteBoard: () => {
-      return useMutation({
-        mutationFn: async (boardId: string) => {
-          return await ubentoSdk.workspace.deleteBoard(boardId);
-        },
-        onSuccess: (_, boardId) => {
-          boardStore.remove(boardId);
-        },
-      });
-    },
+
 
     // Memberships
     useWorkspaceMemberships: (
@@ -356,14 +249,6 @@ export function createUbentoWorkspaceService({
       workspaceStore.push(ws);
       return ws;
     },
-    getCachedWorkspaceBySlug: (slug: string) => {
-      return workspaceStore.getCached((workspace) => workspace.slug === slug);
-    },
-    getWorkspaceBySlug: async (slug: string) => {
-      const ws = await ubentoSdk.workspace.getWorkspaceBySlug(slug);
-      workspaceStore.push(ws);
-      return ws;
-    },
     getWorkspaces: async (
       params: { team_id?: string; limit?: number; cursor?: string } = {},
     ) => {
@@ -372,9 +257,9 @@ export function createUbentoWorkspaceService({
       return res;
     },
     createWorkspace: async (data: {
-      name: string;
+      title: string;
       team_id: string;
-      description?: string;
+      metadata: Record<string, unknown>;
       data: Record<string, unknown>;
     }) => {
       const ws = await ubentoSdk.workspace.createWorkspace(data);
@@ -384,8 +269,8 @@ export function createUbentoWorkspaceService({
     updateWorkspace: async (
       workspaceId: string,
       data: {
-        name?: string;
-        description?: string;
+        title?: string;
+        metadata?: Record<string, unknown>;
         data?: Record<string, unknown>;
       },
     ) => {
@@ -399,67 +284,7 @@ export function createUbentoWorkspaceService({
       return res;
     },
 
-    // Boards
-    getBoard: async (boardId: string) => {
-      const board = await ubentoSdk.workspace.getBoard(boardId);
-      boardStore.push(board);
-      return board;
-    },
-    listBoards: async (params: {
-      workspaceId: string;
-      limit?: number;
-      cursor?: string;
-      parentId?: string | null;
-    }) => {
-      const res = await ubentoSdk.workspace.listBoards({
-        workspace_id: params.workspaceId,
-        limit: params.limit,
-        cursor: params.cursor,
-        parent_id: params.parentId,
-      });
-      boardStore.pushMany(res.data);
-      return res;
-    },
-    createBoard: async (data: {
-      name: string;
-      workspace_id: string;
-      data: Record<string, unknown>;
-      parentId?: string | null;
-      index?: string | null;
-    }) => {
-      const board = await ubentoSdk.workspace.createBoard({
-        workspace_id: data.workspace_id,
-        name: data.name,
-        data: data.data,
-        parent_id: data.parentId,
-        index: data.index,
-      });
-      boardStore.push(board);
-      return board;
-    },
-    updateBoard: async (
-      boardId: string,
-      update: {
-        name?: string;
-        data?: Record<string, unknown>;
-        parentId?: string | null;
-        index?: string | null;
-      },
-    ) => {
-      const board = await ubentoSdk.workspace.updateBoard(boardId, {
-        name: update.name,
-        data: update.data,
-        parent_id: update.parentId,
-        index: update.index,
-      });
-      boardStore.push(board);
-      return board;
-    },
-    deleteBoard: async (boardId: string) => {
-      const res = await ubentoSdk.workspace.deleteBoard(boardId);
-      boardStore.remove(boardId);
-      return res;
-    },
+
 
     // Memberships
     getWorkspaceMemberships: async (params: any = {}) => {
@@ -481,7 +306,6 @@ export function createUbentoWorkspaceService({
   };
 
   return {
-    boardStore,
     workspaceStore,
     workspaceMembershipStore,
     workspaceInviteStore,

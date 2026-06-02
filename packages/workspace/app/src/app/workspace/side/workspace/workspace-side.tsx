@@ -6,6 +6,7 @@ import {
 import { useActiveWorkspaceId, useUbentoEngine } from "@/hooks/app-engine";
 import { useAppModal } from "@/modals/app/hook";
 import { appModalRoutes } from "@/modals/app/routes";
+import { workspaceColorMap } from "@/utils/colors.js";
 import {
   Button,
   ErrorView,
@@ -44,7 +45,7 @@ function TabButton({
       })}
       variant={isActive ? "secondary" : "ghost"}
     >
-      <Icon icon={icon} size={16} />
+      <Icon icon={icon as any} size={16} />
     </Button>
   );
 }
@@ -87,11 +88,25 @@ function WorkspaceSideContent() {
 
   const ActiveComponent = activeTab?.component;
 
+  const activeIcon = (workspaceData?.metadata?.icon || "workspace") as any;
+  const accentColor = workspaceData?.metadata?.accentColor;
+  const colorHex = accentColor ? workspaceColorMap[accentColor] : undefined;
+
   return (
     <TeamSideLayout
-      icon={isLoading ? <Skeleton className="h-4 w-4" /> : <Box size={14} />}
+      icon={
+        isLoading ? (
+          <Skeleton className="h-4 w-4" />
+        ) : (
+          <Icon
+            icon={activeIcon}
+            size={14}
+            style={colorHex ? { color: colorHex } : undefined}
+          />
+        )
+      }
       title={
-        workspaceData?.name ||
+        workspaceData?.title ||
         (isLoading ? <Skeleton className="h-4 w-20" /> : "Untitled")
       }
       onTitleClick={() => push(appModalRoutes.workspace.general)}

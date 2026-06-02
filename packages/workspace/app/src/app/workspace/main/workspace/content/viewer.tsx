@@ -8,7 +8,6 @@ import { WorkspaceEngine } from "../../../../../engine/workspace/engine.js";
 
 function WorkspaceOverlay({ engine }: { engine: WorkspaceEngine }) {
   const workspaceName = engine.useState((state) => state.workspace.title);
-  const workspaceSlug = engine.useState((state) => state.workspace.slug);
   const runtimeStatus = engine.useState((state) => state.status);
 
   if (runtimeStatus === "ready") {
@@ -21,7 +20,7 @@ function WorkspaceOverlay({ engine }: { engine: WorkspaceEngine }) {
     content = <ErrorView message="Failed to load workspace" />;
   } else {
     content = (
-      <PendingView message={workspaceName || workspaceSlug || "Workspace"} />
+      <PendingView message={workspaceName || "Workspace"} />
     );
   }
 

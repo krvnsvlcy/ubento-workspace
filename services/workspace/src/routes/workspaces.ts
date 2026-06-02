@@ -12,41 +12,11 @@ import {
   createWorkspace,
   deleteWorkspace,
   getWorkspace,
-  getWorkspaceBySlug,
   listWorkspaces,
   updateWorkspace,
 } from "../entities/workspace/workspace.js";
 
 const workspacesRouter: Router = Router();
-
-// Get Workspace by Slug
-workspacesRouter.get(
-  "/slug/:slug",
-  chain(
-    validate({
-      params: z.object({
-        slug: z.string(),
-      }),
-    }),
-    enforce({
-      permissions: [ubentoAuth.actions.workspace.read],
-      scope: async (req) => {
-        const workspace = await getWorkspaceBySlug(req.params.slug as string);
-        if (!workspace) throw new NotFoundError("Workspace not found");
-        (req as any).resolvedWorkspace = workspace;
-        return ubentoAuth.scopes.workspace({
-          team_id: workspace.team_id,
-          workspace_id: workspace.id,
-        });
-      },
-    }),
-    async (req, res) => {
-      // Use the cached workspace
-      const workspace = (req as any).resolvedWorkspace;
-      res.json(dataResponse(workspace));
-    },
-  ),
-);
 
 // List Workspaces
 workspacesRouter.get(
@@ -118,9 +88,8 @@ workspacesRouter.post(
   chain(
     validate({
       body: z.object({
-        name: z.string(),
-        slug: z.string().optional(),
-        description: z.string().optional(),
+        title: z.string(),
+        metadata: z.any(),
         team_id: z.string(),
         data: z.any(),
       }),
@@ -148,9 +117,8 @@ workspacesRouter.patch(
         workspace_id: z.string(),
       }),
       body: z.object({
-        name: z.string().optional(),
-        slug: z.string().optional(),
-        description: z.string().optional(),
+        title: z.string().optional(),
+        metadata: z.any().optional(),
         data: z.any().optional(),
       }),
     }),

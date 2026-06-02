@@ -1,20 +1,26 @@
+import { Icon } from "@/components/icon/icon.js";
 import { useUbento, useUbentoEngine } from "@/hooks/app-engine";
+import { useAppModal } from "@/modals/app/hook";
+import { appModalRoutes } from "@/modals/app/routes";
 import { CreateWorkspaceModal } from "@/modals/create_workspace/create_workspace";
 import { DeleteWorkspaceModal } from "@/modals/delete_workspace/delete_workspace";
+import { workspaceColorMap } from "@/utils/colors.js";
 import { useModal } from "@/utils/modal-store";
 import {
   Button,
   Card,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
   ErrorView,
   Heading,
   PendingView,
   Text,
 } from "@ubento/bento.arlo-core";
-import { Box, MoreHorizontal, Plus, Trash2 } from "lucide-react";
+import {
+  FolderOpen,
+  MoreHorizontal,
+  Plus,
+  Settings,
+  Trash2,
+} from "lucide-react";
 import { useMemo } from "react";
 
 function Greeting({ name }: { name?: string }) {
@@ -37,6 +43,7 @@ export function Home() {
   const engine = useUbentoEngine();
   const session = engine.useState((s) => s.session);
   const { open } = useModal();
+  const { push: openAppModal } = useAppModal();
 
   const {
     data: workspaces,
@@ -102,16 +109,25 @@ export function Home() {
         <div className="space-y-1">
           <Greeting name={session?.name} />
           <div className="flex items-center justify-between">
-            <Heading level="display">Your Workspaces</Heading>
-            <Button onClick={handleCreateWorkspace} variant="primary">
-              <Plus size={14} className="mr-2" />
-              New Workspace
-            </Button>
+            <Heading level="h1">Your Workspaces</Heading>
+            <div className="flex gap-3 items-center">
+              <Button
+                onClick={() => openAppModal(appModalRoutes.account.root)}
+                variant="ghost"
+                size="icon"
+              >
+                <Settings size={14} />
+              </Button>
+              <Button onClick={handleCreateWorkspace} variant="primary">
+                <Plus size={14} />
+                New Workspace
+              </Button>
+            </div>
           </div>
         </div>
 
         <div className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {workspaces.map((workspace) => (
               <WorkspaceCard
                 key={workspace.id}
@@ -134,59 +150,71 @@ export function WorkspaceCard({
   onClick,
   onDelete,
 }: {
-  workspace: { id: string; name: string; slug: string };
+  workspace: any;
   onClick: () => void;
   onDelete?: () => Promise<void>;
 }) {
   const { open } = useModal();
+  const engine = useUbentoEngine();
 
-  const handleDeleteClick = async (e: Event) => {
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
-    await open(DeleteWorkspaceModal, {
-      workspaceName: workspace.name,
-      onConfirm: onDelete,
-    });
+    engine.openContextMenu({ x: e.clientX, y: e.clientY }, [
+      {
+        id: "open",
+        label: "Open Workspace",
+        icon: <FolderOpen size={13} />,
+        action: onClick,
+      },
+      {
+        id: "delete",
+        label: "Delete Workspace",
+        icon: <Trash2 size={13} />,
+        action: async () => {
+          await open(DeleteWorkspaceModal, {
+            workspaceName: workspace.title,
+            onConfirm: onDelete,
+          });
+        },
+      },
+    ]);
   };
 
   return (
     <Card
       onClick={onClick}
+      onContextMenu={handleContextMenu}
       variant="surface-interactive"
+      padding="sm"
       className="space-y-3 cursor-pointer group relative"
     >
       <div className="flex items-start justify-between">
-        <div className="w-12 h-12 rounded-xl border border-border bg-background flex items-center justify-center text-content group-hover:bg-content group-hover:text-background transition-colors shrink-0">
-          <Box size={18} />
+        <div className="w-12 h-12 rounded-xl bg-background flex items-center justify-center text-content transition-colors shrink-0">
+          <Icon
+            icon={(workspace.metadata?.icon || "layout-grid") as any}
+            size={20}
+            strokeWidth={1.75}
+            style={
+              workspace.metadata?.accentColor
+                ? { color: workspaceColorMap[workspace.metadata.accentColor] }
+                : undefined
+            }
+          />
         </div>
 
-        {/* More button + dropdown menu */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button
-              onClick={(e) => e.stopPropagation()}
-              className="flex h-7 w-7 items-center justify-center rounded-lg text-content-muted opacity-0 group-hover:opacity-100 transition-all hover:bg-surface hover:text-content"
-              aria-label="More options"
-            >
-              <MoreHorizontal size={15} />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
-            <DropdownMenuItem
-              className="text-content focus:text-content focus:bg-surface"
-              onSelect={handleDeleteClick}
-            >
-              <Trash2 size={13} className="mr-2 shrink-0" />
-              Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        {/* More button */}
+        <button
+          onClick={handleContextMenu}
+          className="flex h-7 w-7 items-center justify-center rounded-lg text-content-muted opacity-0 group-hover:opacity-100 transition-all hover:bg-surface hover:text-content"
+          aria-label="More options"
+        >
+          <MoreHorizontal size={15} />
+        </button>
       </div>
 
       <div>
-        <Text weight="semibold">{workspace.name}</Text>
-        <Text shade="subtle" size="sm">
-          Workspace summary goes here.
-        </Text>
+        <Text weight="semibold">{workspace.title}</Text>
       </div>
     </Card>
   );

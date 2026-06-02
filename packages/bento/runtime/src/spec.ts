@@ -58,3 +58,31 @@ export const workspaceSpecSchema = z.object({
   roots: z.array(z.string()).default([]),
 });
 export type WorkspaceSpec = z.infer<typeof workspaceSpecSchema>;
+
+export const accentColorSchema = z.enum([
+  "auburn",
+  "cinnabar",
+  "cacao",
+  "espresso",
+  "ochre",
+  "amber",
+  "sage",
+  "jade",
+  "pine",
+  "teal",
+  "azure",
+  "cobalt",
+  "violet",
+  "fig",
+  "mulberry",
+  "rose",
+  "coral",
+  "garnet",
+]);
+export type AccentColor = z.infer<typeof accentColorSchema>;
+
+export const workspaceMetadataSchema = z.object({
+  icon: z.string().optional(),
+  accentColor: accentColorSchema.optional(),
+});
+export type WorkspaceMetadata = z.infer<typeof workspaceMetadataSchema>;
