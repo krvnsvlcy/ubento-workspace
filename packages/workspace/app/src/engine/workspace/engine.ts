@@ -1,8 +1,13 @@
 import { UbentoEngine } from "@/engine/app/engine";
 import { appModalRoutes } from "@/modals/app/routes";
 import { ConfirmMutationModal } from "@/modals/confirm_mutation/confirm_mutation";
-import { MonacoService } from "@/services/monaco/monaco-service";
-import { TsService } from "@/services/ts/ts-service";
+import {
+  ModuleData,
+  ModuleStatus,
+  ModuleSyncer,
+} from "@/services/ts/module-syncer";
+import { PackageInstallStatus } from "@/services/ts/package_manager/package_manager";
+import { TsService, TsServiceStatus } from "@/services/ts/ts-service";
 import { createZustandStateController } from "@ubento/bento.arlo-core";
 import {
   BentoEngineHostRpcInterface,
@@ -35,7 +40,6 @@ import {
   userWorkspaceSettingsSchema,
 } from "../settings";
 import { createWorkspaceCopilotAgentEnvironment } from "./environment";
-const workspaceSettingsKey = "ubento-workspace";
 
 function parseSpecData<S extends z.ZodTypeAny>(
   schema: S,
@@ -59,21 +63,6 @@ function parseSpecData<S extends z.ZodTypeAny>(
   }
 }
 
-export type TsServiceStatus = {
-  status:
-    | "idle"
-    | "initializing"
-    | "loading-libs"
-    | "loading-modules"
-    | "loading-packages"
-    | "ready"
-    | "error";
-  message?: string;
-  loadedPackagesCount: number;
-  totalPackagesCount: number;
-  packageStatuses?: Record<string, "pending" | "success" | "error">;
-};
-
 export type WorkspaceState = {
   // status
   status: "pending" | "connected" | "ready" | "error";
@@ -88,24 +77,19 @@ export type WorkspaceState = {
   hover?: string;
 
   leftPanelOpen: boolean;
-
-  // watched context nodes
-  watchedContextNodes: Record<string, any>;
-
-  // ts service background status
   tsServiceStatus?: TsServiceStatus;
+  packageStatuses?: Record<string, PackageInstallStatus>;
+  moduleStatuses?: ModuleStatus[];
 };
 
 export function createWorkspaceEngine({
   workspace,
   appEngine,
   session,
-  initialSettings,
 }: {
   workspace: workspaceClient.Workspace;
   appEngine: UbentoEngine;
   session: UbentoSession;
-  initialSettings?: any;
 }) {
   let rpc: DuplexRpc<
     BentoEngineHostRpcInterface,
@@ -113,7 +97,6 @@ export function createWorkspaceEngine({
   > | null = null;
   let cleanupTargetListeners: (() => void) | null = null;
   let tsService: TsService | null = null;
-  let monacoService: MonacoService | null = null;
   const workspaceService = appEngine.ubento.workspace;
   const logger = appEngine.logger.child({ module: "workspace_engine" });
 
@@ -153,7 +136,6 @@ export function createWorkspaceEngine({
       slug: workspace.slug,
       spec: parsedWorkspaceSpec,
     },
-    watchedContextNodes: {},
     tsServiceStatus: {
       status: "idle",
       loadedPackagesCount: 0,
@@ -858,7 +840,7 @@ export function createWorkspaceEngine({
   }
 
   const engine = {
-    id: workspace.id,
+    workspaceId: workspace.id,
     appEngine,
     logger,
     copilot,
@@ -887,7 +869,10 @@ export function createWorkspaceEngine({
         try {
           await rpc.egress.setTheme({ isDark });
         } catch (err) {
-          logger.error("Failed to propagate theme change to workspace runtime", err as any);
+          logger.error(
+            "Failed to propagate theme change to workspace runtime",
+            err as any,
+          );
         }
       }
     },
@@ -1058,21 +1043,93 @@ export function createWorkspaceEngine({
 
     getTsService: () => {
       if (!tsService) {
-        tsService = new TsService(engine as any);
+        tsService = new TsService({
+          workspaceId: workspace.id,
+          logger: logger,
+          monacoService: appEngine.getMonacoService(),
+          onStatusChange: (status) => {
+            store.setState({ tsServiceStatus: status });
+          },
+          onPackageStatusesChange: (statuses) => {
+            store.setState({ packageStatuses: statuses });
+          },
+        });
+        const workspaceSpec = store.getState().workspace.spec;
+        // package syncer
+        if (workspaceSpec.isValid) {
+          tsService.updatePackages(
+            Object.entries({
+              ...workspaceSpec.data.packages,
+              react: "19",
+              "react-dom": "19",
+            }).map(([name, version]) => ({ name, version })),
+          );
+        }
+        store.subscribe((state, prev) => {
+          if (state.workspace.spec.isValid) {
+            const workspaceSpec = state.workspace.spec.data;
+
+            const packages = workspaceSpec.packages || {};
+            const prevPackages =
+              (prev.workspace.spec.data as any).packages || {};
+            if (dequal(packages, prevPackages)) return;
+
+            tsService?.updatePackages(
+              Object.entries({
+                ...(workspaceSpec.packages || {}),
+                react: "19",
+                "react-dom": "19",
+              }).map(([name, version]) => ({ name, version })),
+            );
+          }
+        });
+
+        // module syncer
+        function getModuleData(workspace: WorkspaceSpec): ModuleData[] {
+          return [
+            ...Object.entries(workspace.modules || {}).map(([name, m]) => ({
+              type: "module",
+              name,
+              moduleId: m.id,
+              versionId: m.versionId,
+            })),
+            ...Object.values(workspace.boards || {}).map((b) => ({
+              type: "board",
+              name: b.title,
+              moduleId: b.module.id,
+              versionId: b.module.versionId,
+            })),
+          ] as ModuleData[];
+        }
+        const moduleSyncer = new ModuleSyncer({
+          tsService: tsService,
+          ubentoService: appEngine.ubento,
+          workspaceId: workspace.id,
+          onStatusChange: (statuses) => {
+            store.setState({ moduleStatuses: statuses });
+          },
+        });
+        if (workspaceSpec.isValid) {
+          moduleSyncer.updateModules(getModuleData(workspaceSpec.data));
+        }
+        store.subscribe((state, prev) => {
+          const workspaceSpec = state.workspace.spec;
+          const prevWorkspaceSpec = prev.workspace.spec;
+          const data = workspaceSpec.isValid
+            ? getModuleData(workspaceSpec.data)
+            : [];
+          const prevData = prevWorkspaceSpec.isValid
+            ? getModuleData(prevWorkspaceSpec.data)
+            : [];
+          if (dequal(data, prevData)) return;
+          moduleSyncer.updateModules(data);
+        });
       }
       return tsService;
     },
 
-    getMonacoService: () => {
-      if (!monacoService) {
-        monacoService = new MonacoService(engine as any);
-      }
-      return monacoService;
-    },
-
     destroy: () => {
       tsService?.dispose();
-      monacoService?.dispose();
       rpc?.dispose();
       cleanupTargetListeners?.();
       unsubscribeEngine();

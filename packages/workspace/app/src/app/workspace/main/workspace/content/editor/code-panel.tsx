@@ -1,32 +1,31 @@
 import { CodeEditor } from "@/components/code-editor.js";
+import { makeTsPath, tsPathToMonacoUri } from "@/utils/uri";
 import { Skeleton } from "@ubento/bento.arlo-core";
 import clsx from "clsx";
-
-interface CodePanelProps {
-  value: string;
-  onChange: (value: string) => void;
-  isLoading?: boolean;
-  readOnly?: boolean;
-  className?: string;
-  onSave?: () => void;
-  moduleName: string;
-  moduleType: "components" | "modules";
-  moduleId: string;
-  versionId: string;
-}
+import { ModuleSourceStatus } from "./use-module-source";
 
 export function CodePanel({
   value,
   onChange,
-  isLoading,
+  status,
   readOnly = false,
   className,
   onSave,
-  moduleName,
-  moduleType,
+  workspaceId,
   moduleId,
   versionId,
-}: CodePanelProps) {
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  status: ModuleSourceStatus;
+  readOnly?: boolean;
+  className?: string;
+  onSave?: () => void;
+  workspaceId: string;
+  moduleId: string;
+  versionId: string;
+}) {
+  const isLoading = status === "loading" || status === "idle";
   return (
     <div
       className={clsx(
@@ -73,16 +72,13 @@ export function CodePanel({
         </div>
       ) : (
         <CodeEditor
+          uri={tsPathToMonacoUri(makeTsPath(workspaceId, moduleId, versionId))}
           value={value}
           onChange={onChange}
-          language={moduleType === "components" ? "ubento-tsx" : "ubento-ts"}
+          language={"ubento-tsx"}
           lineNumbers={true}
           readOnly={readOnly}
           onSave={onSave}
-          moduleName={moduleName}
-          moduleType={moduleType}
-          moduleId={moduleId}
-          versionId={versionId}
           className="w-full h-full"
         />
       )}

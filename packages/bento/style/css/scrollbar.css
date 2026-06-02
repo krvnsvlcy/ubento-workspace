@@ -50,9 +50,9 @@
   --os-track-bg: transparent;
   --os-track-bg-hover: transparent;
   --os-track-bg-active: transparent;
-  --os-thumb-bg: var(--color-neutral-border, #787878);
-  --os-thumb-bg-hover: var(--color-neutral-border-hover, #595959);
-  --os-thumb-bg-active: var(--color-neutral-border-active, #454545);
+  --os-thumb-bg: var(--color-border, #787878);
+  --os-thumb-bg-hover: var(--color-border-hover, #595959);
+  --os-thumb-bg-active: var(--color-border-active, #454545);
   --os-thumb-border-radius: 3px;
   --os-track-border-radius: 3px;
 }

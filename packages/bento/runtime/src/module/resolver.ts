@@ -140,8 +140,7 @@ export function updateImportMap(overrides: Record<string, string>) {
  * when the workspace spec is loaded.
  */
 export function injectWorkspaceImportMap(
-  components: Record<string, ModuleRef> = {},
-  libraries: Record<string, ModuleRef> = {},
+  modules: Record<string, ModuleRef> = {},
 ) {
   // 1. Generate our core host-provided dependencies via Blobs
   const baseProxies = createProxyModules();
@@ -149,14 +148,8 @@ export function injectWorkspaceImportMap(
   // 2. Generate Service Worker routes with strict namespaces
   const remoteMappings: Record<string, string> = {};
 
-  // Map components to the @/components/ namespace
-  Object.entries(components).forEach(([name, ref]) => {
-    const alias = `@/components/${name}`;
-    remoteMappings[alias] = `${MODULE_BASE_PATH}${ref.id}@${ref.versionId}.js`;
-  });
-
   // Map libraries to the @/modules/ namespace
-  Object.entries(libraries).forEach(([name, ref]) => {
+  Object.entries(modules).forEach(([name, ref]) => {
     const alias = `@/modules/${name}`;
     remoteMappings[alias] = `${MODULE_BASE_PATH}${ref.id}@${ref.versionId}.js`;
   });
@@ -164,8 +157,7 @@ export function injectWorkspaceImportMap(
   console.log("overrides:", {
     baseProxies,
     remoteMappings,
-    components,
-    libraries,
+    libraries: modules,
   });
 
   // 3. Combine and inject into the DOM

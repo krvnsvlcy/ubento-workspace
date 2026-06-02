@@ -50,7 +50,7 @@ export function Tooltip({
           <Tooltip_.Content
             sideOffset={sideOffset}
             side={side}
-            className="max-w-60 select-none rounded-md px-2.5 py-1.5 text-sm leading-5 shadow-md text-content bg-surface"
+            className="max-w-60 select-none rounded-md px-2.5 py-1.5 text-sm leading-5 shadow-md text-content bg-content text-contrast"
             style={{
               zIndex: 1000,
             }}
@@ -58,7 +58,7 @@ export function Tooltip({
             {content}
             {showArrow && (
               <Tooltip_.Arrow
-                className="border-none fill-surface"
+                className="border-none fill-content"
                 width={12}
                 height={7}
                 aria-hidden="true"

@@ -268,7 +268,8 @@ export function createDuplexRpc<
         if (typeof prop !== "string") {
           return undefined;
         }
-        return (arg: any, options?: { timeout?: number }) => call(prop, arg, options);
+        return (arg: any, options?: { timeout?: number }) =>
+          call(prop, arg, options);
       },
     },
   );
@@ -380,7 +381,6 @@ export function createDuplexRpc<
             durationMs: Date.now() - startedAt,
           });
         } catch (e: any) {
-          debugger;
           const error = e?.message ?? String(e ?? "Unknown error");
           console.error(e);
           const err: ResErrMsg = {

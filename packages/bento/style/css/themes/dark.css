@@ -4,8 +4,8 @@
 
 .dark {
   /* Deep, monastic black background with crisp off-white text */
-  --color-background: #25272c;
-  --color-foreground: #e7ecf0;
+  --color-background: #1e1e1e;
+  --color-foreground: #f9faff;
 
   /* Base root fallback */
   --color-base: #ffffff;

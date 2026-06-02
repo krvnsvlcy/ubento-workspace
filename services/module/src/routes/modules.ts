@@ -335,6 +335,7 @@ modulesRouter.get(
         throw new NotFoundError("File not found");
       }
 
+      res.set("Cache-Control", "public, max-age=31536000, immutable");
       res.json(dataResponse({ content }));
     },
   ),

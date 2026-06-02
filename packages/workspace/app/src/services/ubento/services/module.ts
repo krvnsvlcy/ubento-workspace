@@ -292,7 +292,10 @@ export function createUbentoModuleService({
             module_ids?: string[];
           };
         }) => {
-          return await ubentoSdk.module.updateModuleCollection(collectionId, data);
+          return await ubentoSdk.module.updateModuleCollection(
+            collectionId,
+            data,
+          );
         },
         onSuccess: (collection) => {
           moduleCollectionStore.push(collection);
@@ -318,7 +321,10 @@ export function createUbentoModuleService({
           collectionId: string;
           file: File | Blob;
         }) => {
-          return await ubentoSdk.module.uploadCollectionCoverImage(collectionId, file);
+          return await ubentoSdk.module.uploadCollectionCoverImage(
+            collectionId,
+            file,
+          );
         },
         onSuccess: (collection) => {
           moduleCollectionStore.push(collection);
@@ -413,7 +419,8 @@ export function createUbentoModuleService({
     },
     // Collections
     getModuleCollection: async (collectionId: string) => {
-      const collection = await ubentoSdk.module.getModuleCollection(collectionId);
+      const collection =
+        await ubentoSdk.module.getModuleCollection(collectionId);
       moduleCollectionStore.push(collection);
       return collection;
     },
@@ -449,7 +456,10 @@ export function createUbentoModuleService({
         module_ids?: string[];
       },
     ) => {
-      const collection = await ubentoSdk.module.updateModuleCollection(collectionId, data);
+      const collection = await ubentoSdk.module.updateModuleCollection(
+        collectionId,
+        data,
+      );
       moduleCollectionStore.push(collection);
       return collection;
     },
@@ -458,8 +468,14 @@ export function createUbentoModuleService({
       moduleCollectionStore.remove(collectionId);
       return res;
     },
-    uploadCollectionCoverImage: async (collectionId: string, file: File | Blob) => {
-      const collection = await ubentoSdk.module.uploadCollectionCoverImage(collectionId, file);
+    uploadCollectionCoverImage: async (
+      collectionId: string,
+      file: File | Blob,
+    ) => {
+      const collection = await ubentoSdk.module.uploadCollectionCoverImage(
+        collectionId,
+        file,
+      );
       moduleCollectionStore.push(collection);
       return collection;
     },

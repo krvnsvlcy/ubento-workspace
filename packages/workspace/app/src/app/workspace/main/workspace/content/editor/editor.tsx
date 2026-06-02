@@ -1,22 +1,21 @@
 import { useWorkspaceEngine } from "@/contexts/workspace";
-import { useUbento } from "@/hooks/app-engine";
+import { useUbento, useUbentoEngine } from "@/hooks/app-engine";
 import { useEditingModule } from "@/hooks/workspace";
 import { UpgradeModuleModal } from "@/modals/upgrade_module/upgrade_module";
 import { Button } from "@ubento/bento.arlo-core";
 import { useEffect, useState } from "react";
 import { SplitView } from "../../components/split-view";
 import { CodePanel } from "./code-panel";
-import { EditorFooter } from "./editor-footer";
-import { TsControlPanel } from "./ts-control-panel";
+import { EditorFooter } from "./footer/editor-footer";
 import { Header, ViewMode } from "./header";
 import { PreviewPanel } from "./preview-panel";
 import { useModuleSource } from "./use-module-source";
 
 export function Editor() {
   const workspaceEngine = useWorkspaceEngine();
+  const appEngine = useUbentoEngine();
   const ubento = useUbento();
   const [mode, setMode] = useState<ViewMode>("split");
-  const [showControlPanel, setShowControlPanel] = useState(false);
 
   const editingModule = useEditingModule();
   const moduleId = editingModule?.id || "";
@@ -32,25 +31,31 @@ export function Editor() {
   // Lazily initialize Monaco and TS Services on editor mount
   useEffect(() => {
     workspaceEngine.getTsService().initialize();
-    workspaceEngine.getMonacoService().getMonaco();
-  }, [workspaceEngine]);
+    appEngine.getMonacoService().getMonaco();
+  }, [workspaceEngine, appEngine]);
 
   const spec = workspaceEngine.store.getState().workspace.spec.data as any;
   let moduleName = "";
   let moduleType: "components" | "modules" = "components";
 
   if (spec) {
-    const components = (spec.components || {}) as Record<string, { id: string; versionId: string }>;
-    const modules = (spec.modules || {}) as Record<string, { id: string; versionId: string }>;
+    const components = (spec.components || {}) as Record<
+      string,
+      { id: string; versionId: string }
+    >;
+    const modules = (spec.modules || {}) as Record<
+      string,
+      { id: string; versionId: string }
+    >;
     const compEntry = Object.entries(components).find(
-      ([_, ref]) => ref.id === moduleId
+      ([_, ref]) => ref.id === moduleId,
     );
     if (compEntry) {
       moduleName = compEntry[0];
       moduleType = "components";
     } else {
       const modEntry = Object.entries(modules).find(
-        ([_, ref]) => ref.id === moduleId
+        ([_, ref]) => ref.id === moduleId,
       );
       if (modEntry) {
         moduleName = modEntry[0];
@@ -63,8 +68,9 @@ export function Editor() {
     content,
     setContent,
     status,
-    isLoading,
-    update: saveModule,
+    save: saveModule,
+    isDirty,
+    error,
   } = useModuleSource({
     moduleId,
     versionId,
@@ -77,55 +83,71 @@ export function Editor() {
     });
   };
 
-  const handleUpgrade = async () => {
-    if (!latestVersionId) return;
-
+  const runUpgrade = async ({
+    withConfirmation = true,
+    moduleId,
+    versionId,
+    latestVersionId,
+  }: {
+    withConfirmation?: boolean;
+    moduleId: string;
+    versionId: string;
+    latestVersionId: string;
+  }) => {
     // 1. Get references that will be updated
     const refs = workspaceEngine.getModuleReferences({
       id: moduleId,
       versionId: versionId,
     });
 
-    // 2. Open the UpgradeModuleModal
-    const confirmed = await workspaceEngine.appEngine.openModal(
-      UpgradeModuleModal,
-      {
-        moduleId,
-        versionId,
-        latestVersionId,
-        refs,
-      },
-    );
+    if (withConfirmation) {
+      // 2. Open the UpgradeModuleModal
+      const confirmed = await workspaceEngine.appEngine.openModal(
+        UpgradeModuleModal,
+        {
+          moduleId,
+          versionId,
+          latestVersionId,
+          refs,
+        },
+      );
+      if (!confirmed) return;
+    }
 
     // 3. If confirmed, update reference in spec and update editingModule settings
-    if (confirmed) {
-      await workspaceEngine.updateModuleReferences({
-        refs,
-        module: {
-          id: moduleId,
-          versionId: latestVersionId,
-        },
-      });
+    await workspaceEngine.updateModuleReferences({
+      refs,
+      module: {
+        id: moduleId,
+        versionId: latestVersionId,
+      },
+    });
 
-      workspaceEngine.userSetting.update({
-        editingModule: {
-          id: moduleId,
-          versionId: latestVersionId,
-        },
-      });
-
-      workspaceEngine.appEngine.notify({
-        title: "Module Upgraded",
-        message:
-          "Successfully upgraded references and updated current session to the latest version.",
-        type: "success",
-      });
-    }
+    workspaceEngine.userSetting.update({
+      editingModule: {
+        id: moduleId,
+        versionId: latestVersionId,
+      },
+    });
+  };
+  const handleUpgrade = async () => {
+    return runUpgrade({
+      withConfirmation: true,
+      moduleId,
+      versionId,
+      latestVersionId,
+    });
   };
 
-  const handleSave = () => {
-    if (!isLatestVersion) return;
-    saveModule(content);
+  const handleSave = async () => {
+    if (!isLatestVersion || !isDirty) return;
+    const mod = await saveModule();
+    await runUpgrade({
+      withConfirmation: false,
+      moduleId: mod.id,
+      versionId,
+      latestVersionId: mod.latest_version_id,
+    });
   };
 
   // Keyboard shortcut listener for Ctrl+S / Cmd+S when outside the editor
@@ -150,8 +172,10 @@ export function Editor() {
       <Header
         onClose={handleCloseEditor}
         mode={mode}
+        isDirty={isDirty}
         onModeChange={setMode}
-        saveStatus={status}
+        moduleStatus={status}
+        error={error}
       />
 
       {!isLatestVersion && (
@@ -177,14 +201,13 @@ export function Editor() {
           <CodePanel
             value={content}
             onChange={setContent}
-            isLoading={isLoading}
+            status={status}
             readOnly={!isLatestVersion}
             onSave={handleSave}
-            moduleName={moduleName}
-            moduleType={moduleType}
+            className="border-none"
+            workspaceId={workspaceEngine.workspaceId}
             moduleId={moduleId}
             versionId={versionId}
-            className="border-none"
           />
         )}
         {mode === "preview" && (
@@ -196,11 +219,10 @@ export function Editor() {
               <CodePanel
                 value={content}
                 onChange={setContent}
-                isLoading={isLoading}
+                status={status}
                 readOnly={!isLatestVersion}
                 onSave={handleSave}
-                moduleName={moduleName}
-                moduleType={moduleType}
+                workspaceId={workspaceEngine.workspaceId}
                 moduleId={moduleId}
                 versionId={versionId}
                 className="border-r border-border"
@@ -211,13 +233,7 @@ export function Editor() {
           />
         )}
       </div>
-      {showControlPanel && (
-        <TsControlPanel onClose={() => setShowControlPanel(false)} />
-      )}
-      <EditorFooter 
-        showControlPanel={showControlPanel} 
-        setShowControlPanel={setShowControlPanel} 
-      />
+      <EditorFooter />
     </div>
   );
 }

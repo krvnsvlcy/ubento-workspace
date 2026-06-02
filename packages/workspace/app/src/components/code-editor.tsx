@@ -1,27 +1,12 @@
 import { useDarkMode } from "@/app/hooks/use-dark-mode";
-import { useWorkspaceEngine } from "@/contexts/workspace";
-import Editor from "@monaco-editor/react";
-import { useRef, useEffect } from "react";
-
-interface CodeEditorProps {
-  value: string;
-  onChange?: (val: string) => void;
-  language?: string;
-  folding?: boolean;
-  lineNumbers?: boolean;
-  readOnly?: boolean;
-  minimap?: boolean;
-  height?: string;
-  className?: string;
-  onSave?: () => void;
-  moduleName?: string;
-  moduleType?: "components" | "modules";
-  moduleId?: string;
-  versionId?: string;
-}
+import { useUbentoEngine } from "@/hooks/app-engine";
+import { Monaco } from "@/services/monaco/monaco-service";
+import type * as monacoType from "monaco-editor";
+import { useEffect, useRef, useState } from "react";
 
 export function CodeEditor({
   value,
+  uri,
   onChange,
   language = "json",
   folding = true,
@@ -31,82 +16,169 @@ export function CodeEditor({
   height = "100%",
   className,
   onSave,
-  moduleName,
-  moduleType,
-  moduleId,
-  versionId,
-}: CodeEditorProps) {
+}: {
+  value: string;
+  uri?: string;
+  onChange?: (val: string) => void;
+  language?: string;
+  folding?: boolean;
+  lineNumbers?: boolean;
+  readOnly?: boolean;
+  minimap?: boolean;
+  height?: string;
+  className?: string;
+  onSave?: () => void;
+}) {
   const isDark = useDarkMode();
-  const workspaceEngine = useWorkspaceEngine();
+  const appEngine = useUbentoEngine();
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const editorRef = useRef<monacoType.editor.IStandaloneCodeEditor | null>(
+    null,
+  );
+  const [monaco, setMonaco] = useState<Monaco | null>(null);
+
   const onSaveRef = useRef(onSave);
   onSaveRef.current = onSave;
 
-  const handleEditorMount = (editor: any, monaco: any) => {
-    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
-      onSaveRef.current?.();
-    });
-  };
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
 
-  // Sync initial content to TS Service
-  useEffect(() => {
-    if (workspaceEngine && moduleId && versionId && value) {
-      const ext = moduleType === "components" ? "tsx" : "ts";
-      const virtualPath = `/workspace/modules/${moduleId}/${versionId}.${ext}`;
-      workspaceEngine.getTsService().writeFile(virtualPath, value);
-    }
-  }, [workspaceEngine, moduleId, versionId]);
-
-  const handleValueChange = (val: string | undefined) => {
-    const newVal = val || "";
-    onChange?.(newVal);
-
-    if (workspaceEngine && moduleId && versionId) {
-      const ext = moduleType === "components" ? "tsx" : "ts";
-      const virtualPath = `/workspace/modules/${moduleId}/${versionId}.${ext}`;
-      workspaceEngine.getTsService().writeFile(virtualPath, newVal);
-    }
-  };
+  const valueRef = useRef(value);
+  valueRef.current = value;
 
   const monacoLanguage = language === "tsx" ? "typescript" : language;
 
   const getPath = () => {
-    if (moduleId && versionId) {
-      const ext = moduleType === "components" ? "tsx" : "ts";
-      return `file:///workspace/modules/${moduleId}/${versionId}.${ext}`;
-    }
+    if (uri) return uri;
     if (language === "tsx") return "file:///main.tsx";
     if (language === "typescript") return "file:///main.ts";
     if (language === "javascript" || language === "jsx")
       return "file:///main.jsx";
-    return `file:///main.${language}`;
+    return `file:///main.tsx`;
   };
 
+  const path = getPath();
+
+  // Load monaco instance via MonacoService
+  useEffect(() => {
+    let active = true;
+    appEngine
+      .getMonacoService()
+      .getMonaco()
+      .then((m) => {
+        if (active) {
+          setMonaco(m);
+        }
+      });
+    return () => {
+      active = false;
+    };
+  }, [appEngine]);
+
+  // Handle editor creation
+  useEffect(() => {
+    if (!monaco || !containerRef.current) return;
+
+    const editor = monaco.editor.create(containerRef.current, {
+      theme: isDark ? "vs-dark" : "vs",
+      minimap: { enabled: minimap },
+      fontSize: 13,
+      fontFamily: "var(--font-mono)",
+      lineNumbers: lineNumbers ? "on" : "off",
+      readOnly: readOnly,
+      padding: { top: 4, bottom: 4 },
+      automaticLayout: true,
+      fixedOverflowWidgets: true,
+    });
+
+    editorRef.current = editor;
+
+    // Add save command
+    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
+      onSaveRef.current?.();
+    });
+
+    return () => {
+      editor.dispose();
+      editorRef.current = null;
+    };
+  }, [monaco]);
+
+  // Handle model setup and switching
+  useEffect(() => {
+    if (!monaco || !editorRef.current) return;
+
+    const uri = monaco.Uri.parse(path);
+    let model = monaco.editor.getModel(uri);
+
+    if (!model) {
+      model = monaco.editor.createModel(valueRef.current, monacoLanguage, uri);
+    } else {
+      if (model.getValue() !== valueRef.current) {
+        model.setValue(valueRef.current);
+      }
+      monaco.editor.setModelLanguage(model, monacoLanguage);
+    }
+
+    editorRef.current.setModel(model);
+
+    // Sync content changes
+    const disposable = model.onDidChangeContent(() => {
+      const currentVal = model.getValue();
+      valueRef.current = currentVal;
+      onChangeRef.current?.(currentVal);
+    });
+
+    // Refresh diagnostics
+    appEngine.getMonacoService().updateFileDiagnostics(uri.toString());
+
+    return () => {
+      disposable.dispose();
+      // Dispose the model on switch/unmount to avoid memory leaks
+      const currentModel = monaco.editor.getModel(uri);
+      if (currentModel) {
+        currentModel.dispose();
+      }
+    };
+  }, [monaco, path, monacoLanguage, appEngine]);
+
+  // Sync value updates from parent component
+  useEffect(() => {
+    if (!editorRef.current) return;
+    const model = editorRef.current.getModel();
+    if (model && value !== valueRef.current) {
+      valueRef.current = value;
+      const prevPosition = editorRef.current.getPosition();
+      model.setValue(value);
+      if (prevPosition) {
+        editorRef.current.setPosition(prevPosition);
+      }
+    }
+  }, [value]);
+
+  // Sync theme changes
+  useEffect(() => {
+    if (monaco && editorRef.current) {
+      monaco.editor.setTheme(isDark ? "vs-dark" : "vs");
+    }
+  }, [monaco, isDark]);
+
+  // Sync dynamic editor options
+  useEffect(() => {
+    if (editorRef.current) {
+      editorRef.current.updateOptions({
+        minimap: { enabled: minimap },
+        lineNumbers: lineNumbers ? "on" : "off",
+        readOnly: readOnly,
+      });
+    }
+  }, [minimap, lineNumbers, readOnly]);
+
   return (
-    <div className={className} style={{ height, width: "100%" }}>
-      <Editor
-        height="100%"
-        language={monacoLanguage}
-        path={getPath()}
-        theme={isDark ? "vs-dark" : "light"}
-        value={value}
-        onChange={handleValueChange}
-        onMount={handleEditorMount}
-        options={{
-          minimap: { enabled: minimap },
-          fontSize: 12,
-          fontFamily: "var(--font-mono)",
-          lineNumbers: lineNumbers ? "on" : "off",
-          glyphMargin: undefined,
-          folding,
-          lineDecorationsWidth: undefined,
-          lineNumbersMinChars: 0,
-          roundedSelection: false,
-          scrollBeyondLastLine: false,
-          readOnly: readOnly,
-          padding: { top: 12, bottom: 12 },
-          automaticLayout: true,
-        }}
-      />
-    </div>
+    <div
+      className={className}
+      style={{ height, width: "100%", overflow: "hidden" }}
+      ref={containerRef}
+    />
   );
 }

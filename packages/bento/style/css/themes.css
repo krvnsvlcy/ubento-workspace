@@ -23,3 +23,8 @@ input::placeholder,
 textarea::placeholder {
   color: color-mix(in srgb, currentColor 50%, transparent 50%);
 }
+
+/* Force hide monaco's weird double line numbers */
+div.line-numbers.lh-even:before {
+  display: none !important;
+}

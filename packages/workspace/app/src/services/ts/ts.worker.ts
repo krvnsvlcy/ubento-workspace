@@ -48,7 +48,7 @@ export class TypeScriptWorkerService {
     this.moduleResolutionCache = ts.createModuleResolutionCache(
       "/",
       (s) => normPath(s),
-      this.compilerOptions
+      this.compilerOptions,
     );
 
     const host: ts.LanguageServiceHost = {
@@ -58,6 +58,7 @@ export class TypeScriptWorkerService {
         return f ? String(f.version) : "0";
       },
       getScriptSnapshot: (fileName) => {
+        console.log("[ts.worker] host.getScriptSnapshot:", fileName);
         const f = this.files.get(normPath(fileName));
         return f ? ts.ScriptSnapshot.fromString(f.content) : undefined;
       },
@@ -81,8 +82,14 @@ export class TypeScriptWorkerService {
       getDefaultLibFileName: (opts) =>
         `${DEFAULT_LIB_DIR}/${pickAnchorLib(opts)}`,
 
-      fileExists: (p) => this.files.has(normPath(p)),
-      readFile: (p) => this.files.get(normPath(p))?.content,
+      fileExists: (p) => {
+        console.log("[ts.worker] host.fileExists:", p);
+        return this.files.has(normPath(p));
+      },
+      readFile: (p) => {
+        console.log("[ts.worker] host.readFile:", p);
+        return this.files.get(normPath(p))?.content;
+      },
       directoryExists: (p) => this.vfsDirs.has(normPath(p)),
 
       getDirectories: (p) => {
@@ -97,6 +104,7 @@ export class TypeScriptWorkerService {
         return out;
       },
       readDirectory: (path) => {
+        console.log("[ts.worker] host.readDirectory:", path);
         const dir = normPath(path);
         const entries = this.vfsDirs.get(dir);
         if (!entries) return [];
@@ -109,7 +117,10 @@ export class TypeScriptWorkerService {
       },
 
       useCaseSensitiveFileNames: () => true,
-      realpath: (p) => normPath(p),
+      realpath: (p) => {
+        console.log("[ts.worker] host.realpath:", p);
+        return normPath(p);
+      },
       getProjectVersion: () => String(this.projectVersion),
       getNewLine: () => "\n",
     };
@@ -213,7 +224,7 @@ export class TypeScriptWorkerService {
     uri: string,
     offset: number,
     options?: ts.GetCompletionsAtPositionOptions,
-    formatSettings?: ts.FormatCodeSettings
+    formatSettings?: ts.FormatCodeSettings,
   ) {
     const n = normPath(uri);
     return (
@@ -221,7 +232,7 @@ export class TypeScriptWorkerService {
         n,
         offset,
         options,
-        formatSettings
+        formatSettings,
       ) ?? {
         entries: [],
         isGlobalCompletion: false,
@@ -254,7 +265,7 @@ export class TypeScriptWorkerService {
       req.formatSettings ?? {},
       req.source,
       preferences,
-      req.data
+      req.data,
     );
   }
 
@@ -267,7 +278,10 @@ export class TypeScriptWorkerService {
       range: info.textSpan
         ? {
             start: this.offsetToPosition(n, info.textSpan.start),
-            end: this.offsetToPosition(n, info.textSpan.start + info.textSpan.length),
+            end: this.offsetToPosition(
+              n,
+              info.textSpan.start + info.textSpan.length,
+            ),
           }
         : undefined,
     };
@@ -306,19 +320,26 @@ export class TypeScriptWorkerService {
       uri: def.fileName,
       range: {
         start: this.offsetToPosition(def.fileName, def.textSpan.start),
-        end: this.offsetToPosition(def.fileName, def.textSpan.start + def.textSpan.length),
+        end: this.offsetToPosition(
+          def.fileName,
+          def.textSpan.start + def.textSpan.length,
+        ),
       },
     }));
   }
 
   getTypeDefinition(uri: string, offset: number) {
     const n = normPath(uri);
-    const defs = this.languageService.getTypeDefinitionAtPosition(n, offset) ?? [];
+    const defs =
+      this.languageService.getTypeDefinitionAtPosition(n, offset) ?? [];
     return defs.map((def) => ({
       uri: def.fileName,
       range: {
         start: this.offsetToPosition(def.fileName, def.textSpan.start),
-        end: this.offsetToPosition(def.fileName, def.textSpan.start + def.textSpan.length),
+        end: this.offsetToPosition(
+          def.fileName,
+          def.textSpan.start + def.textSpan.length,
+        ),
       },
     }));
   }
@@ -330,7 +351,10 @@ export class TypeScriptWorkerService {
       uri: ref.fileName,
       range: {
         start: this.offsetToPosition(ref.fileName, ref.textSpan.start),
-        end: this.offsetToPosition(ref.fileName, ref.textSpan.start + ref.textSpan.length),
+        end: this.offsetToPosition(
+          ref.fileName,
+          ref.textSpan.start + ref.textSpan.length,
+        ),
       },
       isWriteAccess: ref.isWriteAccess,
     }));
@@ -345,7 +369,10 @@ export class TypeScriptWorkerService {
       range: info.canRename
         ? {
             start: this.offsetToPosition(n, info.triggerSpan.start),
-            end: this.offsetToPosition(n, info.triggerSpan.start + info.triggerSpan.length),
+            end: this.offsetToPosition(
+              n,
+              info.triggerSpan.start + info.triggerSpan.length,
+            ),
           }
         : undefined,
     };
@@ -353,11 +380,15 @@ export class TypeScriptWorkerService {
 
   rename(uri: string, offset: number, newName: string) {
     const n = normPath(uri);
-    const locs = this.languageService.findRenameLocations(n, offset, false, false) ?? [];
+    const locs =
+      this.languageService.findRenameLocations(n, offset, false, false) ?? [];
     return locs.map((loc) => ({
       range: {
         start: this.offsetToPosition(loc.fileName, loc.textSpan.start),
-        end: this.offsetToPosition(loc.fileName, loc.textSpan.start + loc.textSpan.length),
+        end: this.offsetToPosition(
+          loc.fileName,
+          loc.textSpan.start + loc.textSpan.length,
+        ),
       },
       newText: newName,
     }));
@@ -367,21 +398,29 @@ export class TypeScriptWorkerService {
     const n = normPath(uri);
     const start = this.positionToOffset(n, range.start);
     const end = this.positionToOffset(n, range.end);
-    const fixes = this.languageService.getCodeFixesAtPosition(n, start, end, [], {}, {}) ?? [];
+    const fixes =
+      this.languageService.getCodeFixesAtPosition(n, start, end, [], {}, {}) ??
+      [];
     return fixes.map((action) => ({
       title: action.description,
       kind: action.fixName,
       edit: {
-        changes: action.changes.reduce((acc, change) => {
-          acc[change.fileName] = change.textChanges.map((tc) => ({
-            range: {
-              start: this.offsetToPosition(change.fileName, tc.span.start),
-              end: this.offsetToPosition(change.fileName, tc.span.start + tc.span.length),
-            },
-            newText: tc.newText,
-          }));
-          return acc;
-        }, {} as { [uri: string]: any[] }),
+        changes: action.changes.reduce(
+          (acc, change) => {
+            acc[change.fileName] = change.textChanges.map((tc) => ({
+              range: {
+                start: this.offsetToPosition(change.fileName, tc.span.start),
+                end: this.offsetToPosition(
+                  change.fileName,
+                  tc.span.start + tc.span.length,
+                ),
+              },
+              newText: tc.newText,
+            }));
+            return acc;
+          },
+          {} as { [uri: string]: any[] },
+        ),
       },
     }));
   }
@@ -405,7 +444,9 @@ export class TypeScriptWorkerService {
         indentSize: opts.tabSize,
       }),
     };
-    const edits = this.languageService.getFormattingEditsForDocument(n, formatOptions) ?? [];
+    const edits =
+      this.languageService.getFormattingEditsForDocument(n, formatOptions) ??
+      [];
     return edits.map((e) => ({
       range: {
         start: this.offsetToPosition(n, e.span.start),
@@ -439,7 +480,10 @@ export class TypeScriptWorkerService {
     };
   }
 
-  private positionToOffset(uri: string, pos: { line: number; character: number }) {
+  private positionToOffset(
+    uri: string,
+    pos: { line: number; character: number },
+  ) {
     const f = this.files.get(normPath(uri));
     if (!f) return 0;
     const lines = f.content.split("\n");
@@ -452,8 +496,14 @@ export class TypeScriptWorkerService {
 
   private createModuleResolutionHost(): ts.ModuleResolutionHost {
     return {
-      fileExists: (p) => this.files.has(normPath(p)),
-      readFile: (p) => this.files.get(normPath(p))?.content,
+      fileExists: (p) => {
+        console.log("[ts.worker] resolutionHost.fileExists:", p);
+        return this.files.has(normPath(p));
+      },
+      readFile: (p) => {
+        console.log("[ts.worker] resolutionHost.readFile:", p);
+        return this.files.get(normPath(p))?.content;
+      },
       directoryExists: (p) => this.vfsDirs.has(normPath(p)),
       getDirectories: (p) => {
         const dir = normPath(p);
@@ -477,7 +527,7 @@ export class TypeScriptWorkerService {
       normPath(fromFile),
       this.compilerOptions,
       host,
-      this.moduleResolutionCache
+      this.moduleResolutionCache,
     );
     const rf = resolved.resolvedModule?.resolvedFileName;
     return rf ? normPath(rf) : undefined;
@@ -491,9 +541,10 @@ export class TypeScriptWorkerService {
       this.compilerOptions,
       host,
       undefined,
-      this.moduleResolutionCache as any
+      this.moduleResolutionCache as any,
     );
-    const rf = (resolved as any).resolvedTypeReferenceDirective?.resolvedFileName;
+    const rf = (resolved as any).resolvedTypeReferenceDirective
+      ?.resolvedFileName;
     return rf ? normPath(rf) : undefined;
   }
 
@@ -530,7 +581,7 @@ export class TypeScriptWorkerService {
     const info = ts.preProcessFile(
       f.content,
       /* readImportFiles */ true,
-      /* detectJavaScriptImports */ true
+      /* detectJavaScriptImports */ true,
     );
 
     for (const im of info.importedFiles) {
@@ -600,7 +651,9 @@ export function runTsWorker() {
     port: createWindowPort(self, self),
     handlers: {
       setCompilerOptions: (request) =>
-        Promise.resolve(tsService.setCompilerOptions(request.options, request.replace)),
+        Promise.resolve(
+          tsService.setCompilerOptions(request.options, request.replace),
+        ),
       writeFiles: (request) =>
         Promise.resolve(tsService.writeFiles(request.files)),
       removeFiles: (request) =>
@@ -614,8 +667,8 @@ export function runTsWorker() {
             request.uri,
             request.offset,
             request.options,
-            request.formatSettings
-          )
+            request.formatSettings,
+          ),
         ),
       getCompletionDetails: (request) =>
         Promise.resolve(tsService.getCompletionDetails(request)),
@@ -627,24 +680,30 @@ export function runTsWorker() {
           tsService.getSignatureHelp(
             request.uri,
             request.offset,
-            request.trigger
-          )
+            request.trigger,
+          ),
         ),
 
       getDefinition: (request) =>
         Promise.resolve(tsService.getDefinition(request.uri, request.offset)),
       getTypeDefinition: (request) =>
-        Promise.resolve(tsService.getTypeDefinition(request.uri, request.offset)),
+        Promise.resolve(
+          tsService.getTypeDefinition(request.uri, request.offset),
+        ),
       getReferences: (request) =>
         Promise.resolve(tsService.getReferences(request.uri, request.offset)),
 
       renamePrep: (request) =>
         Promise.resolve(tsService.renamePrep(request.uri, request.offset)),
       rename: (request) =>
-        Promise.resolve(tsService.rename(request.uri, request.offset, request.newName)),
+        Promise.resolve(
+          tsService.rename(request.uri, request.offset, request.newName),
+        ),
 
       codeActions: (request) =>
-        Promise.resolve(tsService.codeActions(request.uri, request.range, request.kindFilter)),
+        Promise.resolve(
+          tsService.codeActions(request.uri, request.range, request.kindFilter),
+        ),
       format: (request) =>
         Promise.resolve(tsService.format(request.uri, request.opts)),
 
@@ -660,7 +719,7 @@ export function runTsWorker() {
     },
   });
   rpc.run();
-  console.log("TS worker started");
+  console.log("TS worker started 1");
 }
 
 if (typeof self !== "undefined" && !("window" in self)) {

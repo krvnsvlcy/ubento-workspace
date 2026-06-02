@@ -7,20 +7,16 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
   Button,
+  Spinner,
   TabSwitch,
+  Tooltip,
 } from "@ubento/bento.arlo-core";
 import { Layout, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import AutosizeInput from "react-input-autosize";
+import { ModuleSourceStatus } from "./use-module-source";
 
 export type ViewMode = "code" | "split" | "preview";
-
-interface HeaderProps {
-  onClose: () => void;
-  mode: ViewMode;
-  onModeChange: (mode: ViewMode) => void;
-  saveStatus?: "idle" | "loading" | "success" | "error";
-}
 
 function NameInput({
   value,
@@ -39,7 +35,9 @@ function NameInput({
     <div className="flex items-center hover:bg-neutral-500/10 focus-within:bg-neutral-500/10 h-8 px-2 rounded-xl transition-colors">
       <AutosizeInput
         value={text}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setText(e.target.value)}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+          setText(e.target.value)
+        }
         onBlur={() => {
           if (text.trim() && text !== value) {
             onChange(text);
@@ -62,12 +60,95 @@ function NameInput({
   );
 }
 
+function StatusIndicator({
+  status,
+  isDirty,
+  error,
+}: {
+  status: ModuleSourceStatus;
+  isDirty: boolean;
+  error?: string | null;
+}) {
+  if (status === "loading" || status === "idle") {
+    return (
+      <div
+        className="flex items-center gap-2 bg-surface text-content px-2 rounded-full"
+        data-tone="neutral"
+      >
+        <Spinner className="size-3" />
+        <span className="text-[11px] font-medium">Loading</span>
+      </div>
+    );
+  }
+
+  if (status === "saving") {
+    return (
+      <div
+        className="flex items-center gap-2 bg-surface text-content px-2 rounded-full"
+        data-tone="neutral"
+      >
+        <Spinner className="size-3" />
+        <span className="text-[11px] font-medium">Saving</span>
+      </div>
+    );
+  }
+
+  if (status === "error") {
+    return (
+      <Tooltip
+        delayDuration={200}
+        sideOffset={4}
+        content={error || "Unknown error"}
+      >
+        <div
+          className="flex items-center gap-2 bg-surface text-content px-2 rounded-full cursor-help"
+          data-tone="destructive"
+        >
+          <div className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
+          <span className="text-[11px] font-medium">Errored</span>
+        </div>
+      </Tooltip>
+    );
+  }
+
+  if (isDirty) {
+    return (
+      <div
+        className="flex items-center gap-2 bg-surface text-content px-2 rounded-full"
+        data-tone="info"
+      >
+        <div className="w-1.5 h-1.5 rounded-full bg-current" />
+        <span className="text-[11px] font-medium">Modified</span>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className="flex items-center gap-2 bg-surface text-content px-2 rounded-full"
+      data-tone="success"
+    >
+      <div className="w-1.5 h-1.5 rounded-full bg-current" />
+      <span className="text-[11px] font-medium">Up to date</span>
+    </div>
+  );
+}
+
 export function Header({
   onClose,
   mode,
+  isDirty,
   onModeChange,
-  saveStatus,
-}: HeaderProps) {
+  moduleStatus,
+  error,
+}: {
+  onClose: () => void;
+  mode: ViewMode;
+  isDirty: boolean;
+  onModeChange: (mode: ViewMode) => void;
+  moduleStatus: ModuleSourceStatus;
+  error?: string | null;
+}) {
   const board = useActiveBoard();
   const ubento = useUbento();
   const editingModuleId = useEditingModuleId();
@@ -100,34 +181,11 @@ export function Header({
                       console.log("Renaming module to:", newName);
                     }}
                   />
-                  {saveStatus && saveStatus !== "idle" && (
-                    <>
-                      {saveStatus === "loading" && (
-                        <>
-                          <div className="w-1.5 h-1.5 rounded-full bg-neutral-400 animate-pulse" />
-                          <span className="text-[11px] text-content-muted font-medium">
-                            Syncing...
-                          </span>
-                        </>
-                      )}
-                      {saveStatus === "success" && (
-                        <>
-                          <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
-                          <span className="text-[11px] text-content-muted font-medium">
-                            Saved
-                          </span>
-                        </>
-                      )}
-                      {saveStatus === "error" && (
-                        <>
-                          <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-                          <span className="text-[11px] text-red-500 font-medium">
-                            Error saving
-                          </span>
-                        </>
-                      )}
-                    </>
-                  )}
+                  <StatusIndicator
+                    status={moduleStatus}
+                    isDirty={isDirty}
+                    error={error}
+                  />
                 </div>
               </BreadcrumbPage>
             </BreadcrumbItem>

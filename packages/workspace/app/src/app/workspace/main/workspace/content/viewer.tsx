@@ -1,10 +1,10 @@
 import { ErrorView } from "@/components/error.js";
+import { useTheme } from "@/contexts/theme.js";
 import { useWorkspaceEngine } from "@/contexts/workspace.js";
 import { useUbentoEngine } from "@/hooks/app-engine";
 import { PendingView } from "@ubento/bento.arlo-core";
-import { WorkspaceEngine } from "../../../../../engine/workspace/engine.js";
-import { useTheme } from "@/contexts/theme.js";
 import { useEffect } from "react";
+import { WorkspaceEngine } from "../../../../../engine/workspace/engine.js";
 
 function WorkspaceOverlay({ engine }: { engine: WorkspaceEngine }) {
   const workspaceName = engine.useState((state) => state.workspace.title);
@@ -104,7 +104,7 @@ export function Viewer() {
       <div className="flex-1 relative">
         <iframe
           src={appEngine.workspaceRuntimeUrl}
-          key={workspaceEngine.id}
+          key={workspaceEngine.workspaceId}
           onLoad={(e) => {
             if (e.currentTarget.contentWindow) {
               workspaceEngine.init(e.currentTarget.contentWindow);

@@ -1,6 +1,13 @@
 import { useUbento } from "@/hooks/app-engine";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+export type ModuleSourceStatus =
+  | "idle"
+  | "loading"
+  | "saving"
+  | "success"
+  | "error";
+
 export function useModuleSource({
   moduleId,
   versionId,
@@ -10,15 +17,13 @@ export function useModuleSource({
   versionId: string;
   filename?: string;
 }) {
+  const currentKey = `${moduleId}:${filename}`; // versionId not included because version changes on each save.
   const lastFetchedKey = useRef<string | null>(null);
+  const persistedContent = useRef<string>("");
   const ubento = useUbento();
   const [content, setContent] = useState("");
-  const [status, setStatus] = useState<
-    "idle" | "loading" | "success" | "error"
-  >("idle");
+  const [status, setStatus] = useState<ModuleSourceStatus>("idle");
   const [error, setError] = useState<string | null>(null);
-
-  const currentKey = `${moduleId}:${versionId}:${filename}`;
 
   useEffect(() => {
     if (!moduleId || !versionId) {
@@ -34,6 +39,7 @@ export function useModuleSource({
       .readModuleVersionFile(moduleId, versionId, filename)
       .then((res) => {
         setContent(res);
+        persistedContent.current = res;
         setStatus("success");
       })
       .catch((e) => {
@@ -42,30 +48,29 @@ export function useModuleSource({
       });
   }, [moduleId, versionId, filename, currentKey, ubento]);
 
-  const update = useCallback(
-    (content: string) => {
-      setStatus("loading");
-      ubento.module
-        .updateModuleVersion(moduleId, content)
-        .then(() => {
-          setStatus("success");
-        })
-        .catch((e) => {
-          setError(e.message);
-          setStatus("error");
-        });
-    },
-    [moduleId, versionId, filename, ubento],
-  );
+  const save = useCallback(async () => {
+    setStatus("saving");
+    try {
+      const res = await ubento.module.updateModuleVersion(moduleId, content);
+      persistedContent.current = content;
+      setStatus("success");
+      return res;
+    } catch (e) {
+      setError(String(e));
+      setStatus("error");
+      throw e;
+    }
+  }, [moduleId, versionId, filename, ubento, content]);
 
   return {
     content,
     setContent,
     status,
     error,
+    isDirty: content !== persistedContent.current,
     isLoading: status === "loading",
     isSuccess: status === "success",
     isError: status === "error",
-    update,
+    save,
   };
 }

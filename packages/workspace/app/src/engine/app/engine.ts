@@ -3,6 +3,7 @@ import {
   WorkspaceEngine,
 } from "@/engine/workspace/engine";
 import { AppModal } from "@/modals/app/app_modal";
+import { MonacoService } from "@/services/monaco/monaco-service";
 import { createUbentoService, UbentoService } from "@/services/ubento/ubento";
 import { QueryClient } from "@tanstack/react-query";
 import { ubentoAuth } from "@ubento/services.primitives";
@@ -73,6 +74,7 @@ export type UbentoEngine = StateController<UbentoEngineState> & {
   goToLocation: (location: UbentoLocation) => void;
   openWorkspace: (workspaceId: string) => void;
   reloadWorkspace: () => void;
+  getMonacoService: () => MonacoService;
   setDragActive: (active: boolean) => void;
   setActiveWorkspaceEngine: (engine: WorkspaceEngine) => void;
   clearActiveWorkspaceEngine: (engine: WorkspaceEngine) => void;
@@ -325,6 +327,8 @@ export function createUbentoEngine({
     init: {},
   });
 
+  let monacoService: MonacoService | null = null;
+
   const appEngine: UbentoEngine = {
     logger,
     ...stateController,
@@ -335,6 +339,12 @@ export function createUbentoEngine({
     workspaceRuntimeUrl,
     componentRuntimeUrl,
     registryModuleUrlTemplate,
+    getMonacoService() {
+      if (!monacoService) {
+        monacoService = new MonacoService();
+      }
+      return monacoService;
+    },
     goToLocation(location: UbentoLocation) {
       stateController.setState((state) => ({
         ...state,
