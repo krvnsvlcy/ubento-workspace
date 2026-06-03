@@ -38,7 +38,10 @@ while (!connected) {
       ? initialState.workspace.spec.data
       : undefined;
 
-    injectWorkspaceImportMap(undefined, spec?.modules);
+    injectWorkspaceImportMap({
+      modules: spec.modules,
+      packages: spec.packages,
+    });
     await runServiceWorker({
       rpc,
       registryModuleUrlTemplate,

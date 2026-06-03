@@ -8,12 +8,8 @@ import { useLocation, useNavigation, useParams } from "../hooks/navigation.js";
 import { useAction, useInfiniteQuery, useQuery } from "../hooks/service.js";
 import type { ModuleRef } from "../spec.js";
 
-// The path that your Service Worker is actively listening for
 export const MODULE_BASE_PATH = "/__ubento_modules/";
 
-/**
- * Creates a proxy module that re-exports everything from a window object
- */
 export function createModuleProxy(
   module: any,
   proxyName: string,
@@ -46,9 +42,6 @@ export function createModuleProxy(
   `;
 }
 
-/**
- * Creates proxy modules for React, ReactDOM, and Ubento runtime with their blob URLs
- */
 export function createProxyModules(): Record<string, string> {
   const reactScript = createModuleProxy(React, "React", true);
   const reactJsxRuntimeScript = createModuleProxy(
@@ -99,9 +92,6 @@ export function createProxyModules(): Record<string, string> {
   };
 }
 
-/**
- * Merge or create an import map in the document, injecting/overriding specifiers.
- */
 export function updateImportMap(overrides: Record<string, string>) {
   if (typeof document === "undefined") return;
 
@@ -135,13 +125,13 @@ export function updateImportMap(overrides: Record<string, string>) {
   }
 }
 
-/**
- * Main initialization function to be called by the Ubento Runtime
- * when the workspace spec is loaded.
- */
-export function injectWorkspaceImportMap(
-  modules: Record<string, ModuleRef> = {},
-) {
+export function injectWorkspaceImportMap({
+  modules = {},
+  packages = {},
+}: {
+  modules: Record<string, ModuleRef>;
+  packages: Record<string, string>;
+}) {
   // 1. Generate our core host-provided dependencies via Blobs
   const baseProxies = createProxyModules();
 
@@ -154,16 +144,45 @@ export function injectWorkspaceImportMap(
     remoteMappings[alias] = `${MODULE_BASE_PATH}${ref.id}@${ref.versionId}.js`;
   });
 
+  // 3. Define core host packages that must always be externalized
+  const coreExternals = [
+    "react",
+    "react-dom",
+    "react/jsx-runtime",
+    "react-dom/client",
+    "lucide-react",
+    "ubento",
+  ];
+
+  // 4. Generate esm.sh URLs for runtime packages
+  const packageMappings: Record<string, string> = {};
+  const allPackageNames = Object.keys(packages);
+
+  Object.entries(packages).forEach(([name, version]) => {
+    // Combine core guarantees with all other peer packages (excluding itself)
+    const externalList = [
+      ...coreExternals,
+      ...allPackageNames.filter((pkgName) => pkgName !== name),
+    ];
+
+    // Build the esm.sh URL with the external query string
+    const queryParams = `?external=${externalList.join(",")}`;
+    packageMappings[name] = `https://esm.sh/${name}@${version}${queryParams}`;
+  });
+
   console.log("overrides:", {
     baseProxies,
     remoteMappings,
+    packageMappings,
     libraries: modules,
+    packages,
   });
 
-  // 3. Combine and inject into the DOM
+  // 5. Combine and inject into the DOM
   updateImportMap({
     ...baseProxies,
     ...remoteMappings,
+    ...packageMappings,
   });
 }
 

@@ -12,7 +12,7 @@ import {
 import { z } from "zod";
 import { cryptoUtils } from "../lib/crypto.js";
 import prisma from "../lib/prisma.js";
-import { getConnectionProvider } from "./connection_provider.js";
+import { getConnectionProvider } from "./http_connection_provider.js";
 
 export const oauthClientCredentialsSchema = z.object({
   clientId: z.string(),

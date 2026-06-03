@@ -10,9 +10,9 @@ import {
   TsPackageManager,
 } from "./package_manager/package_manager";
 import { createJsdelivrRegistry } from "./package_manager/registry";
+import { generateServiceDeclarations } from "./package_manager/service-declaration-generator.js";
 import { TypeDefStore } from "./package_manager/typedef_store";
 import { ubentoDeclaration } from "./package_manager/ubento-declaration";
-import { generateServiceDeclarations } from "./package_manager/service-declaration-generator.js";
 import { MainToTsWorkerRpcDef, TsWorkerToMainRpcDef } from "./rpc";
 
 export type TsServiceStatus = {
@@ -137,20 +137,26 @@ export class TsService {
 
         // Configure compiler for a modern React WorkOS environment
         await this.rpc.egress.setCompilerOptions({
-          target: "ES2022",
-          module: "ESNext",
-          jsx: "react-jsx", // Supports modern React 17+ (no need to import React)
-          strict: true,
-          esModuleInterop: true,
-          allowSyntheticDefaultImports: true,
-          skipLibCheck: true, // Massive performance boost in the web worker
-          isolatedModules: true, // Ensures compatibility with fast transpilers like esbuild
-          allowImportingTsExtensions: true,
-          allowArbitraryExtensions: true,
-          baseUrl: "/",
-          paths: {
-            "@/modules/*": [`modules/*`],
+          options: {
+            module: 199, // esnext
+            jsx: 4, // react-jsx
+            allowJs: true,
+            checkJs: false,
+            esModuleInterop: true,
+            forceConsistentCasingInFileNames: true,
+            strict: true,
+            skipLibCheck: true,
+            lib: ["esnext", "dom", "dom.iterable"],
+            target: 99, // esNext
+            types: ["node"],
+            allowImportingTsExtensions: true,
+            allowArbitraryExtensions: true,
+            allowNonTsExtensions: true,
+            paths: {
+              "@/*": [`/*`],
+            },
           },
+          replace: true,
         });
 
         // 3. Load core lib definitions

@@ -1,3 +1,4 @@
+import { standardIcons } from "@/components/icon/icon";
 import { SideSection } from "@/components/side/section";
 import { TreeEntry } from "@/components/tree/tree-entry";
 import { TreeIndent } from "@/components/tree/tree-indent";
@@ -191,7 +192,7 @@ function BoardNode({
         )}
       >
         <TreeEntry
-          icon="panels-top-left"
+          icon={standardIcons.board}
           isContainer={hasChildren}
           active={activeBoardId === board.id}
           isOpen={isExpanded}

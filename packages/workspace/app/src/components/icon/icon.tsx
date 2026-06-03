@@ -26,3 +26,13 @@ export function Icon({
     />
   );
 }
+
+export const standardIcons = {
+  home: "home",
+  workspace: "layout-dashboard",
+  board: "panels-top-left",
+  service: "bolt",
+  module: "blocks",
+  package: "package",
+  assets: "shapes",
+} satisfies Record<string, IconName>;

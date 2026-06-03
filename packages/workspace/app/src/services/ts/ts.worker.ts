@@ -19,14 +19,7 @@ const join = (a: string, b: string) => normPath((a === "/" ? "" : a) + "/" + b);
 export class TypeScriptWorkerService {
   private languageService: ts.LanguageService;
   private compilerOptions: ts.CompilerOptions = {
-    target: ts.ScriptTarget.ESNext,
-    module: ts.ModuleKind.ESNext,
-    jsx: ts.JsxEmit.ReactJSX,
-    moduleResolution: ts.ModuleResolutionKind.NodeJs,
     allowNonTsExtensions: true,
-    allowJs: true,
-    strict: true,
-    esModuleInterop: true,
   };
 
   private files = new Map<string, { content: string; version: number }>();
@@ -83,11 +76,9 @@ export class TypeScriptWorkerService {
         `${DEFAULT_LIB_DIR}/${pickAnchorLib(opts)}`,
 
       fileExists: (p) => {
-        console.log("[ts.worker] host.fileExists:", p);
         return this.files.has(normPath(p));
       },
       readFile: (p) => {
-        console.log("[ts.worker] host.readFile:", p);
         return this.files.get(normPath(p))?.content;
       },
       directoryExists: (p) => this.vfsDirs.has(normPath(p)),
@@ -104,7 +95,6 @@ export class TypeScriptWorkerService {
         return out;
       },
       readDirectory: (path) => {
-        console.log("[ts.worker] host.readDirectory:", path);
         const dir = normPath(path);
         const entries = this.vfsDirs.get(dir);
         if (!entries) return [];
@@ -117,10 +107,7 @@ export class TypeScriptWorkerService {
       },
 
       useCaseSensitiveFileNames: () => true,
-      realpath: (p) => {
-        console.log("[ts.worker] host.realpath:", p);
-        return normPath(p);
-      },
+      realpath: (p) => normPath(p),
       getProjectVersion: () => String(this.projectVersion),
       getNewLine: () => "\n",
     };

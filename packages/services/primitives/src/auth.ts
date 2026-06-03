@@ -102,9 +102,7 @@ export const ubentoAuth = {
       delete: "module_collection:delete",
     },
     vertex: {
-      query: "vertex:query",
-      mutate: "vertex:mutate",
-      subscribe: "vertex:subscribe",
+      invoke: "vertex:invoke",
     },
     setting: {
       read: "setting:read",

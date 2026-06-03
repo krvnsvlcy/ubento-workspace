@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "definitions": {
-    "ConnectionProvider": {
+    "Connection": {
       "type": "object",
       "properties": {
         "id": {
@@ -9,7 +9,79 @@
         },
         "entity": {
           "type": "string",
-          "default": "connection_provider"
+          "default": "connection"
+        },
+        "team_id": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "data": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "credentials": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/EncryptedData"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "version": {
+          "type": "integer",
+          "default": 1
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "team_id",
+        "type",
+        "name",
+        "updated_at"
+      ]
+    },
+    "HttpConnectionProvider": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "entity": {
+          "type": "string",
+          "default": "http_connection_provider"
         },
         "team_id": {
           "type": [
@@ -18,9 +90,6 @@
           ]
         },
         "handle": {
-          "type": "string"
-        },
-        "type": {
           "type": "string"
         },
         "name": {
@@ -70,57 +139,7 @@
       "required": [
         "id",
         "handle",
-        "type",
         "name",
-        "updated_at"
-      ]
-    },
-    "Connection": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
-        },
-        "entity": {
-          "type": "string",
-          "default": "connection"
-        },
-        "team_id": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "description": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "provider_id": {
-          "type": "string"
-        },
-        "credentials": {
-          "$ref": "#/definitions/EncryptedData"
-        },
-        "version": {
-          "type": "integer",
-          "default": 1
-        },
-        "created_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "updated_at": {
-          "type": "string",
-          "format": "date-time"
-        }
-      },
-      "required": [
-        "id",
-        "team_id",
-        "name",
-        "provider_id",
         "updated_at"
       ]
     },
@@ -369,11 +388,11 @@
   },
   "type": "object",
   "properties": {
-    "connectionProvider": {
-      "$ref": "#/definitions/ConnectionProvider"
-    },
     "connection": {
       "$ref": "#/definitions/Connection"
+    },
+    "httpConnectionProvider": {
+      "$ref": "#/definitions/HttpConnectionProvider"
     },
     "oAuthClient": {
       "$ref": "#/definitions/OAuthClient"

@@ -2,8 +2,8 @@ import { auth, createService } from "@ubento/services.toolkit";
 import { env } from "./env.js";
 import authRouter from "./routes/auth.js";
 import connectionRouter from "./routes/connection.js";
-import connectionProviderRouter from "./routes/connection_provider.js";
-import invokeRouter from "./routes/invoke.js";
+import connectionProviderRouter from "./routes/http_connection_provider.js";
+import invokeRouter from "./routes/invoke/invoke.js";
 import oauthClientRouter from "./routes/oauth_client.js";
 import serviceRouter from "./routes/service.js";
 import serviceChannelRouter from "./routes/service_channel.js";
@@ -26,7 +26,7 @@ service.app.use(
     authorizationDatabaseUri: env.DATABASE_URL,
   }),
 );
-service.app.use("/vertex/connection-providers", connectionProviderRouter);
+service.app.use("/vertex/http-connection-providers", connectionProviderRouter);
 service.app.use("/vertex/connections", connectionRouter);
 service.app.use("/vertex/services", serviceRouter);
 service.app.use("/vertex/service-channels", serviceChannelRouter);

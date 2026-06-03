@@ -1,50 +1,13 @@
 import { z } from "zod";
-import { operationSpecSchema } from "./operation.js";
-import {
-  httpConnectionSpecSchema,
-  httpHandlerSchema,
-} from "./protocols/http.js";
-import { schemaSchema } from "./schema.js";
-
-export function serviceSpecV1SchemaFactory<
-  Type extends string,
-  TConnectionSpec extends z.ZodType,
-  THandlerSpec extends z.ZodType,
->({
-  type,
-  connection,
-  handler,
-}: {
-  type: Type;
-  connection: TConnectionSpec;
-  handler: THandlerSpec;
-}) {
-  return z.object({
-    // System
-    spec: z.literal(1),
-    // Metadata
-    type: z.literal(type),
-    name: z.string(),
-    description: z.string().optional(),
-    tags: z.array(z.string()).optional(),
-    // Connection
-    connection: connection.optional(),
-    // Types
-    schemas: z.record(z.string(), schemaSchema).optional(),
-    // Operations
-    queries: z.record(z.string(), operationSpecSchema({ handler })).optional(),
-    actions: z.record(z.string(), operationSpecSchema({ handler })).optional(),
-  });
-}
-
-export const httpServiceSpecV1Schema = serviceSpecV1SchemaFactory({
-  type: "http",
-  connection: httpConnectionSpecSchema,
-  handler: httpHandlerSchema,
-});
+import { httpServiceSpecV1Schema } from "./protocols/http/service.js";
+import { mongodbServiceSpecV1Schema } from "./protocols/mongodb/service.js";
 
 export const serviceSpecV1Schema = z.discriminatedUnion("type", [
   httpServiceSpecV1Schema,
+  mongodbServiceSpecV1Schema,
 ]);
 export type ServiceSpecV1_r = z.input<typeof serviceSpecV1Schema>;
 export type ServiceSpecV1 = z.output<typeof serviceSpecV1Schema>;
+
+export { HttpServiceSpecV1 } from "./protocols/http/service.js";
+export { MongodbServiceSpecV1 } from "./protocols/mongodb/service.js";

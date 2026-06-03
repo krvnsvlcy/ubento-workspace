@@ -6,6 +6,7 @@ import {
 } from "@/hooks/app-engine";
 import { TabDefinition } from "../../../types";
 
+import { standardIcons } from "@/components/icon/icon";
 import { BoardsSection } from "./boards-section";
 import { ServicesSection } from "./services-section";
 
@@ -34,7 +35,7 @@ export function WorkspaceTab() {
   return (
     <div className="flex flex-col gap-4 pb-8">
       <TreeEntry
-        icon="home"
+        icon={standardIcons.home}
         onClick={() => {
           updateSettings({
             board: undefined,

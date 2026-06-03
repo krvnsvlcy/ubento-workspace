@@ -1,8 +1,6 @@
-import {
-  ConnectionCredentials,
-  ConnectionProviderConfig,
-} from "../connection/connections";
-import { HttpConnectionSpec, HttpHandler } from "../spec/spec";
+import { HttpConnectionCredentials } from "../../spec/protocols/http/connection";
+import { HttpConnectionProviderConfig } from "../../spec/protocols/http/provider";
+import { HttpConnectionSpec, HttpHandler } from "../../spec/spec";
 import {
   runHttpHandler,
   RunHttpHandlerError,
@@ -17,8 +15,8 @@ export async function invokeHttpService({
   handler: HttpHandler;
   connection?: {
     spec: HttpConnectionSpec;
-    provider: ConnectionProviderConfig;
-    credentials: ConnectionCredentials;
+    provider: HttpConnectionProviderConfig;
+    credentials: HttpConnectionCredentials;
   };
   args: Record<string, unknown>;
 }): Promise<RunHttpHandlerResult> {
@@ -63,8 +61,8 @@ export function applyCredentials(
   headers: Record<string, unknown>,
   query: Record<string, unknown>,
   connection?: {
-    provider: ConnectionProviderConfig;
-    credentials: ConnectionCredentials;
+    provider: HttpConnectionProviderConfig;
+    credentials: HttpConnectionCredentials;
   },
 ): RunHttpHandlerError | null {
   if (!connection?.credentials) {

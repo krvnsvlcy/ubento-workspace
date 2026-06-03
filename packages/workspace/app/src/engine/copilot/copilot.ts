@@ -1,5 +1,5 @@
-import { AgentThread, UserMessageAttachment } from "@ubento/workspace.agent";
 import { createZustandStateController } from "@ubento/bento.arlo-core";
+import { AgentThread, UserMessageAttachment } from "@ubento/workspace.agent";
 import { registerStore } from "@ubento/zustand-devtool";
 import { createStore } from "zustand";
 import {
@@ -25,6 +25,7 @@ export type UbentoCopilotInput = {
 };
 export type UbentoCopilotState = {
   input: UbentoCopilotInput;
+  status: "idle" | "active";
   activeModelId: string;
   activeThreadId?: string;
 };
@@ -42,6 +43,7 @@ export function createUbentoCopilot({
       userAttachments: [],
       contextAttachments: {},
     },
+    status: "idle",
     activeModelId: modelIds.gemini3flashLite,
   }));
   registerStore("copilot", store);
@@ -65,9 +67,14 @@ export function createUbentoCopilot({
   }
 
   const attachmentTypes = Object.fromEntries(
-    [ubentoLocationAttachmentType, ubentoWorkspaceAttachmentType].map((t) => [t.type, t]),
+    [ubentoLocationAttachmentType, ubentoWorkspaceAttachmentType].map((t) => [
+      t.type,
+      t,
+    ]),
   );
-  type UbentoCopilotAttachments = BentoLocationAttachment | BentoWorkspaceAttachment;
+  type UbentoCopilotAttachments =
+    | BentoLocationAttachment
+    | BentoWorkspaceAttachment;
 
   return {
     logger,
@@ -116,6 +123,7 @@ export function createUbentoCopilot({
         // Clear input immediately for better UX
         store.setState((s) => ({
           input: { ...s.input, text: "" },
+          status: "active",
         }));
 
         let thread: AgentThread;
@@ -165,6 +173,9 @@ export function createUbentoCopilot({
           modelId: state.activeModelId,
           executionEndState: execution.getState(),
         });
+        store.setState((s) => ({
+          status: "idle",
+        }));
       } catch (error) {
         logger.error("Failed to send message to Copilot", {
           event: "copilot_send_error",
@@ -174,6 +185,7 @@ export function createUbentoCopilot({
         // restore input on failure
         store.setState((s) => ({
           input: { ...s.input, text: content },
+          status: "idle",
         }));
       }
     },

@@ -125,7 +125,7 @@ export async function uploadServiceChannelSpec(id: string, spec: ServiceSpec) {
     channelId: channel.id,
   });
 
-  console.log({ conn: spec.connection, filePath });
+  console.log({ conn: spec.type === "http" ? spec.connection : spec.connectionId, filePath });
 
   const file = serviceBucket.file(filePath);
   await file.save(JSON.stringify(spec, null, 2), {

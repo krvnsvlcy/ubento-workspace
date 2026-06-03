@@ -1,11 +1,17 @@
 import { QueryClientProvider } from "@tanstack/react-query";
-import { ErrorView, PendingView } from "@ubento/bento.arlo-core";
+import {
+  Code,
+  Heading,
+  PendingView,
+  Text,
+} from "@ubento/bento.arlo-core";
 import React, { useEffect, useState } from "react";
 import { transform } from "sucrase";
 import { BentoRuntimeProvider } from "../context/runtime";
 import { queryClient } from "../query";
 import { BentoRuntime } from "../runtime/runtime";
 import { BentoBoardView } from "./board";
+import { ErrorBoundary } from "./error-boundary";
 import { BentoHomeView } from "./home";
 
 export function BentoRuntimeView({ runtime }: { runtime: BentoRuntime }) {
@@ -33,13 +39,12 @@ export function BentoRuntimeView({ runtime }: { runtime: BentoRuntime }) {
 export function ComponentRuntime({
   runtime,
   code,
-  props,
 }: {
   runtime: BentoRuntime;
   code: string;
-  props: any;
 }) {
   const [error, setError] = useState<string | null>(null);
+  const [missingPreview, setMissingPreview] = useState<boolean>(false);
   const [Component, setComponent] = useState<React.ComponentType<any> | null>(
     null,
   );
@@ -51,7 +56,11 @@ export function ComponentRuntime({
 
     const compileAndLoad = async () => {
       try {
+        // Reset states on new compilation
         setError(null);
+        setMissingPreview(false);
+        setComponent(null);
+
         const { code: compiledCode } = transform(code, {
           transforms: ["typescript", "jsx"],
           jsxRuntime: "automatic",
@@ -65,15 +74,16 @@ export function ComponentRuntime({
 
         // Use dynamic import with the object URL
         const mod = await import(/* @vite-ignore */ url);
-        const DefaultExport = mod.default || mod;
 
-        if (typeof DefaultExport !== "function") {
-          throw new Error(
-            "The component code must export a default React component.",
-          );
+        // Strictly require the named 'Preview' export. Zero fallbacks.
+        const PreviewComponent = mod.Preview;
+
+        if (!PreviewComponent) {
+          setMissingPreview(true);
+          return;
         }
 
-        setComponent(() => DefaultExport);
+        setComponent(() => PreviewComponent);
       } catch (err: any) {
         console.error("[component.runtime] compilation error:", err);
         setError(err.message);
@@ -89,7 +99,41 @@ export function ComponentRuntime({
   }, [code]);
 
   if (error) {
-    return <ErrorView message={`Compilation Error: ${error}`} />;
+    return (
+      <div className="h-screen w-screen flex flex-col items-center justify-center bg-background p-8 text-center gap-4">
+        <Heading level="h3" className="font-bold">
+          Compilation Error
+        </Heading>
+        <Text shade="subtle" className="max-w-md">
+          There was an error compiling your component.
+        </Text>
+        <Code className="text-left w-full max-w-md p-4 mt-2 font-mono">
+          {error}
+        </Code>
+      </div>
+    );
+  }
+
+  if (missingPreview) {
+    return (
+      <div className="h-screen w-screen flex flex-col items-center justify-center bg-background p-8 text-center gap-4">
+        <Heading level="h3" className="font-bold">
+          No Preview Found
+        </Heading>
+        <Text shade="subtle" className="max-w-md">
+          To preview this module, export a named <code>Preview</code> component.
+        </Text>
+        <Code className="text-left w-full max-w-md p-4 mt-2 font-mono">
+          {`export const Preview = () => {
+  return (
+    <div>
+      Hello from the module!
+    </div>
+  );
+};`}
+        </Code>
+      </div>
+    );
   }
 
   if (!Component) {
@@ -97,10 +141,12 @@ export function ComponentRuntime({
   }
 
   return (
-    <BentoRuntimeProvider runtime={runtime}>
-      <QueryClientProvider client={queryClient}>
-        <Component key={code} {...props} />
-      </QueryClientProvider>
-    </BentoRuntimeProvider>
+    <ErrorBoundary key={code}>
+      <BentoRuntimeProvider runtime={runtime}>
+        <QueryClientProvider client={queryClient}>
+          <Component key={code} />
+        </QueryClientProvider>
+      </BentoRuntimeProvider>
+    </ErrorBoundary>
   );
 }

@@ -1,5 +1,8 @@
 import { OperationSpec } from "./operation.js";
-import { HttpConnectionSpec, httpHandlerSchema } from "./protocols/http.js";
+import {
+  HttpConnectionSpec,
+  httpHandlerSchema,
+} from "./protocols/http/handler.js";
 import { ServiceSpecV1_r } from "./service.js";
 
 export interface ServiceSpecTemplate {

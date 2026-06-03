@@ -6,7 +6,7 @@ import {
   toSerializable,
   validate,
 } from "@ubento/services.toolkit";
-import { connectionProviderConfigSchema } from "@ubento/vertex.core";
+import { httpConnectionProviderConfigSchema } from "@ubento/vertex.core";
 import { Request, Response, Router } from "express";
 import multer from "multer";
 import { z } from "zod";
@@ -18,7 +18,7 @@ import {
   listConnectionProviders,
   updateConnectionProvider,
   uploadConnectionProviderImage,
-} from "../entities/connection_provider.js";
+} from "../entities/http_connection_provider.js";
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -38,7 +38,7 @@ router.get(
       );
       if (!provider) {
         throw new NotFoundError(
-          `connection_provider ${req.params.provider_id}`,
+          `http_connection_provider ${req.params.provider_id}`,
         );
       }
       res.json(toSerializable(provider));
@@ -60,7 +60,7 @@ router.get(
       );
       if (!provider) {
         throw new NotFoundError(
-          `connection_provider with handle ${req.params.handle}`,
+          `http_connection_provider with handle ${req.params.handle}`,
         );
       }
       res.json(toSerializable(provider));
@@ -108,7 +108,7 @@ router.post(
         type: z.string().min(1),
         name: z.string().min(1),
         description: z.string().optional(),
-        config: connectionProviderConfigSchema.optional(),
+        config: httpConnectionProviderConfigSchema.optional(),
         tags: z.array(z.string()).optional(),
         team_id: z.string().nullable().optional(),
       }),
@@ -132,7 +132,7 @@ router.patch(
         type: z.string().optional(),
         name: z.string().optional(),
         description: z.string().optional(),
-        config: connectionProviderConfigSchema.optional(),
+        config: httpConnectionProviderConfigSchema.optional(),
         tags: z.array(z.string()).optional(),
       }),
     }),

@@ -1,3 +1,4 @@
+import { standardIcons } from "@/components/icon/icon";
 import { SideSection } from "@/components/side/section";
 import { TreeEntry } from "@/components/tree/tree-entry";
 import { TreeIndent } from "@/components/tree/tree-indent";
@@ -76,7 +77,9 @@ function sortChildEntries(
   modules: Record<string, ModuleRef>,
   moduleGroups: Record<string, any>,
 ): { type: "group" | "module"; id: string }[] {
-  const groups = entries.filter((e) => e.type === "group" && !!moduleGroups[e.id]);
+  const groups = entries.filter(
+    (e) => e.type === "group" && !!moduleGroups[e.id],
+  );
   const mods = entries.filter((e) => e.type === "module" && !!modules[e.id]);
 
   groups.sort((a, b) => {
@@ -190,7 +193,7 @@ function ModuleNode({
   if (isEditing) {
     return (
       <div style={style} ref={setDragRef}>
-        <TreeEntry icon="service" actionMode="hidden">
+        <TreeEntry icon={standardIcons.module} actionMode="hidden">
           <input
             autoFocus
             className="w-full bg-transparent border-none outline-none p-0 text-[13px] text-foreground placeholder:text-content-muted"
@@ -224,7 +227,7 @@ function ModuleNode({
     >
       <TreeEntry
         active={isActive}
-        icon="service"
+        icon={standardIcons.module}
         onClick={() => onSelect(refData)}
         actions={[
           {
@@ -431,7 +434,7 @@ function FolderNode({
         </TreeEntry>
       </div>
 
-      {(isExpanded && (hasChildren || isAddingChildFolder)) && (
+      {isExpanded && (hasChildren || isAddingChildFolder) && (
         <TreeIndent>
           <div className="flex flex-col gap-0.5">
             {isAddingChildFolder && (
@@ -493,11 +496,7 @@ interface AddModuleEntryProps {
   modules: Record<string, ModuleRef>;
 }
 
-function AddModuleEntry({
-  onCancel,
-  onSuccess,
-  modules,
-}: AddModuleEntryProps) {
+function AddModuleEntry({ onCancel, onSuccess, modules }: AddModuleEntryProps) {
   const workspaceEngine = useWorkspaceEngine();
   const ubento = useUbentoEngine();
   const session = useSession();
@@ -543,8 +542,11 @@ function AddModuleEntry({
         },
       };
 
-      const specData = workspaceEngine.store.getState().workspace.spec.data as any;
-      const rootModuleGroups = specData ? [...(specData.rootModuleGroups || [])] : [];
+      const specData = workspaceEngine.store.getState().workspace.spec
+        .data as any;
+      const rootModuleGroups = specData
+        ? [...(specData.rootModuleGroups || [])]
+        : [];
       if (!rootModuleGroups.includes(trimmed)) {
         rootModuleGroups.push(trimmed);
       }
@@ -574,7 +576,7 @@ function AddModuleEntry({
 
   return (
     <TreeEntry
-      icon="service"
+      icon={standardIcons.module}
       actionMode="hidden"
       loading={isCreating}
       error={error}
@@ -616,7 +618,9 @@ export function ModulesSection() {
   const specData = workspaceEngine.useState((s) => s.workspace.spec);
   const modules = specData.isValid ? specData.data.modules || {} : {};
   const moduleGroups = specData.isValid ? specData.data.moduleGroups || {} : {};
-  const rootModuleGroups = specData.isValid ? specData.data.rootModuleGroups || [] : [];
+  const rootModuleGroups = specData.isValid
+    ? specData.data.rootModuleGroups || []
+    : [];
 
   // Compute all referenced ids to find orphans
   const referencedIds = new Set<string>();
@@ -629,11 +633,19 @@ export function ModulesSection() {
     referencedIds.add(id);
   }
 
-  const orphanModuleIds = Object.keys(modules).filter((id) => !referencedIds.has(id));
-  const orphanGroupIds = Object.keys(moduleGroups).filter((id) => !referencedIds.has(id));
+  const orphanModuleIds = Object.keys(modules).filter(
+    (id) => !referencedIds.has(id),
+  );
+  const orphanGroupIds = Object.keys(moduleGroups).filter(
+    (id) => !referencedIds.has(id),
+  );
 
   // Combined root entries list
-  const rootEntries = [...rootModuleGroups, ...orphanGroupIds, ...orphanModuleIds];
+  const rootEntries = [
+    ...rootModuleGroups,
+    ...orphanGroupIds,
+    ...orphanModuleIds,
+  ];
   const sortedRootEntries = sortEntries(rootEntries, modules, moduleGroups);
 
   const sensors = useSensors(
@@ -680,7 +692,9 @@ export function ModulesSection() {
           updatedGroups[gid] = {
             ...g,
             entries: g.entries.map((e: any) =>
-              e.type === "module" && e.id === oldName ? { ...e, id: newName } : e,
+              e.type === "module" && e.id === oldName
+                ? { ...e, id: newName }
+                : e,
             ),
           };
         }
@@ -712,7 +726,8 @@ export function ModulesSection() {
   };
 
   const handleUninstallModule = async (name: string) => {
-    if (!confirm(`Are you sure you want to uninstall module "${name}"?`)) return;
+    if (!confirm(`Are you sure you want to uninstall module "${name}"?`))
+      return;
 
     try {
       const updatedModules = { ...modules };
@@ -968,12 +983,20 @@ export function ModulesSection() {
     for (const id of currentRoots) {
       refIds.add(id);
     }
-    const orphanMods = Object.keys(currentModules).filter((id) => !refIds.has(id));
-    const orphanGrps = Object.keys(updatedGroups).filter((id) => !refIds.has(id));
+    const orphanMods = Object.keys(currentModules).filter(
+      (id) => !refIds.has(id),
+    );
+    const orphanGrps = Object.keys(updatedGroups).filter(
+      (id) => !refIds.has(id),
+    );
     let updatedRoots = [...currentRoots, ...orphanGrps, ...orphanMods];
 
     // Remove from old position
-    const removedResult = removeIdFromTree(updatedGroups, updatedRoots, activeId);
+    const removedResult = removeIdFromTree(
+      updatedGroups,
+      updatedRoots,
+      activeId,
+    );
     updatedGroups = removedResult.moduleGroups;
     updatedRoots = removedResult.rootModuleGroups;
 
@@ -1050,9 +1073,13 @@ export function ModulesSection() {
       >
         <div
           ref={setRootDroppableRef}
-          className={clsx("flex flex-col gap-0.5 w-full min-h-[150px] transition-all rounded-xl", {
-            "bg-current/5 ring-2 ring-dashed ring-accent": isOverRoot && activeDragId,
-          })}
+          className={clsx(
+            "flex flex-col gap-0.5 w-full min-h-[150px] transition-all rounded-xl",
+            {
+              "bg-current/5 ring-2 ring-dashed ring-accent":
+                isOverRoot && activeDragId,
+            },
+          )}
         >
           {isAdding && (
             <AddModuleEntry
@@ -1072,53 +1099,52 @@ export function ModulesSection() {
             />
           )}
 
-          {sortedRootEntries.length > 0 ? (
-            sortedRootEntries.map((id) => {
-              const isGroup = !!moduleGroups[id];
-              if (isGroup) {
-                const group = moduleGroups[id];
-                return (
-                  <FolderNode
-                    key={id}
-                    groupId={id}
-                    group={group}
-                    allGroups={moduleGroups}
-                    modules={modules}
-                    depth={0}
-                    onSelectModule={handleSelectModule}
-                    onRenameModule={handleRenameModule}
-                    onUninstallModule={handleUninstallModule}
-                    onRenameGroup={handleRenameGroup}
-                    onDeleteGroup={handleDeleteGroup}
-                    onCreateChildGroup={handleCreateChildGroup}
-                    activeDragId={activeDragId}
-                  />
-                );
-              } else {
-                const refData = modules[id];
-                if (!refData) return null;
-                return (
-                  <ModuleNode
-                    key={id}
-                    name={id}
-                    refData={refData}
-                    onSelect={handleSelectModule}
-                    onRename={handleRenameModule}
-                    onUninstall={handleUninstallModule}
-                    activeDragId={activeDragId}
-                  />
-                );
-              }
-            })
-          ) : (
-            !isAdding && !isAddingFolder && (
-              <div className="px-3 py-4 text-center my-auto">
-                <p className="text-[11px] text-content-muted italic">
-                  No modules installed
-                </p>
-              </div>
-            )
-          )}
+          {sortedRootEntries.length > 0
+            ? sortedRootEntries.map((id) => {
+                const isGroup = !!moduleGroups[id];
+                if (isGroup) {
+                  const group = moduleGroups[id];
+                  return (
+                    <FolderNode
+                      key={id}
+                      groupId={id}
+                      group={group}
+                      allGroups={moduleGroups}
+                      modules={modules}
+                      depth={0}
+                      onSelectModule={handleSelectModule}
+                      onRenameModule={handleRenameModule}
+                      onUninstallModule={handleUninstallModule}
+                      onRenameGroup={handleRenameGroup}
+                      onDeleteGroup={handleDeleteGroup}
+                      onCreateChildGroup={handleCreateChildGroup}
+                      activeDragId={activeDragId}
+                    />
+                  );
+                } else {
+                  const refData = modules[id];
+                  if (!refData) return null;
+                  return (
+                    <ModuleNode
+                      key={id}
+                      name={id}
+                      refData={refData}
+                      onSelect={handleSelectModule}
+                      onRename={handleRenameModule}
+                      onUninstall={handleUninstallModule}
+                      activeDragId={activeDragId}
+                    />
+                  );
+                }
+              })
+            : !isAdding &&
+              !isAddingFolder && (
+                <div className="px-3 py-4 text-center my-auto">
+                  <p className="text-[11px] text-content-muted italic">
+                    No modules installed
+                  </p>
+                </div>
+              )}
         </div>
       </SideSection>
     </DndContext>

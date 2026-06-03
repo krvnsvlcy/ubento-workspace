@@ -1,5 +1,5 @@
-import { resolveObject } from "../resolve";
-import { HttpBody, HttpBodyType, HttpHandler } from "../spec/spec";
+import { resolveObject } from "../../resolve";
+import { HttpBody, HttpBodyType, HttpHandler } from "../../spec/spec";
 
 export type RunHttpHandlerErrorCode =
   | "UNSUPPORTED_HANDLER_TYPE"

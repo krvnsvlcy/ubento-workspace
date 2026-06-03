@@ -1,3 +1,4 @@
+import { standardIcons } from "@/components/icon/icon";
 import { SideSection } from "@/components/side/section";
 import { TreeEntry } from "@/components/tree/tree-entry";
 import { useWorkspaceEngine } from "@/contexts/workspace";
@@ -48,7 +49,7 @@ function ServiceEntry({
 
   if (isEditing) {
     return (
-      <TreeEntry icon="service" actionMode="hidden">
+      <TreeEntry icon={standardIcons.service} actionMode="hidden">
         <input
           autoFocus
           className="w-full bg-transparent border-none outline-none p-0 text-[13px] text-foreground placeholder:text-content-muted"

@@ -1,18 +1,15 @@
 import { chain, validate, ValidationError } from "@ubento/services.toolkit";
 import {
   buildRequestUrl,
-  ConnectionCredentials,
-  connectionProviderConfigSchema,
+  HttpConnectionCredentials,
+  httpConnectionProviderConfigSchema,
   resolveObject,
   runHttpHandler, // <-- Imported runHttpHandler
 } from "@ubento/vertex.core";
 import { Request, Response, Router } from "express";
 import { z } from "zod";
-import {
-  createConnection,
-  updateConnectionAuth,
-} from "../entities/connection.js"; // <-- Fixed import path
-import { getConnectionProvider } from "../entities/connection_provider.js";
+import { createConnection, updateConnection } from "../entities/connection.js"; // <-- Fixed import path
+import { getConnectionProvider } from "../entities/http_connection_provider.js";
 import { oauthClientCredentialsSchema } from "../entities/oauth_client.js";
 import { cryptoUtils } from "../lib/crypto.js";
 import prisma from "../lib/prisma.js";
@@ -45,7 +42,7 @@ async function getAuthUrl({
   if (!provider) throw new Error("Provider not found");
 
   // 1. Validate config
-  const config = connectionProviderConfigSchema.parse(provider.config);
+  const config = httpConnectionProviderConfigSchema.parse(provider.config);
   const authConfig = config.auth?.oauth2;
 
   if (!authConfig) {
@@ -122,7 +119,7 @@ export async function handleOAuthCallback(
   if (!provider) throw new Error("Provider not found");
 
   // 4. Extract correctly typed auth config
-  const config = connectionProviderConfigSchema.parse(provider.config);
+  const config = httpConnectionProviderConfigSchema.parse(provider.config);
   const authConfig = config.auth?.oauth2;
   if (!authConfig) {
     throw new Error("Provider is not configured for OAuth2");
@@ -154,7 +151,7 @@ export async function handleOAuthCallback(
   }
 
   const tokenData = result.data as any;
-  const authData: ConnectionCredentials = {
+  const authData: HttpConnectionCredentials = {
     type: "oauth2",
     accessToken: tokenData.accessToken || tokenData.access_token,
     refreshToken: tokenData.refreshToken || tokenData.refresh_token,
@@ -167,20 +164,31 @@ export async function handleOAuthCallback(
   let connection = await prisma.connection.findFirst({
     where: {
       team_id: stateRecord.team_id,
-      provider_id: oauthClient.provider_id,
+      type: "http",
+      data: {
+        equals: {
+          providerId: oauthClient.provider_id,
+        },
+      },
     },
   });
 
   if (connection) {
-    const updated = await updateConnectionAuth(connection.id, authData);
+    const updated = await updateConnection(connection.id, {
+      credentials: authData,
+    });
     return {
       connection: updated,
       clientState: stateRecord.state,
     };
   } else {
     const created = await createConnection({
+      type: "http",
       team_id: stateRecord.team_id,
-      provider_id: oauthClient.provider_id,
+      name: provider.name,
+      data: {
+        providerId: oauthClient.provider_id,
+      },
       credentials: authData,
     });
     return {

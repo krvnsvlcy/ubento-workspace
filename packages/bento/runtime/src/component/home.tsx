@@ -22,7 +22,7 @@ export function BentoHomeView({ runtime }: { runtime: BentoRuntime }) {
     return (
       <div className="h-screen w-screen flex flex-col items-center justify-center bg-background p-8">
         <div className="flex flex-col items-center text-center max-w-md gap-6">
-          <Heading level="display">{workspace.title}</Heading>
+          <Heading level="h1">{workspace.title}</Heading>
           <Text shade="subtle">
             Start by creating your first board to organize your tasks and
             visualize your data in this workspace.

@@ -63,7 +63,10 @@ while (!connected) {
       document.documentElement.classList.remove("dark");
     }
 
-    injectWorkspaceImportMap(undefined, workspaceSpec?.modules);
+    injectWorkspaceImportMap({
+      modules: workspaceSpec.modules,
+      packages: workspaceSpec.packages,
+    });
 
     if (registryModuleUrlTemplate) {
       await runServiceWorker({
@@ -82,7 +85,6 @@ while (!connected) {
         workspace: {
           id: "",
           title: "",
-          slug: "",
           spec: (workspaceSpec
             ? { isValid: true, data: workspaceSpec }
             : { isValid: false, data: undefined, issues: [] }) as any,

@@ -1,3 +1,4 @@
+import { withRetry } from "@/utils/retry";
 import { makeTsPath, tsPathToMonacoUri } from "@/utils/uri";
 import { MonacoService } from "../monaco/monaco-service";
 import { UbentoService } from "../ubento/ubento";
@@ -12,6 +13,7 @@ export type ModuleData = {
 
 export type ModuleStatus = ModuleData & {
   status: "idle" | "loading" | "loaded" | "unloading" | "error";
+  error?: string;
 };
 
 export class ModuleSyncer {
@@ -47,10 +49,12 @@ export class ModuleSyncer {
     moduleId: string,
     versionId: string,
   ): Promise<string> {
-    return this.ubentoService.module.readModuleVersionFile(
-      moduleId,
-      versionId,
-      "index.tsx",
+    return withRetry(() =>
+      this.ubentoService.module.readModuleVersionFile(
+        moduleId,
+        versionId,
+        "index.tsx",
+      ),
     );
   }
 
@@ -80,7 +84,7 @@ export class ModuleSyncer {
   }
 
   /**
-   * Translates a synthetic proxy path (e.g., /modules/badge.tsx)
+   * Translates a synthetic proxy path (e.g., @/modules/badge.tsx)
    * to its underlying concrete version path.
    * If the path is not a recognized synthetic path, it returns the original.
    */
@@ -121,7 +125,11 @@ export class ModuleSyncer {
             this.notify();
           } catch (e) {
             console.error(`Failed to unload module ${id}:`, e);
-            this.modules.set(id, { ...existing, status: "error" });
+            this.modules.set(id, {
+              ...existing,
+              status: "error",
+              error: e instanceof Error ? e.message : String(e),
+            });
             this.notify();
           }
         };
@@ -166,7 +174,11 @@ export class ModuleSyncer {
             this.notify();
           } catch (e) {
             console.error(`Failed to sync module ${next.moduleId}:`, e);
-            this.modules.set(next.moduleId, { ...next, status: "error" });
+            this.modules.set(next.moduleId, {
+              ...next,
+              status: "error",
+              error: e instanceof Error ? e.message : String(e),
+            });
             this.notify();
           }
         };

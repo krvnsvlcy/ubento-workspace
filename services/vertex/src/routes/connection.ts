@@ -12,9 +12,8 @@ import {
   createConnection,
   deleteConnection,
   getConnection,
-  getTeamConnection,
   listConnections,
-  updateConnectionAuth,
+  updateConnection,
 } from "../entities/connection.js";
 
 const router: Router = Router();
@@ -40,36 +39,12 @@ router.get(
 );
 
 router.get(
-  "/team/:team_id/:provider_name",
-  chain(
-    validate({
-      params: z.object({
-        team_id: z.string(),
-        provider_name: z.string(),
-      }),
-    }),
-    async (req: Request, res: Response) => {
-      const connection = await getTeamConnection(
-        req.params.team_id as string,
-        req.params.provider_name as string,
-      );
-      if (!connection) {
-        throw new NotFoundError(
-          `connection for team ${req.params.team_id} and provider ${req.params.provider_name}`,
-        );
-      }
-      res.json(toSerializable(connection));
-    },
-  ),
-);
-
-router.get(
   "/",
   chain(
     validate({
       query: z.object({
         team_id: z.string().optional(),
-        provider_id: z.string().optional(),
+        tags: z.string().optional(),
         cursor: z.string().optional(),
         limit: z.coerce.number().optional(),
       }),
@@ -78,7 +53,7 @@ router.get(
       const result = await listConnections({
         ...parseCursorQuery(req),
         team_id: parseStringQuery(req, "team_id"),
-        provider_id: parseStringQuery(req, "provider_id"),
+        tags: parseStringQuery(req, "tags")?.split(","),
       });
       res.json(result);
     },
@@ -106,32 +81,33 @@ router.post(
   ),
 );
 
-router.post(
-  "/:connection_id/auth",
+router.patch(
+  "/:connection_id",
   chain(
     validate({
       params: z.object({
         connection_id: z.string(),
       }),
-      body: z.unknown(),
+      body: z.object({
+        credentials: z.unknown().optional(),
+        data: z.object({}).optional(),
+        name: z.string().optional(),
+      }),
     }),
     async (req: Request, res: Response) => {
-      let credentials = req.body;
-      let name: string | undefined;
+      const { credentials, name, data } = req.body as {
+        credentials?: unknown;
+        name?: string;
+        data?: object;
+      };
 
-      if (
-        req.body &&
-        typeof req.body === "object" &&
-        "credentials" in (req.body as any)
-      ) {
-        credentials = (req.body as any).credentials;
-        name = (req.body as any).name;
-      }
-
-      const connection = await updateConnectionAuth(
+      const connection = await updateConnection(
         req.params.connection_id as string,
-        credentials,
-        name,
+        {
+          credentials,
+          name,
+          data,
+        },
       );
       res.json(toSerializable(connection));
     },

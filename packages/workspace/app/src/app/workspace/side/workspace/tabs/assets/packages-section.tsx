@@ -1,10 +1,11 @@
+import { standardIcons } from "@/components/icon/icon";
 import { SideSection } from "@/components/side/section";
 import { TreeEntry } from "@/components/tree/tree-entry";
 import { useWorkspaceEngine } from "@/contexts/workspace";
-import React from "react";
 import { useAppModal } from "@/modals/app/hook.js";
 import { appModalRoutes } from "@/modals/app/routes.js";
 import { Plus } from "lucide-react";
+import React from "react";
 
 interface PackageEntryProps {
   name: string;
@@ -41,7 +42,7 @@ function PackageEntry({
 
   if (isEditing) {
     return (
-      <TreeEntry icon="assets" actionMode="hidden">
+      <TreeEntry icon={standardIcons.assets} actionMode="hidden">
         <input
           autoFocus
           className="w-full bg-transparent border-none outline-none p-0 text-[13px] text-foreground placeholder:text-content-muted"
@@ -66,7 +67,7 @@ function PackageEntry({
 
   return (
     <TreeEntry
-      icon="assets"
+      icon={standardIcons.assets}
       actions={[
         {
           icon: "edit",

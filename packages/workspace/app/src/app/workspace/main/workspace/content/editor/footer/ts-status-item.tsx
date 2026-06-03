@@ -318,7 +318,15 @@ function TsStatusPanel() {
                       <span className="text-content-muted">Unloading...</span>
                     )}
                     {mod.status === "error" && (
-                      <span className="text-red-500 font-medium">Error</span>
+                      <Tooltip
+                        delayDuration={200}
+                        sideOffset={4}
+                        content={mod.error || "Unknown synchronization failure"}
+                      >
+                        <span className="text-red-500 font-medium cursor-help">
+                          Error
+                        </span>
+                      </Tooltip>
                     )}
                     {mod.status === "idle" && (
                       <span className="text-content-muted">Idle</span>

@@ -43,7 +43,7 @@ export async function listConnectionProviders({
   handle?: string;
   tags?: string[];
 } = {}) {
-  const page = await prismaListWithCursor(prisma.connectionProvider, {
+  const page = await prismaListWithCursor(prisma.httpConnectionProvider, {
     limit,
     cursor,
     orderBy: [{ id: "asc" }],
@@ -69,12 +69,14 @@ export async function listConnectionProviders({
 }
 
 export async function getConnectionProvider(id: string) {
-  const p = await prisma.connectionProvider.findUnique({ where: { id } });
+  const p = await prisma.httpConnectionProvider.findUnique({ where: { id } });
   return p ? serializeConnectionProvider(p) : null;
 }
 
 export async function getConnectionProviderByHandle(handle: string) {
-  const p = await prisma.connectionProvider.findUnique({ where: { handle } });
+  const p = await prisma.httpConnectionProvider.findUnique({
+    where: { handle },
+  });
   return p ? serializeConnectionProvider(p) : null;
 }
 
@@ -84,7 +86,6 @@ export async function getConnectionProviderByHandle(handle: string) {
 
 export async function createConnectionProvider({
   handle,
-  type,
   name,
   description,
   config,
@@ -92,21 +93,19 @@ export async function createConnectionProvider({
   team_id,
 }: {
   handle: string;
-  type: string;
   name: string;
   description?: string | null;
   config?: Prisma.InputJsonValue | null;
   tags?: string[];
   team_id?: string | null;
 }) {
-  const p = await prisma.connectionProvider.create({
+  const p = await prisma.httpConnectionProvider.create({
     data: {
       id: makeEntityId({
         code: ubentoEntities.connectionProvider.code,
         bareId: generateBareId(),
       }),
       handle,
-      type,
       name,
       description,
       config,
@@ -125,7 +124,7 @@ export async function updateConnectionProvider(
   id: string,
   data: {
     handle?: string;
-    type?: string;
+    type?: string; // Ignored
     name?: string;
     description?: string | null;
     config?: Prisma.InputJsonValue | null;
@@ -133,7 +132,11 @@ export async function updateConnectionProvider(
     team_id?: string | null;
   },
 ) {
-  const p = await prisma.connectionProvider.update({ where: { id }, data });
+  const { type, ...rest } = data;
+  const p = await prisma.httpConnectionProvider.update({
+    where: { id },
+    data: rest,
+  });
   return serializeConnectionProvider(p);
 }
 
@@ -147,7 +150,7 @@ export async function uploadConnectionProviderImage(
   contentType: string,
 ) {
   const hash = await uploadImage(buffer, contentType);
-  const p = await prisma.connectionProvider.update({
+  const p = await prisma.httpConnectionProvider.update({
     where: { id },
     data: { image_hash: hash },
   });
@@ -159,5 +162,5 @@ export async function uploadConnectionProviderImage(
 // ---------------------------------------------------------------------------
 
 export async function deleteConnectionProvider(id: string) {
-  return prisma.connectionProvider.delete({ where: { id } });
+  return prisma.httpConnectionProvider.delete({ where: { id } });
 }

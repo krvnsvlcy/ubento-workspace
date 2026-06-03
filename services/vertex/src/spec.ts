@@ -8,9 +8,9 @@ export const spec = {
     version: "1.0.0",
   },
   paths: {
-    "/vertex/connection-providers": {
+    "/vertex/http-connection-providers": {
       get: {
-        summary: "List all connection providers",
+        summary: "List all http connection providers",
         parameters: [
           { name: "team_id", in: "query", schema: { type: "string" } },
           { name: "name", in: "query", schema: { type: "string" } },
@@ -20,11 +20,11 @@ export const spec = {
         ],
         responses: {
           "200": {
-            description: "A list of connection providers",
+            description: "A list of http connection providers",
             content: {
               "application/json": {
                 schema: makeCursorPageResponseSchema({
-                  $ref: "#/components/schemas/ConnectionProvider",
+                  $ref: "#/components/schemas/HttpConnectionProvider",
                 }),
               },
             },
@@ -32,7 +32,7 @@ export const spec = {
         },
       },
       post: {
-        summary: "Create a connection provider",
+        summary: "Create an http connection provider",
         requestBody: {
           content: {
             "application/json": {
@@ -53,17 +53,17 @@ export const spec = {
         },
         responses: {
           "200": {
-            description: "The created connection provider",
+            description: "The created http connection provider",
             content: {
               "application/json": {
-                schema: { $ref: "#/components/schemas/ConnectionProvider" },
+                schema: { $ref: "#/components/schemas/HttpConnectionProvider" },
               },
             },
           },
         },
       },
     },
-    "/vertex/connection-providers/{provider_id}": {
+    "/vertex/http-connection-providers/{provider_id}": {
       parameters: [
         {
           name: "provider_id",
@@ -73,20 +73,20 @@ export const spec = {
         },
       ],
       get: {
-        summary: "Get a connection provider",
+        summary: "Get an http connection provider",
         responses: {
           "200": {
-            description: "The connection provider",
+            description: "The http connection provider",
             content: {
               "application/json": {
-                schema: { $ref: "#/components/schemas/ConnectionProvider" },
+                schema: { $ref: "#/components/schemas/HttpConnectionProvider" },
               },
             },
           },
         },
       },
       patch: {
-        summary: "Update a connection provider",
+        summary: "Update an http connection provider",
         requestBody: {
           content: {
             "application/json": {
@@ -105,17 +105,17 @@ export const spec = {
         },
         responses: {
           "200": {
-            description: "The updated connection provider",
+            description: "The updated http connection provider",
             content: {
               "application/json": {
-                schema: { $ref: "#/components/schemas/ConnectionProvider" },
+                schema: { $ref: "#/components/schemas/HttpConnectionProvider" },
               },
             },
           },
         },
       },
       delete: {
-        summary: "Delete a connection provider",
+        summary: "Delete an http connection provider",
         responses: {
           "200": {
             description: "Confirmation of deletion",
@@ -131,7 +131,7 @@ export const spec = {
         },
       },
     },
-    "/vertex/connection-providers/{provider_id}/image": {
+    "/vertex/http-connection-providers/{provider_id}/image": {
       parameters: [
         {
           name: "provider_id",
@@ -141,7 +141,7 @@ export const spec = {
         },
       ],
       post: {
-        summary: "Upload image for connection provider",
+        summary: "Upload image for http connection provider",
         requestBody: {
           content: {
             "multipart/form-data": {
@@ -157,33 +157,33 @@ export const spec = {
         },
         responses: {
           "200": {
-            description: "The updated connection provider with image_url",
+            description: "The updated http connection provider with image_url",
             content: {
               "application/json": {
-                schema: { $ref: "#/components/schemas/ConnectionProvider" },
+                schema: { $ref: "#/components/schemas/HttpConnectionProvider" },
               },
             },
           },
         },
       },
     },
-    "/vertex/connection-providers/by-name/{name}": {
+    "/vertex/http-connection-providers/by-handle/{handle}": {
       parameters: [
         {
-          name: "name",
+          name: "handle",
           in: "path",
           schema: { type: "string" },
           required: true,
         },
       ],
       get: {
-        summary: "Get a connection provider by name",
+        summary: "Get an http connection provider by handle",
         responses: {
           "200": {
-            description: "The connection provider",
+            description: "The http connection provider",
             content: {
               "application/json": {
-                schema: { $ref: "#/components/schemas/ConnectionProvider" },
+                schema: { $ref: "#/components/schemas/HttpConnectionProvider" },
               },
             },
           },
@@ -195,6 +195,7 @@ export const spec = {
         summary: "List all connections",
         parameters: [
           { name: "team_id", in: "query", schema: { type: "string" } },
+          { name: "tags", in: "query", schema: { type: "string" } },
           { name: "cursor", in: "query", schema: { type: "string" } },
           { name: "limit", in: "query", schema: { type: "number" } },
         ],
@@ -219,11 +220,13 @@ export const spec = {
               schema: {
                 type: "object",
                 properties: {
+                  name: { type: "string" },
                   team_id: { type: "string" },
                   provider_id: { type: "string" },
-                  auth: { type: "object", nullable: true },
+                  credentials: { type: "object", nullable: true },
+                  description: { type: "string", nullable: true },
                 },
-                required: ["team_id", "provider_id"],
+                required: ["name", "team_id", "provider_id"],
               },
             },
           },
@@ -262,39 +265,18 @@ export const spec = {
           },
         },
       },
-      delete: {
-        summary: "Delete a connection",
-        responses: {
-          "200": {
-            description: "Confirmation of deletion",
-            content: {
-              "application/json": {
-                schema: {
-                  type: "object",
-                  properties: { id: { type: "string" } },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-    "/vertex/connections/{connection_id}/auth": {
-      parameters: [
-        {
-          name: "connection_id",
-          in: "path",
-          schema: { type: "string" },
-          required: true,
-        },
-      ],
-      post: {
-        summary: "Update connection auth",
+      patch: {
+        summary: "Update a connection",
         requestBody: {
           content: {
             "application/json": {
               schema: {
                 type: "object",
+                properties: {
+                  name: { type: "string" },
+                  credentials: { type: "object", nullable: true },
+                  data: { type: "object", nullable: true },
+                },
               },
             },
           },
@@ -310,30 +292,17 @@ export const spec = {
           },
         },
       },
-    },
-    "/vertex/connections/team/{team_id}/{provider_name}": {
-      parameters: [
-        {
-          name: "team_id",
-          in: "path",
-          schema: { type: "string" },
-          required: true,
-        },
-        {
-          name: "provider_name",
-          in: "path",
-          schema: { type: "string" },
-          required: true,
-        },
-      ],
-      get: {
-        summary: "Get a connection for a team by provider name",
+      delete: {
+        summary: "Delete a connection",
         responses: {
           "200": {
-            description: "The connection",
+            description: "Confirmation of deletion",
             content: {
               "application/json": {
-                schema: { $ref: "#/components/schemas/Connection" },
+                schema: {
+                  type: "object",
+                  properties: { id: { type: "string" } },
+                },
               },
             },
           },
@@ -876,10 +845,10 @@ export const spec = {
   },
   components: {
     schemas: {
-      ConnectionProvider: {
-        ...prismaSchemas.definitions.ConnectionProvider,
+      HttpConnectionProvider: {
+        ...prismaSchemas.definitions.HttpConnectionProvider,
         properties: {
-          ...prismaSchemas.definitions.ConnectionProvider.properties,
+          ...prismaSchemas.definitions.HttpConnectionProvider.properties,
           image_url: { type: "string", nullable: true },
         },
       },

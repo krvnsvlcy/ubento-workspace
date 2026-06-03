@@ -23,13 +23,32 @@ type EncryptedData {
     cipher_text String
 }
 
-model ConnectionProvider {
+model Connection {
+    id      String @id @map("_id")
+    entity  String @default("connection")
+    team_id String
+
+    type        String // eg. "http", "mongodb", etc
+    name        String // eg. "Stripe prod", "Stripe test", "Acme Postgres DB"
+    description String?
+
+    data        Json?
+    credentials EncryptedData?
+    tags        String[]       @default([])
+
+    version    Int      @default(1) @db.Long
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+
+    @@map("connections")
+}
+
+model HttpConnectionProvider {
     id     String @id @map("_id")
-    entity String @default("connection_provider")
+    entity String @default("http_connection_provider")
 
     team_id     String?
     handle      String   @unique // eg. "stripe", "shopify" (machine-readable)
-    type        String // eg. "http", "database", (protocol)
     name        String // eg. "Stripe", "Shopify", "PostgreSQL" (human-readable)
     description String?
     config      Json? // eg. Auth strategy, default headers
@@ -37,33 +56,13 @@ model ConnectionProvider {
     image_hash  String? // hash of the image
 
     // Relations
-    connections   Connection[]
     oauth_clients OAuthClient[]
 
     version    Int      @default(1) @db.Long
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt
 
-    @@map("connection_providers")
-}
-
-model Connection {
-    id      String @id @map("_id")
-    entity  String @default("connection")
-    team_id String
-
-    name        String // eg. "Stripe prod", "Stripe test", "Acme Postgres DB"
-    description String?
-
-    provider_id String
-    provider    ConnectionProvider @relation(fields: [provider_id], references: [id])
-    credentials EncryptedData
-
-    version    Int      @default(1) @db.Long
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
-
-    @@map("connections")
+    @@map("http_connection_providers")
 }
 
 model OAuthClient {
@@ -74,7 +73,7 @@ model OAuthClient {
     name    String
 
     provider_id String
-    provider    ConnectionProvider @relation(fields: [provider_id], references: [id])
+    provider    HttpConnectionProvider @relation(fields: [provider_id], references: [id])
     credentials EncryptedData
 
     version    Int      @default(1) @db.Long

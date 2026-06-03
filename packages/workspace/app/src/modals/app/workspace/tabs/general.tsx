@@ -1,5 +1,5 @@
 import { IconPicker } from "@/components/icon/icon-picker.js";
-import { Icon, IconName } from "@/components/icon/icon.js";
+import { IconName } from "@/components/icon/icon.js";
 import { useUbento, useUbentoEngine } from "@/hooks/app-engine.js";
 import { workspaceColorMap } from "@/utils/colors.js";
 import { useModal } from "@/utils/modal-store.js";
@@ -15,7 +15,7 @@ import {
   ScrollArea,
   Text,
 } from "@ubento/bento.arlo-core";
-import { Loader2 } from "lucide-react";
+import { Loader2, Trash } from "lucide-react";
 import { FC, useEffect, useState } from "react";
 
 export const GeneralTab: FC = () => {
@@ -201,7 +201,7 @@ export const GeneralTab: FC = () => {
                       }`}
                       title="Default"
                     >
-                      <Icon icon="trash" size={14} />
+                      <Trash size={14} />
                     </button>
                   </div>
                 </Field>
