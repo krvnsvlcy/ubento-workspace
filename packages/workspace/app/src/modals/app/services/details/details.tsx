@@ -2,7 +2,7 @@ import { ErrorView } from "@/components/error";
 import { useWorkspaceEngine } from "@/contexts/workspace";
 import { useUbentoEngine } from "@/hooks/app-engine";
 import { useAppModal } from "@/modals/app/hook.js";
-import { appModalRoutes } from "@/modals/app/routes.js";
+import { appModalRoutes, routeMatch } from "@/modals/app/routes.js";
 import {
   Button,
   Content,
@@ -28,7 +28,7 @@ export function ServiceDetails() {
   const engine = useUbentoEngine();
   const ubento = engine.ubento;
   const session = engine.useState((s) => s.session);
-  const { params, goBack, push } = useAppModal();
+  const { params, goBack, push, replace, path } = useAppModal();
   const serviceId = params.serviceId || params.id || "";
   const workspaceEngine = useWorkspaceEngine();
 
@@ -62,6 +62,16 @@ export function ServiceDetails() {
   }, [channels, activeChannelId]);
   const parsedSpec = spec ? serviceSpecV1Schema.safeParse(spec) : null;
   const specData = parsedSpec?.success ? parsedSpec.data : undefined;
+
+  useEffect(() => {
+    if (routeMatch(path, appModalRoutes.services.service) && specData) {
+      if (specData.type === "mongodb") {
+        replace(appModalRoutes.services.serviceMongo, { serviceId });
+      } else {
+        replace(appModalRoutes.services.serviceHttp, { serviceId });
+      }
+    }
+  }, [path, specData, serviceId, replace]);
 
   if (isLoadingService) {
     return <PendingView message="Service" />;
@@ -111,7 +121,12 @@ export function ServiceDetails() {
                 variant="primary"
                 className="w-full"
                 onClick={() => {
-                  push(appModalRoutes.services.edit, { serviceId });
+                  const type = specData?.type || "http";
+                  if (type === "mongodb") {
+                    push(appModalRoutes.services.editMongo, { serviceId });
+                  } else {
+                    push(appModalRoutes.services.editHttp, { serviceId });
+                  }
                 }}
               >
                 <Edit size={16} /> Edit Service

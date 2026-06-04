@@ -439,10 +439,10 @@ export function createWorkspaceEngine({
     let vertexResponse: vertexClient.VertexResult;
 
     if (type === "query") {
-      vertexResponse = await appEngine.ubento.sdk.vertex.runQuery({
+      vertexResponse = await appEngine.ubento.sdk.vertex.invoke({
         teamId: session.teamId,
         serviceChannelId: channelId,
-        query: name,
+        operation: name,
         args: args,
       });
     } else {
@@ -467,10 +467,10 @@ export function createWorkspaceEngine({
         };
       }
 
-      vertexResponse = await appEngine.ubento.sdk.vertex.runAction({
+      vertexResponse = await appEngine.ubento.sdk.vertex.invoke({
         teamId: session.teamId,
         serviceChannelId: channelId,
-        action: name,
+        operation: name,
         args: args,
       });
     }
@@ -1065,7 +1065,9 @@ export function createWorkspaceEngine({
           await Promise.all(
             Object.entries(services).map(async ([name, serviceData]) => {
               try {
-                const spec = await getServiceSpec((serviceData as any).channelId);
+                const spec = await getServiceSpec(
+                  (serviceData as any).channelId,
+                );
                 if (spec.isValid) {
                   specs[name] = spec.data;
                 }
@@ -1101,6 +1103,7 @@ export function createWorkspaceEngine({
               ...workspaceSpec.data.packages,
               react: "19",
               "react-dom": "19",
+              "@tanstack/react-query": "5",
             }).map(([name, version]) => ({ name, version })),
           );
         }
@@ -1118,6 +1121,7 @@ export function createWorkspaceEngine({
                 ...(workspaceSpec.packages || {}),
                 react: "19",
                 "react-dom": "19",
+                "@tanstack/react-query": "5",
               }).map(([name, version]) => ({ name, version })),
             );
           }

@@ -31,8 +31,14 @@ export const appModalRoutes = {
   services: {
     services: "/services",
     service: "/services/service", // must be passed the id of the service
+    serviceHttp: "/services/service-http",
+    serviceMongo: "/services/service-mongo",
     create: "/services/create",
+    createHttp: "/services/create-http",
+    createMongo: "/services/create-mongo",
     edit: "/services/edit",
+    editHttp: "/services/edit-http",
+    editMongo: "/services/edit-mongo",
     createProvider: "/services/create-provider",
     editProvider: "/services/edit-provider",
   },

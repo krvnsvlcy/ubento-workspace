@@ -23,7 +23,7 @@ export function createUbentoVertexService({
   // --- Stores ---
 
   const connectionProviderStore = createStore<
-    vertexClient.ConnectionProvider,
+    vertexClient.HttpConnectionProvider,
     { team_id?: string; name?: string; tags?: string[] },
     UbentoApiPage
   >({
@@ -155,7 +155,7 @@ export function createUbentoVertexService({
       });
     },
     useConnectionProviderByHandle: (handle: string, options?: any) => {
-      return useQuery<vertexClient.ConnectionProvider>({
+      return useQuery<vertexClient.HttpConnectionProvider>({
         queryKey: ["connection-provider-by-handle", handle],
         queryFn: async () => {
           return await (ubentoSdk.vertex as any).getProviderByHandle(handle);
@@ -212,10 +212,12 @@ export function createUbentoVertexService({
         mutationFn: async (data: {
           team_id: string;
           name: string;
-          provider_id: string;
-          credentials?: Record<string, any>;
+          type: string;
+          data?: unknown;
+          credentials?: unknown;
+          description?: string;
         }) => {
-          return await ubentoSdk.vertex.createConnection(data);
+          return await ubentoSdk.vertex.createConnection(data as any);
         },
         onSuccess: (connection) => {
           connectionStore.push(connection);
@@ -488,6 +490,31 @@ export function createUbentoVertexService({
           connectionProviderStore.push(provider);
           queryClient.invalidateQueries({ queryKey: ["connection-providers"] });
         },
+      });
+    },
+    useExtractMongodbSchema: () => {
+      return useMutation({
+        mutationFn: async ({
+          connectionId,
+          database,
+          options,
+        }: {
+          connectionId: string;
+          database: string;
+          options?: { sampleSize?: number };
+        }) => {
+          return await ubentoSdk.vertex.extractDbSchema(connectionId, database, options);
+        },
+      });
+    },
+    useListMongodbDatabases: (connectionId?: string) => {
+      return useQuery({
+        queryKey: ["connections", connectionId, "mongodb", "databases"],
+        queryFn: async () => {
+          if (!connectionId) return [];
+          return await ubentoSdk.vertex.listMongodbDatabases(connectionId);
+        },
+        enabled: !!connectionId,
       });
     },
   };

@@ -10,6 +10,7 @@ export const serviceDataSchema = z.object({
   id: z.string(),
   channelId: z.string(),
   connectionId: z.string(),
+  type: z.enum(["http", "mongodb"]),
   permissions: z
     .object({
       queries: z.record(z.string(), operationPermissionSchema).optional(),

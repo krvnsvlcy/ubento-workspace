@@ -1,6 +1,6 @@
-import { ConnectionProviderConfig } from "@ubento/vertex.core";
+import { HttpConnectionProviderConfig } from "@ubento/vertex.core";
 
-export function extractProviderAuthMethods(config: ConnectionProviderConfig) {
+export function extractProviderAuthMethods(config: HttpConnectionProviderConfig) {
   const authMethods: Array<{
     code: string;
     name: string;

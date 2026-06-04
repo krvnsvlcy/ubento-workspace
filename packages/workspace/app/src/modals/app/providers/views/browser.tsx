@@ -129,7 +129,7 @@ export const ProvidersBrowser: FC = () => {
 };
 
 interface ProviderCardProps {
-  provider: vertexClient.ConnectionProvider;
+  provider: vertexClient.HttpConnectionProvider;
   onSelect: (provider: any) => void;
 }
 

@@ -51,7 +51,7 @@ export function OAuthClientSelector({
   value,
   onChange,
 }: {
-  providerData: vertexClient.ConnectionProvider;
+  providerData: vertexClient.HttpConnectionProvider;
   value: string;
   onChange: (value: string) => void;
 }) {

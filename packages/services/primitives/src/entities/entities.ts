@@ -124,6 +124,14 @@ export const ubentoEntities = {
     name: "intelligence_file",
     code: "itf",
   },
+  /**
+   * Represents a model proxy request.
+   */
+  intelligenceRequest: {
+    name: "intelligence_request",
+    code: "irq",
+  },
+
 
   // System
   /**

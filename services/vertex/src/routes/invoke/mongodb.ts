@@ -1,5 +1,5 @@
+import { invokeMongoService } from "@ubento/vertex.invoke";
 import {
-  invokeMongoService,
   MongodbServiceSpecV1,
   mongodbConnectionCredentialsSchema,
 } from "@ubento/vertex.core";
@@ -68,6 +68,7 @@ export async function handleMongodbInvocation({
   const result = await invokeMongoService({
     operation: operationName as any,
     connection: {
+      database: spec.database,
       data: connection ? (connection.data as any) : undefined,
       credentials: parsedAuthData,
     },

@@ -5,6 +5,7 @@ import fileRouter from "./routes/files.js";
 import { gatewayRouter } from "./routes/gateway.js";
 import messageRouter from "./routes/messages.js";
 import { modelRouter } from "./routes/models.js";
+import requestRouter from "./routes/requests.js";
 import threadRouter from "./routes/threads.js";
 import toolsRouter from "./routes/tools.js";
 import { spec } from "./spec/spec.js";
@@ -25,5 +26,6 @@ service.app.use("/intelligence/threads", threadRouter);
 service.app.use("/intelligence/files", fileRouter);
 service.app.use("/intelligence/messages", messageRouter);
 service.app.use("/intelligence/tools", toolsRouter);
+service.app.use("/intelligence/requests", requestRouter);
 
 service.start();

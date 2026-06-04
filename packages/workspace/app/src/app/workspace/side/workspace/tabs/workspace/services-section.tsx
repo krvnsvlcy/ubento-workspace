@@ -79,7 +79,7 @@ function ServiceEntry({
       className="w-4 h-4 rounded-md object-cover"
     />
   ) : (
-    "service"
+    standardIcons.service
   );
 
   return (

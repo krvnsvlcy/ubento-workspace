@@ -5,8 +5,30 @@ import * as ReactDOM from "react-dom";
 import * as ReactDOMClient from "react-dom/client";
 import * as ReactJsxRuntime from "react/jsx-runtime";
 import { useLocation, useNavigation, useParams } from "../hooks/navigation.js";
-import { useAction, useInfiniteQuery, useQuery } from "../hooks/service.js";
+import {
+  httpQueryOptions,
+  httpInfiniteQueryOptions,
+  useHttpMutation,
+} from "../hooks/service/http.js";
+import {
+  mongodbFindQueryOptions,
+  mongodbFindOneQueryOptions,
+  mongodbCountDocumentsQueryOptions,
+  mongodbAggregateQueryOptions,
+  mongodbListCollectionsQueryOptions,
+  mongodbListDatabasesQueryOptions,
+  mongodbExtractCollectionSchemaQueryOptions,
+  mongodbExtractDbSchemaQueryOptions,
+  mongodbInsertOneMutationOptions,
+  mongodbInsertManyMutationOptions,
+  mongodbUpdateOneMutationOptions,
+  mongodbUpdateManyMutationOptions,
+  mongodbDeleteOneMutationOptions,
+  mongodbDeleteManyMutationOptions,
+  mongodbFindOneAndUpdateMutationOptions,
+} from "../hooks/service/mongodb.js";
 import type { ModuleRef } from "../spec.js";
+import * as TanstackReactQuery from "@tanstack/react-query";
 
 export const MODULE_BASE_PATH = "/__ubento_modules/";
 
@@ -57,11 +79,32 @@ export function createProxyModules(): Record<string, string> {
   );
   const lucideReactScript = createModuleProxy(LucideReact, "LucideReact", true);
 
+  const reactQueryScript = createModuleProxy(
+    TanstackReactQuery,
+    "TanstackReactQuery",
+    true,
+  );
+
   const bentoRuntimeScript = createModuleProxy(
     {
-      useAction,
-      useQuery,
-      useInfiniteQuery,
+      httpQueryOptions,
+      httpInfiniteQueryOptions,
+      useHttpMutation,
+      mongodbFindQueryOptions,
+      mongodbFindOneQueryOptions,
+      mongodbCountDocumentsQueryOptions,
+      mongodbAggregateQueryOptions,
+      mongodbListCollectionsQueryOptions,
+      mongodbListDatabasesQueryOptions,
+      mongodbExtractCollectionSchemaQueryOptions,
+      mongodbExtractDbSchemaQueryOptions,
+      mongodbInsertOneMutationOptions,
+      mongodbInsertManyMutationOptions,
+      mongodbUpdateOneMutationOptions,
+      mongodbUpdateManyMutationOptions,
+      mongodbDeleteOneMutationOptions,
+      mongodbDeleteManyMutationOptions,
+      mongodbFindOneAndUpdateMutationOptions,
       useParams,
       useLocation,
       useNavigation,
@@ -85,6 +128,9 @@ export function createProxyModules(): Record<string, string> {
     ),
     "lucide-react": URL.createObjectURL(
       new Blob([lucideReactScript], { type: "application/javascript" }),
+    ),
+    "@tanstack/react-query": URL.createObjectURL(
+      new Blob([reactQueryScript], { type: "application/javascript" }),
     ),
     ubento: URL.createObjectURL(
       new Blob([bentoRuntimeScript], { type: "application/javascript" }),

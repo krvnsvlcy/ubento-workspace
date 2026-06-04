@@ -25,6 +25,7 @@ export const spec: OpenAPIV3.Document = {
       Message: prismaSchemas.definitions.Message as any,
       Thread: prismaSchemas.definitions.Thread as any,
       File: prismaSchemas.definitions.File as any,
+      Request: prismaSchemas.definitions.Request as any,
       MessageStatus: {
         type: "string",
         enum: ["in_progress", "completed", "errored", "aborted"],
@@ -1005,6 +1006,54 @@ export const spec: OpenAPIV3.Document = {
                   },
                   required: ["content"],
                 },
+              },
+            },
+          },
+          "400": {
+            description: "Bad request",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Error" },
+              },
+            },
+          },
+        },
+      },
+    },
+    "/intelligence/requests": {
+      get: {
+        summary: "List requests",
+        description: "Retrieve a paginated list of AI model requests for a team",
+        tags: ["Requests"],
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          {
+            in: "query",
+            name: "team_id",
+            schema: { type: "string" },
+            description: "The team ID to filter requests",
+          },
+          {
+            in: "query",
+            name: "cursor",
+            schema: { type: "string" },
+            description: "Pagination cursor for retrieving next page",
+          },
+          {
+            in: "query",
+            name: "limit",
+            schema: { type: "integer", default: 20 },
+            description: "Maximum number of requests to return",
+          },
+        ],
+        responses: {
+          "200": {
+            description: "List of requests",
+            content: {
+              "application/json": {
+                schema: makeCursorPageResponseSchema({
+                  $ref: "#/components/schemas/Request",
+                }),
               },
             },
           },

@@ -31,14 +31,15 @@ export function useServiceWorkspaceState(
   const { installedServices, installedServiceIds } =
     useWorkspaceServices(workspaceEngine);
   const isInstalled = installedServiceIds.has(serviceId);
+  const providerHandle = specData?.type === "http" ? specData.connection?.provider : undefined;
   const {
     data: provider,
     isPending: isPendingProvider,
     isError: isErrorProvider,
   } = engine.ubento.vertex.useConnectionProviderByHandle(
-    specData?.connection?.provider || "",
+    providerHandle || "",
     {
-      enabled: !!specData?.connection?.provider,
+      enabled: !!providerHandle,
     },
   );
 
@@ -55,9 +56,8 @@ export function useServiceWorkspaceState(
       if (!session.teamId || !provider?.id) return [];
       const result = await ubento.sdk.vertex.listConnections({
         team_id: session.teamId,
-        provider_id: provider.id,
       });
-      return result?.data || [];
+      return (result?.data || []).filter((c: any) => c.data?.providerId === provider.id);
     },
     enabled: !!session.teamId && !!provider?.id,
   });

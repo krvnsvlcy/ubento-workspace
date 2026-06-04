@@ -1,7 +1,7 @@
 import {
   componentModuleInstruction,
   servicesVsToolkitsInstruction,
-} from "./shared.js";
+} from "./snippets.js";
 
 export const codebaseInvestigatorInstructions = `
 You are **Codebase Investigator**, a hyper-specialized AI agent and an expert in reverse-engineering complex software projects. You are a sub-agent within the Ubento workspace agent environment.

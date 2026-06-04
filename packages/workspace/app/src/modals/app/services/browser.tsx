@@ -38,7 +38,7 @@ import {
   Target,
   Users,
 } from "lucide-react";
-import { FC, useState } from "react";
+import { FC, useState, useRef, useEffect } from "react";
 import { Case, Default, Switch } from "react-if";
 import { GoBack } from "../go-back.js";
 
@@ -120,6 +120,24 @@ export const ServiceBrowser: FC = () => {
   const [activeCategory, setActiveCategory] = useState("all");
   const [activeTab, setActiveTab] = useState("public");
 
+  const [showCreateDropdown, setShowCreateDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowCreateDropdown(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   const serviceTabs = [
     { key: "public", label: "Public" },
     { key: "private", label: "Private" },
@@ -150,7 +168,7 @@ export const ServiceBrowser: FC = () => {
         <Content>
           <ContentHeader>
             <GoBack />
-            <Heading>Select Service</Heading>
+            <Heading level="h4">Select Service</Heading>
             <Text shade="subtle">Add services to your workspace.</Text>
           </ContentHeader>
           <ContentBody>
@@ -173,14 +191,41 @@ export const ServiceBrowser: FC = () => {
             </div>
           </ContentBody>
           <ContentFooter className="border-t border-border/30 pt-3">
-            <Button
-              onClick={() => push(appModalRoutes.services.create)}
-              className="w-full"
-              variant="primary"
-              align="start"
-            >
-              <Plus size={16} /> Create Service
-            </Button>
+            <div className="relative w-full" ref={dropdownRef}>
+              {showCreateDropdown && (
+                <div className="absolute bottom-full left-0 right-0 mb-2 bg-background border border-border/30 rounded-xl shadow-xl p-1 z-50 flex flex-col gap-1">
+                  <Button
+                    onClick={() => {
+                      setShowCreateDropdown(false);
+                      push(appModalRoutes.services.createHttp);
+                    }}
+                    variant="ghost"
+                    align="start"
+                    className="w-full text-xs font-semibold py-2 px-3 justify-start"
+                  >
+                    <Server size={14} className="mr-2" /> HTTP Service
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      setShowCreateDropdown(false);
+                      push(appModalRoutes.services.createMongo);
+                    }}
+                    variant="ghost"
+                    align="start"
+                    className="w-full text-xs font-semibold py-2 px-3 justify-start"
+                  >
+                    <Server size={14} className="mr-2" /> MongoDB Service
+                  </Button>
+                </div>
+              )}
+              <Button
+                onClick={() => setShowCreateDropdown(!showCreateDropdown)}
+                className="w-full"
+                variant="primary"
+              >
+                <Plus size={16} /> Create Service
+              </Button>
+            </div>
           </ContentFooter>
         </Content>
       </RailLayoutSide>

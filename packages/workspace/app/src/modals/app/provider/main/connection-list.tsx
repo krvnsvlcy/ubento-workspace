@@ -15,7 +15,7 @@ import {
   Text,
 } from "@ubento/bento.arlo-core";
 import { vertexClient } from "@ubento/services.sdk";
-import { ConnectionProviderConfig } from "@ubento/vertex.core";
+import { HttpConnectionProviderConfig } from "@ubento/vertex.core";
 import { Globe, Plus, Trash2 } from "lucide-react";
 import { FC, useState } from "react";
 import { Case, Default, Switch } from "react-if";
@@ -30,7 +30,7 @@ export function ConnectionList() {
     providerCode || "",
   );
   const config = (providerData as any)?.config as
-    | ConnectionProviderConfig
+    | HttpConnectionProviderConfig
     | undefined;
 
   const {

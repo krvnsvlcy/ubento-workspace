@@ -15,8 +15,8 @@ import {
 } from "@ubento/bento.arlo-core";
 import { vertexClient } from "@ubento/services.sdk";
 import {
-  ConnectionCredentials,
-  ConnectionProviderConfig,
+  HttpConnectionCredentials,
+  HttpConnectionProviderConfig,
 } from "@ubento/vertex.core";
 import { useState } from "react";
 import { Case, Default, If, Switch } from "react-if";
@@ -32,7 +32,7 @@ export function AddConnection() {
     ubento.vertex.useConnectionProviderByHandle(providerCode || "");
 
   const config = (providerData as any)?.config as
-    | ConnectionProviderConfig
+    | HttpConnectionProviderConfig
     | undefined;
 
   if (isLoading) {
@@ -45,9 +45,7 @@ export function AddConnection() {
 
   if (!providerData || !config) {
     return (
-      <Content className="p-6 text-sm text-base">
-        Provider not found.
-      </Content>
+      <Content className="p-6 text-sm text-base">Provider not found.</Content>
     );
   }
 
@@ -67,8 +65,8 @@ function AddConnectionForm({
   onSuccess,
   onCancel,
 }: {
-  providerData: vertexClient.ConnectionProvider;
-  config: ConnectionProviderConfig;
+  providerData: vertexClient.HttpConnectionProvider;
+  config: HttpConnectionProviderConfig;
   onSuccess: () => void;
   onCancel: () => void;
 }) {
@@ -111,7 +109,7 @@ function AddConnectionForm({
     }
   };
   const handleCreate = async () => {
-    let credentials: ConnectionCredentials;
+    let credentials: HttpConnectionCredentials;
     if (authMethod === "api-key") {
       credentials = {
         type: "api_key",
@@ -130,7 +128,10 @@ function AddConnectionForm({
     createConnection(
       {
         team_id: session.teamId || "",
-        provider_id: providerData.id,
+        type: "http",
+        data: {
+          provider_id: providerData.id,
+        },
         name: connectionName,
         credentials,
       },

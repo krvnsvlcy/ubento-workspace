@@ -10,7 +10,7 @@ import {
   Text,
 } from "@ubento/bento.arlo-core";
 import { vertexClient } from "@ubento/services.sdk";
-import { ConnectionProviderConfig } from "@ubento/vertex.core";
+import { HttpConnectionProviderConfig } from "@ubento/vertex.core";
 import { Edit, Globe } from "lucide-react";
 import { Case, Default, Switch } from "react-if";
 import { GoBack } from "../../go-back.js";
@@ -21,8 +21,8 @@ export function ProviderSidebar({
   data,
   config,
 }: {
-  data?: vertexClient.ConnectionProvider;
-  config?: ConnectionProviderConfig;
+  data?: vertexClient.HttpConnectionProvider;
+  config?: HttpConnectionProviderConfig;
 }) {
   const session = useSession();
   const { push } = useAppModal();

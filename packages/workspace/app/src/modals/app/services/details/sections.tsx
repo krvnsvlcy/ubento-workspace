@@ -160,3 +160,135 @@ export function ActionsSection({ actions }: { actions: Record<string, any> }) {
 export function SchemasSection({ schemas }: { schemas: Record<string, any> }) {
   return <OperationsSection title="Schemas" icon={Braces} operations={schemas} />;
 }
+
+export function DatabasesSection({
+  databases,
+}: {
+  databases: any[];
+}) {
+  return (
+    <section className="space-y-6">
+      <Heading
+        level="h3"
+        as="h3"
+        className="mb-4 flex items-center gap-2 text-[16px] font-bold"
+      >
+        <Database size={18} className="text-base" />
+        Databases & Collections
+      </Heading>
+      <div className="space-y-6">
+        {databases.map((db, idx) => (
+          <div key={db.name || idx} className="space-y-3">
+            <div className="flex items-baseline gap-2">
+              <span className="font-bold text-content text-sm">{db.name}</span>
+              {db.description && (
+                <span className="text-xs text-content-muted">{db.description}</span>
+              )}
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              {db.collections?.map((col: any, colIdx: number) => (
+                <Card
+                  key={col.name || colIdx}
+                  className="p-5 bg-surface/20 border border-border/30 backdrop-blur-sm rounded-xl hover:border-border/30 hover:bg-surface/30 transition-all group"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="font-bold text-content group-hover:text-base transition-colors">
+                      {col.name}
+                    </div>
+                    <Boxes size={14} className="text-content-muted" />
+                  </div>
+                  {col.description && (
+                    <p className="text-xs text-content-subtle mb-3">{col.description}</p>
+                  )}
+                  {col.schema && col.schema.properties && (
+                    <div className="space-y-1">
+                      <div className="text-[10px] uppercase font-bold text-content-muted tracking-wider">
+                        Fields
+                      </div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {Object.entries(col.schema.properties).map(([fieldName, fieldMeta]: [string, any]) => {
+                          const fieldType = Array.isArray(fieldMeta.types)
+                            ? fieldMeta.types.join(" | ")
+                            : fieldMeta.type || "any";
+                          return (
+                            <span
+                              key={fieldName}
+                              className="text-[10px] font-mono text-content-muted bg-black/20 px-2 py-0.5 rounded"
+                              title={`${fieldName}: ${fieldType}`}
+                            >
+                              {fieldName} <span className="opacity-60">({fieldType})</span>
+                            </span>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </Card>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+export function CollectionsSection({
+  collections,
+}: {
+  collections: any[];
+}) {
+  return (
+    <section className="space-y-4">
+      <Heading
+        level="h3"
+        as="h3"
+        className="mb-4 flex items-center gap-2 text-[16px] font-bold"
+      >
+        <Boxes size={18} className="text-base" />
+        Collections
+      </Heading>
+      <div className="grid grid-cols-2 gap-4">
+        {collections.map((col: any, colIdx: number) => (
+          <Card
+            key={col.name || colIdx}
+            className="p-5 bg-surface/20 border border-border/30 backdrop-blur-sm rounded-xl hover:border-border/30 hover:bg-surface/30 transition-all group"
+          >
+            <div className="flex items-center justify-between mb-2">
+              <div className="font-bold text-content group-hover:text-base transition-colors">
+                {col.name}
+              </div>
+              <Boxes size={14} className="text-content-muted" />
+            </div>
+            {col.description && (
+              <p className="text-xs text-content-subtle mb-3">{col.description}</p>
+            )}
+            {col.schema && col.schema.properties && (
+              <div className="space-y-1">
+                <div className="text-[10px] uppercase font-bold text-content-muted tracking-wider">
+                  Fields
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {Object.entries(col.schema.properties).map(([fieldName, fieldMeta]: [string, any]) => {
+                    const fieldType = Array.isArray(fieldMeta.types)
+                      ? fieldMeta.types.join(" | ")
+                      : fieldMeta.type || "any";
+                    return (
+                      <span
+                        key={fieldName}
+                        className="text-[10px] font-mono text-content-muted bg-black/20 px-2 py-0.5 rounded"
+                        title={`${fieldName}: ${fieldType}`}
+                      >
+                        {fieldName} <span className="opacity-60">({fieldType})</span>
+                      </span>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </Card>
+        ))}
+      </div>
+    </section>
+  );
+}

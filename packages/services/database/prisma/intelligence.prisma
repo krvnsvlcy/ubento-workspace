@@ -69,3 +69,33 @@ model File {
 
     @@map("files")
 }
+
+model Request {
+    id          String   @id @map("_id")
+    entity      String   @default("intelligence_request")
+    team_id     String
+    workspace_id String?
+    
+    provider        String
+    model           String
+    latency_ms      Int
+    status_code     Int
+    success         Boolean
+
+    prompt_tokens     Int?
+    cached_tokens     Int?
+    reasoning_tokens   Int?
+    response_tokens   Int?
+    total_tokens      Int?
+
+    request_data  Json?      
+    response_data Json?      
+    estimated_cost Float? 
+    gateway_metadata Json?   
+
+    version    Int      @default(1) @db.Long
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+
+    @@map("requests")
+}

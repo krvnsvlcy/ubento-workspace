@@ -23,6 +23,32 @@ export class IntelligenceService {
     });
   }
 
+  // ===== Requests =====
+
+  async listRequests({
+    team_id,
+    limit,
+    cursor,
+  }: {
+    team_id?: string;
+    limit?: number;
+    cursor?: string;
+  } = {}) {
+    const result = await this.intelligenceClient.get(
+      "/intelligence/requests",
+      {
+        params: {
+          query: {
+            team_id,
+            limit,
+            cursor,
+          },
+        },
+      },
+    );
+    return extractResponseData(result, true);
+  }
+
   // ===== Threads =====
 
   async listThreads({

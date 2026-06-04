@@ -1,7 +1,7 @@
 import {
   Connection,
-  ConnectionProvider,
   createVertexServiceClient,
+  HttpConnectionProvider,
   OAuthClient,
   Service,
   ServiceChannel,
@@ -28,7 +28,7 @@ export class VertexService {
     });
   }
 
-  // ===== Connection Providers =====
+  // ===== Http Connection Providers =====
 
   async listConnectionProviders(
     options: {
@@ -40,15 +40,18 @@ export class VertexService {
       tags?: string[];
     } = {},
   ) {
-    const result = await this.vertexClient.get("/vertex/connection-providers", {
-      params: { query: options },
-    });
+    const result = await this.vertexClient.get(
+      "/vertex/http-connection-providers",
+      {
+        params: { query: options },
+      },
+    );
     return extractResponseData(result, true);
   }
 
-  async getProviderByHandle(handle: string): Promise<ConnectionProvider> {
+  async getProviderByHandle(handle: string): Promise<HttpConnectionProvider> {
     const result = await this.vertexClient.get(
-      "/vertex/connection-providers/by-handle/{handle}" as any,
+      "/vertex/http-connection-providers/by-handle/{handle}" as any,
       {
         params: { path: { handle } },
       },
@@ -58,15 +61,14 @@ export class VertexService {
 
   async createConnectionProvider(data: {
     handle: string;
-    type: string;
     name: string;
     description?: string;
     config?: Record<string, any>;
     tags?: string[];
     team_id?: string | null;
-  }): Promise<ConnectionProvider> {
+  }): Promise<HttpConnectionProvider> {
     const result = await this.vertexClient.post(
-      "/vertex/connection-providers",
+      "/vertex/http-connection-providers",
       {
         body: data as any,
       },
@@ -78,16 +80,15 @@ export class VertexService {
     providerId: string,
     data: {
       handle?: string;
-      type?: string;
       name?: string;
       description?: string;
       config?: Record<string, any>;
       tags?: string[];
       team_id?: string | null;
     },
-  ): Promise<ConnectionProvider> {
+  ): Promise<HttpConnectionProvider> {
     const result = await this.vertexClient.patch(
-      "/vertex/connection-providers/{provider_id}",
+      "/vertex/http-connection-providers/{provider_id}",
       {
         params: { path: { provider_id: providerId } },
         body: data as any,
@@ -96,9 +97,11 @@ export class VertexService {
     return extractResponseData(result, true);
   }
 
-  async getConnectionProvider(providerId: string): Promise<ConnectionProvider> {
+  async getConnectionProvider(
+    providerId: string,
+  ): Promise<HttpConnectionProvider> {
     const result = await this.vertexClient.get(
-      "/vertex/connection-providers/{provider_id}",
+      "/vertex/http-connection-providers/{provider_id}",
       {
         params: { path: { provider_id: providerId } },
       },
@@ -113,7 +116,7 @@ export class VertexService {
       team_id?: string;
       limit?: number;
       cursor?: string;
-      provider_id?: string;
+      tags?: string;
     } = {},
   ) {
     const result = await this.vertexClient.get("/vertex/connections", {
@@ -136,23 +139,39 @@ export class VertexService {
     teamId: string,
     provider: string,
   ): Promise<Connection | undefined> {
-    const result = await this.vertexClient.get(
-      "/vertex/connections/team/{team_id}/{provider_name}",
-      {
-        params: { path: { team_id: teamId, provider_name: provider } },
-      },
-    );
-    return extractResponseData(result, false);
+    const connections = await this.listConnections({ team_id: teamId });
+    return connections.data.find((c: any) => c.type === provider);
   }
 
   async createConnection(data: {
+    name: string;
     team_id: string;
-    provider_id: string;
-    auth?: Record<string, any>;
+    type: string;
+    data?: Record<string, any>;
+    credentials?: Record<string, any>;
+    description?: string;
   }): Promise<Connection> {
     const result = await this.vertexClient.post("/vertex/connections", {
       body: data as any,
     });
+    return extractResponseData(result, true);
+  }
+
+  async updateConnection(
+    connectionId: string,
+    data: {
+      credentials?: any;
+      data?: Record<string, any>;
+      name?: string;
+    },
+  ): Promise<Connection> {
+    const result = await this.vertexClient.patch(
+      "/vertex/connections/{connection_id}",
+      {
+        params: { path: { connection_id: connectionId } },
+        body: data as any,
+      },
+    );
     return extractResponseData(result, true);
   }
 
@@ -170,11 +189,37 @@ export class VertexService {
     connectionId: string,
     credentials: any,
   ): Promise<Connection> {
-    const result = await this.vertexClient.post(
-      "/vertex/connections/{connection_id}/auth",
+    return this.updateConnection(connectionId, { credentials });
+  }
+
+  async extractDbSchema(
+    connectionId: string,
+    database: string,
+    options: {
+      sampleSize?: number;
+    } = {},
+  ): Promise<Record<string, any>> {
+    const result = await this.vertexClient.get(
+      "/vertex/connections/{connection_id}/mongodb/schema",
       {
-        params: { path: { connection_id: connectionId } },
-        body: credentials,
+        params: {
+          path: { connection_id: connectionId },
+          query: { ...options, database },
+        },
+      },
+    );
+    return extractResponseData(result, true);
+  }
+
+  async listMongodbDatabases(
+    connectionId: string,
+  ): Promise<{ name: string; sizeOnDisk?: number; empty?: boolean }[]> {
+    const result = await this.vertexClient.get(
+      "/vertex/connections/{connection_id}/mongodb/databases",
+      {
+        params: {
+          path: { connection_id: connectionId },
+        },
       },
     );
     return extractResponseData(result, true);
@@ -432,47 +477,24 @@ export class VertexService {
     return extractResponseData(result, true);
   }
 
-  async runQuery({
+  async invoke({
     teamId,
     serviceChannelId,
-    query,
+    operation,
     args = {},
   }: {
     teamId: string;
     serviceChannelId: string;
-    query: string;
+    operation: string;
     args?: Record<string, any>;
   }) {
-    const result = await this.vertexClient.post("/vertex/{team_id}/query", {
+    const result = await this.vertexClient.post("/vertex/{team_id}", {
       params: {
         path: { team_id: teamId },
       },
       body: {
         service_channel_id: serviceChannelId,
-        query,
-        args: args as any,
-      },
-    });
-    return extractResponseData(result, true);
-  }
-  async runAction({
-    teamId,
-    serviceChannelId,
-    action,
-    args = {},
-  }: {
-    teamId: string;
-    serviceChannelId: string;
-    action: string;
-    args?: Record<string, any>;
-  }) {
-    const result = await this.vertexClient.post("/vertex/{team_id}/action", {
-      params: {
-        path: { team_id: teamId },
-      },
-      body: {
-        service_channel_id: serviceChannelId,
-        action,
+        operation,
         args: args as any,
       },
     });
@@ -482,12 +504,12 @@ export class VertexService {
   async uploadConnectionProviderImage(
     providerId: string,
     file: Blob | File,
-  ): Promise<ConnectionProvider> {
+  ): Promise<HttpConnectionProvider> {
     const formData = new FormData();
     const filename = (file as any).name || "logo.webp";
     formData.append("image", file, filename);
     const result = await this.vertexClient.post(
-      "/vertex/connection-providers/{provider_id}/image" as any,
+      "/vertex/http-connection-providers/{provider_id}/image" as any,
       {
         params: { path: { provider_id: providerId } } as any,
         body: formData as any,

@@ -11,12 +11,21 @@ export type SummarizedServiceSpec = {
 };
 
 function summarizeServiceSpec(spec: ServiceSpecV1): SummarizedServiceSpec {
+  if (spec.type === "http") {
+    return {
+      type: spec.type,
+      description: spec.description,
+      schemas: spec.schemas ? Object.keys(spec.schemas) : [],
+      queries: spec.queries ? Object.keys(spec.queries) : [],
+      actions: spec.actions ? Object.keys(spec.actions) : [],
+    };
+  }
   return {
     type: spec.type,
     description: spec.description,
-    schemas: spec.schemas ? Object.keys(spec.schemas) : [],
-    queries: spec.queries ? Object.keys(spec.queries) : [],
-    actions: spec.actions ? Object.keys(spec.actions) : [],
+    schemas: [],
+    queries: [],
+    actions: [],
   };
 }
 
@@ -112,6 +121,9 @@ export const serviceActionResource: ServiceActionResourceType = {
     if (!parsed.success) {
       throw new Error(`Invalid service spec for ${data.service}.`);
     }
+    if (parsed.data.type !== "http") {
+      throw new Error(`Service "${data.service}" is not an HTTP service.`);
+    }
     const actions = parsed.data.actions || {};
     const action = actions[data.action];
     if (!action) {
@@ -143,6 +155,9 @@ export const serviceQueryResource: ServiceQueryResourceType = {
     if (!parsed.success) {
       throw new Error(`Invalid service spec for ${data.service}.`);
     }
+    if (parsed.data.type !== "http") {
+      throw new Error(`Service "${data.service}" is not an HTTP service.`);
+    }
     const queries = parsed.data.queries || {};
     const query = queries[data.query];
     if (!query) {
@@ -173,6 +188,9 @@ export const serviceSchemaResource: ServiceSchemaResourceType = {
     const parsed = serviceSpecV1Schema.safeParse(serviceSpec);
     if (!parsed.success) {
       throw new Error(`Invalid service spec for ${data.service}.`);
+    }
+    if (parsed.data.type !== "http") {
+      throw new Error(`Service "${data.service}" is not an HTTP service.`);
     }
     const schemas = parsed.data.schemas || {};
     const schema = schemas[data.schema];

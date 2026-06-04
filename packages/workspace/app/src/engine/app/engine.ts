@@ -23,9 +23,9 @@ import {
 } from "../settings";
 import { makeLocationString } from "./app_modal";
 import {
+  ContextMenuInstance,
   ContextMenuItem,
   ContextMenuItemGroup,
-  ContextMenuInstance,
 } from "./context_menu";
 import { parseLocation, stringifyLocation, UbentoLocation } from "./location";
 import { UbentoSession } from "./session";
@@ -37,6 +37,10 @@ export interface ModalInstance {
   resolve: (value: any) => void;
   tags: string[];
 }
+
+export type DevOptions = {
+  enableAiInspector?: boolean;
+};
 
 export type UbentoEngineState = {
   session: UbentoSession;
@@ -71,6 +75,9 @@ export type UbentoEngine = StateController<UbentoEngineState> & {
   userSetting: SettingState<z.infer<typeof userAppSettingsSchema>>;
   teamSetting: SettingState<z.infer<typeof teamAppSettingsSchema>>;
 
+  // dev options
+  devOptions: DevOptions;
+
   goToLocation: (location: UbentoLocation) => void;
   openWorkspace: (workspaceId: string) => void;
   reloadWorkspace: () => void;
@@ -103,11 +110,11 @@ export type UbentoEngine = StateController<UbentoEngineState> & {
 
   openContextMenu: (
     position: { x: number; y: number },
-    content: (ContextMenuItem | ContextMenuItemGroup | React.ReactNode)[]
+    content: (ContextMenuItem | ContextMenuItemGroup | React.ReactNode)[],
   ) => void;
   showContextMenu: (
     position: { x: number; y: number },
-    content: (ContextMenuItem | ContextMenuItemGroup | React.ReactNode)[]
+    content: (ContextMenuItem | ContextMenuItemGroup | React.ReactNode)[],
   ) => void;
   closeContextMenu: () => void;
 };
@@ -118,12 +125,14 @@ export function createUbentoEngine({
   registryModuleUrlTemplate,
   ubentoApi,
   session,
+  devOptions = {},
 }: {
   workspaceRuntimeUrl: string;
   componentRuntimeUrl: string;
   registryModuleUrlTemplate: string;
   ubentoApi: UbentoSDK;
   session: UbentoSession;
+  devOptions?: DevOptions;
 }) {
   const initialLocation = parseLocation();
   const logger = createLogger({
@@ -332,6 +341,7 @@ export function createUbentoEngine({
   const appEngine: UbentoEngine = {
     logger,
     ...stateController,
+    devOptions,
     ubento,
     queryClient,
     userSetting,

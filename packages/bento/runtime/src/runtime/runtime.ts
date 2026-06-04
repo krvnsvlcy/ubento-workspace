@@ -1,11 +1,13 @@
 import type { DuplexRpc } from "@ubento/rpc";
 import { createZustandStateController } from "@ubento/state";
 import { createStore as createZustandStore } from "zustand";
+import { QueryClient } from "@tanstack/react-query";
 import {
   BentoEngineHostRpcInterface,
   BentoEngineRuntimeRpcInterface,
 } from "../bridge/bridge";
 import { ModuleManager } from "../module/manager";
+import { createQueryClient } from "../query";
 import { BentoUserData, BentoWorkspaceData } from "./types";
 
 export type BentoLocation = {
@@ -56,7 +58,7 @@ export function createBentoRuntime({
   initialState: BentoRuntimeState;
   moduleManager: ModuleManager;
   rpc: DuplexRpc<BentoEngineRuntimeRpcInterface, BentoEngineHostRpcInterface>;
-}) {
+}): BentoRuntime {
   const store = createZustandStore<BentoRuntimeState>(() => {
     return {
       ...initialState,
@@ -182,7 +184,7 @@ export function createBentoRuntime({
     });
   }
 
-  return {
+  const runtime: any = {
     ...controller,
     moduleManager,
     rpc,
@@ -202,6 +204,43 @@ export function createBentoRuntime({
       store.setState({ workspace: workspaceData });
     },
   };
+
+  runtime.queryClient = createQueryClient(runtime);
+
+  return runtime;
 }
 
-export type BentoRuntime = ReturnType<typeof createBentoRuntime>;
+export interface BentoRuntime {
+  getState: () => BentoRuntimeState;
+  subscribe: (
+    listener: (state: BentoRuntimeState, previousState: BentoRuntimeState) => void,
+  ) => () => void;
+  useState: {
+    (): BentoRuntimeState;
+    <T>(
+      selector: (state: BentoRuntimeState) => T,
+      equalityFn?: (a: T, b: T) => boolean,
+    ): T;
+  };
+  setState: (
+    updater:
+      | Partial<BentoRuntimeState>
+      | ((state: BentoRuntimeState) => Partial<BentoRuntimeState>),
+  ) => void;
+  moduleManager: ModuleManager;
+  rpc: DuplexRpc<BentoEngineRuntimeRpcInterface, BentoEngineHostRpcInterface>;
+  runServiceOperation: (args: {
+    service: string;
+    operation: string;
+    type: "query" | "action";
+    args?: Record<string, unknown>;
+  }) => Promise<any>;
+  goHome: () => void;
+  goToBoard: (boardId: string, params?: Record<string, string>) => void;
+  createBoard: (args?: {
+    title?: string;
+    parentId?: string;
+    spec?: any;
+  }) => Promise<void>;
+  queryClient: QueryClient;
+}

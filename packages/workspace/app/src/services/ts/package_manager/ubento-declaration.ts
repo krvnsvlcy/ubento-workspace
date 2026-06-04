@@ -65,17 +65,17 @@ declare module "ubento" {
         : any
       : any;
 
-  export function useQuery<
+  export function httpQueryOptions<
     TService extends string,
     TQuery extends string,
   >(args: {
     service: TService | keyof UbentoServices;
     query: TQuery | (TService extends keyof UbentoServices ? keyof UbentoServices[TService]["queries"] : string);
     args?: ServiceQueryArgs<TService, TQuery>;
-    options?: QueryOptions;
-  }): UseQueryResult<ServiceQueryResult<TService, TQuery>>;
+    options?: any;
+  }): any;
 
-  export function useInfiniteQuery<
+  export function httpInfiniteQueryOptions<
     TService extends string,
     TQuery extends string,
   >(args: {
@@ -84,22 +84,162 @@ declare module "ubento" {
     args?: ServiceQueryArgs<TService, TQuery>;
     initialPageParam: any;
     getNextPageParam: (lastPage: any, allPages: any[]) => any;
-    options?: InfiniteQueryOptions;
-  }): UseInfiniteQueryResult<ServiceQueryResult<TService, TQuery>>;
+    options?: any;
+  }): any;
 
-  export function useAction<
+  export function useHttpMutation<
     TService extends string,
     TAction extends string,
   >(args: {
     service: TService | keyof UbentoServices;
     action: TAction | (TService extends keyof UbentoServices ? keyof UbentoServices[TService]["actions"] : string);
     args?: ServiceActionArgs<TService, TAction>;
-    options?: MutationOptions;
+    options?: any;
   }): UseMutationResult<
     ServiceActionResult<TService, TAction>,
     any,
     ServiceActionArgs<TService, TAction>
   >;
+
+  export function mongodbFindQueryOptions<
+    TService extends keyof UbentoServices,
+    TCollection extends keyof UbentoServices[TService]["collections"] & string,
+  >(args: {
+    service: TService;
+    collection: TCollection;
+    filter?: any;
+    projection?: any;
+    sort?: any;
+    limit?: number;
+    skip?: number;
+    options?: any;
+  }): any;
+
+  export function mongodbFindOneQueryOptions<
+    TService extends keyof UbentoServices,
+    TCollection extends keyof UbentoServices[TService]["collections"] & string,
+  >(args: {
+    service: TService;
+    collection: TCollection;
+    filter?: any;
+    projection?: any;
+    options?: any;
+  }): any;
+
+  export function mongodbCountDocumentsQueryOptions<
+    TService extends keyof UbentoServices,
+    TCollection extends keyof UbentoServices[TService]["collections"] & string,
+  >(args: {
+    service: TService;
+    collection: TCollection;
+    filter?: any;
+    options?: any;
+  }): any;
+
+  export function mongodbAggregateQueryOptions<
+    TService extends keyof UbentoServices,
+    TCollection extends keyof UbentoServices[TService]["collections"] & string,
+  >(args: {
+    service: TService;
+    collection: TCollection;
+    pipeline: any[];
+    options?: any;
+  }): any;
+
+  export function mongodbListCollectionsQueryOptions<
+    TService extends keyof UbentoServices,
+  >(args: {
+    service: TService;
+    options?: any;
+  }): any;
+
+  export function mongodbListDatabasesQueryOptions<
+    TService extends keyof UbentoServices,
+  >(args: {
+    service: TService;
+    options?: any;
+  }): any;
+
+  export function mongodbExtractCollectionSchemaQueryOptions<
+    TService extends keyof UbentoServices,
+    TCollection extends keyof UbentoServices[TService]["collections"] & string,
+  >(args: {
+    service: TService;
+    collection: TCollection;
+    sampleSize?: number;
+    options?: any;
+  }): any;
+
+  export function mongodbExtractDbSchemaQueryOptions<
+    TService extends keyof UbentoServices,
+  >(args: {
+    service: TService;
+    sampleSize?: number;
+    options?: any;
+  }): any;
+
+  export function mongodbInsertOneMutationOptions<
+    TService extends keyof UbentoServices,
+    TCollection extends keyof UbentoServices[TService]["collections"] & string,
+  >(args: {
+    service: TService;
+    collection: TCollection;
+    options?: any;
+  }): any;
+
+  export function mongodbInsertManyMutationOptions<
+    TService extends keyof UbentoServices,
+    TCollection extends keyof UbentoServices[TService]["collections"] & string,
+  >(args: {
+    service: TService;
+    collection: TCollection;
+    options?: any;
+  }): any;
+
+  export function mongodbUpdateOneMutationOptions<
+    TService extends keyof UbentoServices,
+    TCollection extends keyof UbentoServices[TService]["collections"] & string,
+  >(args: {
+    service: TService;
+    collection: TCollection;
+    options?: any;
+  }): any;
+
+  export function mongodbUpdateManyMutationOptions<
+    TService extends keyof UbentoServices,
+    TCollection extends keyof UbentoServices[TService]["collections"] & string,
+  >(args: {
+    service: TService;
+    collection: TCollection;
+    options?: any;
+  }): any;
+
+  export function mongodbDeleteOneMutationOptions<
+    TService extends keyof UbentoServices,
+    TCollection extends keyof UbentoServices[TService]["collections"] & string,
+  >(args: {
+    service: TService;
+    collection: TCollection;
+    options?: any;
+  }): any;
+
+  export function mongodbDeleteManyMutationOptions<
+    TService extends keyof UbentoServices,
+    TCollection extends keyof UbentoServices[TService]["collections"] & string,
+  >(args: {
+    service: TService;
+    collection: TCollection;
+    options?: any;
+  }): any;
+
+  export function mongodbFindOneAndUpdateMutationOptions<
+    TService extends keyof UbentoServices,
+    TCollection extends keyof UbentoServices[TService]["collections"] & string,
+  >(args: {
+    service: TService;
+    collection: TCollection;
+    options?: any;
+  }): any;
 
   export function useLocation(): BentoLocation | undefined;
 

@@ -1,7 +1,7 @@
 import { useAppModal } from "@/modals/app/hook";
 import { appModalRoutes, routeMatch } from "@/modals/app/routes";
 import { vertexClient } from "@ubento/services.sdk";
-import { ConnectionProviderConfig } from "@ubento/vertex.core";
+import { HttpConnectionProviderConfig } from "@ubento/vertex.core";
 import { Case, Switch } from "react-if";
 import { AddConnection } from "./add-connection.js";
 import { ConnectionList } from "./connection-list.js";
@@ -11,8 +11,8 @@ import { OAuthClientView } from "./oauth-client.js";
 interface ConnectionMainProps {
   connections: vertexClient.Connection[];
   isLoadingConnections: boolean;
-  providerData?: vertexClient.ConnectionProvider;
-  config?: ConnectionProviderConfig;
+  providerData?: vertexClient.HttpConnectionProvider;
+  config?: HttpConnectionProviderConfig;
 }
 
 export function ConnectionMain({

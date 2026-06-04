@@ -167,6 +167,104 @@
         "size",
         "updated_at"
       ]
+    },
+    "Request": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "entity": {
+          "type": "string",
+          "default": "intelligence_request"
+        },
+        "team_id": {
+          "type": "string"
+        },
+        "provider": {
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        },
+        "latency_ms": {
+          "type": "integer"
+        },
+        "status_code": {
+          "type": "integer"
+        },
+        "success": {
+          "type": "boolean"
+        },
+        "prompt_tokens": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "cached_tokens": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "thinking_tokens": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "response_tokens": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "total_tokens": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "estimated_cost_usd": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "response_metadata": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "version": {
+          "type": "integer",
+          "default": 1
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "team_id",
+        "provider",
+        "model",
+        "latency_ms",
+        "status_code",
+        "success",
+        "updated_at"
+      ]
     }
   },
   "type": "object",
@@ -179,6 +277,9 @@
     },
     "file": {
       "$ref": "#/definitions/File"
+    },
+    "request": {
+      "$ref": "#/definitions/Request"
     }
   }
 }

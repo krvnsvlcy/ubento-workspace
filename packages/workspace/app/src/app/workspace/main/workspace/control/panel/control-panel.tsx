@@ -1,11 +1,12 @@
 import { useCopilot } from "@/contexts/copilot";
 import { useUbentoEngine } from "@/hooks/app-engine";
 import { Button } from "@ubento/bento.arlo-core";
-import { History, Plus, Sidebar, X } from "lucide-react";
+import { Cpu, History, Plus, Sidebar, X } from "lucide-react";
 import { useState } from "react";
 import { WorkspaceEngine } from "../../../../../../engine/workspace/engine";
 import { CopilotTab } from "./tabs/copilot/copilot";
 import { HistoryTab } from "./tabs/copilot/history";
+import { AiInspectorTab } from "./tabs/ai-inspector/ai-inspector";
 
 export function ControlPanel({
   controller,
@@ -43,12 +44,25 @@ export function ControlPanel({
     },
   ];
 
+  if (appEngine.devOptions?.enableAiInspector) {
+    actions.push({
+      icon: <Cpu size={16} />,
+      label: "AI Inspector",
+      onClick: () => {
+        setActiveTab("ai-inspector");
+      },
+    });
+  }
+
   switch (activeTab) {
     case "ai":
       content = <CopilotTab />;
       break;
     case "ai-history":
       content = <HistoryTab onBack={() => setActiveTab("ai")} />;
+      break;
+    case "ai-inspector":
+      content = <AiInspectorTab />;
       break;
   }
 

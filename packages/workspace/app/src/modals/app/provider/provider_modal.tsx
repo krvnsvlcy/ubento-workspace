@@ -5,7 +5,7 @@ import {
   RailLayoutMain,
   RailLayoutSide,
 } from "@ubento/bento.arlo-core";
-import { ConnectionProviderConfig } from "@ubento/vertex.core";
+import { HttpConnectionProviderConfig } from "@ubento/vertex.core";
 import { useAppModal } from "../hook.js";
 import { ConnectionMain } from "./main/connection-main.js";
 import { ProviderSidebar } from "./side/provider-side.js";
@@ -26,7 +26,7 @@ export function ProviderModal() {
     allConnectionsData?.pages.flatMap((page) => page.data) ?? [];
 
   const config = (providerData as any)?.config as
-    | ConnectionProviderConfig
+    | HttpConnectionProviderConfig
     | undefined;
 
   // Filter connections for this provider

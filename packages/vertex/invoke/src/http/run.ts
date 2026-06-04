@@ -1,5 +1,9 @@
-import { resolveObject } from "../../resolve";
-import { HttpBody, HttpBodyType, HttpHandler } from "../../spec/spec";
+import {
+  resolveObject,
+  HttpBody,
+  HttpBodyType,
+  HttpHandler,
+} from "@ubento/vertex.core";
 
 export type RunHttpHandlerErrorCode =
   | "UNSUPPORTED_HANDLER_TYPE"

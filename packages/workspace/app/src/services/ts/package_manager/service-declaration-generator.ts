@@ -57,33 +57,51 @@ export function generateServiceDeclarations(specs: Record<string, any>): string 
     }
     namespaces.push(`declare namespace UbentoService_${serviceName} {\n${schemaDefs.join("\n\n")}\n}`);
 
-    // 2. Generate service operations
-    const queries: string[] = [];
-    if (spec.queries) {
-      for (const [queryName, queryOp] of Object.entries(spec.queries)) {
-        const argsType = operationArgsToTs((queryOp as any).args, serviceName);
-        const resultType = jsonSchemaToTs((queryOp as any).schema, serviceName);
-        queries.push(`        "${queryName}": {\n          args: ${argsType};\n          result: ${resultType};\n        };`);
+    if (spec.type === "mongodb") {
+      const collections: string[] = [];
+      if (spec.collections) {
+        for (const col of spec.collections) {
+          const docType = col.schema ? jsonSchemaToTs(col.schema, serviceName) : "any";
+          collections.push(`        "${col.name}": {\n          document: ${docType};\n        };`);
+        }
       }
-    }
-
-    const actions: string[] = [];
-    if (spec.actions) {
-      for (const [actionName, actionOp] of Object.entries(spec.actions)) {
-        const argsType = operationArgsToTs((actionOp as any).args, serviceName);
-        const resultType = jsonSchemaToTs((actionOp as any).schema, serviceName);
-        actions.push(`        "${actionName}": {\n          args: ${argsType};\n          result: ${resultType};\n        };`);
+      serviceEntries.push(`    "${serviceName}": {
+      queries: Record<string, never>;
+      actions: Record<string, never>;
+      collections: {
+${collections.join("\n")}
+      };
+    };`);
+    } else {
+      // 2. Generate service operations
+      const queries: string[] = [];
+      if (spec.queries) {
+        for (const [queryName, queryOp] of Object.entries(spec.queries)) {
+          const argsType = operationArgsToTs((queryOp as any).args, serviceName);
+          const resultType = jsonSchemaToTs((queryOp as any).schema, serviceName);
+          queries.push(`        "${queryName}": {\n          args: ${argsType};\n          result: ${resultType};\n        };`);
+        }
       }
-    }
 
-    serviceEntries.push(`    "${serviceName}": {
+      const actions: string[] = [];
+      if (spec.actions) {
+        for (const [actionName, actionOp] of Object.entries(spec.actions)) {
+          const argsType = operationArgsToTs((actionOp as any).args, serviceName);
+          const resultType = jsonSchemaToTs((actionOp as any).schema, serviceName);
+          actions.push(`        "${actionName}": {\n          args: ${argsType};\n          result: ${resultType};\n        };`);
+        }
+      }
+
+      serviceEntries.push(`    "${serviceName}": {
       queries: {
 ${queries.join("\n")}
       };
       actions: {
 ${actions.join("\n")}
       };
+      collections: Record<string, never>;
     };`);
+    }
   }
 
   return `// Generated service declarations

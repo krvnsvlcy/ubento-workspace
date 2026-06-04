@@ -1,10 +1,12 @@
 import { chain, validate, ValidationError } from "@ubento/services.toolkit";
 import {
   buildRequestUrl,
+  runHttpHandler,
+} from "@ubento/vertex.invoke";
+import {
   HttpConnectionCredentials,
   httpConnectionProviderConfigSchema,
   resolveObject,
-  runHttpHandler, // <-- Imported runHttpHandler
 } from "@ubento/vertex.core";
 import { Request, Response, Router } from "express";
 import { z } from "zod";

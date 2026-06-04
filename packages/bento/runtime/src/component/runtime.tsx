@@ -1,14 +1,8 @@
 import { QueryClientProvider } from "@tanstack/react-query";
-import {
-  Code,
-  Heading,
-  PendingView,
-  Text,
-} from "@ubento/bento.arlo-core";
+import { Code, Heading, PendingView, Text } from "@ubento/bento.arlo-core";
 import React, { useEffect, useState } from "react";
 import { transform } from "sucrase";
 import { BentoRuntimeProvider } from "../context/runtime";
-import { queryClient } from "../query";
 import { BentoRuntime } from "../runtime/runtime";
 import { BentoBoardView } from "./board";
 import { ErrorBoundary } from "./error-boundary";
@@ -31,7 +25,7 @@ export function BentoRuntimeView({ runtime }: { runtime: BentoRuntime }) {
 
   return (
     <BentoRuntimeProvider runtime={runtime}>
-      <QueryClientProvider client={queryClient}>{content}</QueryClientProvider>
+      <QueryClientProvider client={runtime.queryClient}>{content}</QueryClientProvider>
     </BentoRuntimeProvider>
   );
 }
@@ -143,7 +137,7 @@ export function ComponentRuntime({
   return (
     <ErrorBoundary key={code}>
       <BentoRuntimeProvider runtime={runtime}>
-        <QueryClientProvider client={queryClient}>
+        <QueryClientProvider client={runtime.queryClient}>
           <Component key={code} />
         </QueryClientProvider>
       </BentoRuntimeProvider>

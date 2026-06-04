@@ -1,5 +1,6 @@
 import { QueryClient } from "@tanstack/react-query";
 import { ServiceOperationError } from "./bridge/bridge";
+import { BentoRuntime } from "./runtime/runtime";
 
 const retryLogic = (failureCount: number, error: unknown) => {
   // Max 3 retries
@@ -20,28 +21,36 @@ const retryLogic = (failureCount: number, error: unknown) => {
 const STALE_TIME = 5 * 60 * 1000; // 5 minutes
 const GC_TIME = 15 * 60 * 1000; // 15 minutes
 
-export const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: retryLogic,
+export const createQueryClient = (runtime: BentoRuntime) =>
+  new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: retryLogic,
 
-      // Data remains "fresh" for 5 minutes.
-      // Components mounting during this window will use cache WITHOUT a background refetch.
-      staleTime: STALE_TIME,
+        // Data remains "fresh" for 5 minutes.
+        // Components mounting during this window will use cache WITHOUT a background refetch.
+        staleTime: STALE_TIME,
 
-      // Inactive data stays in memory for 15 minutes before garbage collection.
-      // Note: If you are using TanStack Query v4, rename `gcTime` to `cacheTime`.
-      gcTime: GC_TIME,
+        // Inactive data stays in memory for 15 minutes before garbage collection.
+        // Note: If you are using TanStack Query v4, rename `gcTime` to `cacheTime`.
+        gcTime: GC_TIME,
 
-      // Smart Default: Disable automatic refetching when the user switches tabs.
-      // This prevents unnecessary API calls to your backend every time they alt-tab.
-      refetchOnWindowFocus: false,
+        // Smart Default: Disable automatic refetching when the user switches tabs.
+        // This prevents unnecessary API calls to your backend every time they alt-tab.
+        refetchOnWindowFocus: false,
 
-      // Smart Default: Only retry on mount if the data is actually stale.
-      refetchOnMount: true,
+        // Smart Default: Only retry on mount if the data is actually stale.
+        refetchOnMount: true,
+
+        meta: {
+          runtime,
+        },
+      },
+      mutations: {
+        retry: retryLogic,
+        meta: {
+          runtime,
+        },
+      },
     },
-    mutations: {
-      retry: retryLogic,
-    },
-  },
-});
+  });

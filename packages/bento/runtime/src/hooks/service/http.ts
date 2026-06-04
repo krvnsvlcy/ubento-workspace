@@ -1,15 +1,10 @@
 import * as ts from "@tanstack/react-query";
-import { ServiceOperationError } from "../bridge/bridge";
-import { useBentoRuntime } from "../context/runtime";
+import { ServiceOperationError } from "../../bridge/bridge";
+import { useBentoRuntime } from "../../context/runtime";
+import { BentoRuntime } from "../../runtime/runtime";
+import { InfiniteQueryOptions, MutationOptions } from "./types";
 
-export type QueryOptions = Omit<
-  Parameters<typeof ts.useQuery>[0],
-  "queryKey" | "queryFn"
-> & {
-  keepPreviousData?: boolean;
-};
-
-export function useQuery({
+export function httpQueryOptions({
   service,
   query,
   args,
@@ -18,14 +13,13 @@ export function useQuery({
   service: string;
   query: string;
   args?: Record<string, any>;
-  options?: QueryOptions;
+  options?: ts.QueryOptions;
 }) {
-  const { keepPreviousData, ...restOptions } = options ?? {};
-  const runtime = useBentoRuntime();
-  return ts.useQuery({
-    ...restOptions,
+  return ts.queryOptions({
+    ...options,
     queryKey: [service, query, args],
-    queryFn: async () => {
+    queryFn: async ({ meta }) => {
+      const runtime = meta!.runtime as BentoRuntime;
       const res = await runtime.runServiceOperation({
         service,
         operation: query,
@@ -38,16 +32,10 @@ export function useQuery({
         throw new ServiceOperationError(res.error);
       }
     },
-    placeholderData: keepPreviousData ? ts.keepPreviousData : undefined,
   });
 }
 
-export type InfiniteQueryOptions = Omit<
-  Parameters<typeof ts.useInfiniteQuery>[0],
-  "queryKey" | "queryFn" | "initialPageParam" | "getNextPageParam"
->;
-
-export function useInfiniteQuery({
+export function httpInfiniteQueryOptions({
   service,
   query,
   args,
@@ -59,16 +47,18 @@ export function useInfiniteQuery({
   query: string;
   args?: Record<string, any>;
   initialPageParam: any;
-  getNextPageParam: Parameters<typeof ts.useInfiniteQuery>[0]["getNextPageParam"];
+  getNextPageParam: Parameters<
+    typeof ts.infiniteQueryOptions
+  >[0]["getNextPageParam"];
   options?: InfiniteQueryOptions;
 }) {
-  const runtime = useBentoRuntime();
-  return ts.useInfiniteQuery({
+  return ts.infiniteQueryOptions({
     ...options,
     initialPageParam,
     getNextPageParam,
     queryKey: [service, query, args],
-    queryFn: async ({ pageParam }) => {
+    queryFn: async ({ pageParam, meta }) => {
+      const runtime = meta!.runtime as BentoRuntime;
       const res = await runtime.runServiceOperation({
         service,
         operation: query,
@@ -91,12 +81,7 @@ export function useInfiniteQuery({
   });
 }
 
-export type MutationOptions = Omit<
-  Parameters<typeof ts.useMutation>[0],
-  "mutationKey" | "mutationFn"
->;
-
-export function useAction({
+export function useHttpMutation({
   service,
   action,
   args,

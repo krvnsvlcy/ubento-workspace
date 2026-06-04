@@ -1,12 +1,12 @@
 export interface paths {
-    "/vertex/connection-providers": {
+    "/vertex/http-connection-providers": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** List all connection providers */
+        /** List all http connection providers */
         get: {
             parameters: {
                 query?: {
@@ -22,14 +22,14 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description A list of connection providers */
+                /** @description A list of http connection providers */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
                         "application/json": {
-                            data: components["schemas"]["ConnectionProvider"][];
+                            data: components["schemas"]["HttpConnectionProvider"][];
                             nextPage?: {
                                 cursor: string;
                                 limit: number;
@@ -44,7 +44,7 @@ export interface paths {
             };
         };
         put?: never;
-        /** Create a connection provider */
+        /** Create an http connection provider */
         post: {
             parameters: {
                 query?: never;
@@ -65,13 +65,13 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description The created connection provider */
+                /** @description The created http connection provider */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ConnectionProvider"];
+                        "application/json": components["schemas"]["HttpConnectionProvider"];
                     };
                 };
             };
@@ -82,7 +82,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/vertex/connection-providers/{provider_id}": {
+    "/vertex/http-connection-providers/{provider_id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -91,7 +91,7 @@ export interface paths {
             };
             cookie?: never;
         };
-        /** Get a connection provider */
+        /** Get an http connection provider */
         get: {
             parameters: {
                 query?: never;
@@ -103,20 +103,20 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description The connection provider */
+                /** @description The http connection provider */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ConnectionProvider"];
+                        "application/json": components["schemas"]["HttpConnectionProvider"];
                     };
                 };
             };
         };
         put?: never;
         post?: never;
-        /** Delete a connection provider */
+        /** Delete an http connection provider */
         delete: {
             parameters: {
                 query?: never;
@@ -143,7 +143,7 @@ export interface paths {
         };
         options?: never;
         head?: never;
-        /** Update a connection provider */
+        /** Update an http connection provider */
         patch: {
             parameters: {
                 query?: never;
@@ -165,20 +165,20 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description The updated connection provider */
+                /** @description The updated http connection provider */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ConnectionProvider"];
+                        "application/json": components["schemas"]["HttpConnectionProvider"];
                     };
                 };
             };
         };
         trace?: never;
     };
-    "/vertex/connection-providers/{provider_id}/image": {
+    "/vertex/http-connection-providers/{provider_id}/image": {
         parameters: {
             query?: never;
             header?: never;
@@ -189,7 +189,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Upload image for connection provider */
+        /** Upload image for http connection provider */
         post: {
             parameters: {
                 query?: never;
@@ -208,13 +208,13 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description The updated connection provider with image_url */
+                /** @description The updated http connection provider with image_url */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ConnectionProvider"];
+                        "application/json": components["schemas"]["HttpConnectionProvider"];
                     };
                 };
             };
@@ -225,34 +225,34 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/vertex/connection-providers/by-name/{name}": {
+    "/vertex/http-connection-providers/by-handle/{handle}": {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                name: string;
+                handle: string;
             };
             cookie?: never;
         };
-        /** Get a connection provider by name */
+        /** Get an http connection provider by handle */
         get: {
             parameters: {
                 query?: never;
                 header?: never;
                 path: {
-                    name: string;
+                    handle: string;
                 };
                 cookie?: never;
             };
             requestBody?: never;
             responses: {
-                /** @description The connection provider */
+                /** @description The http connection provider */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ConnectionProvider"];
+                        "application/json": components["schemas"]["HttpConnectionProvider"];
                     };
                 };
             };
@@ -277,6 +277,7 @@ export interface paths {
             parameters: {
                 query?: {
                     team_id?: string;
+                    tags?: string;
                     cursor?: string;
                     limit?: number;
                 };
@@ -319,9 +320,11 @@ export interface paths {
             requestBody?: {
                 content: {
                     "application/json": {
+                        name: string;
                         team_id: string;
                         provider_id: string;
-                        auth?: Record<string, never> | null;
+                        credentials?: Record<string, never> | null;
+                        description?: string | null;
                     };
                 };
             };
@@ -404,22 +407,8 @@ export interface paths {
         };
         options?: never;
         head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/vertex/connections/{connection_id}/auth": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                connection_id: string;
-            };
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Update connection auth */
-        post: {
+        /** Update a connection */
+        patch: {
             parameters: {
                 query?: never;
                 header?: never;
@@ -430,7 +419,11 @@ export interface paths {
             };
             requestBody?: {
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        name?: string;
+                        credentials?: Record<string, never> | null;
+                        data?: Record<string, never> | null;
+                    };
                 };
             };
             responses: {
@@ -445,42 +438,86 @@ export interface paths {
                 };
             };
         };
+        trace?: never;
+    };
+    "/vertex/connections/{connection_id}/mongodb/schema": {
+        parameters: {
+            query: {
+                sampleSize?: number;
+                database: string;
+            };
+            header?: never;
+            path: {
+                connection_id: string;
+            };
+            cookie?: never;
+        };
+        /** Extract MongoDB cluster-wide schema */
+        get: {
+            parameters: {
+                query: {
+                    sampleSize?: number;
+                    database: string;
+                };
+                header?: never;
+                path: {
+                    connection_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The extracted schemas mapped by database and collection */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": Record<string, never>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/vertex/connections/team/{team_id}/{provider_name}": {
+    "/vertex/connections/{connection_id}/mongodb/databases": {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                team_id: string;
-                provider_name: string;
+                connection_id: string;
             };
             cookie?: never;
         };
-        /** Get a connection for a team by provider name */
+        /** List MongoDB cluster databases */
         get: {
             parameters: {
                 query?: never;
                 header?: never;
                 path: {
-                    team_id: string;
-                    provider_name: string;
+                    connection_id: string;
                 };
                 cookie?: never;
             };
             requestBody?: never;
             responses: {
-                /** @description The connection */
+                /** @description List of databases in the cluster */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["Connection"];
+                        "application/json": {
+                            name: string;
+                            sizeOnDisk?: number;
+                            empty?: boolean;
+                        }[];
                     };
                 };
             };
@@ -1142,7 +1179,7 @@ export interface paths {
         };
         trace?: never;
     };
-    "/vertex/{team_id}/query": {
+    "/vertex/{team_id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -1153,7 +1190,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Invoke a query */
+        /** Invoke an operation */
         post: {
             parameters: {
                 query?: never;
@@ -1167,61 +1204,13 @@ export interface paths {
                 content: {
                     "application/json": {
                         service_channel_id: string;
-                        query: string;
+                        operation: string;
                         args?: Record<string, never> | null;
                     };
                 };
             };
             responses: {
-                /** @description The result of the query */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["VertexResult"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/vertex/{team_id}/action": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                team_id: string;
-            };
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Invoke an action */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    team_id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: {
-                content: {
-                    "application/json": {
-                        service_channel_id: string;
-                        action: string;
-                        args?: Record<string, never> | null;
-                    };
-                };
-            };
-            responses: {
-                /** @description The result of the action */
+                /** @description The result of the operation */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -1242,13 +1231,12 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        ConnectionProvider: {
+        HttpConnectionProvider: {
             id: string;
-            /** @default connection_provider */
+            /** @default http_connection_provider */
             entity: string;
             team_id?: string;
             handle: string;
-            type: string;
             name: string;
             description?: string;
             config?: Record<string, never>;
@@ -1267,10 +1255,12 @@ export interface components {
             /** @default connection */
             entity: string;
             team_id: string;
+            type: string;
             name: string;
             description?: string;
-            provider_id: string;
-            credentials?: components["schemas"]["EncryptedData"];
+            data?: Record<string, never>;
+            credentials?: components["schemas"]["EncryptedData"] | null;
+            tags?: string[];
             /** @default 1 */
             version: number;
             /** Format: date-time */

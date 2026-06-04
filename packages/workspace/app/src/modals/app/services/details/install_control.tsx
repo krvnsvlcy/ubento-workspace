@@ -38,6 +38,7 @@ export function InstallControl({
       specData,
     });
 
+  const providerHandle = specData?.type === "http" ? specData.connection?.provider : undefined;
   const [selectedConnectionId, setSelectedConnectionId] = useState<
     string | null
   >(null);
@@ -59,7 +60,7 @@ export function InstallControl({
     });
   };
 
-  if (isPending) {
+  if (specData?.type === "http" && isPending) {
     return (
       <Button disabled variant="primary">
         <Spinner /> Connection
@@ -68,10 +69,44 @@ export function InstallControl({
     );
   }
 
-  if (isError) {
+  if (specData?.type === "http" && isError) {
     return (
       <Button disabled variant="primary">
         <AlertCircle size={16} /> Failed to load connection
+      </Button>
+    );
+  }
+
+  const isInstalledNonHttp = specData?.type !== "http" && Object.values(installedServices).some((s: any) => s.id === service.id);
+
+  if (isInstalledNonHttp) {
+    return (
+      <Button
+        onClick={handleUninstall}
+        variant="primary"
+        tone="destructive"
+        className="gap-2"
+      >
+        <Trash2 size={16} /> Uninstall
+      </Button>
+    );
+  }
+
+  if (specData?.type !== "http") {
+    return (
+      <Button
+        onClick={() =>
+          workspaceEngine.installService(service.name, {
+            id: service.id,
+            channelId: activeChannelId || "",
+            connectionId: (specData as any).connectionId || "",
+            type: "mongodb",
+          })
+        }
+        variant="primary"
+        className="gap-2"
+      >
+        <Sparkles size={16} /> Install
       </Button>
     );
   }
@@ -82,7 +117,7 @@ export function InstallControl({
       <Button
         onClick={() => {
           navigate(appModalRoutes.provider.provider, {
-            providerCode: specData?.connection?.provider || "",
+            providerCode: providerHandle || "",
           });
         }}
         variant="primary"
@@ -119,6 +154,7 @@ export function InstallControl({
                 id: service.id,
                 channelId: activeChannelId || "",
                 connectionId: activeConnection.id,
+                type: "http",
               })
             }
             variant="primary"
@@ -130,7 +166,7 @@ export function InstallControl({
         <Button
           onClick={() => {
             navigate(appModalRoutes.provider.provider, {
-              providerCode: specData?.connection?.provider || "",
+              providerCode: providerHandle || "",
             });
           }}
           size="icon"
@@ -172,6 +208,7 @@ export function InstallControl({
               id: service.id,
               channelId: activeChannelId || "",
               connectionId: activeConnection.id,
+              type: "http",
             });
           }}
           variant="primary"
@@ -183,7 +220,7 @@ export function InstallControl({
       <Button
         onClick={() => {
           navigate(appModalRoutes.provider.provider, {
-            providerCode: specData?.connection?.provider || "",
+            providerCode: providerHandle || "",
           });
         }}
         variant="secondary"

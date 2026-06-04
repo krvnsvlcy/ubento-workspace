@@ -1,5 +1,5 @@
-import { MongoClient } from "mongodb";
-import { operationHandlers } from "./handlers";
+import { Db } from "mongodb";
+import { operationHandlers } from "./handlers.js";
 
 export type MongoOperation = keyof typeof operationHandlers;
 
@@ -20,11 +20,11 @@ export type RunMongoOperationResult<T> =
     };
 
 export async function runMongoOperation<T>({
-  client,
+  db,
   operation,
   args,
 }: {
-  client: MongoClient;
+  db: Db;
   operation: MongoOperation;
   args: unknown;
 }): Promise<RunMongoOperationResult<T>> {
@@ -57,7 +57,7 @@ export async function runMongoOperation<T>({
   }
 
   try {
-    const result = await handler.run(client, parsedArgs.data as any);
+    const result = await handler.run(db, parsedArgs.data as any);
     return {
       data: result,
       error: null,

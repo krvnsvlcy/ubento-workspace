@@ -146,7 +146,7 @@ export function CodeEditor({
   useEffect(() => {
     if (!editorRef.current) return;
     const model = editorRef.current.getModel();
-    if (model && value !== valueRef.current) {
+    if (model && value !== model.getValue()) {
       valueRef.current = value;
       const prevPosition = editorRef.current.getPosition();
       model.setValue(value);

@@ -2,7 +2,7 @@ import { createClientFactory } from "~/lib/client.js";
 import { components, paths } from "./types.js";
 
 export const createVertexServiceClient = createClientFactory<paths>();
-export type ConnectionProvider = components["schemas"]["ConnectionProvider"];
+export type HttpConnectionProvider = components["schemas"]["HttpConnectionProvider"];
 export type Connection = components["schemas"]["Connection"];
 export type OAuthConnectionState = components["schemas"]["OAuthConnectionState"];
 export type EncryptedData = components["schemas"]["EncryptedData"];

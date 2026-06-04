@@ -1,5 +1,5 @@
 import { useUbento } from "@/hooks/app-engine";
-import { ConnectionProviderConfig } from "@ubento/vertex.core";
+import { HttpConnectionProviderConfig } from "@ubento/vertex.core";
 import { Button, Text } from "@ubento/bento.arlo-core";
 
 export function ConnectionBlock({
@@ -16,7 +16,7 @@ export function ConnectionBlock({
   if (!isMissing) return null;
 
   const config = (providerData as any)?.config as
-    | ConnectionProviderConfig
+    | HttpConnectionProviderConfig
     | undefined;
 
   const supportsOAuth2 = !!config?.auth.oauth2;

@@ -6,6 +6,7 @@ import { ServiceBrowser } from "./browser.js";
 import { CreateProviderModal } from "./create-provider/create-provider.js";
 import { EditProviderModal } from "./edit-provider/edit-provider.js";
 import { CreateServiceModal } from "./create-service/create-service.js";
+import { CreateMongoServiceModal } from "./create-mongo/create-mongo.js";
 import { ServiceDetails } from "./details/details.js";
 import { EditServiceModal } from "./edit-service/edit-service.js";
 
@@ -17,6 +18,18 @@ export function ServicesModal() {
       <Switch>
         <Case condition={routeMatch(path, appModalRoutes.services.edit)}>
           <EditServiceModal />
+        </Case>
+        <Case condition={routeMatch(path, appModalRoutes.services.editHttp)}>
+          <EditServiceModal />
+        </Case>
+        <Case condition={routeMatch(path, appModalRoutes.services.editMongo)}>
+          <EditServiceModal />
+        </Case>
+        <Case condition={routeMatch(path, appModalRoutes.services.createHttp)}>
+          <CreateServiceModal />
+        </Case>
+        <Case condition={routeMatch(path, appModalRoutes.services.createMongo)}>
+          <CreateMongoServiceModal />
         </Case>
         <Case condition={routeMatch(path, appModalRoutes.services.create)}>
           <CreateServiceModal />
@@ -32,6 +45,12 @@ export function ServicesModal() {
           <EditProviderModal />
         </Case>
         <Case condition={routeMatch(path, appModalRoutes.services.service)}>
+          <ServiceDetails />
+        </Case>
+        <Case condition={routeMatch(path, appModalRoutes.services.serviceHttp)}>
+          <ServiceDetails />
+        </Case>
+        <Case condition={routeMatch(path, appModalRoutes.services.serviceMongo)}>
           <ServiceDetails />
         </Case>
         <Case condition={routeMatch(path, appModalRoutes.services.services)}>

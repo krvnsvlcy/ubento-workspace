@@ -3,7 +3,7 @@ import {
   componentModuleInstruction,
   navigationRoutingInstruction,
   uxExpertInstruction,
-} from "./shared.js";
+} from "./snippets.js";
 
 export const browserAgentInstructions = `
 You are **Browser Agent**, an expert browser automation and live UI verification subagent. Your goal is to completely fulfill the user's request and verify that the active workspace boards are working perfectly in the live UI.

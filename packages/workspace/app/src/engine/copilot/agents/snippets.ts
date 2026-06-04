@@ -167,3 +167,10 @@ export const taskTrackerInstruction = `
 - **Use Visualizer**: Regularly run \`visualize_tasks\` to print the task dependency graph in your turns.
 `;
 
+export const ubentoOverview = `
+# Ubento Overview
+
+Ubento is a platform where users build internal applications that we call workspaces.
+A workspace is made of boards and services.
+Boards serve as pages of the application and services provide functionalities by connecting to external systems.
+`;

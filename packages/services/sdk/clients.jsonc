@@ -56,5 +56,5 @@
       "host": "http://localhost:24333",
     },
   ],
-  "only": ["settings-service"],
+  "only": ["vertex-service"],
 }

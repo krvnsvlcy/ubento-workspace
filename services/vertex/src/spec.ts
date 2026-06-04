@@ -16,7 +16,11 @@ export const spec = {
           { name: "name", in: "query", schema: { type: "string" } },
           { name: "cursor", in: "query", schema: { type: "string" } },
           { name: "limit", in: "query", schema: { type: "number" } },
-          { name: "tags", in: "query", schema: { type: "array", items: { type: "string" } } },
+          {
+            name: "tags",
+            in: "query",
+            schema: { type: "array", items: { type: "string" } },
+          },
         ],
         responses: {
           "200": {
@@ -309,6 +313,76 @@ export const spec = {
         },
       },
     },
+    "/vertex/connections/{connection_id}/mongodb/schema": {
+      parameters: [
+        {
+          name: "connection_id",
+          in: "path",
+          schema: { type: "string" },
+          required: true,
+        },
+        {
+          name: "sampleSize",
+          in: "query",
+          schema: { type: "number" },
+          required: false,
+        },
+        {
+          name: "database",
+          in: "query",
+          schema: { type: "string" },
+          required: true,
+        },
+      ],
+      get: {
+        summary: "Extract MongoDB cluster-wide schema",
+        responses: {
+          "200": {
+            description:
+              "The extracted schemas mapped by database and collection",
+            content: {
+              "application/json": {
+                schema: { type: "object" },
+              },
+            },
+          },
+        },
+      },
+    },
+    "/vertex/connections/{connection_id}/mongodb/databases": {
+      parameters: [
+        {
+          name: "connection_id",
+          in: "path",
+          schema: { type: "string" },
+          required: true,
+        },
+      ],
+      get: {
+        summary: "List MongoDB cluster databases",
+        responses: {
+          "200": {
+            description: "List of databases in the cluster",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "array",
+                  items: {
+                    type: "object",
+                    properties: {
+                      name: { type: "string" },
+                      sizeOnDisk: { type: "number" },
+                      empty: { type: "boolean" },
+                    },
+                    required: ["name"],
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
     "/vertex/services": {
       get: {
         summary: "List all services",
@@ -318,7 +392,11 @@ export const spec = {
           { name: "name", in: "query", schema: { type: "string" } },
           { name: "cursor", in: "query", schema: { type: "string" } },
           { name: "limit", in: "query", schema: { type: "number" } },
-          { name: "tags", in: "query", schema: { type: "array", items: { type: "string" } } },
+          {
+            name: "tags",
+            in: "query",
+            schema: { type: "array", items: { type: "string" } },
+          },
         ],
         responses: {
           "200": {
@@ -766,7 +844,7 @@ export const spec = {
         },
       },
     },
-    "/vertex/{team_id}/query": {
+    "/vertex/{team_id}": {
       parameters: [
         {
           name: "team_id",
@@ -776,7 +854,7 @@ export const spec = {
         },
       ],
       post: {
-        summary: "Invoke a query",
+        summary: "Invoke an operation",
         requestBody: {
           content: {
             "application/json": {
@@ -784,55 +862,17 @@ export const spec = {
                 type: "object",
                 properties: {
                   service_channel_id: { type: "string" },
-                  query: { type: "string" },
+                  operation: { type: "string" },
                   args: { type: "object", nullable: true },
                 },
-                required: ["service_channel_id", "query"],
+                required: ["service_channel_id", "operation"],
               },
             },
           },
         },
         responses: {
           "200": {
-            description: "The result of the query",
-            content: {
-              "application/json": {
-                schema: { $ref: "#/components/schemas/VertexResult" },
-              },
-            },
-          },
-        },
-      },
-    },
-    "/vertex/{team_id}/action": {
-      parameters: [
-        {
-          name: "team_id",
-          in: "path",
-          schema: { type: "string" },
-          required: true,
-        },
-      ],
-      post: {
-        summary: "Invoke an action",
-        requestBody: {
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  service_channel_id: { type: "string" },
-                  action: { type: "string" },
-                  args: { type: "object", nullable: true },
-                },
-                required: ["service_channel_id", "action"],
-              },
-            },
-          },
-        },
-        responses: {
-          "200": {
-            description: "The result of the action",
+            description: "The result of the operation",
             content: {
               "application/json": {
                 schema: { $ref: "#/components/schemas/VertexResult" },

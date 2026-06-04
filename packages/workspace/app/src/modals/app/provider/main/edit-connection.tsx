@@ -15,8 +15,8 @@ import {
 } from "@ubento/bento.arlo-core";
 import { vertexClient } from "@ubento/services.sdk";
 import {
-  ConnectionCredentials,
-  ConnectionProviderConfig,
+  HttpConnectionCredentials,
+  HttpConnectionProviderConfig,
 } from "@ubento/vertex.core";
 import { useState } from "react";
 import { Case, Default, If, Switch } from "react-if";
@@ -36,7 +36,7 @@ export function EditConnection() {
     ubento.vertex.useConnectionProviderByHandle(providerCode || "");
 
   const config = (providerData as any)?.config as
-    | ConnectionProviderConfig
+    | HttpConnectionProviderConfig
     | undefined;
 
   const isLoading = isLoadingConnection || isLoadingProvider;
@@ -76,8 +76,8 @@ function EditConnectionForm({
   onCancel,
 }: {
   connection: vertexClient.Connection;
-  providerData: vertexClient.ConnectionProvider;
-  config: ConnectionProviderConfig;
+  providerData: vertexClient.HttpConnectionProvider;
+  config: HttpConnectionProviderConfig;
   onSuccess: () => void;
   onCancel: () => void;
 }) {
@@ -124,7 +124,7 @@ function EditConnectionForm({
   };
 
   const handleSave = () => {
-    let credentials: ConnectionCredentials | undefined = undefined;
+    let credentials: HttpConnectionCredentials | undefined = undefined;
 
     if (authMethod === "api-key" && apiKey) {
       credentials = {

@@ -1,5 +1,5 @@
+import { invokeHttpService } from "@ubento/vertex.invoke";
 import {
-  invokeHttpService,
   HttpServiceSpecV1,
   httpConnectionCredentialsSchema,
 } from "@ubento/vertex.core";

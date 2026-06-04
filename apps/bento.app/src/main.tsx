@@ -69,7 +69,7 @@ const engine = createUbentoEngine({
     },
     serviceBaseUrls: {
       module: "http://localhost:28888",
-      // intelligence: "http://localhost:44513",
+      intelligence: "http://localhost:44513",
       vertex: "http://localhost:28642",
       billing: "http://localhost:6124",
       settings: "http://localhost:24333",
@@ -81,6 +81,9 @@ const engine = createUbentoEngine({
     import.meta.env.VITE_COMPONENT_RUNTIME_URL || "http://localhost:4030",
   registryModuleUrlTemplate:
     "http://localhost:28888/modules/registry/files/{module_id}/{version_id}/{filename}",
+  devOptions: {
+    enableAiInspector: !!true,
+  },
 });
 
 function BentoShell() {

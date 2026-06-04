@@ -2,6 +2,8 @@ import { Text } from "@ubento/bento.arlo-core";
 import { AlertCircle, Terminal } from "lucide-react";
 import {
   ActionsSection,
+  CollectionsSection,
+  DatabasesSection,
   EntitiesSection,
   QueriesSection,
   SchemasSection,
@@ -67,6 +69,16 @@ export function DetailsBody({
       )
     : {};
 
+  const filteredCollections = specData?.collections
+    ? specData.collections.filter((col: any) => {
+        return (
+          col.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          col.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (specData.database || "").toLowerCase().includes(searchQuery.toLowerCase())
+        );
+      })
+    : [];
+
   return (
     <>
       {isLoadingSpec ? (
@@ -88,20 +100,37 @@ export function DetailsBody({
             </div>
           )}
 
-          {specData?.entities && Object.keys(specData.entities).length > 0 && (
-            <EntitiesSection entities={specData.entities} />
-          )}
+          {specData?.type === "mongodb" ? (
+            filteredCollections.length > 0 ? (
+              <CollectionsSection collections={filteredCollections} />
+            ) : (
+              !isLoadingSpec && !specError && (
+                <div className="flex flex-col items-center justify-center py-12 bg-surface/10 rounded-2xl border border-border/20">
+                  <Terminal size={32} className="text-content-muted mb-4" />
+                  <Text shade="muted" className="text-[13px]">
+                    No matching collections found.
+                  </Text>
+                </div>
+              )
+            )
+          ) : (
+            <>
+              {specData?.entities && Object.keys(specData.entities).length > 0 && (
+                <EntitiesSection entities={specData.entities} />
+              )}
 
-          {Object.keys(filteredQueries).length > 0 && (
-            <QueriesSection queries={filteredQueries} />
-          )}
+              {Object.keys(filteredQueries).length > 0 && (
+                <QueriesSection queries={filteredQueries} />
+              )}
 
-          {Object.keys(filteredActions).length > 0 && (
-            <ActionsSection actions={filteredActions} />
-          )}
+              {Object.keys(filteredActions).length > 0 && (
+                <ActionsSection actions={filteredActions} />
+              )}
 
-          {Object.keys(filteredSchemas).length > 0 && (
-            <SchemasSection schemas={filteredSchemas} />
+              {Object.keys(filteredSchemas).length > 0 && (
+                <SchemasSection schemas={filteredSchemas} />
+              )}
+            </>
           )}
 
           {!specData && !isLoadingSpec && !specError && (

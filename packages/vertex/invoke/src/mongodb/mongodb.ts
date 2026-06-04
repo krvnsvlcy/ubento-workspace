@@ -1,13 +1,13 @@
-import { MongoClient, MongoClientOptions } from "mongodb";
 import {
   MongodbConnectionCredentials,
   MongodbConnectionData,
-} from "../../spec/protocols/mongodb/connection";
+} from "@ubento/vertex.core";
+import { MongoClient, MongoClientOptions } from "mongodb";
 import {
   MongoOperation,
   runMongoOperation,
   RunMongoOperationResult,
-} from "./run";
+} from "./run.js";
 
 export async function invokeMongoService<T>({
   operation,
@@ -15,30 +15,19 @@ export async function invokeMongoService<T>({
   args,
 }: {
   operation: MongoOperation;
-  connection?: {
+  connection: {
+    database: string;
     data: MongodbConnectionData;
-    credentials: MongodbConnectionCredentials;
+    credentials?: MongodbConnectionCredentials;
   };
   args: Record<string, unknown>; // Contains collection, filter, document, etc.
 }): Promise<RunMongoOperationResult<T>> {
-  // 1. Guard against missing infrastructure connections
-  if (!connection) {
-    return {
-      data: null,
-      error: {
-        code: "INVALID_ARGUMENTS",
-        message:
-          "MongoDB connection data and credentials are required to invoke this service.",
-      },
-    };
-  }
-
   const { data, credentials } = connection;
   const clientOptions: MongoClientOptions = {};
   let authPrefix = "";
 
   // 2. Map structural credential variants to native driver option configurations
-  switch (credentials.type) {
+  switch (credentials?.type) {
     case "scram":
       const username = encodeURIComponent(credentials.username);
       const password = encodeURIComponent(credentials.password);
@@ -75,7 +64,7 @@ export async function invokeMongoService<T>({
       break;
   }
 
-  // 3. Construct connection string string format
+  // 3. Construct connection string format
   const protocol = data.isSrv ? "mongodb+srv://" : "mongodb://";
   const hostPart = data.isSrv
     ? data.host
@@ -114,7 +103,7 @@ export async function invokeMongoService<T>({
 
     // 7. Route and execute through the strategy registry
     return await runMongoOperation<T>({
-      client,
+      db: client.db(connection.database),
       operation,
       args: enrichedArgs,
     });

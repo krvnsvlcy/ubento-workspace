@@ -1,6 +1,9 @@
-import { HttpConnectionCredentials } from "../../spec/protocols/http/connection";
-import { HttpConnectionProviderConfig } from "../../spec/protocols/http/provider";
-import { HttpConnectionSpec, HttpHandler } from "../../spec/spec";
+import {
+  HttpConnectionCredentials,
+  HttpConnectionProviderConfig,
+  HttpConnectionSpec,
+  HttpHandler,
+} from "@ubento/vertex.core";
 import {
   runHttpHandler,
   RunHttpHandlerError,
