@@ -11,12 +11,13 @@ import {
   PointerSensor,
   useDraggable,
   useDroppable,
-  useSensor,
   useSensors,
+  useSensor,
 } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { ModuleRef, WorkspaceBoardSpec } from "@ubento/bento.runtime";
 import clsx from "clsx";
+import { Edit2, Home, MoreHorizontal, Plus, Trash2 } from "lucide-react";
 import React, { useCallback, useState } from "react";
 
 function removeIdFromTree(
@@ -116,6 +117,7 @@ interface BoardNodeProps {
   onDelete: (boardId: string, boardName: string) => Promise<void>;
   onCreateChild: (parentId: string) => Promise<void>;
   activeDragId: string | null;
+  homeBoardId: string | undefined;
 }
 
 function BoardNode({
@@ -128,8 +130,10 @@ function BoardNode({
   onDelete,
   onCreateChild,
   activeDragId,
+  homeBoardId,
 }: BoardNodeProps) {
   const workspaceEngine = useWorkspaceEngine();
+  const engine = useUbentoEngine();
   const isExpanded = workspaceEngine.userSetting.useState(
     (s) => s.data.boardExplorer?.expandedStates?.[board.id],
   );
@@ -138,6 +142,7 @@ function BoardNode({
     .filter(Boolean);
 
   const hasChildren = childBoards.length > 0;
+  const isHome = homeBoardId === board.id;
 
   const {
     attributes,
@@ -175,6 +180,79 @@ function BoardNode({
     });
   }, [board.id, workspaceEngine]);
 
+  const showMenu = useCallback(
+    (x: number, y: number) => {
+      const items = [
+        {
+          id: "create-child",
+          label: "Create child board",
+          icon: <Plus size={14} />,
+          action: () => {
+            onCreateChild(board.id);
+          },
+        },
+        {
+          id: "rename",
+          label: "Rename",
+          icon: <Edit2 size={14} />,
+          action: () => {
+            const newTitle = prompt("Enter new title:", board.title);
+            if (newTitle) onRename(board.id, newTitle);
+          },
+        },
+        {
+          id: "delete",
+          label: "Delete",
+          icon: <Trash2 size={14} />,
+          action: () => {
+            onDelete(board.id, board.title);
+          },
+        },
+      ];
+
+      if (!isHome) {
+        items.push({
+          id: "set-home",
+          label: "Set as home board",
+          icon: <Home size={14} />,
+          action: () => {
+            workspaceEngine?.updateWorkspaceSpec({
+              spec: {
+                home: board.id,
+              },
+            });
+            engine.notify({
+              title: "Home Board Set",
+              message: `Successfully set "${board.title}" as home board`,
+              type: "success",
+            });
+          },
+        });
+      }
+
+      engine.openContextMenu({ x, y }, items);
+    },
+    [
+      board.id,
+      board.title,
+      isHome,
+      onCreateChild,
+      onRename,
+      onDelete,
+      workspaceEngine,
+      engine,
+    ],
+  );
+
+  const handleContextMenu = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      showMenu(e.clientX, e.clientY);
+    },
+    [showMenu],
+  );
+
   return (
     <div style={style} className="w-full">
       <div
@@ -184,6 +262,7 @@ function BoardNode({
         }}
         {...attributes}
         {...listeners}
+        onContextMenu={handleContextMenu}
         className={clsx(
           "relative cursor-pointer select-none rounded-lg transition-all duration-150",
           {
@@ -192,35 +271,18 @@ function BoardNode({
         )}
       >
         <TreeEntry
-          icon={standardIcons.board}
+          icon={isHome ? standardIcons.home : standardIcons.board}
           isContainer={hasChildren}
           active={activeBoardId === board.id}
           isOpen={isExpanded}
           onOpenChange={toggleExpanded}
           actions={[
             {
-              icon: "plus" as any,
-              title: "Create child board",
+              icon: <MoreHorizontal size={14} />,
+              title: "More actions",
               handler: (e: React.MouseEvent) => {
                 e.stopPropagation();
-                onCreateChild(board.id);
-              },
-            },
-            {
-              icon: "edit" as any,
-              title: "Rename",
-              handler: (e: React.MouseEvent) => {
-                e.stopPropagation();
-                const newTitle = prompt("Enter new title:", board.title);
-                if (newTitle) onRename(board.id, newTitle);
-              },
-            },
-            {
-              icon: "trash" as any,
-              title: "Delete",
-              handler: (e: React.MouseEvent) => {
-                e.stopPropagation();
-                onDelete(board.id, board.title);
+                showMenu(e.clientX, e.clientY);
               },
             },
           ]}
@@ -249,6 +311,7 @@ function BoardNode({
                   onDelete={onDelete}
                   onCreateChild={onCreateChild}
                   activeDragId={activeDragId}
+                  homeBoardId={homeBoardId}
                 />
                 <SeparatorDropZone
                   id={`sibling-separator:${board.id}:${child.id}:${
@@ -279,6 +342,7 @@ export function BoardsSection() {
   const specData = workspaceEngine.useState((s) => s.workspace.spec);
   const allBoards = specData.isValid ? specData.data.boards || {} : {};
   const rootChildrenIds = specData.isValid ? specData.data.roots || [] : [];
+  const homeBoardId = specData.isValid ? specData.data.home : undefined;
   const rootBoards = rootChildrenIds
     .map((id: string) => allBoards[id])
     .filter(Boolean);
@@ -523,6 +587,7 @@ export function BoardsSection() {
                   onDelete={handleDelete}
                   onCreateChild={handleCreateChild}
                   activeDragId={activeDragId}
+                  homeBoardId={homeBoardId}
                 />
                 <SeparatorDropZone
                   id={`sibling-separator:root:${board.id}:${

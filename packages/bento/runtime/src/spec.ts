@@ -56,6 +56,7 @@ export const workspaceSpecSchema = z.object({
   rootModuleGroups: z.array(z.string()).default([]),
   packages: z.record(z.string(), z.string()).default({}),
   boards: z.record(z.string(), workspaceBoardSpecSchema).default({}),
+  home: z.string().optional(),
   roots: z.array(z.string()).default([]),
 });
 export type WorkspaceSpec = z.infer<typeof workspaceSpecSchema>;

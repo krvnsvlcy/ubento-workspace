@@ -7,12 +7,14 @@ import { BentoRuntime } from "../runtime/runtime";
 import { updateUnoStyle } from "../unocss";
 import { BentoBoardView } from "./board";
 import { ErrorBoundary } from "./error-boundary";
-import { BentoHomeView } from "./home";
+import { BentoFallbackView } from "./fallback";
 
 export function BentoRuntimeView({ runtime }: { runtime: BentoRuntime }) {
   const location = runtime.useState((s) => s.location);
+  const workspaceSpec = runtime.useState((s) => s.workspace.spec);
+  const home = workspaceSpec.isValid ? workspaceSpec.data.home : null;
 
-  let content = <BentoHomeView runtime={runtime} />;
+  let content = <BentoFallbackView runtime={runtime} />;
   if (location) {
     content = (
       <BentoBoardView
@@ -21,6 +23,10 @@ export function BentoRuntimeView({ runtime }: { runtime: BentoRuntime }) {
         boardId={location.boardId}
         params={location.params}
       />
+    );
+  } else if (home) {
+    content = (
+      <BentoBoardView key={home} runtime={runtime} boardId={home} params={{}} />
     );
   }
 

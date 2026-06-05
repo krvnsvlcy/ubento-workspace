@@ -8,7 +8,7 @@ type BoardMap = Record<string, WorkspaceBoardSpec>;
 
 // ─── component ──────────────────────────────────────────────────────────────
 
-export function BentoHomeView({ runtime }: { runtime: BentoRuntime }) {
+export function BentoFallbackView({ runtime }: { runtime: BentoRuntime }) {
   const workspace = runtime.useState((s) => s.workspace);
   const spec = runtime.useState((s) => s.workspace.spec);
 
