@@ -29,6 +29,7 @@ import {
   mongodbUpdateOneMutationOptions,
 } from "../hooks/service/mongodb.js";
 import type { ModuleRef } from "../spec.js";
+import { updateUnoStyle } from "../unocss.js";
 
 export const MODULE_BASE_PATH = "/__ubento_modules/";
 
@@ -261,7 +262,9 @@ export async function runServiceWorker({
 
     // 2. Listen for direct requests from the active Service Worker
     navigator.serviceWorker.addEventListener("message", async (event) => {
-      if (event.data && event.data.type === "REQUEST_TOKEN") {
+      if (!event.data) return;
+
+      if (event.data.type === "REQUEST_TOKEN") {
         const replyPort = event.ports[0];
 
         if (!replyPort) {
@@ -286,6 +289,11 @@ export async function runServiceWorker({
             error,
           );
           replyPort.postMessage({ moduleUrlTemplate: "", headers: {} });
+        }
+      } else if (event.data.type === "MODULE_LOADED") {
+        const { code } = event.data;
+        if (code) {
+          await updateUnoStyle(code);
         }
       }
     });

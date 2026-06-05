@@ -10,11 +10,11 @@
 :root,
 .light {
   --color-background: #ffffff;
-  --color-foreground: #17233f;
+  --color-foreground: #10192b;
 
   /* Base */
-  --color-main: #404040;
-  --color-main-highlight: #7a7a7a;
+  --color-main: #232323;
+  --color-main-highlight: #4a4a4a;
   --color-main-contrast: #ffffff;
 }
 
@@ -89,8 +89,8 @@
 /* 2. The Data Layer: Inject the base values per tone */
 [data-tone="neutral"],
 .light [data-tone="neutral"] {
-  --color-main: #404040;
-  --color-main-highlight: #7a7a7a;
+  --color-main: #232323;
+  --color-main-highlight: #4a4a4a;
   --color-main-contrast: #ffffff;
   --tone-strength: 1.3;
 }

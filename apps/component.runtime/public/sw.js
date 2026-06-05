@@ -55,6 +55,7 @@ async function handleAuthenticatedFetch(event, url) {
   
   if (cachedResponse) {
     // Instant load. Bypass all network and token logic.
+    sendCodeToClient(event.clientId, cachedResponse.clone());
     return cachedResponse;
   }
 
@@ -132,7 +133,8 @@ async function handleAuthenticatedFetch(event, url) {
   const finalHeaders = new Headers(responseToCache.headers);
   finalHeaders.set('Content-Type', 'application/javascript');
   
-  const finalResponse = new Response(await responseToCache.text(), {
+  const code = await responseToCache.text();
+  const finalResponse = new Response(code, {
     status: networkResponse.status,
     statusText: networkResponse.statusText,
     headers: finalHeaders
@@ -141,5 +143,26 @@ async function handleAuthenticatedFetch(event, url) {
   // Save to cache asynchronously so we don't block the return
   event.waitUntil(cache.put(request, finalResponse.clone()));
 
+  sendCodeToClient(event.clientId, code);
+
   return finalResponse;
+}
+
+/**
+ * Sends module source code to the client runtime via postMessage.
+ */
+async function sendCodeToClient(clientId, responseOrCode) {
+  if (!clientId) return;
+  try {
+    const client = await clients.get(clientId);
+    if (client) {
+      const code = typeof responseOrCode === 'string' ? responseOrCode : await responseOrCode.text();
+      client.postMessage({
+        type: 'MODULE_LOADED',
+        code: code
+      });
+    }
+  } catch (error) {
+    console.error('Failed to send code to client:', error);
+  }
 }
