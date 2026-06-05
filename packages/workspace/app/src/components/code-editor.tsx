@@ -120,7 +120,11 @@ export function CodeEditor({
       monaco.editor.setModelLanguage(model, monacoLanguage);
     }
 
+    const prevPosition = editorRef.current.getPosition();
     editorRef.current.setModel(model);
+    if (prevPosition) {
+      editorRef.current.setPosition(prevPosition);
+    }
 
     // Sync content changes
     const disposable = model.onDidChangeContent(() => {

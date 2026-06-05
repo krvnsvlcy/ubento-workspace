@@ -18,8 +18,8 @@ export function SideSection({
   return (
     <div className="flex flex-col gap-0.5">
       <div
-        style={{ position: "sticky", top: 0, zIndex: 10 }}
-        className="bg-background"
+      // style={{ position: "sticky", top: 0, zIndex: 10 }}
+      // className="bg-background"
       >
         <TreeEntry
           onClick={() => setOpen((s) => !s)}

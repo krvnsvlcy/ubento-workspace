@@ -44,8 +44,8 @@ rpc.setHandlers({
 });
 
 const ComponentRuntimeWrapper = ({ runtime }: { runtime: any }) => {
-  const { code, props } = useStore(useComponentStore);
-  return <ComponentRuntime runtime={runtime} code={code} props={props} />;
+  const { code } = useStore(useComponentStore);
+  return <ComponentRuntime runtime={runtime} code={code} />;
 };
 
 let connected = false;

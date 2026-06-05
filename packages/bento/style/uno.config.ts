@@ -44,18 +44,18 @@ export default defineConfig({
     colors: {
       transparent: "transparent",
 
-      // Main colors
+      // Base
       background: "var(--color-background)",
       foreground: "var(--color-foreground)",
 
-      // Base colors
-      base: `var(--color-base)`,
-      highlight: `var(--color-highlight)`,
-      contrast: `var(--color-contrast)`,
+      // Main
+      main: `var(--color-main)`,
+      "main-highlight": `var(--color-main-highlight)`,
+      "main-contrast": `var(--color-main-contrast)`,
+      "main-hover": `var(--color-main-hover)`,
+      "main-active": `var(--color-main-active)`,
 
       // Interaction
-      hover: `var(--color-hover)`,
-      active: `var(--color-active)`,
 
       // surface (highlight, card, input, etc)
       surface: `var(--color-surface)`,

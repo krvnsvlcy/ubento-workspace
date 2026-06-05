@@ -2,12 +2,16 @@ import { useUbentoEngine } from "@/hooks/app-engine";
 import { useAppModal } from "@/modals/app/hook";
 import { appModalRoutes } from "@/modals/app/routes";
 import {
+  Menu,
+  MenuItem,
+  MenuSeparator,
   Popper,
-  PopperMenu,
+  PopperContext,
   PopperProvider,
   PopperTrigger,
 } from "@ubento/bento.arlo-core";
 import { ChevronsUpDown, LogOut, Settings, User } from "lucide-react";
+import { useContext } from "react";
 
 export function TeamFooter() {
   const { push: open } = useAppModal();
@@ -54,34 +58,49 @@ export function TeamFooter() {
           shadow
           offset={12}
         >
-          <div className="w-56">
-            <PopperMenu
-              options={[
-                [
-                  {
-                    label: "Team Settings",
-                    icon: <Settings size={14} />,
-                    onClick: () => open(appModalRoutes.team.root),
-                  },
-                  {
-                    label: "Account Settings",
-                    icon: <User size={14} />,
-                    onClick: () => open(appModalRoutes.account.root),
-                  },
-                ],
-                [
-                  {
-                    label: "Logout",
-                    icon: <LogOut size={14} />,
-                    onClick: handleLogout,
-                    destructive: true,
-                  },
-                ],
-              ]}
-            />
-          </div>
+          <TeamFooterMenu open={open} handleLogout={handleLogout} />
         </Popper>
       </PopperProvider>
     </div>
+  );
+}
+
+function TeamFooterMenu({
+  open,
+  handleLogout,
+}: {
+  open: (path: string) => void;
+  handleLogout: () => void;
+}) {
+  const context = useContext(PopperContext);
+
+  const handleItemClick = (onClick: () => void) => {
+    onClick();
+    context?.setIsOpen(false);
+  };
+
+  return (
+    <Menu className="w-56 p-2 flex flex-col gap-1">
+      <MenuItem
+        onClick={() => handleItemClick(() => open(appModalRoutes.team.root))}
+      >
+        <Settings size={14} />
+        Team Settings
+      </MenuItem>
+      <MenuItem
+        onClick={() => handleItemClick(() => open(appModalRoutes.account.root))}
+      >
+        <User size={14} />
+        Account Settings
+      </MenuItem>
+      <MenuSeparator />
+      <MenuItem
+        variant="destructive"
+        onClick={() => handleItemClick(handleLogout)}
+      >
+        <LogOut size={14} />
+        Logout
+      </MenuItem>
+    </Menu>
   );
 }

@@ -7,13 +7,17 @@
 ::after,
 ::before,
 ::backdrop,
-::file-selector-button {
+::file-selector-button,
+.light,
+.dark {
   /* scrollbar-width: none; */
   border-color: var(--color-border);
   /* corner-shape: squircle; */
 }
 
-body {
+body,
+.light,
+.dark {
   font-family: var(--font-body);
   background: var(--color-background);
   color: var(--color-content);

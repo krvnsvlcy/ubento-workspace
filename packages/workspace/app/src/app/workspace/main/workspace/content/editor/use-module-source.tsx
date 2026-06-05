@@ -21,6 +21,7 @@ export function useModuleSource({
   const lastFetchedKey = useRef<string | null>(null);
   const persistedContent = useRef<string>("");
   const ubento = useUbento();
+  const [savedContent, setSavedContent] = useState("");
   const [content, setContent] = useState("");
   const [status, setStatus] = useState<ModuleSourceStatus>("idle");
   const [error, setError] = useState<string | null>(null);
@@ -39,6 +40,7 @@ export function useModuleSource({
       .readModuleVersionFile(moduleId, versionId, filename)
       .then((res) => {
         setContent(res);
+        setSavedContent(res);
         persistedContent.current = res;
         setStatus("success");
       })
@@ -51,6 +53,7 @@ export function useModuleSource({
   const save = useCallback(async () => {
     setStatus("saving");
     try {
+      setSavedContent(content);
       const res = await ubento.module.updateModuleVersion(moduleId, content);
       persistedContent.current = content;
       setStatus("success");
@@ -64,6 +67,7 @@ export function useModuleSource({
 
   return {
     content,
+    savedContent,
     setContent,
     status,
     error,

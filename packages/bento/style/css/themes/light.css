@@ -1,12 +1,4 @@
 :root {
-  --color-background: #ffffff;
-  --color-foreground: #141414;
-
-  /* Base */
-  --color-base: #000000;
-  --color-highlight: #303030;
-  --color-contrast: #ffffff;
-
   /* =========================================
      Fonts
      ========================================= */
@@ -15,55 +7,72 @@
   --font-mono: "JetBrains Mono", monospace;
 }
 
+:root,
+.light {
+  --color-background: #ffffff;
+  --color-foreground: #17233f;
+
+  /* Base */
+  --color-main: #404040;
+  --color-main-highlight: #7a7a7a;
+  --color-main-contrast: #ffffff;
+}
+
 /* 1. The Logic Layer: Calculate derivations for ANY defined tone */
-[data-tone] {
+[data-tone],
+.light,
+.dark {
   /* Interaction */
-  --color-hover: color-mix(
+  --color-main-hover: color-mix(
     in srgb,
-    var(--color-highlight) 50%,
-    var(--color-base) 50%
+    var(--color-main-highlight) 50%,
+    var(--color-main) 50%
   );
-  --color-active: color-mix(
+  --color-main-active: color-mix(
     in srgb,
-    var(--color-highlight) 100%,
-    var(--color-base) 0%
+    var(--color-main-highlight) 100%,
+    var(--color-main) 0%
   );
 
   /* Surface */
   --color-surface: color-mix(
     in srgb,
-    var(--color-base) calc(var(--tone-strength, 1) * 3%),
+    var(--color-main) calc(var(--tone-strength, 1) * 3%),
     transparent
   );
   --color-surface-hover: color-mix(
     in srgb,
-    var(--color-base) calc(var(--tone-strength, 1) * 6%),
+    var(--color-main) calc(var(--tone-strength, 1) * 6%),
     transparent
   );
   --color-surface-active: color-mix(
     in srgb,
-    var(--color-base) calc(var(--tone-strength, 1) * 9%),
+    var(--color-main) calc(var(--tone-strength, 1) * 9%),
     transparent
   );
 
   /* Border */
-  --color-border: color-mix(in srgb, var(--color-base) 10%, transparent 90%);
+  --color-border: color-mix(
+    in srgb,
+    var(--color-main) calc(var(--tone-strength, 1) * 10%),
+    transparent
+  );
   --color-border-hover: color-mix(
     in srgb,
-    var(--color-base) 15%,
-    transparent 85%
+    var(--color-main) calc(var(--tone-strength, 1) * 15%),
+    transparent
   );
   --color-border-active: color-mix(
     in srgb,
-    var(--color-base) 20%,
-    transparent 80%
+    var(--color-main) calc(var(--tone-strength, 1) * 20%),
+    transparent
   );
 
   /* Content */
   --color-content: color-mix(
     in srgb,
     var(--color-foreground) 50%,
-    var(--color-base) 50%
+    var(--color-main) 50%
   );
   --color-content-subtle: color-mix(
     in srgb,
@@ -78,44 +87,50 @@
 }
 
 /* 2. The Data Layer: Inject the base values per tone */
-[data-tone="neutral"] {
-  --color-base: var(--color-foreground);
-  --color-highlight: #303030;
-  --color-contrast: #ffffff;
+[data-tone="neutral"],
+.light [data-tone="neutral"] {
+  --color-main: #404040;
+  --color-main-highlight: #7a7a7a;
+  --color-main-contrast: #ffffff;
   --tone-strength: 1.3;
 }
 
-[data-tone="accent"] {
-  --color-base: #b300ff;
-  --color-highlight: #b300ff;
-  --color-contrast: #ffffff;
+[data-tone="accent"],
+.light [data-tone="accent"] {
+  --color-main: #0088ff;
+  --color-main-highlight: #47a9ff;
+  --color-main-contrast: #ffffff;
   --tone-strength: 2;
 }
 
-[data-tone="success"] {
-  --color-base: #009362;
-  --color-highlight: #00aa58;
-  --color-contrast: #ffffff;
-  --tone-strength: 1.8;
-}
-
-[data-tone="warning"] {
-  --color-base: #ff9900;
-  --color-highlight: #ffb824;
-  --color-contrast: #ffffff;
+[data-tone="success"],
+.light [data-tone="success"] {
+  --color-main: #00a367;
+  --color-main-highlight: #00e08e;
+  --color-main-contrast: #ffffff;
   --tone-strength: 2;
 }
 
-[data-tone="info"] {
-  --color-base: #0088ff;
-  --color-highlight: #00b3ff;
-  --color-contrast: #ffffff;
-  --tone-strength: 1.6;
+[data-tone="warning"],
+.light [data-tone="warning"] {
+  --color-main: #ff9a2f;
+  --color-main-highlight: #ffc362;
+  --color-main-contrast: #ffffff;
+  --tone-strength: 2;
 }
 
-[data-tone="destructive"] {
-  --color-base: #ff0021;
-  --color-highlight: #ff3c2e;
-  --color-contrast: #ffffff;
-  --tone-strength: 1.6;
+[data-tone="info"],
+.light [data-tone="info"] {
+  --color-main: #0088ff;
+  --color-main-highlight: #47a9ff;
+  --color-main-contrast: #ffffff;
+  --tone-strength: 2;
+}
+
+[data-tone="destructive"],
+.light [data-tone="destructive"] {
+  --color-main: #ff0a36;
+  --color-main-highlight: #ff667a;
+  --color-main-contrast: #ffffff;
+  --tone-strength: 2;
 }

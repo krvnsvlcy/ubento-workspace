@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { transform } from "sucrase";
 import { BentoRuntimeProvider } from "../context/runtime";
 import { BentoRuntime } from "../runtime/runtime";
+import { updateUnoStyle } from "../unocss";
 import { BentoBoardView } from "./board";
 import { ErrorBoundary } from "./error-boundary";
 import { BentoHomeView } from "./home";
@@ -25,7 +26,9 @@ export function BentoRuntimeView({ runtime }: { runtime: BentoRuntime }) {
 
   return (
     <BentoRuntimeProvider runtime={runtime}>
-      <QueryClientProvider client={runtime.queryClient}>{content}</QueryClientProvider>
+      <QueryClientProvider client={runtime.queryClient}>
+        {content}
+      </QueryClientProvider>
     </BentoRuntimeProvider>
   );
 }
@@ -60,6 +63,9 @@ export function ComponentRuntime({
           jsxRuntime: "automatic",
           production: true,
         });
+
+        // Extract classes and update/inject global styles
+        await updateUnoStyle(code);
 
         const blob = new Blob([compiledCode], {
           type: "application/javascript",
@@ -135,7 +141,7 @@ export function ComponentRuntime({
   }
 
   return (
-    <ErrorBoundary key={code}>
+    <ErrorBoundary>
       <BentoRuntimeProvider runtime={runtime}>
         <QueryClientProvider client={runtime.queryClient}>
           <Component key={code} />

@@ -225,10 +225,10 @@ export function Popper({
   };
   const className = cx(
     {
-      "rounded-lg": filled || border,
+      "rounded-2xl": filled || border,
       "bg-background ": filled,
       border: border,
-      "shadow-md": shadow,
+      "shadow-xl": shadow,
     },
     "animate-in fade-in-0 zoom-in-95",
     {

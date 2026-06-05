@@ -18,7 +18,7 @@ export function Layout() {
   return (
     <div
       data-tone="neutral"
-      className="bg-background relative z-0 select-none"
+      className="bg-surface relative z-0 select-none"
       style={{
         height: "100vh",
         width: "100vw",
@@ -28,7 +28,7 @@ export function Layout() {
       {/* Floating Left Panel */}
       {!sidePanelPinned && (
         <div
-          className="fixed top-0 left-0 bottom-0 z-[100] transition-all duration-300 ease-in-out bg-background border-r border-border"
+          className="fixed top-0 left-0 bottom-0 z-[100] transition-all duration-300 ease-in-out bg-background"
           style={{
             width: sidePanelWidth,
             transform: isHovered ? "translateX(0)" : "translateX(-100%)",
@@ -37,7 +37,9 @@ export function Layout() {
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
-          <Side />
+          <div className="bg-surface border-r h-full w-full">
+            <Side />
+          </div>
         </div>
       )}
       {/* Hover Trigger Area at the left edge */}
@@ -50,7 +52,7 @@ export function Layout() {
       <SideSplitView
         left={{
           content: sidePanelPinned ? (
-            <div className="h-full bg-background border-r">
+            <div className="h-full border-r">
               <Side />
             </div>
           ) : null,
@@ -63,7 +65,20 @@ export function Layout() {
         }}
         gap={0}
       >
-        <Main />
+        <div
+          className="bg-background"
+          style={{
+            height: "100%",
+            width: "100%",
+            overflow: "hidden",
+            // borderTopLeftRadius: sidePanelPinned ? "12px" : "0px",
+            // borderBottomLeftRadius: sidePanelPinned ? "12px" : "0px",
+            // boxShadow:
+            //   "-1px 0 1px 0 color-mix(in srgb, currentcolor 10%, transparent)",
+          }}
+        >
+          <Main />
+        </div>
       </SideSplitView>
     </div>
   );

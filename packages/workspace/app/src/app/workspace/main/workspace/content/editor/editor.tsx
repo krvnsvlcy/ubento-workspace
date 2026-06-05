@@ -66,6 +66,7 @@ export function Editor() {
 
   const {
     content,
+    savedContent,
     setContent,
     status,
     save: saveModule,
@@ -211,7 +212,7 @@ export function Editor() {
           />
         )}
         {mode === "preview" && (
-          <PreviewPanel value={content} className="border-none" />
+          <PreviewPanel value={savedContent} className="border-none" />
         )}
         {mode === "split" && (
           <SplitView
@@ -228,7 +229,7 @@ export function Editor() {
                 className="border-r border-border"
               />
             }
-            right={<PreviewPanel value={content} />}
+            right={<PreviewPanel value={savedContent} />}
             initialPosition={40}
           />
         )}

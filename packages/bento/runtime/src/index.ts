@@ -9,3 +9,4 @@ export * from "./module/resolver.js";
 export * from "./runtime/runtime.js";
 export * from "./runtime/types.js";
 export * from "./spec.js";
+export * from "./unocss.js";

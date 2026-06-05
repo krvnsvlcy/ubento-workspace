@@ -1,3 +1,4 @@
+import * as TanstackReactQuery from "@tanstack/react-query";
 import type { DuplexRpc } from "@ubento/rpc";
 import * as LucideReact from "lucide-react";
 import * as React from "react";
@@ -6,29 +7,28 @@ import * as ReactDOMClient from "react-dom/client";
 import * as ReactJsxRuntime from "react/jsx-runtime";
 import { useLocation, useNavigation, useParams } from "../hooks/navigation.js";
 import {
-  httpQueryOptions,
   httpInfiniteQueryOptions,
+  httpQueryOptions,
   useHttpMutation,
 } from "../hooks/service/http.js";
 import {
-  mongodbFindQueryOptions,
-  mongodbFindOneQueryOptions,
-  mongodbCountDocumentsQueryOptions,
   mongodbAggregateQueryOptions,
-  mongodbListCollectionsQueryOptions,
-  mongodbListDatabasesQueryOptions,
+  mongodbCountDocumentsQueryOptions,
+  mongodbDeleteManyMutationOptions,
+  mongodbDeleteOneMutationOptions,
   mongodbExtractCollectionSchemaQueryOptions,
   mongodbExtractDbSchemaQueryOptions,
-  mongodbInsertOneMutationOptions,
-  mongodbInsertManyMutationOptions,
-  mongodbUpdateOneMutationOptions,
-  mongodbUpdateManyMutationOptions,
-  mongodbDeleteOneMutationOptions,
-  mongodbDeleteManyMutationOptions,
   mongodbFindOneAndUpdateMutationOptions,
+  mongodbFindOneQueryOptions,
+  mongodbFindQueryOptions,
+  mongodbInsertManyMutationOptions,
+  mongodbInsertOneMutationOptions,
+  mongodbListCollectionsQueryOptions,
+  mongodbListDatabasesQueryOptions,
+  mongodbUpdateManyMutationOptions,
+  mongodbUpdateOneMutationOptions,
 } from "../hooks/service/mongodb.js";
 import type { ModuleRef } from "../spec.js";
-import * as TanstackReactQuery from "@tanstack/react-query";
 
 export const MODULE_BASE_PATH = "/__ubento_modules/";
 
@@ -214,6 +214,8 @@ export function injectWorkspaceImportMap({
     // Build the esm.sh URL with the external query string
     const queryParams = `?external=${externalList.join(",")}`;
     packageMappings[name] = `https://esm.sh/${name}@${version}${queryParams}`;
+    packageMappings[name + "/*"] =
+      `https://esm.sh/${name}@${version}/*${queryParams}`;
   });
 
   console.log("overrides:", {
