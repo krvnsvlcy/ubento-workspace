@@ -1,4 +1,5 @@
 import { createZustandStateController } from "@ubento/bento.arlo-core";
+import { WorkspaceSpec } from "@ubento/bento.runtime";
 import { AgentThread, UserMessageAttachment } from "@ubento/workspace.agent";
 import { registerStore } from "@ubento/zustand-devtool";
 import { createStore } from "zustand";
@@ -23,6 +24,7 @@ export type UbentoCopilotInput = {
   userAttachments: UserMessageAttachment[]; // user provided attachments
   contextAttachments: Record<string, UserMessageAttachment[]>; // attachments from the current context
 };
+
 export type UbentoCopilotState = {
   input: UbentoCopilotInput;
   status: "idle" | "active";
@@ -105,9 +107,10 @@ export function createUbentoCopilot({
         },
       }));
     },
-    sendMessage: async () => {
+    sendMessage: async (message?: string) => {
       const state = store.getState();
-      const content = state.input.text;
+      const originalContent = state.input.text;
+      const content = message ?? state.input.text;
 
       if (!content.trim()) return;
 
@@ -184,7 +187,7 @@ export function createUbentoCopilot({
         console.error("Failed to send message:", error);
         // restore input on failure
         store.setState((s) => ({
-          input: { ...s.input, text: content },
+          input: { ...s.input, text: originalContent },
           status: "idle",
         }));
       }

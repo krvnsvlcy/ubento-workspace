@@ -3,7 +3,7 @@ import {
   makeEntityId,
   ubentoEntities,
 } from "@ubento/services.primitives";
-import { TooManyRequestsError } from "@ubento/services.toolkit";
+import { PaymentRequiredError } from "@ubento/services.toolkit";
 import express, { Request, Response } from "express";
 import https from "https";
 import { env } from "../env.js";
@@ -80,7 +80,7 @@ gatewayRouter.use(async (req, res, next) => {
       next();
     } catch (error) {
       console.error("Failed to reserve usage:", error);
-      next(new TooManyRequestsError(`AI usage exceeded`));
+      next(new PaymentRequiredError(`AI usage exceeded`));
     }
   }
 });

@@ -360,7 +360,7 @@ const PresetContainer = <TPreset extends Preset, TValue>({
               title={preset.label}
               className={cx(
                 // base
-                "relative w-full overflow-hidden rounded-sm border px-2.5 py-1.5 text-left text-base text-ellipsis whitespace-nowrap shadow-xs outline-hidden transition-all sm:border-none sm:py-2 sm:text-sm sm:shadow-none",
+                "relative w-full overflow-hidden rounded-sm border px-2.5 py-1.5 text-left text-main text-ellipsis whitespace-nowrap shadow-xs outline-hidden transition-all sm:border-none sm:py-2 sm:text-sm sm:shadow-none",
                 // text color
                 "text-content",
                 // border color

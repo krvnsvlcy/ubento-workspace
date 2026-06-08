@@ -39,7 +39,7 @@ function MenuItem({
       data-variant={variant}
       tabIndex={0}
       className={cn(
-        "group/menu-item relative flex cursor-default items-center gap-1.5 rounded-xl px-2.5 py-1 h-8 text-sm outline-hidden select-none focus:bg-surface-hover hover:bg-surface-hover focus:text-content hover:text-content data-inset:pl-7 data-[variant=destructive]:text-base data-[variant=destructive]:focus:bg-surface data-[variant=destructive]:hover:bg-surface data-[variant=destructive]:focus:text-content data-[variant=destructive]:hover:text-content data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 focus:*:[svg]:text-content hover:*:[svg]:text-content data-[variant=destructive]:*:[svg]:text-base",
+        "group/menu-item relative flex cursor-default items-center gap-1.5 rounded-xl px-2.5 py-1 h-8 text-sm outline-hidden select-none focus:bg-surface-hover hover:bg-surface-hover focus:text-content hover:text-content data-inset:pl-7 data-[variant=destructive]:text-main data-[variant=destructive]:focus:bg-surface data-[variant=destructive]:hover:bg-surface data-[variant=destructive]:focus:text-content data-[variant=destructive]:hover:text-content data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 focus:*:[svg]:text-content hover:*:[svg]:text-content data-[variant=destructive]:*:[svg]:text-main",
         className,
       )}
       {...props}

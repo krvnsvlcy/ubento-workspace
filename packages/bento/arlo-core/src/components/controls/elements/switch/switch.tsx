@@ -38,7 +38,7 @@ export function SwitchControl<T>({
             key={`${option.value}`}
             onClick={() => onChange?.(option.value)}
             className={cx("transition-colors", {
-              "border bg-base/20 border-border/30 hover:bg-base/30 text-contrast ":
+              "border bg-main/20 border-border/30 hover:bg-main/30 text-contrast ":
                 option.value === value,
               "text-content hover:bg-surface/80/50 hover:text-content":
                 option.value !== value,

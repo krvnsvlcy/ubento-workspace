@@ -1,6 +1,7 @@
 import { AgentMessage } from "@/message/message.js";
 import { AgentError, UserMessageData } from "@/message/types.js";
 import { llmContentToText } from "@/utils/llm.js";
+import { APICallError } from "@ai-sdk/provider";
 import z from "zod";
 import { createStore } from "zustand/vanilla";
 import { AgentThread } from "../thread/thread.js";
@@ -138,7 +139,7 @@ export function createAgentExecution({
       "edit_board_module",
       "create_board",
       "update_board_metadata",
-      "delete_boards"
+      "delete_boards",
     ]);
 
     if (isPlanModeActive && MUTATING_TOOL_NAMES.has(tool.name)) {
@@ -342,12 +343,22 @@ export function createAgentExecution({
     e: unknown,
     abortController: AbortController,
   ): AgentExecutionError {
+    console.error(e);
     if (e instanceof AgentExecutionError) return e;
     if (abortController.signal.aborted) {
       return new AgentExecutionError({
         code: AgentExecutionErrorCode.ABORTED,
         message: "Execution aborted",
         cause: e,
+      });
+    }
+    if (APICallError.isInstance(e)) {
+      return new AgentExecutionError({
+        code: AgentExecutionErrorCode.API_CALL,
+        message: e.message,
+        data: {
+          statusCode: e.statusCode,
+        },
       });
     }
     return new AgentExecutionError({
@@ -364,10 +375,13 @@ export function createAgentExecution({
     getState: store.getState,
     injectSteering: (text: string) => {
       steeringQueue.push(text);
-      environment.logger?.debug("Steering input injected into execution queue", {
-        event: "steering_injected",
-        text,
-      });
+      environment.logger?.debug(
+        "Steering input injected into execution queue",
+        {
+          event: "steering_injected",
+          text,
+        },
+      );
     },
     runAction,
     run: async ({
@@ -386,6 +400,10 @@ export function createAgentExecution({
         store.setState({
           error: undefined,
           status: "thinking", // Start with thinking instead of running
+        });
+        thread.setState({
+          status: "running",
+          error: undefined,
         });
 
         await thread.pushUserMessage(message);
@@ -429,10 +447,13 @@ export function createAgentExecution({
 
           if (i === maxIterations - 2 && !isFinalRecoveryTurn) {
             // Inject final recovery warning
-            environment.logger?.info("Execution limit reached. Initiating graceful recovery turn.", {
-              event: "execution_recovery_initiated",
-              iterations: i,
-            });
+            environment.logger?.info(
+              "Execution limit reached. Initiating graceful recovery turn.",
+              {
+                event: "execution_recovery_initiated",
+                iterations: i,
+              },
+            );
             await thread.pushUserMessage({
               text: "SYSTEM WARNING: You have reached the execution turn limit. You MUST call the finish action or return your final response immediately. Explain what remains unfinished. Do not call any other tools.",
               modelId: message.modelId,
@@ -460,6 +481,11 @@ export function createAgentExecution({
           status: stateUpdate.status,
           stopReason: stateUpdate.stopReason,
         });
+
+        thread.setState({
+          status: "idle",
+          error: undefined,
+        });
       } catch (e) {
         const normalizedError = normalizeError(e, abortController);
 
@@ -474,10 +500,18 @@ export function createAgentExecution({
             status: "stopped",
             stopReason: "aborted",
           });
+          thread.setState({
+            status: "idle",
+            error: undefined,
+          });
         } else {
           store.setState({
             error: normalizedError,
             status: "errored",
+          });
+          thread.setState({
+            status: "errored",
+            error: normalizedError,
           });
         }
       }

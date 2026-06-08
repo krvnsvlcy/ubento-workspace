@@ -2,6 +2,7 @@
 
 import { cac } from "cac";
 import { build } from "./commands/build/index.js";
+import { check } from "./commands/check/index.js";
 import { clean } from "./commands/clean/index.js";
 import { containerize } from "./commands/containerize/index.js";
 import { deploy } from "./commands/deploy/index.js";
@@ -16,6 +17,7 @@ const cli = cac("scripts");
 
 cli.command("clean", "Remove build outputs (dist, build, etc)").action(clean);
 cli.command("build", "Build the project").action(build);
+cli.command("check", "Check TypeScript files for errors without building").action(check);
 cli
   .command("watch [tsconfig]", "Watch TypeScript files and fix import paths")
   .option("--config <path>", "Path to tsconfig file", {

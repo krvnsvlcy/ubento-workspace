@@ -1,15 +1,17 @@
 import { Tone } from "@/tone";
-import { HTMLAttributes, forwardRef } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
+import { HTMLAttributes, forwardRef } from "react";
 
 export const badgeVariants = cva(
   "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-accent",
   {
     variants: {
       variant: {
-        default: "border-transparent bg-base text-contrast hover:bg-hover",
-        secondary: "border-transparent bg-surface text-content hover:bg-surface-hover",
-        destructive: "border-transparent bg-base text-contrast hover:bg-hover",
+        default: "border-transparent bg-main text-contrast hover:bg-main-hover",
+        secondary:
+          "border-transparent bg-surface text-content hover:bg-surface-hover",
+        destructive:
+          "border-transparent bg-main text-contrast hover:bg-main-hover",
         outline: "text-content border-border",
         // Tremor variants
         accent: "bg-surface text-content border-border",
@@ -23,26 +25,25 @@ export const badgeVariants = cva(
     defaultVariants: {
       variant: "default",
     },
-  }
+  },
 );
 
 export interface BadgeProps
-  extends HTMLAttributes<HTMLSpanElement>,
-    VariantProps<typeof badgeVariants> {
+  extends HTMLAttributes<HTMLSpanElement>, VariantProps<typeof badgeVariants> {
   tone?: Tone;
 }
 
 export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
   ({ className, variant, tone, ...props }, ref) => {
-    const resolvedTone = tone || (
-      variant === "default"
+    const resolvedTone =
+      tone ||
+      (variant === "default"
         ? "accent"
         : variant === "destructive"
-        ? "destructive"
-        : variant === "secondary" || variant === "outline"
-        ? "neutral"
-        : (variant as Tone)
-    );
+          ? "destructive"
+          : variant === "secondary" || variant === "outline"
+            ? "neutral"
+            : (variant as Tone));
 
     return (
       <span
@@ -52,6 +53,6 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
         {...props}
       />
     );
-  }
+  },
 );
 Badge.displayName = "Badge";

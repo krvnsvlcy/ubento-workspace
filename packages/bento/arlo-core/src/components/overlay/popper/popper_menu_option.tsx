@@ -44,7 +44,7 @@ export function PopperMenuOption({
         {
           "text-content": dimmed || disabled,
           "hover:bg-current/7": !disabled,
-          "text-base": destructive,
+          "text-main": destructive,
         },
       )}
       style={{

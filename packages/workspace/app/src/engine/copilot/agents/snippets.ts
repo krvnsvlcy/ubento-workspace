@@ -154,7 +154,7 @@ const { productId } = useParams(); // returns Record<string, string>
 
 export const planModeInstruction = `
 ## Plan Mode Protocol
-- **Strict Read-Only Guard**: When Plan Mode is active, code-modifying tools (e.g., \`write_board_module\`, \`edit_board_module\`, \`create_board\`, \`update_board_metadata\`, \`delete_boards\`) are locked.
+- **Strict Read-Only Guard**: When Plan Mode is active, code-modifying tools (e.g., \`write_module\`, \`edit_module\`, \`create_board\`, \`update_board_metadata\`, \`delete_boards\`) are locked.
 - **Entering Plan Mode**: At the start of a task, if the goal is complex, you MUST call \`enter_plan_mode(reason)\` to establish plan mode.
 - **Exit Plan Mode**: Once the plan is drafted and recorded, call \`approve_plan(approvedPlanSummary)\` to exit Plan Mode and unlock mutating tools. Do NOT attempt to modify files/modules until the plan has been approved.
 `;

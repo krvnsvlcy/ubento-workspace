@@ -255,7 +255,7 @@ const DropdownMenuRadioItem = React.forwardRef<
     <span className="absolute left-2 flex size-4 items-center justify-center">
       <CircleDot
         aria-hidden="true"
-        className="size-full shrink-0 text-base group-data-[state=checked]/DropdownMenuRadioItem:flex group-data-[state=unchecked]/DropdownMenuRadioItem:hidden"
+        className="size-full shrink-0 text-main group-data-[state=checked]/DropdownMenuRadioItem:flex group-data-[state=unchecked]/DropdownMenuRadioItem:hidden"
       />
       <Circle
         aria-hidden="true"

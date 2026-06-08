@@ -69,7 +69,7 @@ const Toast = React.forwardRef<
       case "success":
         Icon = (
           <CheckCircle
-            className="size-5 shrink-0 text-base"
+            className="size-5 shrink-0 text-main"
             aria-hidden="true"
           />
         );
@@ -77,17 +77,14 @@ const Toast = React.forwardRef<
       case "warning":
         Icon = (
           <AlertTriangle
-            className="size-5 shrink-0 text-base"
+            className="size-5 shrink-0 text-main"
             aria-hidden="true"
           />
         );
         break;
       case "error":
         Icon = (
-          <XCircle
-            className="size-5 shrink-0 text-base"
-            aria-hidden="true"
-          />
+          <XCircle className="size-5 shrink-0 text-main" aria-hidden="true" />
         );
         break;
       case "loading":
@@ -100,7 +97,7 @@ const Toast = React.forwardRef<
         break;
       default:
         Icon = (
-          <Info className="size-5 shrink-0 text-base" aria-hidden="true" />
+          <Info className="size-5 shrink-0 text-main" aria-hidden="true" />
         );
         break;
     }
@@ -112,7 +109,7 @@ const Toast = React.forwardRef<
       info: "info",
       loading: "neutral",
     };
-    const tone = variant ? (toneMap[variant] || "neutral") : "neutral";
+    const tone = variant ? toneMap[variant] || "neutral" : "neutral";
 
     return (
       <ToastPrimitives.Root
@@ -171,7 +168,7 @@ const Toast = React.forwardRef<
                   // active
                   "active:bg-surface-active",
                   {
-                    "text-base": variant === "error",
+                    "text-main": variant === "error",
                   },
                 )}
                 onClick={(event) => {

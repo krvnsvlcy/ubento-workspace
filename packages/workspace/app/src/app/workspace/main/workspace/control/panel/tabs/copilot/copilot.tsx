@@ -1,3 +1,4 @@
+import { CopilotChangesView } from "./changes";
 import { CopilotInput } from "./input";
 import { CopilotPlanStatus } from "./plan-status";
 import { CopilotThread } from "./thread";
@@ -7,6 +8,7 @@ export function CopilotTab() {
     <div className="flex h-full flex-col">
       <CopilotPlanStatus />
       <CopilotThread />
+      <CopilotChangesView />
       <CopilotInput />
     </div>
   );

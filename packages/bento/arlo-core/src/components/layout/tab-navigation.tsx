@@ -77,7 +77,7 @@ const TabNavigationLink = React.forwardRef<
             // border hover
             "group-hover:border-border-hover",
             // selected
-            "group-data-active:border-border group-data-active:text-base",
+            "group-data-active:border-border group-data-active:text-main",
             // disabled
             disabled ? "pointer-events-none text-content-muted" : "",
             focusRing,

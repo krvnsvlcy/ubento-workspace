@@ -1,6 +1,6 @@
 export enum AgentExecutionErrorCode {
   RATE_LIMIT_EXCEEDED = "rate_limit_exceeded",
-  MODEL_GENERATION_FAILED = "model_generation_failed",
+  API_CALL = "api_call",
   PARSING_ERROR = "parsing_error",
   TOOL_EXECUTION_FAILED = "tool_execution_failed",
   NO_ACTIONS_RETURNED = "no_actions_returned",

@@ -1,10 +1,17 @@
+import ProgressBar from "@/components/feedback/loaders/progress_bar.js";
 import cx from "clsx";
+import { Edit2, Minus, Plus, Settings, Trash2 } from "lucide-react";
 import type { ReactNode } from "react";
 import React, { forwardRef, useState } from "react";
-import { Plus, Minus, Trash2, Edit2, Settings } from "lucide-react";
-import ProgressBar from "@/components/feedback/loaders/progress_bar.js";
 
-export type ColorAccent = "yellow" | "green" | "blue" | "red" | "violet" | "primary" | "neutral";
+export type ColorAccent =
+  | "yellow"
+  | "green"
+  | "blue"
+  | "red"
+  | "violet"
+  | "primary"
+  | "neutral";
 
 const IconMap: Record<string, any> = {
   plus: Plus,
@@ -46,8 +53,10 @@ export const ControlButton = forwardRef<
   ref,
 ) {
   const [hovered, setHovered] = useState(false);
-  
-  const ActionIcon = action ? (IconMap[action.icon.toLowerCase()] || Settings) : null;
+
+  const ActionIcon = action
+    ? IconMap[action.icon.toLowerCase()] || Settings
+    : null;
 
   return (
     <button
@@ -55,16 +64,12 @@ export const ControlButton = forwardRef<
       className={cx("border w-full h-7 rounded-md", {
         "text-content": dimmed,
         "hover:bg-surface/20": !accent,
-        "border-yellow/20 bg-yellow/10 hover:bg-yellow/20":
-          accent === "yellow",
-        "border-green/20 bg-green/10 hover:bg-green/20":
-          accent === "green",
-        "border-blue/20 bg-blue/10 hover:bg-blue/20":
-          accent === "blue",
+        "border-yellow/20 bg-yellow/10 hover:bg-yellow/20": accent === "yellow",
+        "border-green/20 bg-green/10 hover:bg-green/20": accent === "green",
+        "border-blue/20 bg-blue/10 hover:bg-blue/20": accent === "blue",
         "border-red/20 bg-red/10 hover:bg-red/20": accent === "red",
-        "border-violet/20 bg-violet/10 hover:bg-violet/20":
-          accent === "violet",
-        "border-border/20 bg-base/10 hover:bg-base/20": accent === "primary",
+        "border-violet/20 bg-violet/10 hover:bg-violet/20": accent === "violet",
+        "border-border/20 bg-main/10 hover:bg-main/20": accent === "primary",
       })}
       style={{
         display: "flex",

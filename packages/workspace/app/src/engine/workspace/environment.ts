@@ -56,7 +56,18 @@ export type WorkspaceToolApi = {
   }) => Promise<void>;
   deleteBoard: (args: { boardId: string }) => Promise<void>;
   createBoard: (args: { title: string }) => Promise<WorkspaceBoardSpec>;
-  listBoards: () => Promise<Array<{ id: string; title: string; children: string[] }>>;
+  listBoards: () => Promise<
+    Array<{
+      id: string;
+      title: string;
+      children: string[];
+      module?: { id: string; versionId: string };
+    }>
+  >;
+  withCopilotChanges: <T>(
+    run: () => Promise<T> | T,
+    getPaths: (result: T) => string[],
+  ) => Promise<T>;
 };
 
 export type WorkspaceCopilotAgentEnvironment = CopilotAgentEnvironment & {
@@ -74,7 +85,13 @@ export function createWorkspaceCopilotAgentEnvironment(
     updateWorkspaceSpec: (spec: WorkspaceSpec) => Promise<void>;
   },
 ): WorkspaceCopilotAgentEnvironment {
-  const workspaceToolkit = createWorkspaceToolkit(api);
+  const workspaceToolkit = createWorkspaceToolkit(api, {
+    getWorkspaceSpec: () => {
+      const spec = options.getWorkspaceSpec();
+      return spec?.isValid ? spec.data : undefined;
+    },
+    updateWorkspaceSpec: options.updateWorkspaceSpec,
+  });
 
   const runtimeToolkit = createRuntimeToolkit(api);
 
@@ -89,6 +106,7 @@ export function createWorkspaceCopilotAgentEnvironment(
       return spec?.isValid ? spec.data : undefined;
     },
     updateWorkspaceSpec: options.updateWorkspaceSpec,
+    withCopilotChanges: api.withCopilotChanges,
   });
 
   const environment = createCopilotAgentEnvironment({
@@ -97,29 +115,25 @@ export function createWorkspaceCopilotAgentEnvironment(
     logger: options.logger.child({ module: "copilot" }),
     workspaceId: options.workspaceId,
     tools: [
-      workspaceToolkit.tools.goToTool,
-      workspaceToolkit.tools.updateBoardTool,
-      workspaceToolkit.tools.deleteBoardTool,
-      workspaceToolkit.tools.createBoardTool,
-      workspaceToolkit.tools.listBoardsTool,
+      // navigation
+      workspaceToolkit.tools.goTo,
       // services
       servicesToolkit.tools.listServices,
-      servicesToolkit.tools.describeService,
-      servicesToolkit.tools.describeActions,
-      servicesToolkit.tools.describeQueries,
-      servicesToolkit.tools.describeSchemas,
-      // runtime tools
-      runtimeToolkit.tools.focusBoard,
-      runtimeToolkit.tools.readNode,
-      runtimeToolkit.tools.clickNode,
-      runtimeToolkit.tools.setValue,
-      runtimeToolkit.tools.getValue,
-      runtimeToolkit.tools.readLogs,
-      runtimeToolkit.tools.wait,
+      // boards
+      workspaceToolkit.tools.updateBoard,
+      workspaceToolkit.tools.deleteBoard,
+      workspaceToolkit.tools.createBoard,
+      workspaceToolkit.tools.listBoards,
+      workspaceToolkit.tools.readBoard,
+      // packages
+      workspaceToolkit.tools.listPackages,
+      workspaceToolkit.tools.installPackage,
+      workspaceToolkit.tools.removePackage,
       // modules
-      moduleToolkit.tools.readBoardModule,
-      moduleToolkit.tools.writeBoardModule,
-      moduleToolkit.tools.editBoardModule,
+      workspaceToolkit.tools.listModules, // list installed modules
+      moduleToolkit.tools.readModule,
+      moduleToolkit.tools.writeModule,
+      moduleToolkit.tools.editModule,
     ],
   });
 
@@ -139,11 +153,16 @@ export function createWorkspaceCopilotAgentEnvironment(
     instructions: copilotInstructions,
     agents: ["codebase_investigator", "browser_agent", "generalist"],
     tools: [
-      workspaceToolkit.tools.goToTool.name,
-      workspaceToolkit.tools.createBoardTool.name,
-      workspaceToolkit.tools.updateBoardTool.name,
-      workspaceToolkit.tools.deleteBoardTool.name,
-      workspaceToolkit.tools.listBoardsTool.name,
+      workspaceToolkit.tools.goTo.name,
+      workspaceToolkit.tools.createBoard.name,
+      workspaceToolkit.tools.updateBoard.name,
+      workspaceToolkit.tools.deleteBoard.name,
+      workspaceToolkit.tools.listBoards.name,
+      workspaceToolkit.tools.readBoard.name,
+      workspaceToolkit.tools.listPackages.name,
+      workspaceToolkit.tools.installPackage.name,
+      workspaceToolkit.tools.removePackage.name,
+      workspaceToolkit.tools.listModules.name,
       catalogToolkit.tools.listComponents.name,
       catalogToolkit.tools.describeComponents.name,
       servicesToolkit.tools.listServices.name,
@@ -158,9 +177,9 @@ export function createWorkspaceCopilotAgentEnvironment(
       runtimeToolkit.tools.getValue.name,
       runtimeToolkit.tools.readLogs.name,
       runtimeToolkit.tools.readNode.name,
-      moduleToolkit.tools.readBoardModule.name,
-      moduleToolkit.tools.writeBoardModule.name,
-      moduleToolkit.tools.editBoardModule.name,
+      moduleToolkit.tools.readModule.name,
+      moduleToolkit.tools.writeModule.name,
+      moduleToolkit.tools.editModule.name,
       "enter_plan_mode",
       "approve_plan",
       "create_task",
@@ -178,14 +197,16 @@ export function createWorkspaceCopilotAgentEnvironment(
       "Specialized in codebase analysis, architectural mapping, and reverse-engineering workspace modules and services",
     instructions: codebaseInvestigatorInstructions,
     tools: [
-      workspaceToolkit.tools.listBoardsTool.name,
+      workspaceToolkit.tools.listBoards.name,
+      workspaceToolkit.tools.readBoard.name,
+      workspaceToolkit.tools.listModules.name,
       servicesToolkit.tools.listServices.name,
       servicesToolkit.tools.describeService.name,
       servicesToolkit.tools.describeActions.name,
       servicesToolkit.tools.describeQueries.name,
       servicesToolkit.tools.describeSchemas.name,
-      moduleToolkit.tools.readBoardModule.name,
-      moduleToolkit.tools.editBoardModule.name,
+      moduleToolkit.tools.readModule.name,
+      moduleToolkit.tools.editModule.name,
       runtimeToolkit.tools.readLogs.name,
     ],
     enableMessage: true,
@@ -197,11 +218,13 @@ export function createWorkspaceCopilotAgentEnvironment(
       "Specialized in real-time browser automation, user flow execution, and live UI/UX verification",
     instructions: browserAgentInstructions,
     tools: [
-      workspaceToolkit.tools.goToTool.name,
-      workspaceToolkit.tools.listBoardsTool.name,
-      moduleToolkit.tools.readBoardModule.name,
-      moduleToolkit.tools.writeBoardModule.name,
-      moduleToolkit.tools.editBoardModule.name,
+      workspaceToolkit.tools.goTo.name,
+      workspaceToolkit.tools.listBoards.name,
+      workspaceToolkit.tools.readBoard.name,
+      workspaceToolkit.tools.listModules.name,
+      moduleToolkit.tools.readModule.name,
+      moduleToolkit.tools.writeModule.name,
+      moduleToolkit.tools.editModule.name,
       catalogToolkit.tools.listComponents.name,
       catalogToolkit.tools.describeComponents.name,
       runtimeToolkit.tools.focusBoard.name,
@@ -221,11 +244,16 @@ export function createWorkspaceCopilotAgentEnvironment(
       "A general-purpose AI agent with access to all tools, recommended for turn-intensive tasks or batch refactoring",
     instructions: generalistAgentInstructions,
     tools: [
-      workspaceToolkit.tools.goToTool.name,
-      workspaceToolkit.tools.updateBoardTool.name,
-      workspaceToolkit.tools.deleteBoardTool.name,
-      workspaceToolkit.tools.createBoardTool.name,
-      workspaceToolkit.tools.listBoardsTool.name,
+      workspaceToolkit.tools.goTo.name,
+      workspaceToolkit.tools.updateBoard.name,
+      workspaceToolkit.tools.deleteBoard.name,
+      workspaceToolkit.tools.createBoard.name,
+      workspaceToolkit.tools.listBoards.name,
+      workspaceToolkit.tools.readBoard.name,
+      workspaceToolkit.tools.listPackages.name,
+      workspaceToolkit.tools.installPackage.name,
+      workspaceToolkit.tools.removePackage.name,
+      workspaceToolkit.tools.listModules.name,
       catalogToolkit.tools.listComponents.name,
       catalogToolkit.tools.describeComponents.name,
       servicesToolkit.tools.listServices.name,
@@ -240,9 +268,9 @@ export function createWorkspaceCopilotAgentEnvironment(
       runtimeToolkit.tools.getValue.name,
       runtimeToolkit.tools.readLogs.name,
       runtimeToolkit.tools.readNode.name,
-      moduleToolkit.tools.readBoardModule.name,
-      moduleToolkit.tools.writeBoardModule.name,
-      moduleToolkit.tools.editBoardModule.name,
+      moduleToolkit.tools.readModule.name,
+      moduleToolkit.tools.writeModule.name,
+      moduleToolkit.tools.editModule.name,
       "enter_plan_mode",
       "approve_plan",
       "create_task",

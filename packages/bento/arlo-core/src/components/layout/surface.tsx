@@ -9,7 +9,7 @@ const surfaceVariants = cva("transition-colors", {
       flat: "bg-background text-content",
       subtle: "bg-surface/50 text-content",
       tinted: "bg-surface text-content",
-      bold: "bg-base text-contrast",
+      bold: "bg-main text-contrast",
     },
     interactive: {
       true: "cursor-pointer hover:bg-surface-hover hover:border-border-hover",

@@ -29,9 +29,13 @@ Run `npm run dev` from the root to start all essential services.
 ### Tooling
 A robust `scripts/` directory provides common commands:
 - `build`: Optimized production builds.
+- `check`: Fast TypeScript type checking without emitting files.
 - `deploy`: Deployment to Vercel/Cloud Run.
 - `containerize`: Docker image generation.
 - `watch`: Development watchers.
+
+> [!IMPORTANT]
+> **Type Checking Mandate**: When verifying TypeScript/type correctness of your code changes, **always** run `pnpm check` (or `npx scripts check`) instead of running `pnpm build`. Building the project generates new build outputs in `dist/` directories, which triggers unnecessary re-compilations and reloads of any active dev servers. Use `check` to perform diagnostic checks without writing files.
 
 ### Commit Guidelines
 - Be concise and focused on the "why".

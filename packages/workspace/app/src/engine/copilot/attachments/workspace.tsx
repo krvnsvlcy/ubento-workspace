@@ -3,7 +3,7 @@ import { Briefcase } from "lucide-react";
 import { AttachmentType } from "../types";
 
 export type BentoWorkspaceAttachment = UserMessageAttachment<
-  "bento-workspace",
+  "current-workspace",
   {
     id: string;
     title: string;
@@ -13,7 +13,7 @@ export type BentoWorkspaceAttachment = UserMessageAttachment<
 
 export const ubentoWorkspaceAttachmentType: AttachmentType<BentoWorkspaceAttachment> =
   {
-    type: "bento-workspace",
+    type: "current-workspace",
     label: (data) => {
       return data.title || data.id;
     },

@@ -1,9 +1,9 @@
+import { TreeEntryRaw } from "@/components/data/tree/tree_entry_raw.js";
+import ProgressBar from "@/components/feedback/loaders/progress_bar.js";
 import cx from "clsx";
 import { ChevronRight } from "lucide-react";
 import type { JSX, PropsWithChildren } from "react";
 import React, { memo, useState } from "react";
-import ProgressBar from "@/components/feedback/loaders/progress_bar.js"; 
-import { TreeEntryRaw } from "@/components/data/tree/tree_entry_raw.js";
 
 export type TreeEntryProps = PropsWithChildren<{
   ref?: React.Ref<HTMLDivElement>; // <- ✅ direct ref as prop
@@ -77,12 +77,12 @@ export const TreeEntry = memo(function ({
           "bg-surface/30 hover:bg-surface/50 text-content outline-border":
             active && !accent,
           "bg-surface/30": hover && hoverable && !accent,
-          "hover:bg-base/20": !active && !hover && hoverable && accent,
-          "focus:bg-base/20 focus:text-content focus:outline-accent/40":
+          "hover:bg-main/20": !active && !hover && hoverable && accent,
+          "focus:bg-main/20 focus:text-content focus:outline-accent/40":
             !active && accent,
-          "bg-base/10 hover:bg-base/20 text-content outline-accent/30":
+          "bg-main/10 hover:bg-main/20 text-content outline-accent/30":
             active && accent,
-          "bg-base/10 hover:bg-base/10": hover && hoverable && accent,
+          "bg-main/10 hover:bg-main/10": hover && hoverable && accent,
           "rounded-md": !square, //
           "h-7": size === "medium",
           "h-6 text-sm": size === "small",

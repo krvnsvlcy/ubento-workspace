@@ -6,13 +6,11 @@ export const iconButtonVariants = cva(
   {
     variants: {
       variant: {
-        default:
-          "hover:bg-surface text-content-muted hover:text-content",
+        default: "hover:bg-surface text-content-muted hover:text-content",
         outline:
           "border border-border bg-surface hover:bg-surface-hover text-content-muted hover:text-content",
-        ghost:
-          "hover:bg-surface text-content-muted hover:text-content",
-        primary: "bg-base text-contrast hover:bg-hover",
+        ghost: "hover:bg-surface text-content-muted hover:text-content",
+        primary: "bg-main text-contrast hover:bg-main-hover",
       },
       size: {
         default: "h-8 w-8",

@@ -45,6 +45,7 @@
   "scripts": {
     "watch": "scripts watch",
     "build": "scripts build",
+    "check": "scripts check",
     "test": "vitest run"
   },
   "devDependencies": {

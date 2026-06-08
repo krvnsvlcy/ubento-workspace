@@ -41,7 +41,7 @@ export function WorkspaceControl() {
         style={{
           borderRadius: showControls ? 20 : 32,
           width: showControls ? 400 : 48,
-          height: showControls ? 600 : 48,
+          height: showControls ? 720 : 48,
         }}
         transition={{
           type: "spring",

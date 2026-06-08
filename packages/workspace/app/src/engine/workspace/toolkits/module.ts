@@ -8,86 +8,70 @@ export const createModuleToolkit = ({
   ubento,
   getWorkspaceSpec,
   updateWorkspaceSpec,
+  withCopilotChanges,
 }: {
   ubento: UbentoService;
   getWorkspaceSpec: () => WorkspaceSpec | undefined;
   updateWorkspaceSpec: (workspaceSpec: WorkspaceSpec) => Promise<void>;
+  withCopilotChanges?: <T>(
+    run: () => Promise<T> | T,
+    getPaths: (result: T) => string[],
+  ) => Promise<T>;
 }) => {
-  /** Resolve board → module id + latest version id from the workspace spec */
-  function resolveBoardModule(boardId: string): {
-    moduleId: string;
-    versionId: string;
-  } | null {
-    const spec = getWorkspaceSpec();
-    const board = spec?.boards?.[boardId];
-    if (!board?.module?.id) return null;
-    return { moduleId: board.module.id, versionId: board.module.versionId };
-  }
-  async function updateBoardModule(boardId: string, versionId: string) {
+  async function updateWorkspaceModule(moduleId: string, versionId: string) {
     const spec = getWorkspaceSpec();
     if (!spec) return;
-    const board = spec.boards?.[boardId];
-    if (!board) return;
-    await updateWorkspaceSpec({
-      ...spec,
-      boards: {
-        ...spec.boards,
-        [boardId]: {
+
+    // Create copies of boards and modules to update
+    const updatedBoards = { ...spec.boards };
+    let boardUpdated = false;
+    for (const [boardId, board] of Object.entries(spec.boards || {})) {
+      if (board?.module?.id === moduleId) {
+        updatedBoards[boardId] = {
           ...board,
           module: {
             ...board.module,
             versionId,
           },
-        },
-      },
-    });
+        };
+        boardUpdated = true;
+      }
+    }
+
+    const updatedModules = { ...spec.modules };
+    let moduleUpdated = false;
+    if (spec.modules?.[moduleId]) {
+      updatedModules[moduleId] = {
+        ...spec.modules[moduleId],
+        versionId,
+      };
+      moduleUpdated = true;
+    }
+
+    if (boardUpdated || moduleUpdated) {
+      await updateWorkspaceSpec({
+        ...spec,
+        boards: updatedBoards,
+        modules: updatedModules,
+      });
+    }
   }
 
-  // ── read_board_module ──────────────────────────────────────────────────────
+  // ── read_module ────────────────────────────────────────────────────────────
 
-  const readBoardModuleArgs = z.object({
-    boardId: z
-      .string()
-      .describe("The ID of the board whose module code to read"),
+  const readModuleArgs = z.object({
+    moduleId: z.string().describe("The ID of the module to read"),
+    versionId: z.string().describe("The version ID of the module to read"),
   });
-  const readBoardModuleTool: AgentTool<typeof readBoardModuleArgs> = {
-    name: "read_board_module",
+  const readModuleTool: AgentTool<typeof readModuleArgs> = {
+    name: "read_module",
     description:
-      "Read the current source code of the module that backs a board. " +
-      "Pass the board ID — the module is resolved automatically from the workspace spec.",
-    args: readBoardModuleArgs,
+      "Read the source code of a workspace module for a specific version.",
+    args: readModuleArgs,
     run: async ({ args }) => {
-      const ref = resolveBoardModule(args.boardId);
-      if (!ref) {
-        return {
-          content: [
-            {
-              type: "text",
-              text: `Error: Board "${args.boardId}" not found in the workspace spec or has no associated module.`,
-            },
-          ],
-        };
-      }
-
-      let vId = ref.versionId;
-      if (!vId) {
-        const mod = await ubento.sdk.module.getModule(ref.moduleId);
-        vId = mod.latest_version_id || "";
-      }
-      if (!vId) {
-        return {
-          content: [
-            {
-              type: "text",
-              text: `Error: Module "${ref.moduleId}" for board "${args.boardId}" has no versions.`,
-            },
-          ],
-        };
-      }
-
       const code = await ubento.sdk.module.readModuleVersionFile(
-        ref.moduleId,
-        vId,
+        args.moduleId,
+        args.versionId,
         "index.tsx",
       );
       return {
@@ -96,64 +80,76 @@ export const createModuleToolkit = ({
     },
   };
 
-  // ── write_board_module ─────────────────────────────────────────────────────
+  // ── write_module ───────────────────────────────────────────────────────────
 
-  const writeBoardModuleArgs = z.object({
-    boardId: z
-      .string()
-      .describe("The ID of the board whose module code to write"),
+  const writeModuleArgs = z.object({
+    moduleId: z.string().describe("The ID of the module to write"),
     content: z
       .string()
       .describe("The full new content of the module file (index.tsx)"),
+    versionId: z
+      .string()
+      .describe(
+        "The current/base version ID of the module that is being updated",
+      ),
   });
 
-  const writeBoardModuleTool: AgentTool<typeof writeBoardModuleArgs> = {
-    name: "write_board_module",
-    description:
-      "Save a new version of the module that backs a board. " +
-      "Pass the board ID — the module is resolved automatically from the workspace spec.",
-    args: writeBoardModuleArgs,
+  const writeModuleTool: AgentTool<typeof writeModuleArgs> = {
+    name: "write_module",
+    description: "Save a new version of the workspace module.",
+    args: writeModuleArgs,
     run: async ({ args }) => {
-      const ref = resolveBoardModule(args.boardId);
-      if (!ref) {
-        return {
-          content: [
-            {
-              type: "text",
-              text: `Error: Board "${args.boardId}" not found in the workspace spec or has no associated module.`,
-            },
-          ],
-        };
-      }
+      const saveAndUpdate = async () => {
+        const res = await ubento.sdk.module.saveModuleVersion(args.moduleId, {
+          content: args.content,
+        });
+        await updateWorkspaceModule(args.moduleId, res.latest_version_id);
+        return res;
+      };
 
-      const result = await ubento.sdk.module.saveModuleVersion(ref.moduleId, {
-        content: args.content,
-      });
-      await updateBoardModule(args.boardId, result.latest_version_id);
+      const getAffectedPaths = () => {
+        const spec = getWorkspaceSpec();
+        const paths: string[] = [`modules.${args.moduleId}`];
+        if (spec) {
+          for (const [boardId, board] of Object.entries(spec.boards || {})) {
+            if (board?.module?.id === args.moduleId) {
+              paths.push(`boards.${boardId}`);
+            }
+          }
+        }
+        return paths;
+      };
+
+      const result = withCopilotChanges
+        ? await withCopilotChanges(saveAndUpdate, getAffectedPaths)
+        : await saveAndUpdate();
 
       return {
         content: [
           {
             type: "text",
-            text: `Successfully saved module for board "${args.boardId}". New version ID: "${result.latest_version_id}".`,
+            text: `Successfully saved module "${args.moduleId}". New version ID: "${result.latest_version_id}".`,
           },
         ],
+        structuredContent: {
+          moduleId: args.moduleId,
+          versionId: result.latest_version_id,
+        },
       };
     },
   };
 
-  // ── edit_board_module ──────────────────────────────────────────────────────
+  // ── edit_module ────────────────────────────────────────────────────────────
 
-  const editBoardModuleArgs = z.object({
-    boardId: z
-      .string()
-      .describe("The ID of the board whose module code to edit"),
+  const editModuleArgs = z.object({
+    moduleId: z.string().describe("The ID of the module to edit"),
     oldString: z
       .string()
       .describe("The exact or approximate block of text to replace"),
     newString: z
       .string()
       .describe("The new block of text to insert in place of oldString"),
+    versionId: z.string().describe("The version ID of the module to edit"),
     allowMultiple: z
       .boolean()
       .optional()
@@ -168,45 +164,17 @@ export const createModuleToolkit = ({
       ),
   });
 
-  const editBoardModuleTool: AgentTool<typeof editBoardModuleArgs> = {
-    name: "edit_board_module",
+  const editModuleTool: AgentTool<typeof editModuleArgs> = {
+    name: "edit_module",
     description:
-      "Perform a targeted search-and-replace edit on the board module code. " +
+      "Perform a targeted search-and-replace edit on the workspace module code. " +
       "Under the hood, it will attempt exact, flexible, regex, and fuzzy matching, " +
       "as well as LLM-assisted correction if the matching fails.",
-    args: editBoardModuleArgs,
+    args: editModuleArgs,
     run: async ({ args, environment, modelId, abortController }) => {
-      const ref = resolveBoardModule(args.boardId);
-      if (!ref) {
-        return {
-          content: [
-            {
-              type: "text",
-              text: `Error: Board "${args.boardId}" not found in the workspace spec or has no associated module.`,
-            },
-          ],
-        };
-      }
-
-      let vId = ref.versionId;
-      if (!vId) {
-        const mod = await ubento.sdk.module.getModule(ref.moduleId);
-        vId = mod.latest_version_id || "";
-      }
-      if (!vId) {
-        return {
-          content: [
-            {
-              type: "text",
-              text: `Error: Module "${ref.moduleId}" for board "${args.boardId}" has no versions to edit.`,
-            },
-          ],
-        };
-      }
-
       const currentContent = await ubento.sdk.module.readModuleVersionFile(
-        ref.moduleId,
-        vId,
+        args.moduleId,
+        args.versionId,
         "index.tsx",
       );
 
@@ -215,7 +183,7 @@ export const createModuleToolkit = ({
           content: [
             {
               type: "text",
-              text: `Error: Could not read content of file "index.tsx" for module "${ref.moduleId}".`,
+              text: `Error: Could not read content of file "index.tsx" for module "${args.moduleId}" at version "${args.versionId}".`,
             },
           ],
         };
@@ -228,9 +196,10 @@ export const createModuleToolkit = ({
         {
           old_string: args.oldString,
           new_string: args.newString,
+          allow_quality_check: true, // Internal setting or default
           allow_multiple: args.allowMultiple,
           instruction: args.instruction,
-        },
+        } as any,
         model,
         abortController.signal,
       );
@@ -247,29 +216,53 @@ export const createModuleToolkit = ({
         };
       }
 
-      const result = await ubento.sdk.module.saveModuleVersion(ref.moduleId, {
-        content: editResult.newContent,
-      });
-      await updateBoardModule(args.boardId, result.latest_version_id);
+      const saveAndUpdate = async () => {
+        const res = await ubento.sdk.module.saveModuleVersion(args.moduleId, {
+          content: editResult.newContent,
+        });
+        await updateWorkspaceModule(args.moduleId, res.latest_version_id);
+        return res;
+      };
+
+      const getAffectedPaths = () => {
+        const spec = getWorkspaceSpec();
+        const paths: string[] = [`modules.${args.moduleId}`];
+        if (spec) {
+          for (const [boardId, board] of Object.entries(spec.boards || {})) {
+            if (board?.module?.id === args.moduleId) {
+              paths.push(`boards.${boardId}`);
+            }
+          }
+        }
+        return paths;
+      };
+
+      const result = withCopilotChanges
+        ? await withCopilotChanges(saveAndUpdate, getAffectedPaths)
+        : await saveAndUpdate();
 
       return {
         content: [
           {
             type: "text",
-            text: `Successfully edited module for board "${args.boardId}" using strategy "${editResult.strategy}". New version ID: "${result.latest_version_id}".`,
+            text: `Successfully edited module "${args.moduleId}" using strategy "${editResult.strategy}". New version ID: "${result.latest_version_id}".`,
           },
         ],
+        structuredContent: {
+          moduleId: args.moduleId,
+          versionId: result.latest_version_id,
+        },
       };
     },
   };
 
   return createLocalToolkit({
     name: "module",
-    description: "Tools for reading and writing board module code",
+    description: "Tools for reading and writing module code",
     tools: {
-      readBoardModule: readBoardModuleTool,
-      writeBoardModule: writeBoardModuleTool,
-      editBoardModule: editBoardModuleTool,
+      readModule: readModuleTool,
+      writeModule: writeModuleTool,
+      editModule: editModuleTool,
     },
   });
 };

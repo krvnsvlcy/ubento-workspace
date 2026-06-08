@@ -24,9 +24,9 @@ const Checkbox = React.forwardRef<
         // disabled
         "data-disabled:bg-surface data-disabled:text-content-muted data-disabled:ring-border",
         // checked and enabled
-        "enabled:data-[state=checked]:bg-base enabled:data-[state=checked]:ring-0 enabled:data-[state=checked]:ring-transparent",
+        "enabled:data-[state=checked]:bg-main enabled:data-[state=checked]:ring-0 enabled:data-[state=checked]:ring-transparent",
         // indeterminate
-        "enabled:data-[state=indeterminate]:bg-base enabled:data-[state=indeterminate]:ring-0 enabled:data-[state=indeterminate]:ring-transparent",
+        "enabled:data-[state=indeterminate]:bg-main enabled:data-[state=indeterminate]:ring-0 enabled:data-[state=indeterminate]:ring-transparent",
         // focus
         focusRing,
         className,

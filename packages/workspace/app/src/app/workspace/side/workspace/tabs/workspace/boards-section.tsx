@@ -11,8 +11,8 @@ import {
   PointerSensor,
   useDraggable,
   useDroppable,
-  useSensors,
   useSensor,
+  useSensors,
 } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { ModuleRef, WorkspaceBoardSpec } from "@ubento/bento.runtime";

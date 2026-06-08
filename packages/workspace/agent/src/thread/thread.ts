@@ -4,6 +4,7 @@ import { MessageData, UserMessageData } from "../message/types.js";
 
 import { createAgentContext } from "@/context/context.js";
 import { AgentEnvironment } from "@/environment/environment.js";
+import { AgentExecutionError } from "@/execution/error.js";
 import { AgentMessage, createAgentMessage } from "@/message/message.js";
 import { createZustandStateController, StateController } from "@ubento/state";
 import { AgentContextData } from "../context/types.js";
@@ -14,6 +15,8 @@ import {
 
 export interface AgentThreadState {
   activeExecution: AgentExecution | undefined;
+  status: "idle" | "running" | "errored";
+  error?: AgentExecutionError | undefined;
 }
 
 export interface AgentThread extends StateController<AgentThreadState> {
@@ -51,6 +54,8 @@ export function createAgentThread({
 
   const store = createStore<AgentThreadState>()(() => ({
     activeExecution: undefined,
+    status: "idle",
+    error: undefined,
   }));
   const controller = createZustandStateController(store);
 

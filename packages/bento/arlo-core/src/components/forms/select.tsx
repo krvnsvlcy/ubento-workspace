@@ -39,7 +39,7 @@ const selectTriggerVariants = cva(
       size: {
         sm: "h-6 px-2 text-xs",
         md: "h-8 px-3 text-sm",
-        lg: "h-10 px-4 text-base",
+        lg: "h-10 px-4 text-main",
       },
     },
     defaultVariants: {
@@ -225,10 +225,7 @@ const SelectItem = React.forwardRef<
         {children}
       </SelectPrimitives.ItemText>
       <SelectPrimitives.ItemIndicator>
-        <Check
-          className="size-5 shrink-0 text-content"
-          aria-hidden="true"
-        />
+        <Check className="size-5 shrink-0 text-content" aria-hidden="true" />
       </SelectPrimitives.ItemIndicator>
     </SelectPrimitives.Item>
   );

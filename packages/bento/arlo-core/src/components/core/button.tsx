@@ -15,10 +15,10 @@ const buttonVariants = cva(
         end: "justify-end",
       },
       variant: {
-        primary: "bg-base text-contrast hover:bg-hover",
+        primary: "bg-main text-main-contrast hover:bg-main-hover",
         secondary: "bg-content/8 hover:bg-content/15",
         outline:
-          "border border-border bg-transparent hover:bg-surface text-content",
+          "border border-border bg-background hover:bg-surface text-content",
         ghost: "hover:bg-content/15 hover:text-content",
         link: "text-content/80 hover:text-content",
         "secondary-primary": "bg-content/8 hover:bg-content hover:text-content",
@@ -39,32 +39,17 @@ const buttonVariants = cva(
     compoundVariants: [
       // variant + size
       {
-        variant: [
-          "primary",
-          "secondary",
-          "outline",
-          "ghost",
-        ],
+        variant: ["primary", "secondary", "outline", "ghost"],
         size: "sm",
         class: "h-6 px-2 text-xs",
       },
       {
-        variant: [
-          "primary",
-          "secondary",
-          "outline",
-          "ghost",
-        ],
+        variant: ["primary", "secondary", "outline", "ghost"],
         size: "md",
         class: "h-8 px-4",
       },
       {
-        variant: [
-          "primary",
-          "secondary",
-          "outline",
-          "ghost",
-        ],
+        variant: ["primary", "secondary", "outline", "ghost"],
         size: "lg",
         class: "h-10 px-4",
       },

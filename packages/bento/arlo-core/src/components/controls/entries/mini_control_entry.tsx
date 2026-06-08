@@ -26,8 +26,8 @@ function MiniControlEntryLabel({
       className={cx("h-7 ", {
         "text-content-subtle": !active,
         "hover:text-content": !active && hasMenu,
-        "text-base": active,
-        "text-base hover:text-base-500": active && hasMenu,
+        "text-main": active,
+        "text-main hover:text-main-500": active && hasMenu,
       })}
     >
       {onRemove ? <RemoveButton onRemove={onRemove} /> : <></>}
